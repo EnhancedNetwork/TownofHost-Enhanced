@@ -15,7 +15,7 @@ class GameManagerSerializeFix
             {
                 flag = true;
                 writer.StartMessage((byte)index);
-                var hasBody = logicComponent.Serialize(writer, initialState);
+                var hasBody = logicComponent.Serialize(writer);
                 if (hasBody) writer.EndMessage();
                 else writer.CancelMessage();
                 logicComponent.ClearDirtyFlag();

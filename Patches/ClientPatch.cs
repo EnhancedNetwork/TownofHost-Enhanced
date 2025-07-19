@@ -152,40 +152,6 @@ static class CheckOnlinePermissionsPatch
     }
 }
 
-[HarmonyPatch(typeof(InnerNetClient), nameof(InnerNetClient.Spawn))]
-static class SpawnPatch
-{
-    public static void Prefix(InnerNetClient __instance)
-    {
-        MessageWriter writer = __instance.Streams[1];
-        if (writer.Length > 800)
-        {
-            writer.EndMessage();
-            __instance.SendOrDisconnect(writer);
-            writer.Clear(SendOption.Reliable);
-            writer.StartMessage(5);
-            writer.Write(__instance.GameId);
-        }
-    }
-}
-
-[HarmonyPatch(typeof(InnerNetClient), nameof(InnerNetClient.Despawn))]
-static class DespawnPatch
-{
-    public static void Prefix(InnerNetClient __instance)
-    {
-        MessageWriter writer = __instance.Streams[1];
-        if (writer.Length > 800)
-        {
-            writer.EndMessage();
-            __instance.SendOrDisconnect(writer);
-            writer.Clear(SendOption.Reliable);
-            writer.StartMessage(5);
-            writer.Write(__instance.GameId);
-        }
-    }
-}
-
 //[HarmonyPatch(typeof(AmongUsClient), nameof(AmongUsClient.SendClientReady))]
 //internal class SendClientReadyPatch
 //{

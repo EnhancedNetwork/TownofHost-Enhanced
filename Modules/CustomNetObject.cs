@@ -173,52 +173,7 @@ namespace TOHE.Modules
                 MessageWriter msg = MessageWriter.Get();
                 msg.StartMessage(5);
                 msg.Write(AmongUsClient.Instance.GameId);
-                AmongUsClient.Instance.WriteSpawnMessage(playerControl, -2, SpawnFlags.None, msg);
-                msg.EndMessage();
-/*
-                // This makes Innersloth server think PlayerControl and PlayerNetTransform is a LobbyBehavoir
-                // So it will disable checks regarding it
-                if (GameStates.IsVanillaServer)
-                {
-                    msg.StartMessage(6);
-                    msg.Write(AmongUsClient.Instance.GameId);
-                    msg.WritePacked(int.MaxValue);
-
-                    msg.StartMessage(4);
-                    msg.WritePacked(2U);
-                    msg.WritePacked(-2);
-                    msg.Write((byte)SpawnFlags.None);
-                    msg.WritePacked(1);
-                    msg.WritePacked(playerControl.NetId);
-                    msg.StartMessage(1);
-                    msg.EndMessage();
-                    msg.EndMessage();
-
-                    msg.StartMessage(4);
-                    msg.WritePacked(2U);
-                    msg.WritePacked(-2);
-                    msg.Write((byte)SpawnFlags.None);
-                    msg.WritePacked(1);
-                    msg.WritePacked(playerControl.NetTransform.NetId);
-                    msg.StartMessage(1);
-                    msg.EndMessage();
-                    msg.EndMessage();
-
-                    msg.StartMessage(4);
-                    msg.WritePacked(2U);
-                    msg.WritePacked(-2);
-                    msg.Write((byte)SpawnFlags.None);
-                    msg.WritePacked(1);
-                    msg.WritePacked(playerControl.MyPhysics.NetId);
-                    msg.StartMessage(1);
-                    msg.EndMessage();
-                    msg.EndMessage();
-
-                    msg.EndMessage();
-                }
-                */
-
-                AmongUsClient.Instance.SendOrDisconnect(msg);
+                AmongUsClient.Instance.Spawn(playerControl, -2, SpawnFlags.None);
                 msg.Recycle();
 
                 if (PlayerControl.AllPlayerControls.Contains(playerControl))
@@ -355,9 +310,7 @@ namespace TOHE.Modules
             MessageWriter msg = MessageWriter.Get(SendOption.Reliable);
             msg.StartMessage(5);
             msg.Write(AmongUsClient.Instance.GameId);
-            AmongUsClient.Instance.WriteSpawnMessage(playerControl, -2, SpawnFlags.None, msg);
-            msg.EndMessage();
-            AmongUsClient.Instance.SendOrDisconnect(msg);
+            AmongUsClient.Instance.Spawn(playerControl, -2, SpawnFlags.None);
             msg.Recycle();
 
             // This makes Innersloth server think PlayerControl and PlayerNetTransform is a LobbyBehavoir

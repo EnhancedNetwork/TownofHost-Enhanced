@@ -4,6 +4,7 @@ using Hazel;
 using InnerNet;
 using System;
 using System.Text.RegularExpressions;
+using AmongUs.InnerNet.GameDataMessages;
 using TOHE.Modules;
 using TOHE.Patches;
 using TOHE.Roles.Core.AssignManager;
@@ -28,6 +29,9 @@ class OnGameJoinedPatch
         if (!DebugModeManager.AmDebugger && Main.VersionCheat.Value)
             Main.VersionCheat.Value = false;
 
+        RpcUtils.queuedReliableMessage.Clear();
+        RpcUtils.queuedUnreliableMessage.Clear();
+        
         ChatUpdatePatch.DoBlockChat = false;
         Main.CurrentServerIsVanilla = GameStates.IsVanillaServer && !GameStates.IsLocalGame;
         GameStates.InGame = false;
@@ -380,10 +384,8 @@ class OnPlayerLeftPatch
             {
                 if (GameStates.IsOnlineGame && AmongUsClient.Instance.AmHost)
                 {
-                    MessageWriter messageWriter = AmongUsClient.Instance.Streams[1];
-                    messageWriter.StartMessage(5);
-                    messageWriter.WritePacked(netid);
-                    messageWriter.EndMessage();
+                    var message = new DespawnGameDataMessage(netid);
+                    RpcUtils.LateBroadcastReliableMessage(message);
                 }
             }, 2.5f, "Repeat Despawn", false);
         }
