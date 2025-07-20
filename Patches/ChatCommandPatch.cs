@@ -14,6 +14,8 @@ using TOHE.Roles.Impostor;
 using TOHE.Roles.Neutral;
 using UnityEngine;
 using static TOHE.Translator;
+using AmongUs.InnerNet.GameDataMessages;
+using static TOHE.RPC;
 
 
 namespace TOHE;
@@ -3728,9 +3730,13 @@ class RpcSendChatPatch
             DestroyableSingleton<HudManager>.Instance.Chat.AddChat(__instance, chatText);
         if (chatText.Contains("who", StringComparison.OrdinalIgnoreCase))
             DestroyableSingleton<UnityTelemetry>.Instance.SendWho();
+        /*
         MessageWriter messageWriter = AmongUsClient.Instance.StartRpcImmediately(__instance.NetId, (byte)RpcCalls.SendChat, SendOption.None);
         messageWriter.Write(chatText);
         messageWriter.EndMessage();
+        */
+        var message = new RpcSendChatMessage(__instance.NetId, chatText);
+        RpcUtils.LateBroadcastReliableMessage(message);
         __result = true;
         return false;
     }
