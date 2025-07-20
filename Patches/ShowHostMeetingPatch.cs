@@ -8,9 +8,9 @@ namespace TOHE.Patches;
 [HarmonyPatch]
 public class ShowHostMeetingPatch
 {
-    private static PlayerControl HostControl = null;
-    private static string HostName = string.Empty;
-    private static int HostColor = int.MaxValue;
+    public static PlayerControl HostControl = null;
+    public static string HostName = string.Empty;
+    public static int HostColor = int.MaxValue;
 
     [HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.OnDestroy))]
     [HarmonyPostfix]
