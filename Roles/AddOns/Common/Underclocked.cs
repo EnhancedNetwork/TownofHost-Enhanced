@@ -5,7 +5,7 @@ namespace TOHE.Roles.AddOns.Common;
 public class Underclocked : IAddon
 {
     public CustomRoles Role => CustomRoles.Underclocked;
-    private const int Id = 31600;
+    private const int Id = 35900;
     public AddonTypes Type => AddonTypes.Harmful;
 
     public static OptionItem UnderclockedIncrease;
