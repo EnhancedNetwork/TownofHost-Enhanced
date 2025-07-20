@@ -4,7 +4,7 @@ namespace TOHE;
 
 public static class SpamManager
 {
-    //private static readonly string BANEDWORDS_FILE_PATH = "./TOHE-DATA/BanWords.txt";
+    //private static readonly string BANEDWORDS_FILE_PATH = "./TOHO-DATA/BanWords.txt";
     //public static List<string> BanWords = new();
     //public static void Init()
     //{
@@ -17,7 +17,7 @@ public static class SpamManager
     //    {
     //        try
     //        {
-    //            if (!Directory.Exists(@"TOHE-DATA")) Directory.CreateDirectory(@"TOHE-DATA");
+    //            if (!Directory.Exists(@"TOHO-DATA")) Directory.CreateDirectory(@"TOHO-DATA");
     //            if (File.Exists(@"./BanWords.txt")) File.Move(@"./BanWords.txt", BANEDWORDS_FILE_PATH);
     //            else
     //            {
