@@ -1,12 +1,12 @@
 {
   "LanguageID": "0",
-  "HostText": "Host",
-  "HostColor": "#902efd",
-  "IconColor": "#4bf4ff",
-  "Icon": "♥",
-  "NameColor": "#ffc0cb",
+  "HostText": "TOHO",
+  "HostColor": "#b47ede",
+  "IconColor": "#00ff00",
+  "Icon": " - ",
+  "NameColor": "#ff0000",
 
-  "HideHostText": "Hide 'Host♥' Text",
+  "HideHostText": "Hide 'TOHO -' Text",
   "HideAllTagsAndText": "Hide All Tags (for «AutoMuteUs»)",
 
   "SupportUs": "Support Us",
