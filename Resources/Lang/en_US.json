@@ -4533,6 +4533,8 @@
   "NewYear": "New Year",
   "Holiday": "Holiday",
   "Shuffle": "Shuffle",
+  "CrazyColors": "Crazy Colors",
+  "CrazyColorsCD": "Color switch cooldown",
   "EnableAnomalies": "Enable Anomalies /anomalyinfo",
   "AnomalyMeetingPCT": "Chance per meeting to have an Anomaly",
   "MenuTitle.GameModifiers": "★ Game Modifiers ★",
@@ -4540,7 +4542,8 @@
   "NewYearAnomaly": "We are experiencing the New Year anomaly",
   "HolidayAnomaly": "We are experiencing the Holiday anomaly",
   "ShuffleAnomaly": "We are experiencing the Shuffle anomaly",
-  "Message.AnomalyInfo": "Anomalies are special events that occur under a percent chance. Here is the list of all Anomalies:\n\n<b>Clown Fest</b>\nWhen the Clown Fest occurs, all Crewmates will turn into Jesters for one round.\n\n<b>Retrial</b>\nWhen a Retrial happens, a new meeting will start immediately after the old meeting is over.\n\n<b>New Year</b>\nOn the New Year, all Add-ons between players will be randomized and redistributed.\n\n<b>Holiday</b>\nWhen the Holiday occurs, all Crewmates and Impostors will turn into basic Crewmates or Impostors for one round.\n\n<b>Shuffle</b>\nWhen the Shuffle occurs, all Crewmate and non-Neutral Killing roles will be redistributed among players.",
+  "CrazyColorsAnomaly": "We are experiencing the Crazy Colors anomaly",
+  "Message.AnomalyInfo": "Anomalies are special events that occur under a percent chance. Here is the list of all Anomalies:\n\n<b>Clown Fest</b>\nWhen the Clown Fest occurs, all Crewmates will turn into Jesters for one round.\n\n<b>Retrial</b>\nWhen a Retrial happens, a new meeting will start immediately after the old meeting is over.\n\n<b>New Year</b>\nOn the New Year, all Add-ons between players will be randomized and redistributed.\n\n<b>Holiday</b>\nWhen the Holiday occurs, all Crewmates and Impostors will turn into basic Crewmates or Impostors for one round.\n\n<b>Shuffle</b>\nWhen the Shuffle occurs, all Crewmate and non-Neutral Killing roles will be redistributed among players.\n\n<b>Crazy Colors</b>\nDuring the Crazy Colors anomaly, the color of every player changes every few seconds. At the end of the anomaly, you will be stuck with the color you have!",
   "AnomalyInfoTitle": "ANOMALY INFO",
 
   "Sorcerer": "Sorcerer",

@@ -6,9 +6,13 @@ namespace TOHE.Modules;
 internal class AnomalyManager
 {
     private static readonly List<string> which1 = [];
-
+    public static long LastColorChange;
     public static Dictionary<byte, CustomRoles> FormerRoles = [];
-
+    
+    public static void Init()
+    {
+        LastColorChange = Utils.GetTimeStamp();
+    }
     public static void AnomalyChance()
     {
         which1.Clear();
@@ -35,6 +39,11 @@ internal class AnomalyManager
             {
                 which1.Add("Shuffle");
             }
+
+            if (Options.CrazyColors.GetBool())
+            {
+                which1.Add("CrazyColors");
+            }
             var which2 = which1.RandomElement();
             switch (which2)
             {
@@ -58,6 +67,10 @@ internal class AnomalyManager
                     AfterAnomaly();
                     Shuffle();
                     break;
+                case "CrazyColors":
+                    AfterAnomaly();
+                    CrazyColors = true;
+                    break;
             }
         }
         else AfterAnomaly();
@@ -65,6 +78,7 @@ internal class AnomalyManager
 
     public static void AfterAnomaly()
     {
+        CrazyColors = false;
         foreach (var former in FormerRoles)
         {
             var role = former.Value;
@@ -179,6 +193,29 @@ internal class AnomalyManager
                 AddOnStorage.Remove(RandomAddOn);
             }
             player.Notify(ColorString(GetRoleColor(CustomRoles.Jester), GetString("ShuffleAnomaly")));
+        }
+    }
+
+    public static bool CrazyColors = false;
+    
+    public static void OnFixedUpdate()
+    { 
+        if (!CrazyColors) return;
+        foreach (var player in Main.AllAlivePlayerControls)
+        {
+            player.Notify(ColorString(GetRoleColor(CustomRoles.Rainbow), GetString("CrazyColorsAnomaly")));
+            if (LastColorChange + Options.ColorChangeCoolDown.GetInt() <= Utils.GetTimeStamp())
+            {
+                LastColorChange = Utils.GetTimeStamp();
+                var sender = CustomRpcSender.Create("Anomaly CrazyColors Sender");
+                int color = IRandom.Instance.Next(0, 18);
+                player.SetColor(color);
+                sender.AutoStartRpc(player.NetId, (byte)RpcCalls.SetColor)
+                    .Write(player.Data.NetId)
+                    .Write((byte)color)
+                    .EndRpc();
+                sender.SendMessage();
+            }
         }
     }
 }

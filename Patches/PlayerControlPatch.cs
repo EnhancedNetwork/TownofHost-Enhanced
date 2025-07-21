@@ -1228,6 +1228,9 @@ class FixedUpdateInNormalGamePatch
 
                         if (Rainbow.IsEnabled && Main.IntroDestroyed)
                             Rainbow.OnFixedUpdate();
+                        
+                        if (Options.EnableAnomalies.GetBool())
+                            AnomalyManager.OnFixedUpdate();
                     }
                 }
             }

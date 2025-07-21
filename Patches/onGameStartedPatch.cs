@@ -226,6 +226,8 @@ internal class ChangeRoleSettings
                 addOn?.Init();
             }
 
+            AnomalyManager.Init();
+            
             TargetArrow.Init();
             LocateArrow.Init();
             DoubleTrigger.Init();

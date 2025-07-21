@@ -463,6 +463,8 @@ public static class Options
     public static OptionItem NewYear;
     public static OptionItem Holiday;
     public static OptionItem Shuffle;
+    public static OptionItem CrazyColors;
+    public static OptionItem ColorChangeCoolDown;
     public static OptionItem AnomalyMeetingPCT;
     // public static OptionItem EnableWills;
 
@@ -2135,7 +2137,14 @@ public static class Options
         Shuffle = BooleanOptionItem.Create(60950, "Shuffle", false, TabGroup.ModSettings, false)
             .SetGameMode(CustomGameMode.Standard)
             .SetParent(EnableAnomalies);
-        AnomalyMeetingPCT = IntegerOptionItem.Create(60960, "AnomalyMeetingPCT", new(0, 100, 5), 0, TabGroup.ModSettings, false)
+        CrazyColors = BooleanOptionItem.Create(60960, "CrazyColors", false, TabGroup.ModSettings, false)
+            .SetGameMode(CustomGameMode.Standard)
+            .SetParent(EnableAnomalies);
+        ColorChangeCoolDown = IntegerOptionItem.Create(60970, "CrazyColorsCD", new(5, 15, 1), 10, TabGroup.ModSettings, false)
+            .SetValueFormat(OptionFormat.Seconds)
+            .SetGameMode(CustomGameMode.Standard)
+            .SetParent(CrazyColors);
+        AnomalyMeetingPCT = IntegerOptionItem.Create(60980, "AnomalyMeetingPCT", new(0, 100, 5), 0, TabGroup.ModSettings, false)
             .SetValueFormat(OptionFormat.Percent)
             .SetGameMode(CustomGameMode.Standard)
             .SetParent(EnableAnomalies);
