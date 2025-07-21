@@ -40,7 +40,25 @@ public class MainMenuManagerStartPatch
 
             Ambience.SetActive(false);
         }
+
+        SetButtonColor(__instance.playButton);
+        SetButtonColor(__instance.inventoryButton);
+        SetButtonColor(__instance.shopButton); 
+        SetButtonColor(__instance.newsButton);
+        SetButtonColor(__instance.myAccountButton);
+        SetButtonColor(__instance.settingsButton);
+        SetButtonColor(__instance.creditsButton);
+        SetButtonColor(__instance.quitButton);
     }
+
+    private static void SetButtonColor(PassiveButton playButton)
+    {
+        playButton.inactiveSprites.GetComponent<SpriteRenderer>().color = Color.red;
+        playButton.activeSprites.GetComponent<SpriteRenderer>().color = Color.blue;
+        playButton.activeTextColor = Color.red;
+        playButton.inactiveTextColor = Color.blue;
+    }
+    
 }
 [HarmonyPatch(typeof(MainMenuManager), nameof(MainMenuManager.LateUpdate))]
 class MainMenuManagerLateUpdatePatch
