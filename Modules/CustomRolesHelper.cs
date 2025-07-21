@@ -709,8 +709,8 @@ public static class CustomRolesHelper
 
                 if (pc.Is(CustomRoles.CopyCat)
                     || pc.Is(CustomRoles.Workaholic) && !Workaholic.WorkaholicCanGuess.GetBool()
-                    || (pc.Is(CustomRoles.Terrorist) && (!Terrorist.TerroristCanGuess.GetBool() || Terrorist.CanTerroristSuicideWin.GetBool())
-                    || (pc.Is(CustomRoles.Specter) && !Specter.CanGuess.GetBool()))
+                    || (pc.Is(CustomRoles.Terrorist) && (!Terrorist.TerroristCanGuess.GetBool() || Terrorist.CanTerroristSuicideWin.GetBool()))
+                    || (pc.Is(CustomRoles.Specter) && !Specter.CanGuess.GetBool())
                     || (pc.Is(CustomRoles.Solsticer) && !Solsticer.SolsticerCanGuess.GetBool())
                     || (pc.Is(CustomRoles.God) && !God.CanGuess.GetBool()))
                     return false;
@@ -718,7 +718,7 @@ public static class CustomRolesHelper
                 {
                     if (DoubleShot.ImpCanBeDoubleShot.GetBool() && !pc.Is(CustomRoles.Guesser) && !pc.Is(CustomRoles.EvilGuesser) && (pc.Is(Custom_Team.Impostor) || pc.GetCustomRole().IsMadmate()) && !Options.ImpostorsCanGuess.GetBool())
                         return false;
-                    if (DoubleShot.CrewCanBeDoubleShot.GetBool() && !pc.Is(CustomRoles.Guesser) && !pc.Is(CustomRoles.NiceGuesser) && (pc.Is(Custom_Team.Crewmate) && !Options.CrewmatesCanGuess.GetBool()))
+                    if (DoubleShot.CrewCanBeDoubleShot.GetBool() && !pc.Is(CustomRoles.Guesser) && !pc.Is(CustomRoles.NiceGuesser) && pc.Is(Custom_Team.Crewmate) && !Options.CrewmatesCanGuess.GetBool())
                         return false;
                     if (DoubleShot.NeutralCanBeDoubleShot.GetBool() && !pc.Is(CustomRoles.Guesser) && !pc.Is(CustomRoles.Doomsayer) && ((pc.GetCustomRole().IsNonNK() && !Options.PassiveNeutralsCanGuess.GetBool()) || (pc.GetCustomRole().IsNK() && !Options.NeutralKillersCanGuess.GetBool()) || (pc.GetCustomRole().IsNA() && !Options.NeutralApocalypseCanGuess.GetBool())))
                         return false;
@@ -974,7 +974,8 @@ public static class CustomRolesHelper
                 if (pc.Is(CustomRoles.Nemesis)
                     || pc.Is(CustomRoles.Narc))
                     return false;
-                if (!pc.GetCustomRole().IsImpostor())
+                if (!pc.GetCustomRole().IsImpostor()
+                    && !(pc.GetCustomRole().IsMadmate() && Options.MadmateCanGetImpOnlyAddOn.GetBool()))
                     return false;
                 break;
 
@@ -994,7 +995,8 @@ public static class CustomRolesHelper
                     || pc.Is(CustomRoles.VoidBallot)
                     || pc.Is(CustomRoles.Swift))
                     return false;
-                if (!pc.GetCustomRole().IsImpostor())
+                if (!pc.GetCustomRole().IsImpostor()
+                    && !(pc.GetCustomRole().IsMadmate() && Options.MadmateCanGetImpOnlyAddOn.GetBool()))
                     return false;
                 break;
             case CustomRoles.Tricky:
@@ -1005,9 +1007,11 @@ public static class CustomRolesHelper
                     || pc.Is(CustomRoles.Lightning)
                     || pc.Is(CustomRoles.Swift)
                     || pc.Is(CustomRoles.Swooper)
-                    || pc.Is(CustomRoles.DoubleAgent))
+                    || pc.Is(CustomRoles.DoubleAgent)
+                    || (pc.Is(CustomRoles.Crewpostor) && !Crewpostor.LungeKill.GetBool()))
                     return false;
-                if (!pc.GetCustomRole().IsImpostor())
+                if (!pc.GetCustomRole().IsImpostor()
+                    && !(pc.GetCustomRole().IsMadmate() && Options.MadmateCanGetImpOnlyAddOn.GetBool()))
                     return false;
                 break;
             case CustomRoles.Mare:
@@ -1032,9 +1036,11 @@ public static class CustomRolesHelper
                     || pc.Is(CustomRoles.Flash)
                     || pc.Is(CustomRoles.Sloth)
                     || pc.Is(CustomRoles.KillingMachine)
-                    || pc.Is(CustomRoles.Narc))
+                    || pc.Is(CustomRoles.Narc)
+                    || pc.Is(CustomRoles.Crewpostor))
                     return false;
-                if (!pc.GetCustomRole().IsImpostor())
+                if (!pc.GetCustomRole().IsImpostor()
+                    && !(pc.GetCustomRole().IsMadmate() && Options.MadmateCanGetImpOnlyAddOn.GetBool()))
                     return false;
                 break;
 
@@ -1064,9 +1070,11 @@ public static class CustomRolesHelper
                     || pc.Is(CustomRoles.Stealer)
                     || pc.Is(CustomRoles.Tricky)
                     || pc.Is(CustomRoles.DoubleAgent)
-                    || pc.Is(CustomRoles.YinYanger))
+                    || pc.Is(CustomRoles.YinYanger)
+                    || pc.Is(CustomRoles.Crewpostor))
                     return false;
-                if (!pc.GetCustomRole().IsImpostor())
+                if (!pc.GetCustomRole().IsImpostor()
+                    && !(pc.GetCustomRole().IsMadmate() && Options.MadmateCanGetImpOnlyAddOn.GetBool()))
                     return false;
                 break;
 
@@ -1088,18 +1096,22 @@ public static class CustomRolesHelper
                     || pc.Is(CustomRoles.Lurker)
                     || pc.Is(CustomRoles.Miner)
                     || pc.Is(CustomRoles.Prohibited)
-                    || pc.Is(CustomRoles.DoubleAgent))
+                    || pc.Is(CustomRoles.DoubleAgent)
+                    || pc.Is(CustomRoles.Crewpostor))
                     return false;
-                if (!pc.Is(Custom_Team.Impostor))
+                if (!pc.Is(Custom_Team.Impostor)
+                    && !(pc.GetCustomRole().IsMadmate() && Options.MadmateCanGetImpOnlyAddOn.GetBool()))
                     return false;
                 break;
 
             case CustomRoles.Clumsy:
                 if (pc.Is(CustomRoles.Swift)
                     || pc.Is(CustomRoles.Bomber)
-                    || pc.Is(CustomRoles.KillingMachine))
+                    || pc.Is(CustomRoles.KillingMachine)
+                    || pc.Is(CustomRoles.Crewpostor))
                     return false;
-                if (!pc.GetCustomRole().IsImpostor())
+                if (!pc.GetCustomRole().IsImpostor()
+                    && !(pc.GetCustomRole().IsMadmate() && Options.MadmateCanGetImpOnlyAddOn.GetBool()))
                     return false;
                 break;
 
