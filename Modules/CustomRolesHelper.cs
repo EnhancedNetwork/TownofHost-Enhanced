@@ -216,7 +216,8 @@ public static class CustomRolesHelper
             CustomRoles.Volatile or
             CustomRoles.Mutant or
             CustomRoles.Cultist or
-            CustomRoles.Godzilla;
+            CustomRoles.Godzilla or
+            CustomRoles.Slenderman;
     }
     public static bool IsTasklessCrewmate(this CustomRoles role)
     {
@@ -1437,6 +1438,7 @@ public static class CustomRolesHelper
            CustomRoles.Slayer => CountTypes.Slayer,
            CustomRoles.Contaminator => CountTypes.Contaminator,
            CustomRoles.Rulebook => CountTypes.Rulebook,
+           CustomRoles.Slenderman=> CountTypes.Slenderman,
            CustomRoles.Massacre => CountTypes.Massacre,
            CustomRoles.Volatile => CountTypes.Volatile,
            CustomRoles.Godzilla => CountTypes.Godzilla,
@@ -1508,6 +1510,7 @@ public static class CustomRolesHelper
             CustomRoles.Contaminator => CustomWinner.Contaminator,
             CustomRoles.Massacre => CustomWinner.Massacre,
             CustomRoles.Rulebook => CustomWinner.Rulebook,
+            CustomRoles.Slenderman=> CustomWinner.Slenderman,
             CustomRoles.Volatile => CustomWinner.Volatile,
             CustomRoles.Gunslinger => CustomWinner.Gunslinger,
             CustomRoles.Godzilla => CustomWinner.Godzilla,
@@ -1554,6 +1557,7 @@ public static class CustomRolesHelper
             CountTypes.Contaminator => CustomRoles.Contaminator,
             CountTypes.Massacre => CustomRoles.Massacre,
             CountTypes.Rulebook => CustomRoles.Rulebook,
+            CountTypes.Slenderman => CustomRoles.Slenderman,
             CountTypes.Volatile => CustomRoles.Volatile,
             CountTypes.Godzilla => CustomRoles.Godzilla,
             _ => throw new NotImplementedException()
@@ -1656,5 +1660,6 @@ public enum CountTypes
     Rulebook,
     Volatile,
     Mutant,
-    Godzilla
+    Godzilla,
+    Slenderman
 }

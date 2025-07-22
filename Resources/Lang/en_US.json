@@ -4711,6 +4711,11 @@
   "ForensicAnalysisNoKiller": "Analysis complete. No killer detected.",
   "ForensicCurseRemoved": "You removed a curse from {0}!",
   "ForensicSampleCollected": "Sample collected from {0}'s body.",
-  "ForensicVitalsText": "Vitals"
+  "ForensicVitalsText": "Vitals",
   
+  "Slenderman": "Slenderman",
+  "SlendermanInfo": "Blind players just by approaching them",
+  "SlendermanInfoLong": "(Neutrals):\nAs the Slenderman, when you get close to a player, their vision gets worse. Kill everyone to win.",
+  "DarkenRadius360": "Darken radius",
+  "DarkenedVision360": "Darkenned vision"
 }
