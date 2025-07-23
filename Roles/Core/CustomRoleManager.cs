@@ -131,7 +131,6 @@ public static class CustomRoleManager
         if (CustomRoles.Pitfall.RoleExist()) Pitfall.SetPitfallTrapVision(opt, player);
         if (CustomRoles.Medusa.RoleExist()) Medusa.SetStoned(player, opt);
         if (CustomRoles.Sacrifist.RoleExist()) Sacrifist.SetVision(player, opt);
-        if (CustomRoles.Slenderman.RoleExist()) Slenderman.SetReducedVision(opt, player);
 
 
         var playerSubRoles = player.GetCustomSubRoles();
