@@ -11,6 +11,7 @@ using System.Runtime.CompilerServices;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using AmongUs.InnerNet.GameDataMessages;
 using TOHE.Modules;
 using TOHE.Modules.ChatManager;
 using TOHE.Patches;
@@ -24,6 +25,7 @@ using TOHE.Roles.Impostor;
 using TOHE.Roles.Neutral;
 using UnityEngine;
 using static TOHE.Translator;
+using Object = Il2CppSystem.Object;
 
 namespace TOHE;
 
@@ -2847,6 +2849,85 @@ public static class Utils
         vanillasend.Recycle();
     }
 
+    public static void CreateDeadBody(Vector3 position, byte colorId, PlayerControl deadBodyParent)
+    {
+        int baseColorId = deadBodyParent.Data.DefaultOutfit.ColorId;
+        deadBodyParent.Data.DefaultOutfit.ColorId = colorId;
+        DeadBody deadBody = UnityEngine.Object.Instantiate(GameManager.Instance.DeadBodyPrefab);
+        deadBody.enabled = false;
+        deadBody.ParentId = deadBodyParent.PlayerId;
+        foreach (SpriteRenderer b in deadBody.bodyRenderers)
+            deadBodyParent.SetPlayerMaterialColors(b);
+        deadBodyParent.SetPlayerMaterialColors(deadBody.bloodSplatter);
+        Vector3 vector = position + deadBodyParent.KillAnimations[0].BodyOffset;
+        vector.z = vector.y / 1000f;
+        deadBody.transform.position = vector;
+        deadBodyParent.Data.DefaultOutfit.ColorId = baseColorId;
+    }
+
+    public static void RpcCreateDeadBody(Vector3 position, byte colorId, PlayerControl deadBodyParent, SendOption sendOption = SendOption.Reliable)
+    {
+        if (deadBodyParent == null || !Main.IntroDestroyed) return;
+        CreateDeadBody(position, colorId, deadBodyParent);
+        PlayerControl playerControl = UnityEngine.Object.Instantiate(AmongUsClient.Instance.PlayerPrefab, Vector2.zero, Quaternion.identity);
+        playerControl.PlayerId = deadBodyParent.PlayerId;
+        playerControl.isNew = false;
+        playerControl.notRealPlayer = true;
+        playerControl.NetTransform.SnapTo(position);
+        AmongUsClient.Instance.NetIdCnt += 1U;
+        var sender = CustomRpcSender.Create("Utils.RpcCreateDeadBody", sendOption, true);
+        MessageWriter writer = sender.stream;
+        sender.StartMessage();
+        writer.StartMessage(4);
+        SpawnGameDataMessage item = AmongUsClient.Instance.CreateSpawnMessage(playerControl, -2, SpawnFlags.None);
+        item.SerializeValues(writer);
+        writer.EndMessage();
+
+        if (GameStates.IsVanillaServer)
+        {
+            for (uint i = 1; i <= 3; ++i)
+            {
+                writer.StartMessage(4);
+                writer.WritePacked(2U);
+                writer.WritePacked(-2);
+                writer.Write((byte)SpawnFlags.None);
+                writer.WritePacked(1);
+                writer.WritePacked(AmongUsClient.Instance.NetIdCnt - i);
+                writer.StartMessage(1);
+                writer.EndMessage();
+                writer.EndMessage();
+            }
+        }
+
+        if (PlayerControl.AllPlayerControls.Contains(playerControl))
+            PlayerControl.AllPlayerControls.Remove(playerControl);
+
+        int baseColorId = playerControl.Data.DefaultOutfit.ColorId;
+        sender.StartRpc(playerControl.NetId, RpcCalls.SetColor)
+            .Write(playerControl.Data.NetId)
+            .Write(colorId)
+            .EndRpc();
+        sender.StartRpc(playerControl.NetId, RpcCalls.MurderPlayer)
+            .WriteNetObject(playerControl)
+            .Write((int)MurderResultFlags.Succeeded)
+            .EndRpc();
+        sender.StartRpc(playerControl.NetId, RpcCalls.SetColor)
+            .Write(playerControl.Data.NetId)
+            .Write(baseColorId)
+            .EndRpc();
+        writer.StartMessage(1);
+        writer.WritePacked(playerControl.Data.NetId);
+        playerControl.Data.Serialize(writer, false);
+        writer.EndMessage();
+        writer.StartMessage(5);
+        writer.WritePacked(playerControl.NetId);
+        writer.EndMessage();
+        AmongUsClient.Instance.RemoveNetObject(playerControl);
+        UnityEngine.Object.Destroy(playerControl.gameObject);
+        sender.EndMessage();
+        sender.SendMessage();
+    }    
+    
     public static int AllPlayersCount => Main.PlayerStates.Values.Count(state => state.countTypes != CountTypes.OutOfGame);
     public static int AllAlivePlayersCount => Main.AllAlivePlayerControls.Count(pc => !pc.Is(CountTypes.OutOfGame));
     public static bool IsAllAlive => Main.PlayerStates.Values.All(state => state.countTypes == CountTypes.OutOfGame || !state.IsDead);
