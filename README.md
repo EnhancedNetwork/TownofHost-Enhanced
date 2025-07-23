@@ -91,6 +91,7 @@
 > - /spectate command
 > - Provided roles: Pyromaniac, Necromancer, Head Hunter (Huntsman), Alchemist, and others
 > - Game Mode: FFA
+> - The Ability to create dead bodies
 > - Improved Role Summary
 > - Dark Theme
 > - Improved Role Spawns
