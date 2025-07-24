@@ -37,7 +37,7 @@ internal class Reverie : RoleBase
             .SetValueFormat(OptionFormat.Seconds);
         IncreaseKillCooldown = FloatOptionItem.Create(Id + 13, "ReverieIncreaseKillCooldown", new(0f, 180f, 2.5f), 5f, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Reverie])
             .SetValueFormat(OptionFormat.Seconds);
-        MaxKillCooldown = FloatOptionItem.Create(Id + 14, "ReverieMaxKillCooldown", new(0f, 180f, 2.5f), 40f, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Reverie])
+        MaxKillCooldown = FloatOptionItem.Create(Id + 14, "MaxKillCooldown", new(0f, 180f, 2.5f), 40f, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Reverie])
             .SetValueFormat(OptionFormat.Seconds);
         MisfireSuicide = BooleanOptionItem.Create(Id + 15, "ReverieMisfireSuicide", true, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Reverie]);
         ResetCooldownMeeting = BooleanOptionItem.Create(Id + 16, "ReverieResetCooldownMeeting", false, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Reverie]);
@@ -76,7 +76,7 @@ internal class Reverie : RoleBase
         if (killer == null || target == null) return true;
 
         float kcd;
-        if ((!target.GetCustomRole().IsCrewmate() && !target.Is(CustomRoles.Trickster)) || (ConvertedReverieRogue.GetBool() && killer.GetCustomSubRoles().Any(subrole => subrole.IsConverted() || subrole == CustomRoles.Madmate))) // if killed non crew or if converted
+        if ((!target.IsPlayerCrewmateTeam() && !target.Is(CustomRoles.Trickster)) || (ConvertedReverieRogue.GetBool() && !killer.IsPlayerCrewmateTeam())) // if killed non crew or if converted
             kcd = NowCooldown[killer.PlayerId] - ReduceKillCooldown.GetFloat();
         else kcd = NowCooldown[killer.PlayerId] + IncreaseKillCooldown.GetFloat();
         NowCooldown[killer.PlayerId] = Math.Clamp(kcd, MinKillCooldown.GetFloat(), MaxKillCooldown.GetFloat());

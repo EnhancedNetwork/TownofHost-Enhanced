@@ -25,7 +25,7 @@ internal class Mercenary : RoleBase
         Options.SetupRoleOptions(Id, TabGroup.ImpostorRoles, CustomRoles.Mercenary);
         KillCooldown = FloatOptionItem.Create(Id + 10, GeneralOption.KillCooldown, new(0f, 180f, 2.5f), 20f, TabGroup.ImpostorRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Mercenary])
             .SetValueFormat(OptionFormat.Seconds);
-        TimeLimit = FloatOptionItem.Create(Id + 11, "MercenaryLimit", new(5f, 180f, 5f), 60f, TabGroup.ImpostorRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Mercenary])
+        TimeLimit = FloatOptionItem.Create(Id + 11, "SuicideTimer", new(5f, 180f, 5f), 60f, TabGroup.ImpostorRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Mercenary])
             .SetValueFormat(OptionFormat.Seconds);
     }
     public override void Init()

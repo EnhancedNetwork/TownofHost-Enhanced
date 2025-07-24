@@ -13,7 +13,7 @@ public class Trapper : IAddon
     public void SetupCustomOption()
     {
         SetupAdtRoleOptions(Id, CustomRoles.Trapper, canSetNum: true, teamSpawnOptions: true);
-        TrapperBlockMoveTime = FloatOptionItem.Create(Id + 13, "TrapperBlockMoveTime", new(1f, 180f, 1f), 5f, TabGroup.Addons, false).SetParent(CustomRoleSpawnChances[CustomRoles.Trapper])
+        TrapperBlockMoveTime = FloatOptionItem.Create(Id + 13, "FreezeTime", new(1f, 180f, 1f), 5f, TabGroup.Addons, false).SetParent(CustomRoleSpawnChances[CustomRoles.Trapper])
             .SetValueFormat(OptionFormat.Seconds);
     }
     public void Init()
@@ -37,7 +37,7 @@ public static class TrapperExtension
             Main.AllPlayerSpeed[killer.PlayerId] = Main.AllPlayerSpeed[killer.PlayerId] - Main.MinSpeed + tmpSpeed;
             ReportDeadBodyPatch.CanReport[killer.PlayerId] = true;
             killer.MarkDirtySettings();
-            RPC.PlaySoundRPC(killer.PlayerId, Sounds.TaskComplete);
+            RPC.PlaySoundRPC(Sounds.TaskComplete, killer.PlayerId);
         }, Trapper.TrapperBlockMoveTime.GetFloat(), "Trapper BlockMove");
     }
 }

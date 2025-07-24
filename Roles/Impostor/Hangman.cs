@@ -47,6 +47,7 @@ internal class Hangman : RoleBase
 
         if (Main.CheckShapeshift.TryGetValue(killer.PlayerId, out var isShapeshift) && isShapeshift)
         {
+            RPC.PlaySoundRPC(Sounds.KillSound, killer.PlayerId);
             target.SetDeathReason(PlayerState.DeathReason.LossOfHead);
             target.RpcExileV2();
             Main.PlayerStates[target.PlayerId].SetDead();
@@ -54,7 +55,6 @@ internal class Hangman : RoleBase
             target.SetRealKiller(killer);
 
             killer.SetKillCooldown();
-            //MurderPlayerPatch.AfterPlayerDeathTasks(killer, target, false);
             return false;
         }
         return true;

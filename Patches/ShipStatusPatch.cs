@@ -3,6 +3,7 @@ using System;
 using TOHE.Patches;
 using TOHE.Roles.AddOns.Common;
 using TOHE.Roles.Core;
+using TOHE.Roles.Impostor;
 using TOHE.Roles.Neutral;
 using UnityEngine;
 using static TOHE.Translator;
@@ -127,7 +128,7 @@ class UpdateSystemPatch
 
         if (systemType == SystemTypes.Electrical && 0 <= amount && amount <= 4)
         {
-            var SwitchSystem = ShipStatus.Instance.Systems[SystemTypes.Electrical].Cast<SwitchSystem>();
+            var SwitchSystem = ShipStatus.Instance.Systems[SystemTypes.Electrical].CastFast<SwitchSystem>();
             if (SwitchSystem != null && SwitchSystem.IsActive)
             {
                 player.GetRoleClass()?.SwitchSystemUpdate(SwitchSystem, amount, player);
@@ -161,7 +162,8 @@ class ShipStatusCloseDoorsPatch
         Logger.Info($"Trying to close the door in the room: {room}", "CloseDoorsOfType");
 
         bool allow;
-        if (Options.CurrentGameMode == CustomGameMode.FFA || Options.DisableCloseDoor.GetBool()) allow = false;
+        if (Options.CurrentGameMode == CustomGameMode.FFA || Options.DisableCloseDoor.GetBool()
+                    || Options.CurrentGameMode == CustomGameMode.SpeedRun && !SpeedRun.SpeedRun_AllowCloseDoor.GetBool()) allow = false;
         else allow = true;
 
         if (allow)
@@ -219,7 +221,7 @@ class StartPatch
                 if (birthdayDecorationIsActive)
                     __instance.transform.FindChild("BirthdayDecorSkeld")?.gameObject.SetActive(true);
                 break;
-            case MapNames.Mira when Options.HalloweenDecorationsMira.GetBool():
+            case MapNames.MiraHQ when Options.HalloweenDecorationsMira.GetBool():
                 __instance.transform.FindChild("Halloween")?.gameObject.SetActive(true);
                 break;
             case MapNames.Dleks when Options.HalloweenDecorationsDleks.GetBool():
@@ -269,6 +271,27 @@ class ShipStatusBeginPatch
     public static void Prefix()
     {
         RpcSetTasksPatch.decidedCommonTasks.Clear();
+        RpcSetTasksPatch.decidedMedBayPlayer.Clear();
+
+        if (Options.OverrideMedbayScan_OnVisualOff.GetBool())
+        {
+            var min = Options.OverrideMedbayScan_MinPlayer.GetInt();
+            var max = Options.OverrideMedbayScan_MaxPlayer.GetInt();
+
+            if (min > max)
+            {
+                max = min;
+            }
+
+            var playerIds = Main.AllPlayerControls
+                .Select(pc => pc.PlayerId)
+                .ToList();
+
+            int count = Math.Clamp(IRandom.Instance.Next(min, max + 1), 0, playerIds.Count);
+
+            var selected = playerIds.OrderBy(_ => IRandom.Instance.Next(0, int.MaxValue)).Take(count);
+            RpcSetTasksPatch.decidedMedBayPlayer.AddRange(selected);
+        }
     }
     public static void Postfix()
     {
@@ -329,6 +352,8 @@ class ShipStatusSerializePatch
 {
     // Patch the global way of Serializing ShipStatus
     // If we are patching any other systemTypes, just add below like Ventilation.
+    public static List<int> ReactorFlashList = [];
+
     public static bool Prefix(ShipStatus __instance, [HarmonyArgument(0)] MessageWriter writer, [HarmonyArgument(1)] bool initialState, ref bool __result)
     {
         __result = false;
@@ -347,6 +372,15 @@ class ShipStatusSerializePatch
                 // Further new systems should skip original methods here and add new patches below.
                 num++;
                 continue;
+            }
+
+            if (ReactorFlashList.Count > 0 && !Saboteur.IsCriticalSabotage())
+            {
+                if (systemTypes is SystemTypes.Reactor or SystemTypes.LifeSupp or SystemTypes.Laboratory or SystemTypes.HeliSabotage)
+                {
+                    num++;
+                    continue;
+                }
             }
 
             if (__instance.Systems.TryGetValue(systemTypes, out ISystemType systemType) && systemType.IsDirty) // initialState used here in vanilla code. Removed it.
@@ -377,7 +411,7 @@ class ShipStatusSerializePatch
                 }
             }
 
-            var ventilationSystem = __instance.Systems[SystemTypes.Ventilation].Cast<VentilationSystem>();
+            var ventilationSystem = __instance.Systems[SystemTypes.Ventilation].CastFast<VentilationSystem>();
             if (ventilationSystem != null && ventilationSystem.IsDirty)
             {
                 // Logger.Info("customVentilation: " + customVentilation, "ShipStatusSerializePatch");
@@ -408,7 +442,6 @@ class ShipStatusSerializePatch
                 ventilationSystem.IsDirty = false;
             }
         }
-
         return false;
     }
 }

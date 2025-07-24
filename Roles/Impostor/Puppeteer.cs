@@ -1,6 +1,6 @@
-using AmongUs.GameOptions;
 using Hazel;
 using TOHE.Modules;
+using TOHE.Modules.Rpc;
 using TOHE.Roles.Core;
 using TOHE.Roles.Double;
 using TOHE.Roles.Neutral;
@@ -52,11 +52,8 @@ internal class Puppeteer : RoleBase
 
     private static void SendRPC(byte puppetId, byte targetId, byte typeId)
     {
-        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncPuppet, SendOption.Reliable, -1);
-        writer.Write(typeId);
-        writer.Write(puppetId);
-        writer.Write(targetId);
-        AmongUsClient.Instance.FinishRpcImmediately(writer);
+        var msg = new RpcSyncPuppet(PlayerControl.LocalPlayer.NetId, typeId, puppetId, targetId);
+        RpcUtils.LateBroadcastReliableMessage(msg);
     }
     public static void ReceiveRPC(MessageReader reader)
     {
@@ -113,7 +110,7 @@ internal class Puppeteer : RoleBase
 
             foreach (var target in Main.AllAlivePlayerControls)
             {
-                if (target.PlayerId != puppet.PlayerId && !(target.Is(Custom_Team.Impostor) || target.Is(CustomRoles.Pestilence)))
+                if (target.PlayerId != puppet.PlayerId && !(target.Is(Custom_Team.Impostor) || target.IsTransformedNeutralApocalypse()))
                 {
                     dis = Utils.GetDistance(puppeteerPos, target.transform.position);
                     targetDistance.Add(target.PlayerId, dis);
@@ -124,14 +121,14 @@ internal class Puppeteer : RoleBase
             {
                 var min = targetDistance.OrderBy(c => c.Value).FirstOrDefault();
                 var target = Utils.GetPlayerById(min.Key);
-                var KillRange = NormalGameOptionsV08.KillDistances[Mathf.Clamp(Main.NormalOptions.KillDistance, 0, 2)];
+                var KillRange = ExtendedPlayerControl.GetKillDistances();
 
                 if (min.Value <= KillRange && puppet.CanMove && target.CanMove)
                 {
                     if (puppet.RpcCheckAndMurder(target, true))
                     {
                         var puppeteerId = PuppeteerList[puppet.PlayerId];
-                        RPC.PlaySoundRPC(puppeteerId, Sounds.KillSound);
+                        RPC.PlaySoundRPC(Sounds.KillSound, puppeteerId);
                         puppet.RpcMurderPlayer(target);
                         target.SetRealKiller(Utils.GetPlayerById(puppeteerId));
                         Utils.MarkEveryoneDirtySettings();
@@ -140,7 +137,7 @@ internal class Puppeteer : RoleBase
                         //Utils.NotifyRoles(SpecifySeer: puppet);
                         Utils.NotifyRoles(SpecifySeer: Utils.GetPlayerById(puppeteerId), SpecifyTarget: puppet, ForceLoop: true);
 
-                        if (!puppet.Is(CustomRoles.Pestilence) && PuppeteerDoubleKills.GetBool())
+                        if (!puppet.IsTransformedNeutralApocalypse() && PuppeteerDoubleKills.GetBool())
                         {
                             puppet.SetDeathReason(PlayerState.DeathReason.Drained);
                             puppet.RpcMurderPlayer(puppet);
