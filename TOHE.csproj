@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 	<PropertyGroup>
 		<TargetFramework>net6.0</TargetFramework>
 		<GenerateAssemblyFileVersionAttribute>false</GenerateAssemblyFileVersionAttribute>
@@ -37,6 +37,14 @@
 			<PrivateAssets>all</PrivateAssets>
 			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 		</PackageReference>
+	</ItemGroup>
+
+	<!-- Samboy063.Cpp2IL.Core 2022.1.0-development.1356-->
+	<!-- Due to Samboy063 package origin often crashes, we include a local build of samboy core here so we wont be influenced by it. -->
+	<ItemGroup>
+		<Reference Include="Cpp2IL.Core">
+			<HintPath>Samboy063.Cpp2IL.Core.dll</HintPath>
+		</Reference>
 	</ItemGroup>
 
 	<Target Name="EnsureTokenEnvExists" BeforeTargets="BeforeBuild">
