@@ -2849,7 +2849,7 @@ public static class Utils
         vanillasend.Recycle();
     }
 
-    public static void CreateDeadBody(Vector3 position, byte colorId, PlayerControl deadBodyParent)
+    public static DeadBody CreateDeadBody(Vector3 position, int colorId, PlayerControl deadBodyParent)
     {
         int baseColorId = deadBodyParent.Data.DefaultOutfit.ColorId;
         deadBodyParent.Data.DefaultOutfit.ColorId = colorId;
@@ -2863,12 +2863,14 @@ public static class Utils
         vector.z = vector.y / 1000f;
         deadBody.transform.position = vector;
         deadBodyParent.Data.DefaultOutfit.ColorId = baseColorId;
+
+        return deadBody;
     }
 
-    public static void RpcCreateDeadBody(Vector3 position, byte colorId, PlayerControl deadBodyParent, SendOption sendOption = SendOption.Reliable)
+    public static DeadBody RpcCreateDeadBody(Vector3 position, int colorId, PlayerControl deadBodyParent, SendOption sendOption = SendOption.Reliable)
     {
-        if (deadBodyParent == null || !Main.IntroDestroyed) return;
-        CreateDeadBody(position, colorId, deadBodyParent);
+        if (deadBodyParent == null || !Main.IntroDestroyed) return null;
+        var deadBody = CreateDeadBody(position, colorId, deadBodyParent);
         PlayerControl playerControl = UnityEngine.Object.Instantiate(AmongUsClient.Instance.PlayerPrefab, Vector2.zero, Quaternion.identity);
         playerControl.PlayerId = deadBodyParent.PlayerId;
         playerControl.isNew = false;
@@ -2926,6 +2928,8 @@ public static class Utils
         UnityEngine.Object.Destroy(playerControl.gameObject);
         sender.EndMessage();
         sender.SendMessage();
+
+        return deadBody;
     }    
     
     public static int AllPlayersCount => Main.PlayerStates.Values.Count(state => state.countTypes != CountTypes.OutOfGame);
