@@ -933,7 +933,7 @@ public enum CustomRoles
     Shroud,
     Sidekick,
     Slayer,
-    Slenderman,
+    Skeleton,
     Solsticer,
     Sorcerer,
     SoulCollector,
@@ -1174,7 +1174,7 @@ public enum CustomWinner
     Gunslinger = CustomRoles.Gunslinger,
     Mutant = CustomRoles.Mutant,
     Godzilla = CustomRoles.Godzilla,
-    Slenderman = CustomRoles.Slenderman,
+    Skeleton = CustomRoles.Skeleton,
     Red = CustomRoles.Red,
     Blue = CustomRoles.Blue
 }

@@ -4713,9 +4713,8 @@
   "ForensicSampleCollected": "Sample collected from {0}'s body.",
   "ForensicVitalsText": "Vitals",
   
-  "Slenderman": "Slenderman",
-  "SlendermanInfo": "Blind players just by approaching them",
-  "SlendermanInfoLong": "(Neutrals):\nAs the Slenderman, when you get close to a player, their vision gets worse. Kill everyone to win.",
-  "DarkenRadius360": "Darken radius",
-  "DarkenedVision360": "Darkenned vision"
+  "Skeleton": "Skeleton",
+  "SkeletonInfo": "Blind players just by approaching them",
+  "SkeletonInfoLong": "(Neutrals):\nAs the Skeleton, you can kill players. If enough of your bodies are reported, you will win the game.",
+  "SkeletonNumberOfReportsToWin": "Number of body reports for Skeleton to win"
 }

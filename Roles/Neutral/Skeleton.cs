@@ -27,7 +27,6 @@ internal class Skeleton : RoleBase
             .SetParent(CustomRoleSpawnChances[CustomRoles.Skeleton])
             .SetValueFormat(OptionFormat.Seconds);
     }
-    public override void SetAbilityButtonText(HudManager hud, byte id) => hud.AbilityButton.OverrideText(GetString("SkeletonButtonText"));
     public override bool CanUseKillButton(PlayerControl pc) => true;
     public override void SetKillCooldown(byte id)
     {
