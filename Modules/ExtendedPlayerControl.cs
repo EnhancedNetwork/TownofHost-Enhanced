@@ -1382,6 +1382,7 @@ static class ExtendedPlayerControl
             CustomRoles.Charmed and not
             CustomRoles.Recruit and not
             CustomRoles.Admired and not
+            CustomRoles.CorruptedA and not
             CustomRoles.Soulless and not
             CustomRoles.Lovers and not
             CustomRoles.Infected and not
@@ -1488,8 +1489,10 @@ static class ExtendedPlayerControl
 
     private readonly static LogHandler logger = Logger.Handler("KnowRoleTarget");
     public static bool KnowRoleTarget(PlayerControl seer, PlayerControl target)
-    {
-        if (Options.CurrentGameMode == CustomGameMode.FFA || GameEndCheckerForNormal.GameIsEnded) return true;
+    { 
+        if (seer.Is(Custom_Team.Impostor) && target.Is(CustomRoles.CorruptedA)) return false;
+        else if (seer.Is(CustomRoles.CorruptedA) && target.Is(Custom_Team.Impostor)) return false;
+        else if (Options.CurrentGameMode == CustomGameMode.FFA || GameEndCheckerForNormal.GameIsEnded) return true;
         else if (seer.Is(CustomRoles.GM) || target.Is(CustomRoles.GM) || (seer.AmOwner && Main.GodMode.Value)) return true;
         else if (Options.SeeEjectedRolesInMeeting.GetBool() && Main.PlayerStates[target.PlayerId].deathReason == PlayerState.DeathReason.Vote) return true;
         else if (Altruist.HasEnabled && seer.IsMurderedThisRound()) return false;

@@ -125,7 +125,7 @@ public class PlayerState(byte playerId)
                 _ => throw new NotImplementedException()
             };
         }
-        if (pc.Is(CustomRoles.Admired))
+        if (pc.Is(CustomRoles.Admired) || pc.Is(CustomRoles.CorruptedA))
         {
             countTypes = CountTypes.Crew;
         }
@@ -208,6 +208,7 @@ public class PlayerState(byte playerId)
             SubRoles.Remove(CustomRoles.Rascal);
             SubRoles.Remove(CustomRoles.Loyal);
             SubRoles.Remove(CustomRoles.Admired);
+            SubRoles.Remove(CustomRoles.CorruptedA);
         }
 
         switch (role)
@@ -279,6 +280,7 @@ public class PlayerState(byte playerId)
                 break;
 
             case CustomRoles.Admired:
+            case CustomRoles.CorruptedA:
                 countTypes = CountTypes.Crew;
                 SubRoles.RemoveAll(AddON => AddON != role && AddON.IsConverted());
                 SubRoles.Remove(CustomRoles.Rascal);

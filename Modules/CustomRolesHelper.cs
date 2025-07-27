@@ -399,7 +399,8 @@ public static class CustomRolesHelper
 
     public static bool IsBetrayalAddonV2(this CustomRoles role)
         => (role.IsBetrayalAddon() && role is not CustomRoles.Rascal)
-            || role is CustomRoles.Admired;
+            || role is CustomRoles.Admired
+            || role is CustomRoles.CorruptedA;
 
     public static bool IsAddonAssignedMidGame(this CustomRoles role)
         => role.IsBetrayalAddonV2()
@@ -427,7 +428,7 @@ public static class CustomRolesHelper
     public static bool IsPlayerImpostorTeam(this PlayerState player, bool onlyMainRole = false)
     {
         if (!onlyMainRole)
-            if (player.SubRoles.Any(x => (x.IsConverted() || x is CustomRoles.Admired) && x is not CustomRoles.Madmate)) return false;
+            if (player.SubRoles.Any(x => (x.IsConverted() || x is CustomRoles.Admired || x is CustomRoles.CorruptedA) && x is not CustomRoles.Madmate)) return false;
 
         return player.MainRole.IsImpostor() || player.MainRole.GetCustomRoleType() is Custom_RoleType.Madmate;
     }
@@ -438,6 +439,7 @@ public static class CustomRolesHelper
         if (!onlyMainRole)
         {
             if (player.SubRoles.Contains(CustomRoles.Admired)) return true;
+            if (player.SubRoles.Contains(CustomRoles.CorruptedA)) return true;
             if (player.SubRoles.Any(x => (x.IsConverted()))) return false;
         }
 
@@ -450,6 +452,7 @@ public static class CustomRolesHelper
         if (!onlyMainRole)
         {
             if (player.SubRoles.Contains(CustomRoles.Admired)) return false;
+            if (player.SubRoles.Contains(CustomRoles.CorruptedA)) return false;
             if (player.SubRoles.Any(x => (x.IsConverted() && x is not CustomRoles.Madmate or CustomRoles.Enchanted))) return true;
         }
 
@@ -464,6 +467,7 @@ public static class CustomRolesHelper
         {
             if (player.SubRoles.Contains(CustomRoles.Enchanted)) return true;
             if (player.SubRoles.Contains(CustomRoles.Admired)) return false;
+            if (player.SubRoles.Contains(CustomRoles.CorruptedA)) return false;
             if (player.SubRoles.Any(x => (x.IsConverted() && x is not CustomRoles.Enchanted))) return false;
         }
 

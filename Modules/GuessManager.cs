@@ -975,6 +975,11 @@ public static class GuessManager
                     if (!listOfRoles.Contains(CustomRoles.Admired))
                         listOfRoles.Add(CustomRoles.Admired);
                 }
+                if (CustomRoles.Corrupted.IsEnable())
+                {
+                    if (!listOfRoles.Contains(CustomRoles.CorruptedA))
+                        listOfRoles.Add(CustomRoles.CorruptedA);
+                }
 
                 if (CustomRoles.PlagueBearer.IsEnable())
                 {

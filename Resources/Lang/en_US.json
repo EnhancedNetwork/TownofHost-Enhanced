@@ -4721,5 +4721,11 @@
   "Propagandist": "Propagandist",
   "PropagandistInfo": "Steal the votes of players!",
   "PropagandistLong": "(Impostors):\nAs the Propagandist, you can kill normally. On the next meeting, you will gain an extra vote for each player you killed.",
-  "MarkCooldown361": "Mark cooldown"
+
+  "Corrupted": "Corrupted",
+  "CorruptedA-": "Corrupted ",
+  "CorruptedInfo": "Transform yourself into an Impostor",
+  "CorruptedAInfo": "You are a Crewmate team",
+  "CorruptedInfoLong": "As the Corrupted, once you complete your tasks, you will become a random Impostor role. You will still win with Crewmates.",
+  "CorruptedAInfoLong": "You win with Crewmates, you were formerly a Corrupted role"
 }

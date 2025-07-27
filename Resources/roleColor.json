@@ -294,5 +294,7 @@
   "Meteor": "#dc2c2c",
   "Nuancer": "#b30000",
   "ForensicScientist": "#00ff7f",
-  "Skeleton": "#fcf5dc"
+  "Skeleton": "#fcf5dc",
+  "Corrupted": "#27dbd8",
+  "CorruptedA": "#27dbd8"
 }
