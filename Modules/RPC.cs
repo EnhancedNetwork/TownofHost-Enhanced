@@ -816,7 +816,7 @@ internal static class RPC
     {
         MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SetFriendCode, SendOption.None);
         writer.Write(fc);
-        writer.EndMessage();
+        AmongUsClient.Instance.FinishRpcImmediately(writer);
         SetFriendCode(PlayerControl.LocalPlayer, fc);
     }
     public static void SetFriendCode(PlayerControl target, string fc)
@@ -843,7 +843,7 @@ internal static class RPC
                 writer.Write(cheating ? Main.playerVersion[hostId].tag : $"{ThisAssembly.Git.Commit}({ThisAssembly.Git.Branch})");
                 writer.Write(cheating ? Main.playerVersion[hostId].forkId : Main.ForkId);
                 writer.Write(cheating);
-                writer.EndMessage();
+                AmongUsClient.Instance.FinishRpcImmediately(writer);
             }
             Main.playerVersion[PlayerControl.LocalPlayer.GetClientId()] = new PlayerVersion(Main.PluginVersion, $"{ThisAssembly.Git.Commit}({ThisAssembly.Git.Branch})", Main.ForkId);
         }

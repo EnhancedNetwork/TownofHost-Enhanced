@@ -3733,7 +3733,7 @@ class RpcSendChatPatch
         /*
         MessageWriter messageWriter = AmongUsClient.Instance.StartRpcImmediately(__instance.NetId, (byte)RpcCalls.SendChat, SendOption.None);
         messageWriter.Write(chatText);
-        messageWriter.EndMessage();
+        AmongUsClient.Instance.FinishRpcImmediately(writer);
         */
         var message = new RpcSendChatMessage(__instance.NetId, chatText);
         RpcUtils.LateBroadcastReliableMessage(message);
