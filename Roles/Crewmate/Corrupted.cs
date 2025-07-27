@@ -24,7 +24,7 @@ internal class Corrupted : RoleBase
         if (taskState.IsTaskFinished)
         {
             var role = SelectRandomImpostor();
-            pc.RpcChangeRoleBasis(role);
+            pc.RpcSetRoleDesync(role);
             pc.RpcSetCustomRole(CustomRoles.CorruptedA);
             pc.RpcSetCustomRole(role);
         }
