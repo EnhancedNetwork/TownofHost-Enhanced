@@ -4716,5 +4716,10 @@
   "Skeleton": "Skeleton",
   "SkeletonInfo": "Blind players just by approaching them",
   "SkeletonInfoLong": "(Neutrals):\nAs the Skeleton, you can kill players. If enough of your bodies are reported, you will win the game.",
-  "SkeletonNumberOfReportsToWin": "Number of body reports for Skeleton to win"
+  "SkeletonNumberOfReportsToWin": "Number of body reports for Skeleton to win",
+
+  "Propagandist": "Propagandist",
+  "PropagandistInfo": "Steal the votes of players!",
+  "PropagandistLong": "(Impostors):\nAs the Propagandist, you can kill normally. On the next meeting, you will gain an extra vote for each player you killed.",
+  "MarkCooldown361": "Mark cooldown"
 }
