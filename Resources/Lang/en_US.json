@@ -4720,7 +4720,7 @@
 
   "Propagandist": "Propagandist",
   "PropagandistInfo": "Steal the votes of players!",
-  "PropagandistLong": "(Impostors):\nAs the Propagandist, you can kill normally. On the next meeting, you will gain an extra vote for each player you killed.",
+  "PropagandistInfoLong": "(Impostors):\nAs the Propagandist, you can kill normally. On the next meeting, you will gain an extra vote for each player you killed.",
 
   "Corrupted": "Corrupted",
   "CorruptedA-": "Corrupted ",
