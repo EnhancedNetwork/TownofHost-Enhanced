@@ -7,17 +7,26 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TOHE", "TOHE.csproj", "{9FA
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
-		Canary|Any CPU = Canary|Any CPU
-		Debug|Any CPU = Debug|Any CPU
-		Release|Any CPU = Release|Any CPU
+		BetaAndroid|Any CPU = BetaAndroid|Any CPU
+		BetaWindows|Any CPU = BetaWindows|Any CPU
+		DebugAndroid|Any CPU = DebugAndroid|Any CPU
+		DebugWindows|Any CPU = DebugWindows|Any CPU
+		ReleaseAndroid|Any CPU = ReleaseAndroid|Any CPU
+		ReleaseWindows|Any CPU = ReleaseWindows|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{9FA38997-C44D-4B7B-B99C-9938C03C6656}.Canary|Any CPU.ActiveCfg = Canary|Any CPU
-		{9FA38997-C44D-4B7B-B99C-9938C03C6656}.Canary|Any CPU.Build.0 = Canary|Any CPU
-		{9FA38997-C44D-4B7B-B99C-9938C03C6656}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{9FA38997-C44D-4B7B-B99C-9938C03C6656}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{9FA38997-C44D-4B7B-B99C-9938C03C6656}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{9FA38997-C44D-4B7B-B99C-9938C03C6656}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9FA38997-C44D-4B7B-B99C-9938C03C6656}.BetaAndroid|Any CPU.ActiveCfg = BetaAndroid|Any CPU
+		{9FA38997-C44D-4B7B-B99C-9938C03C6656}.BetaAndroid|Any CPU.Build.0 = BetaAndroid|Any CPU
+		{9FA38997-C44D-4B7B-B99C-9938C03C6656}.BetaWindows|Any CPU.ActiveCfg = BetaWindows|Any CPU
+		{9FA38997-C44D-4B7B-B99C-9938C03C6656}.BetaWindows|Any CPU.Build.0 = BetaWindows|Any CPU
+		{9FA38997-C44D-4B7B-B99C-9938C03C6656}.DebugAndroid|Any CPU.ActiveCfg = DebugAndroid|Any CPU
+		{9FA38997-C44D-4B7B-B99C-9938C03C6656}.DebugAndroid|Any CPU.Build.0 = DebugAndroid|Any CPU
+		{9FA38997-C44D-4B7B-B99C-9938C03C6656}.DebugWindows|Any CPU.ActiveCfg = DebugWindows|Any CPU
+		{9FA38997-C44D-4B7B-B99C-9938C03C6656}.DebugWindows|Any CPU.Build.0 = DebugWindows|Any CPU
+		{9FA38997-C44D-4B7B-B99C-9938C03C6656}.ReleaseAndroid|Any CPU.ActiveCfg = ReleaseAndroid|Any CPU
+		{9FA38997-C44D-4B7B-B99C-9938C03C6656}.ReleaseAndroid|Any CPU.Build.0 = ReleaseAndroid|Any CPU
+		{9FA38997-C44D-4B7B-B99C-9938C03C6656}.ReleaseWindows|Any CPU.ActiveCfg = ReleaseWindows|Any CPU
+		{9FA38997-C44D-4B7B-B99C-9938C03C6656}.ReleaseWindows|Any CPU.Build.0 = ReleaseWindows|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

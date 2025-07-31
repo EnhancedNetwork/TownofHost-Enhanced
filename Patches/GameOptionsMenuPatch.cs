@@ -338,7 +338,7 @@ public static class GameOptionsMenuPatch
     }
     private static BaseGameSetting GetSetting(OptionItem item)
     {
-        static t CreateAndInvoke<t>(Func<t> func) where t : BaseGameSetting
+        static TSetting CreateAndInvoke<TSetting>(Func<TSetting> func) where TSetting : BaseGameSetting
         {
             return func.Invoke();
         }
