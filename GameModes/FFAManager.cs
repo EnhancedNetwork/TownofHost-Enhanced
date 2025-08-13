@@ -466,15 +466,15 @@ internal static class FFAManager
 
                     foreach (PlayerControl pc in Main.AllAlivePlayerControls)
                     {
-                        if (changePositionPlayers.Contains(pc.PlayerId) || !pc.IsAlive() || pc.onLadder || pc.inVent) continue;
+                        if (changePositionPlayers.Contains(pc.PlayerId) || !pc.CanBeTeleported()) continue;
 
                         var filtered = Main.AllAlivePlayerControls.Where(a =>
-                            pc.IsAlive() && !pc.inVent && a.PlayerId != pc.PlayerId && !changePositionPlayers.Contains(a.PlayerId)).ToArray();
+                            pc.IsAlive() && pc.CanBeTeleported() && a.PlayerId != pc.PlayerId && !changePositionPlayers.Contains(a.PlayerId)).ToArray();
                         if (filtered.Length == 0) break;
 
                         PlayerControl target = filtered.RandomElement();
 
-                        if (pc.inVent || target.inVent) continue;
+                        if (!pc.CanBeTeleported() || !target.CanBeTeleported()) continue;
 
                         changePositionPlayers.Add(target.PlayerId);
                         changePositionPlayers.Add(pc.PlayerId);
