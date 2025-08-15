@@ -154,42 +154,52 @@ internal class MoonDancer : CovenManager
     public override bool OnCheckMurderAsKiller(PlayerControl killer, PlayerControl target)
     {
         if (killer == null || target == null) return false;
-        if (HasNecronomicon(killer))
+        if (killer.CheckDoubleTrigger(target, () => { SetBatonPass(killer, target); }))
         {
-            var rd = IRandom.Instance;
-            if (target.GetCustomRole().IsCovenTeam())
+            if (HasNecronomicon(killer))
             {
-                killer.Notify(GetString("MoonDancerCantBlastOff"));
-                return false;
-            }
-            if (rd.Next(0, 101) < BlastOffChance.GetInt())
-            {
-                if (CanBlast(killer, target.PlayerId))
+                var rd = IRandom.Instance;
+                if (target.GetCustomRole().IsCovenTeam())
                 {
-                    BlastPlayer(killer, target);
-                    if (!DisableShieldAnimations.GetBool()) killer.RpcGuardAndKill(killer);
-                    killer.ResetKillCooldown();
-                    killer.SetKillCooldown();
-                    killer.RPCPlayCustomSound("BlastOff");
-                    target.RPCPlayCustomSound("BlastOff");
+                    killer.Notify(GetString("MoonDancerCantBlastOff"));
+                    return false;
+                }
+                if (rd.Next(0, 101) < BlastOffChance.GetInt())
+                {
+                    if (CanBlast(killer, target.PlayerId))
+                    {
+                        BlastPlayer(killer, target);
+                        if (!DisableShieldAnimations.GetBool()) killer.RpcGuardAndKill(killer);
+                        killer.ResetKillCooldown();
+                        killer.SetKillCooldown();
+                        killer.RPCPlayCustomSound("BlastOff");
+                        target.RPCPlayCustomSound("BlastOff");
+                    }
+                    else
+                    {
+                        killer.ResetKillCooldown();
+                        killer.SetKillCooldown();
+                        killer.Notify(GetString("MoonDancerCantBlastOff"));
+                    }
+                    return false;
                 }
                 else
                 {
-                    killer.ResetKillCooldown();
-                    killer.SetKillCooldown();
-                    killer.Notify(GetString("MoonDancerCantBlastOff"));
+                    _ = new LateTask(() =>
+                    {
+                        killer.Notify(GetString("MoonDancerNormalKill"));
+                    }, target.Is(CustomRoles.Burst) ? Burst.BurstKillDelay.GetFloat() : 0f, "BurstKillCheck");
+                    return true;
                 }
-                return false;
-            }
-            else
-            {
-                _ = new LateTask(() =>
-                {
-                    killer.Notify(GetString("MoonDancerNormalKill"));
-                }, target.Is(CustomRoles.Burst) ? Burst.BurstKillDelay.GetFloat() : 0f, "BurstKillCheck");
-                return true;
             }
         }
+        
+        return false;
+    }
+
+    private static void SetBatonPass(PlayerControl killer, PlayerControl target)
+    {
+        if (killer == null || target == null) return;
         if (target.GetCustomRole().IsCovenTeam())
         {
             BatonPassList[killer.PlayerId].Add(target.PlayerId);
@@ -200,9 +210,9 @@ internal class MoonDancer : CovenManager
             BatonPassList[killer.PlayerId].Add(target.PlayerId);
             killer.Notify(GetString("MoonDancerGiveHarmfulAddon"));
         }
+
         killer.ResetKillCooldown();
         killer.SetKillCooldown();
-        return false;
     }
 
     public override void OnReportDeadBody(PlayerControl reporter, NetworkedPlayerInfo target)
