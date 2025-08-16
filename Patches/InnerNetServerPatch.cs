@@ -26,7 +26,7 @@ class ServerHandleMessagePatch
                     if (extraBytes == "") extraBytes = "None";
                     Logger.Info($"{client?.PlayerName} was disconnected on server-side. Junk Bytes: {extraBytes}", "ServerHandleMessagePatch");
 
-                    this.ClientDisconnect(client);
+                    __instance.ClientDisconnect(client);
                     return;
                 }
             }
