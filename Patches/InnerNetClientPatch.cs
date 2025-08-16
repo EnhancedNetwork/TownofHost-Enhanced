@@ -1,3 +1,4 @@
+using System;
 using Hazel;
 using InnerNet;
 using TOHE.Modules;
@@ -25,29 +26,33 @@ class ClientHandleMessagePatch
     public static void Prefix(InnerNetClient __instance, MessageReader reader, SendOption sendOption)
     {
         try {
-            MessageReader copyReader = reader.Duplicate();
-            if (copyReader.Tag == 3) // Tags.RemoveGame = 3
+            if (reader.Tag == 3) // Tags.RemoveGame = 3
             {
                 DisconnectReasons disconnectReasons = DisconnectReasons.ServerRequest;
-                if (copyReader.Position < copyReader.Length)
+                if (reader.Position < reader.Length)
                 {
                     disconnectReasons = (DisconnectReasons)reader.ReadByte();
                 }
 
                 var extraBytes = "";
-                while (copyReader.Position < copyReader.Length)
+                while (reader.Position < reader.Length)
                 {
-                    extraBytes += copyReader.ReadByte().ToString();
+                    extraBytes += reader.ReadByte().ToString();
                     extraBytes += " ";
                     if (extraBytes.Length > 32) break;
                 }
                 if (extraBytes == "") extraBytes = "None";
-                Logger.Debug($"{client?.PlayerName} was disconnected on client-side / Reason: {disconnectReasons} / Junk Bytes: {extraBytes}", "ClientHandleMessagePatch");
+
+                Logger.Info($"{__instance.ClientId} was disconnected on client-side / Reason: {disconnectReasons} / Junk Bytes: {extraBytes}", "ClientHandleMessagePatch");
+                
+                __instance.EnqueueDisconnect(disconnectReasons, null);
+
+                return;
             }
         }
         catch (Exception e)
         {
-            Logger.Error($"Couldn't get disconnect info / Error: {e}", "ClientHandleMessagePatch");
+            Logger.Error($"Couldn't get disconnect info / Error: {e.Message}", "ClientHandleMessagePatch");
         }
     }
 }

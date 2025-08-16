@@ -1,3 +1,4 @@
+using System;
 using Hazel;
 using InnerNet;
 using static TOHE.Translator;
@@ -11,26 +12,28 @@ class ServerHandleMessagePatch
     {
         try
         {
-            MessageReader copyReader = reader.Duplicate();
-            if (copyReader.Tag == 3) // Tags.RemoveGame = 3
+            if (reader.Tag == 3) // Tags.RemoveGame = 3
             {
-                if (copyReader.ReadInt32() == 32)
+                if (reader.ReadInt32() == 32)
                 {
                     var extraBytes = "";
-                    while (copyReader.Position < copyReader.Length)
+                    while (reader.Position < reader.Length)
                     {
-                        extraBytes += copyReader.ReadByte().ToString();
+                        extraBytes += reader.ReadByte().ToString();
                         extraBytes += " ";
                         if (extraBytes.Length > 32) break;
                     }
                     if (extraBytes == "") extraBytes = "None";
-                    Logger.Debug($"{client?.PlayerName} was disconnected on server-side. Junk Bytes: {extraBytes}", "ServerHandleMessagePatch");
+                    Logger.Info($"{client?.PlayerName} was disconnected on server-side. Junk Bytes: {extraBytes}", "ServerHandleMessagePatch");
+
+                    this.ClientDisconnect(client);
+                    return;
                 }
             }
         }
         catch (Exception e)
         {
-            Logger.Error($"Couldn't get disconnect info / Error: {e}", "ServerHandleMessagePatch");
+            Logger.Error($"Couldn't get disconnect info / Error: {e.Message}", "ServerHandleMessagePatch");
         }
     }
 }
