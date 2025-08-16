@@ -501,7 +501,7 @@ class OnPlayerLeftPatch
                     break;
             }
 
-            Logger.Info($"{data?.PlayerName} - (ClientID:{data?.Id} / FriendCode:{data?.FriendCode} / HashPuid:{data?.GetHashedPuid()} / Platform:{data?.PlatformData.Platform}) Disconnect (Reason:{reason}´╝îPing:{AmongUsClient.Instance.Ping})", "Session OnPlayerLeftPatch");
+            Logger.Info($"{data?.PlayerName} - (ClientID:{data?.Id} / FriendCode:{data?.FriendCode} / HashPuid:{data?.GetHashedPuid()} / Platform:{data?.PlatformData.Platform}) Disconnect (Reason:{reason} / Ping:{AmongUsClient.Instance.Ping})", "Session OnPlayerLeftPatch");
 
             // End the game when a player exits game during assigning roles (AntiBlackOut Protect)
             if (Main.AssignRolesIsStarted)

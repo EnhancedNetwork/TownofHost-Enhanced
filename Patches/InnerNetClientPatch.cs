@@ -19,6 +19,39 @@ public enum GameDataTag : byte
     XboxDeclareXuid = 207,
 }
 
+[HarmonyPatch(typeof(InnerNetClient), nameof(InnerNetClient.HandleMessage))]
+class ClientHandleMessagePatch
+{
+    public static void Prefix(InnerNetClient __instance, MessageReader reader, SendOption sendOption)
+    {
+        try {
+            MessageReader copyReader = reader.Duplicate();
+            if (copyReader.Tag == 3) // Tags.RemoveGame = 3
+            {
+                DisconnectReasons disconnectReasons = DisconnectReasons.ServerRequest;
+                if (copyReader.Position < copyReader.Length)
+                {
+                    disconnectReasons = (DisconnectReasons)reader.ReadByte();
+                }
+
+                var extraBytes = "";
+                while (copyReader.Position < copyReader.Length)
+                {
+                    extraBytes += copyReader.ReadByte().ToString();
+                    extraBytes += " ";
+                    if (extraBytes.Length > 32) break;
+                }
+                if (extraBytes == "") extraBytes = "None";
+                Logger.Debug($"{client?.PlayerName} was disconnected on client-side / Reason: {disconnectReasons} / Junk Bytes: {extraBytes}", "ClientHandleMessagePatch");
+            }
+        }
+        catch (Exception e)
+        {
+            Logger.Error($"Couldn't get disconnect info / Error: {e}", "ClientHandleMessagePatch");
+        }
+    }
+}
+
 [HarmonyPatch(typeof(InnerNetClient), nameof(InnerNetClient.HandleGameDataInner))]
 internal class GameDataHandlerPatch
 {
