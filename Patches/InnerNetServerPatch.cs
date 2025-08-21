@@ -29,6 +29,23 @@ class ServerHandleMessagePatch
                     __instance.ClientDisconnect(client);
                     return;
                 }
+                else
+                {
+                    var extraBytes = "";
+                    while (reader.Position < reader.Length)
+                    {
+                        extraBytes += reader.ReadByte().ToString();
+                        extraBytes += " ";
+                        if (extraBytes.Length > 32) break;
+                    }
+                    if (extraBytes == "") extraBytes = "None";
+                    Logger.Info($"{client?.PlayerName} was disconnected on server-side. Junk Bytes: {extraBytes}", "ServerHandleMessagePatch");
+                    return;
+                }
+            }
+            else
+            {
+                Logger.Info($"Received message with code {reader.Tag} from {client?.PlayerName}.", "ServerHandleMessagePatch");
             }
         }
         catch (Exception e)
