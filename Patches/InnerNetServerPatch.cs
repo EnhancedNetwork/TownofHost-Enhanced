@@ -45,7 +45,7 @@ class ServerHandleMessagePatch
             }
             else
             {
-                Logger.Info($"Received message with code {reader.Tag} from {client?.PlayerName}.", "ServerHandleMessagePatch");
+                // Logger.Info($"Received message with code {reader.Tag} from {client?.PlayerName}.", "ServerHandleMessagePatch");
             }
         }
         catch (Exception e)

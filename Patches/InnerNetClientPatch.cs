@@ -61,7 +61,7 @@ class ClientHandleMessagePatch
         }
         catch (Exception e)
         {
-            Logger.Error($"Couldn't get disconnect info / Error: {e.Message}", "ClientHandleMessagePatch");
+            // Logger.Error($"Couldn't get disconnect info / Error: {e.Message}", "ClientHandleMessagePatch");
         }
     }
 }
