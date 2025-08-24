@@ -56,6 +56,7 @@ public static class Options
             3 => CustomGameMode.HidenSeekTOHE, // HidenSeekTOHE must be after other game modes
             _ => CustomGameMode.Standard
         };
+    public static int prevGameMode = 0;
     public static readonly string[] gameModes =
     [
         "Standard",

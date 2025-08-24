@@ -98,7 +98,7 @@ class OnGameJoinedPatch
                     if (Options.CurrentGameMode != CustomGameMode.HidenSeekTOHE)
                     {
                         // Select HideNSeekTOHE
-                        Options.GameMode.SetValue(2);
+                        Options.GameMode.SetValue(3);
                     }
                     break;
 
