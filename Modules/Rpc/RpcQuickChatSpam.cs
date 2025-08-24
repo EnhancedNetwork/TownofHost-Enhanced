@@ -39,6 +39,7 @@ namespace TOHE.Modules.Rpc
                     for (int i = 0; i < 21; i++)
                     {
                         var randomString = stringNamesValues[random.Next(stringNamesValues.Length)];
+                        Logger.Info($"Sent spam message: {randomString}", "SendQuickChatSpam");
                         var message = new RpcSendQuickChatMessage(firstAlivePlayer.NetId, new(QuickChatPhraseType.ComplexPhrase, randomString, 0, null));
                         message.Serialize(writer);
                         DestroyableSingleton<HudManager>.Instance.Chat.AddChat(firstAlivePlayer, GetString(randomString), false);
