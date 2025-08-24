@@ -861,7 +861,8 @@ public static class CustomRolesHelper
                 if (pc.Is(CustomRoles.Doctor)
                     || pc.Is(CustomRoles.God)
                     || pc.Is(CustomRoles.Visionary)
-                    || pc.Is(CustomRoles.GuardianAngelTOHE))
+                    || pc.Is(CustomRoles.GuardianAngelTOHE)
+                    || pc.Is(CustomRoles.Mimic))
                     return false;
                 break;
 
@@ -972,7 +973,8 @@ public static class CustomRolesHelper
 
             case CustomRoles.Mimic:
                 if (pc.Is(CustomRoles.Nemesis)
-                    || pc.Is(CustomRoles.Narc))
+                    || pc.Is(CustomRoles.Narc)
+                    || pc.Is(CustomRoles.Necroview))
                     return false;
                 if (!pc.GetCustomRole().IsImpostor())
                     return false;
