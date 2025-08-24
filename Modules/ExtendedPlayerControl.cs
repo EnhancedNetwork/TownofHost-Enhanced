@@ -1612,6 +1612,11 @@ static class ExtendedPlayerControl
     {
         Main.PlayerStates[targetId].deathReason = reason;
     }
+    public static PlayerState.DeathReason GetDeathReason(this PlayerControl target) => target.PlayerId.GetDeathReason();
+    public static PlayerState.DeathReason GetDeathReason(this byte targetId)
+    {
+        return Main.PlayerStates[targetId].deathReason;
+    }
 
     public static bool Is(this PlayerControl target, CustomRoles role) =>
         role > CustomRoles.NotAssigned ? target.GetCustomSubRoles().Contains(role) : target.GetCustomRole() == role;
