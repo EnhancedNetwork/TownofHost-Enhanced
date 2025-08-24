@@ -279,13 +279,13 @@ namespace TOHE.Modules.Rpc
                 case QuickChatSpamMode.QuickChatSpam_Random20:
                     var random = IRandom.Instance;
                     var stringNamesValues = Enum.GetValues(typeof(StringNames)).Cast<StringNames>().Except(badSpam).ToArray();
-                    Logger.Info($"Found {stringNamesValues.Length} spam keys.", "SendQuickChatSpam");
+                    // Logger.Info($"Found {stringNamesValues.Length} spam keys.", "SendQuickChatSpam");
 
-                    foreach (StringNames value in stringNamesValues)
-                    {
-                        string translation = DestroyableSingleton<TranslationController>.Instance.GetString(value);
-                        if (translation.Contains("{0}")) Logger.Info($"StringNames.{value},", "SendQuickChatSpam");
-                    }
+                    // foreach (StringNames value in stringNamesValues)
+                    // {
+                    //     string translation = DestroyableSingleton<TranslationController>.Instance.GetString(value);
+                    //     if (translation.Contains("{0}")) Logger.Info($"StringNames.{value},", "SendQuickChatSpam");
+                    // }
 
                     for (int i = 0; i < 21; i++)
                         {
