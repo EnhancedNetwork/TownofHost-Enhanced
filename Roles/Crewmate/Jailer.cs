@@ -128,6 +128,11 @@ internal class Jailer : RoleBase
         }
     }
 
+    public override void AfterMeetingTasks()
+    {
+        JailerTarget.Clear();
+    }
+
     public override void OnVote(PlayerControl voter, PlayerControl target)
     {
         if (voter == null || target == null) return;
