@@ -403,6 +403,7 @@
   "Revenant": "Revenant",
   "Requiter": "Requiter",
   "Narc": "Narc",
+  "Rat": "Rat",
   "EngineerTOHEInfo": "Use the vents to catch the <color=#ff1919>Impostors</color>",
   "ScientistTOHEInfo": "Access portable Vitals from anywhere",
   "NoisemakerTOHEInfo": "Send out an alert when killed",
@@ -731,6 +732,7 @@
   "RevenantInfo": "Take your killer's role",
   "RequiterInfo": "Avenge the ejected <color=#8cffff>Crewmates</color>",
   "NarcInfo": "Ruin the <color=#ff1919>Impostors'</color> plans",
+  "RatInfo": "Learn what roles aren't in game",
   "EngineerTOHEInfoLong": "(Crewmates):\nAs the Engineer, you may access the Vents while Comms Sabotaged is inactive.",
   "ScientistTOHEInfoLong": "(Crewmates):\nAs the Scientist, you can see Vitals at any time, showing you who is alive and dead.",
   "NoisemakerTOHEInfoLong": "(Crewmates):\nAs the Noisemaker, whenever you die, you will make a noise, and a visual indicator of your death appears on the screen so the Crewmates can run to catch the person who killed you red-handed (even if it’s not red).",
@@ -1062,6 +1064,7 @@
   "RevenantInfoLong": "(Neutral):\nAs the Revenant, your goal is to be killed. If you are killed, you will take your killer's role and kill your killer instead. You cannot win before being killed.\nNote that Revenant only works when being directly killed.",
   "RequiterInfoLong": "(Crewmates):\nThe Requiter has no bullets at the beginning.\nFor each Crewmate ejected,the Requiter gains one bullet.\nThe Requiter can kill when they have bullets.",
   "NarcInfoLong": "(Betrayal Add-ons):\nImpostors and Madmates see Narc as their teammate,but Narc themselves don't know who the Impostors and Madmates are.\nNarc appears as a Sheriff to Crewmates\n\nNote:Depending on the settings,Impostors may kill each other when Narc is in a game.\nIf the respective option is disabled,Narc won't be able to use their kill button until the other Impostors die.",
+  "RatInfoLong": "(Add-ons):\nAs the rat, you receive a list of roles that were not chosen this game.",
   "ShowTextOverlay": "Text Overlay",
   "ShowModdedClientText": "Modded Client Text",
   "DisableShieldAnimations": "Disable Unnecessary Shield Animations",
@@ -4147,6 +4150,13 @@
 
   "OverrideMedbayScan_OnVisualOff": "Show Medbay Scan when Visual Tasks are off",
   "OverrideMedbayScan_MinPlayer": "Minimum Players",
-  "OverrideMedbayScan_MaxPlayer": "Maximum Players"
+  "OverrideMedbayScan_MaxPlayer": "Maximum Players",
 
+  "RatRoleCount": "Roles Learned",
+  "RatCanFindCrew": "Can Find Crewmate Roles",
+  "RatCanFindImp": "Can Find Imposter Roles",
+  "RatCanFindNeutral": "Can Find Neutral Roles",
+  "RatCanFindCoven": "Can Find Coven Roles",
+  "RatMsgTitle": "Roles Sniffed",
+  "RatRoleList": "Your nose tells you that no one is <b>{0}</b>."
 }

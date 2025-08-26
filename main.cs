@@ -1014,6 +1014,7 @@ public enum CustomRoles
     Lucky,
     Madmate,
     Mare,
+    Rat,
     Rebirth,
     Mimic,
     Mundane,

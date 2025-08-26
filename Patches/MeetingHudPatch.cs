@@ -1047,17 +1047,20 @@ class MeetingHudStartPatch
         if (Eavesdropper.IsEnable)
             Eavesdropper.GetMessage();
 
-        // Add Mimic msg
-        if (MimicMsg != "")
-        {
-            MimicMsg = GetString("MimicDeadMsg") + "\n" + MimicMsg;
+        if (Rat.IsEnable)
+            Rat.GetMessage();
 
-            var isImpostorTeamList = Main.AllPlayerControls.Where(x => x.GetCustomRole().IsImpostorTeam()).ToArray();
-            foreach (var imp in isImpostorTeamList)
+        // Add Mimic msg
+            if (MimicMsg != "")
             {
-                AddMsg(MimicMsg, imp.PlayerId, ColorString(GetRoleColor(CustomRoles.Mimic), GetString("Mimic").ToUpper()));
+                MimicMsg = GetString("MimicDeadMsg") + "\n" + MimicMsg;
+
+                var isImpostorTeamList = Main.AllPlayerControls.Where(x => x.GetCustomRole().IsImpostorTeam()).ToArray();
+                foreach (var imp in isImpostorTeamList)
+                {
+                    AddMsg(MimicMsg, imp.PlayerId, ColorString(GetRoleColor(CustomRoles.Mimic), GetString("Mimic").ToUpper()));
+                }
             }
-        }
 
         msgToSend.Do(x => Logger.Info($"To:{x.Item2} {x.Item3} => {x.Item1}", "Skill Notice OnMeeting Start"));
 
