@@ -7,7 +7,7 @@ namespace TOHE.Roles.AddOns.Common;
 public class Rat : IAddon
 {
     public CustomRoles Role => CustomRoles.Rat;
-    private const int Id = 22900;
+    private const int Id = 23400;
     public AddonTypes Type => AddonTypes.Helpful;
     private static readonly HashSet<byte> playerList = [];
     public static bool IsEnable = false;
