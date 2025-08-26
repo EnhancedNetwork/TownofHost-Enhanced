@@ -4153,10 +4153,10 @@
   "OverrideMedbayScan_MaxPlayer": "Maximum Players",
 
   "RatRoleCount": "Roles Learned",
-  "RatCanFindCrew": "Can Find Crewmate Roles",
-  "RatCanFindImp": "Can Find Imposter Roles",
-  "RatCanFindNeutral": "Can Find Neutral Roles",
-  "RatCanFindCoven": "Can Find Coven Roles",
+  "RatCanFindCrew": "Can Find <color=#8cffff>Crewmate</color> Roles",
+  "RatCanFindImp": "Can Find <color=#ff1919>Impostor</color> Roles",
+  "RatCanFindNeutral": "Can Find <color=#7f8c8d>Neutral</color> Roles",
+  "RatCanFindCoven": "Can Find <color=#ac42f2>Coven</color> Roles",
   "RatMsgTitle": "Roles Sniffed",
   "RatRoleList": "Your nose tells you that no one is <b>{0}</b>."
 }

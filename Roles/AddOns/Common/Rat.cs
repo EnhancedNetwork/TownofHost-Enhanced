@@ -51,15 +51,15 @@ public class Rat : IAddon
         List<CustomRoles> listOfRoles = [.. CustomRolesHelper.AllRoles.Where(role => !role.IsGhostRole() && role.IsEnable() && !role.RoleExist(countDead: true) && ((role.IsCrewmate()&&canFindCrew.GetBool())||(role.IsImpostor()&&canFindImp.GetBool())||(role.IsNeutral()&&canFindNeutral.GetBool())||(role.IsCoven()&&canFindCoven.GetBool()))).Shuffle()];
         string separator = TranslationController.Instance.currentLanguage.languageID is SupportedLangs.English or SupportedLangs.Russian ? "], [" : "】, 【";
         if (n > listOfRoles.Count) n = listOfRoles.Count;
-        
+
         foreach (var ratId in playerList)
         {
             List<CustomRoles> ratRoles = [.. listOfRoles.Take(i..(i + n))];
 
-            HashSet<string> ratRoleList = [];
+            SortedSet<string> ratRoleList = [];
             foreach (var role in ratRoles)
             {
-                ratRoleList.Add(role.GetActualRoleName());
+                ratRoleList.Add(role.GetColoredTextByRole(role.GetActualRoleName()));
             }
 
             MeetingHudStartPatch.AddMsg(string.Format(GetString("RatRoleList"), string.Join(separator, ratRoleList)), ratId, Utils.ColorString(Utils.GetRoleColor(CustomRoles.Rat), GetString("RatMsgTitle")));
