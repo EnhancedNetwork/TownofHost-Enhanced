@@ -62,7 +62,7 @@ public class Rat : IAddon
                 ratRoleList.Add(role.GetColoredTextByRole(role.GetActualRoleName()));
             }
 
-            MeetingHudStartPatch.AddMsg(string.Format(GetString("RatRoleList"), string.Join(separator, ratRoleList)), ratId, Utils.ColorString(Utils.GetRoleColor(CustomRoles.Rat), GetString("RatMsgTitle")));
+            MeetingHudStartPatch.AddMsg(string.Format(GetString("RatRoleList"), $"{separator[0]}{string.Join(separator, ratRoleList)}{separator[^1]}"), ratId, Utils.ColorString(Utils.GetRoleColor(CustomRoles.Rat), GetString("RatMsgTitle")));
 
             i += n;
             if (i + n > listOfRoles.Count) i = 0;
