@@ -404,6 +404,7 @@
   "Requiter": "Requiter",
   "Narc": "Narc",
   "Rat": "Rat",
+  "Inquisitor": "Inquisitor",
   "EngineerTOHEInfo": "Use the vents to catch the <color=#ff1919>Impostors</color>",
   "ScientistTOHEInfo": "Access portable Vitals from anywhere",
   "NoisemakerTOHEInfo": "Send out an alert when killed",
@@ -733,6 +734,7 @@
   "RequiterInfo": "Avenge the ejected <color=#8cffff>Crewmates</color>",
   "NarcInfo": "Ruin the <color=#ff1919>Impostors'</color> plans",
   "RatInfo": "Learn what roles aren't in game",
+  "InquisitorInfo": "Kill the Heretics!",
   "EngineerTOHEInfoLong": "(Crewmates):\nAs the Engineer, you may access the Vents while Comms Sabotaged is inactive.",
   "ScientistTOHEInfoLong": "(Crewmates):\nAs the Scientist, you can see Vitals at any time, showing you who is alive and dead.",
   "NoisemakerTOHEInfoLong": "(Crewmates):\nAs the Noisemaker, whenever you die, you will make a noise, and a visual indicator of your death appears on the screen so the Crewmates can run to catch the person who killed you red-handed (even if it’s not red).",
@@ -1065,6 +1067,7 @@
   "RequiterInfoLong": "(Crewmates):\nThe Requiter has no bullets at the beginning.\nFor each Crewmate ejected,the Requiter gains one bullet.\nThe Requiter can kill when they have bullets.",
   "NarcInfoLong": "(Betrayal Add-ons):\nImpostors and Madmates see Narc as their teammate,but Narc themselves don't know who the Impostors and Madmates are.\nNarc appears as a Sheriff to Crewmates\n\nNote:Depending on the settings,Impostors may kill each other when Narc is in a game.\nIf the respective option is disabled,Narc won't be able to use their kill button until the other Impostors die.",
   "RatInfoLong": "(Add-ons):\nAs the rat, you receive a list of roles that were not chosen this game.",
+  "InquisitorInfoLong": "(Neutrals):\nAs the Inquisitor, you are given a list of target roles (Heretics). Use your kill button to check if a player is a heretic. Double-click to kill, but make sure they are a heretic or you will lose the ability to do it again.",
   "ShowTextOverlay": "Text Overlay",
   "ShowModdedClientText": "Modded Client Text",
   "DisableShieldAnimations": "Disable Unnecessary Shield Animations",
@@ -3826,6 +3829,7 @@
   "WinnerRoleText.Pyromaniac": "Pyromaniac Wins!",
   "WinnerRoleText.Doppelganger": "Doppelganger Wins!",
   "WinnerRoleText.Quizmaster": "Quizmaster Wins!",
+  "WinnerRoleText.Inquisitor": "Nobody expects the Spanish Inquisition!",
   "WinnerRoleText.Agitater": "Agitator Wins!",
   "WinnerRoleText.Shocker": "Shocker Wins!",
   "AdditionalWinnerRoleText.Sidekick": "Sidekick",
@@ -4158,5 +4162,11 @@
   "RatCanFindNeutral": "Can Find <color=#7f8c8d>Neutral</color> Roles",
   "RatCanFindCoven": "Can Find <color=#ac42f2>Coven</color> Roles",
   "RatMsgTitle": "Roles Sniffed",
-  "RatRoleList": "Your nose tells you that no one is <b>{0}</b>."
+  "RatRoleList": "Your nose tells you that no one is <b>{0}</b>.",
+
+  "InquisitorHereticCount": "Heretic Count",
+  "InquisitorDiesOnMiss": "Die After Killing Non-Heretic",
+  "InquisitorHereticDeadInMeeting": "A Heretic died in meeting.",
+  "InquisitorTargets": "Heretics: {0}",
+  "InquisitorTargetsLeft": "Alive {0}/{1}"
 }
