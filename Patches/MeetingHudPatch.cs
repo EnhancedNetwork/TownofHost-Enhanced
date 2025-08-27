@@ -134,6 +134,11 @@ class CheckForEndVotingPatch
                         pc.GetRoleClass()?.OnVote(pc, voteTarget); // Role has voted
                         voteTarget.GetRoleClass()?.OnVoted(voteTarget, pc); // Role is voted
 
+                        if (Lich.IsCursed(pc))
+                        {
+                            Lich.OnTargetVote(pc);
+                        }
+
                         if (voteTarget.Is(CustomRoles.Aware))
                         {
                             Aware.OnVoted(pc, pva);

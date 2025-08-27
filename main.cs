@@ -897,6 +897,7 @@ public enum CustomRoles
     Jester,
     Juggernaut,
     Lawyer,
+    Lich,
     Maverick,
     Opportunist,
     Pelican,

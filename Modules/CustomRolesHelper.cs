@@ -138,6 +138,7 @@ public static class CustomRolesHelper
             CustomRoles.Stalker or
             CustomRoles.Doomsayer or
             CustomRoles.SoulCollector or
+            CustomRoles.Lich or
             CustomRoles.Death or
             CustomRoles.Berserker or
             CustomRoles.War or
