@@ -101,7 +101,8 @@ internal class CopyCat : RoleBase
             CustomRoles.Doomsayer or // CopyCat cannot guessed roles because he can be know others roles players
             CustomRoles.EvilGuesser or
             CustomRoles.NiceGuesser or
-            CustomRoles.Baker or CustomRoles.Famine;
+            CustomRoles.Baker or
+            CustomRoles.Famine;
     }
 
     public override bool ForcedCheckMurderAsKiller(PlayerControl killer, PlayerControl target)
@@ -155,6 +156,7 @@ internal class CopyCat : RoleBase
                 _ => role
             };
         }
+        if (Lich.IsCursed(target)) role = CustomRoles.Lich;
         if (role.IsCrewmate())
         {
             if (role != CustomRoles.CopyCat)

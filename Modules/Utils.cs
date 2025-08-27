@@ -478,6 +478,10 @@ public static class Utils
                     targetSubRoles = Main.PlayerStates[DollMaster.DollMasterTarget.PlayerId].SubRoles;
             }
         }
+        if (Lich.IsCursed(GetPlayerById(targetId)) && Lich.IsDeceived(GetPlayerById(seerId), GetPlayerById(targetId)))
+        {
+            targetMainRole = CustomRoles.Lich;
+        }
 
         RoleText.Clear().Append(GetRoleName(targetMainRole));
         RoleColor = GetRoleColor(targetMainRole);
@@ -2045,7 +2049,7 @@ public static class Utils
                         if (seer.IsAlive() && Overseer.IsRevealedPlayer(seer, target) && Illusionist.IsNonCovIllusioned(target.PlayerId))
                         {
                             var randomRole = CustomRolesHelper.AllRoles.Where(role => role.IsEnable() && !role.IsAdditionRole() && role.IsCoven()).ToList().RandomElement();
-                            BlankRT = ColorString(GetRoleColor(randomRole), GetString(randomRole.ToString()));
+                            BlankRT = ColorString(GetRoleColor(randomRole), GetString(randomRole.GetActualRoleName()));
                             if (randomRole is CustomRoles.CovenLeader or CustomRoles.Jinx or CustomRoles.Illusionist or CustomRoles.VoodooMaster) // Roles with Ability Uses
                             {
                                 BlankRT += randomRole.GetStaticRoleClass().GetProgressText(target.PlayerId, false);
@@ -2053,9 +2057,18 @@ public static class Utils
                             TargetRoleText = $"<size={fontSize}>{BlankRT}</size>\r\n";
                         }
 
+                        if (seer.IsAlive() && Lich.IsCursed(target) && Lich.IsDeceived(seer, target))
+                        {
+                            BlankRT = ColorString(GetRoleColor(CustomRoles.Lich), GetString(CustomRoles.Lich.GetActualRoleName()));
+                            TargetRoleText = $"<size={fontSize}>{BlankRT}</size>\r\n";
+                            
+                            if (!Overseer.IsRevealedPlayer(seer, target))
+                                TargetRoleText = KnowRoleTarget ? TargetRoleText : "";
+                        }
+
                         // ====== Target player name ======
 
-                        string TargetPlayerName = target.GetRealName(isForMeeting);
+                            string TargetPlayerName = target.GetRealName(isForMeeting);
 
                         var tempNameText = seer.GetRoleClass()?.NotifyPlayerName(seer, target, TargetPlayerName, isForMeeting);
                         if (tempNameText != string.Empty)

@@ -1182,14 +1182,24 @@ class MeetingHudStartPatch
                 if (Illusionist.IsNonCovIllusioned(targetId))
                 {
                     var randomRole = CustomRolesHelper.AllRoles.Where(role => role.IsEnable() && !role.IsAdditionRole() && role.IsCoven()).ToList().RandomElement();
-                    blankRT.Clear().Append(ColorString(GetRoleColor(randomRole), GetString(randomRole.ToString())));
+                    blankRT.Clear().Append(ColorString(GetRoleColor(randomRole), GetString(randomRole.GetActualRoleName())));
                     if (randomRole.GetStaticRoleClass().IsMethodOverridden("GetProgressText")) // Roles with Ability Uses
                     {
                         blankRT.Append(randomRole.GetStaticRoleClass().GetProgressText(playerId, false));
                     }
                     result.Clear().Append($"<size={roleTextMeeting.fontSize}>{blankRT}</size>");
                 }
+                if (Lich.IsCursed(target) && Lich.IsDeceived(player, target))
+                {
+                    blankRT.Clear().Append(CustomRoles.Lich.ToColoredString());
+                    result.Clear().Append($"<size={roleTextMeeting.fontSize}>{blankRT}</size>");
+                }
                 roleTextMeeting.text = result.ToString();
+            }
+            if (player.IsAlive() && !target.AmOwner && ExtendedPlayerControl.KnowRoleTarget(player, target) && Lich.IsCursed(target) && Lich.IsDeceived(player, target))
+            {
+                string blankRT = CustomRoles.Lich.ToColoredString();
+                roleTextMeeting.text = $"<size={roleTextMeeting.fontSize}>{blankRT}</size>";
             }
 
             var suffixBuilder = new StringBuilder(32);

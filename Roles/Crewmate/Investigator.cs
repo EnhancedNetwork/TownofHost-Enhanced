@@ -3,6 +3,7 @@ using Hazel;
 using TOHE.Modules;
 using TOHE.Modules.Rpc;
 using TOHE.Roles.Coven;
+using TOHE.Roles.Neutral;
 using static TOHE.Options;
 
 namespace TOHE.Roles.Crewmate;
@@ -108,6 +109,7 @@ internal class Investigator : RoleBase
         if (!InvestigatedList.TryGetValue(seer.PlayerId, out var targetList)) return string.Empty;
         if (!targetList.Contains(target.PlayerId)) return string.Empty;
 
+        if (Lich.IsCursed(target)) return "#FF1919";
         if (Illusionist.IsCovIllusioned(target.PlayerId)) return "#8CFFFF";
         if (Illusionist.IsNonCovIllusioned(target.PlayerId) || target.HasKillButton() || CopyCat.playerIdList.Contains(target.PlayerId)) return "#FF1919";
         else return "#8CFFFF";

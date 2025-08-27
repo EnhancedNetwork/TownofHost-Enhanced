@@ -2998,6 +2998,7 @@
   "GetPassiveCharges": "Gain a passive charge every round",
   "PassiveChargeGained": "You have gained a passive Charge for your Grimoire",
   "LichTargetUsed": "You have cursed <b>{0}</b> instead",
+  "LichCantTargetApoc": "Can't curse another Apocalypse",
   "LichChargeGained": "Charge gained",
   "LichCanVent": "<color=#80172C>Lich</color> can Vent",
   "LichKillButtonText": "Curse",
