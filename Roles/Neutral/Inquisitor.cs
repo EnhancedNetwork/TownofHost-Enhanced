@@ -29,6 +29,8 @@ internal class Inquisitor : RoleBase
     private static int hereticCount;
     private static bool diesOnMiss;
 
+    private int actualHereticCount;
+
     private static readonly Dictionary<byte, HashSet<byte>> Targets = [];
     private static readonly Dictionary<byte, HashSet<byte>> InquiredList = [];
     private static readonly Dictionary<byte, CustomRoles> TargetRoles = [];
@@ -127,7 +129,8 @@ internal class Inquisitor : RoleBase
                     if (teams.Count > 1) teamFound = 0;
                 }
 
-                AliveHeretics[inquisitor.PlayerId] = Targets[inquisitor.PlayerId].Count;
+                actualHereticCount = Targets[inquisitor.PlayerId].Count;
+                AliveHeretics[inquisitor.PlayerId] = actualHereticCount;
 
                 Logger.Info($"{inquisitor?.GetNameWithRole()}:{Targets[inquisitor.PlayerId].Select(id => TargetRoles[id])}", "Inquisitor");
             }
@@ -291,7 +294,7 @@ internal class Inquisitor : RoleBase
 
         List<string> targetRoles = GetTargetsRoles(seer);
         int hereticsLeft = GetHereticsLeft(seer);
-        return targetRoles.Count > 0 ? CustomRoles.Inquisitor.GetColoredTextByRole($"{string.Format(GetString("InquisitorTargets"), string.Join(separator, targetRoles))}: {string.Format(GetString("InquisitorTargetsLeft"), hereticsLeft, hereticCount)}") : string.Empty;
+        return targetRoles.Count > 0 ? CustomRoles.Inquisitor.GetColoredTextByRole($"{string.Format(GetString("InquisitorTargets"), string.Join(separator, targetRoles))}: {string.Format(GetString("InquisitorTargetsLeft"), hereticsLeft, actualHereticCount)}") : string.Empty;
     }
 
     public static void CheckHereticRevived()
