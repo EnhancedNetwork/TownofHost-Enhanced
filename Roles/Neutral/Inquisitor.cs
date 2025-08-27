@@ -16,6 +16,8 @@ internal class Inquisitor : RoleBase
     //===========================SETUP================================\\
     public override CustomRoles Role => CustomRoles.Inquisitor;
     private const int Id = 32000;
+    public override bool IsExperimental => true;
+    public override bool IsDesyncRole => true;
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.NeutralChaos;
     //==================================================================\\
@@ -50,8 +52,8 @@ internal class Inquisitor : RoleBase
         Options.SetupRoleOptions(Id, TabGroup.NeutralRoles, CustomRoles.Inquisitor);
         KillCooldown = FloatOptionItem.Create(Id + 10, GeneralOption.KillCooldown, new(0f, 60f, 2.5f), 15f, TabGroup.NeutralRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Inquisitor])
             .SetValueFormat(OptionFormat.Seconds);
-        OptionHereticCount = IntegerOptionItem.Create(Id + 10, "InquisitorHereticCount", new(1, 5, 1), 3, TabGroup.NeutralRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Inquisitor]);
-        OptionDiesOnMiss = BooleanOptionItem.Create(Id + 11, "InquisitorDiesOnMiss", false, TabGroup.NeutralRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Inquisitor]);
+        OptionHereticCount = IntegerOptionItem.Create(Id + 11, "InquisitorHereticCount", new(1, 5, 1), 3, TabGroup.NeutralRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Inquisitor]);
+        OptionDiesOnMiss = BooleanOptionItem.Create(Id + 12, "InquisitorDiesOnMiss", false, TabGroup.NeutralRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Inquisitor]);
     }
 
     public override void Init()
@@ -70,6 +72,9 @@ internal class Inquisitor : RoleBase
 
         var inquisitor = _Player;
         Targets[inquisitor.PlayerId] = [];
+        InquiredList[inquisitor.PlayerId] = [];
+
+        inquisitor.AddDoubleTrigger();
 
         if (AmongUsClient.Instance.AmHost && inquisitor.IsAlive())
         {
@@ -83,6 +88,8 @@ internal class Inquisitor : RoleBase
                 else if (Targets[inquisitor.PlayerId].Contains(target.PlayerId)) continue;
                 if (NotTargetable.Contains(target.GetCustomRole())) continue;
                 if (inquisitor.Is(CustomRoles.Lovers) && target.Is(CustomRoles.Lovers)) continue;
+
+                targetList.Add(target);
             }
 
             if (targetList.Any())
@@ -122,7 +129,6 @@ internal class Inquisitor : RoleBase
 
                 AliveHeretics[inquisitor.PlayerId] = Targets[inquisitor.PlayerId].Count;
 
-                SendRPC(SetTargets: true);
                 Logger.Info($"{inquisitor?.GetNameWithRole()}:{Targets[inquisitor.PlayerId].Select(id => TargetRoles[id])}", "Inquisitor");
             }
             else
@@ -140,11 +146,6 @@ internal class Inquisitor : RoleBase
     }
     public override void Remove(byte playerId)
     {
-        if (AmongUsClient.Instance.AmHost)
-        {
-            SendRPC(SetTargets: false);
-        }
-
         Targets.Remove(_Player.PlayerId);
         CustomRoleManager.CheckDeadBodyOthers.Remove(OthersAfterPlayerDeathTask);
     }
@@ -153,36 +154,58 @@ internal class Inquisitor : RoleBase
 
     public override bool CanUseKillButton(PlayerControl pc) => IsUseKillButton(pc);
     public static bool IsUseKillButton(PlayerControl pc)
-        => HaveMissed.Contains(pc.PlayerId);
+        => !HaveMissed.Contains(pc.PlayerId);
 
-    public override bool OnCheckMurderAsKiller(PlayerControl killer, PlayerControl target)
+    public override bool ForcedCheckMurderAsKiller(PlayerControl killer, PlayerControl target)
     {
-        if (!killer.CheckDoubleTrigger(target, () => CheckIfHeretic(killer, target))) return false;
-        
-        if (IsTarget(target))
+        if (killer.CheckDoubleTrigger(target, () => { CheckIfHeretic(killer, target); }))
         {
-            killer.ResetKillCooldown();
-            target.SetDeathReason(PlayerState.DeathReason.Torched);
-            return true;
-        }
+            if (IsTarget(target))
+            {
+                killer.SetKillCooldown();
+                target.SetDeathReason(PlayerState.DeathReason.Torched);
+                return true;
+            }
 
-        if (diesOnMiss)
-        {
-            killer.SetDeathReason(PlayerState.DeathReason.Misfire);
-            killer.RpcMurderPlayer(killer);
-            return true;
+            if (diesOnMiss)
+            {
+                killer.SetDeathReason(PlayerState.DeathReason.Misfire);
+                killer.RpcMurderPlayer(killer);
+                return true;
+            }
+            else
+            {
+                HaveMissed.Add(killer.PlayerId);
+                killer.SetKillCooldown();
+                return true;
+            }
         }
-        else
-        {
-            HaveMissed.Add(killer.PlayerId);
-            killer.SetKillCooldown();
-            return true;
-        }
+        else return false;
     }
 
-    public void CheckIfHeretic(PlayerControl player, PlayerControl target)
+    public static bool CanSeeIsHeretic(PlayerControl player, PlayerControl target)
     {
+        if (player == null || target == null) return false;
+        if (!InquiredList.TryGetValue(player.PlayerId, out var targetList)) return false;
+        if (targetList.Contains(target.PlayerId)) return true;
+
+        return false;
+    }
+
+    public static void CheckIfHeretic(PlayerControl player, PlayerControl target)
+    {
+        if (player == null || target == null) return;
+        if (!InquiredList.TryGetValue(player.PlayerId, out var targetList)) return;
+        if (targetList.Contains(target.PlayerId)) return;
+
         InquiredList[player.PlayerId].Add(target.PlayerId);
+
+        SendRPC(player.PlayerId, target.PlayerId);
+
+        Logger.Info($"{player.GetNameWithRole()}：{target.GetNameWithRole()}", "Inquisitor");
+        Utils.NotifyRoles(SpecifySeer: player, SpecifyTarget: target, ForceLoop: true);
+
+        player.SetKillCooldown();
     }
 
     public override string PlayerKnowTargetColor(PlayerControl seer, PlayerControl target)
@@ -196,28 +219,19 @@ internal class Inquisitor : RoleBase
         else return "#8CFFFF";
     }
 
-    private void SendRPC(bool SetTargets = false)
+    private static void SendRPC(byte playerId, byte targetId)
     {
-        var writer = MessageWriter.Get(SendOption.Reliable);
-        writer.Write(SetTargets);
-        writer.Write(Targets[_Player.PlayerId].Count);
-        foreach (var target in Targets[_Player.PlayerId])
-            writer.Write(target);
-        RpcUtils.LateBroadcastReliableMessage(new RpcSyncRoleSkill(PlayerControl.LocalPlayer.NetId, _Player.NetId, writer));
+        var msg = new RpcSetInquisitor(PlayerControl.LocalPlayer.NetId, playerId, targetId);
+        RpcUtils.LateBroadcastReliableMessage(msg);
     }
-    public override void ReceiveRPC(MessageReader reader, PlayerControl NaN)
+    public static void ReceiveRPC(MessageReader reader)
     {
-        bool SetTargets = reader.ReadBoolean();
-        int targetCount = reader.ReadInt32();
+        byte playerId = reader.ReadByte();
 
-        HashSet<byte> targets = [];
-        for (int i = 0; i < targetCount; i++)
-        {
-            targets.Add(reader.ReadByte());
-        }
-
-        if (SetTargets) Targets[_Player.PlayerId] = targets;
-        else Targets[_Player.PlayerId].Clear();
+        if (InquiredList.ContainsKey(playerId))
+            InquiredList[playerId].Add(reader.ReadByte());
+        else
+            InquiredList.Add(playerId, []);
     }
 
     private bool IsTarget(PlayerControl player) => IsTarget(player.PlayerId);
@@ -277,7 +291,7 @@ internal class Inquisitor : RoleBase
 
         List<string> targetRoles = GetTargetsRoles(seer);
         int hereticsLeft = GetHereticsLeft(seer);
-        return targetRoles.Count > 0 ? $"{string.Format(GetString("InquisitorTargets"), string.Join(separator, targetRoles))}: {string.Format(GetString("InquisitorTargetsLeft"), hereticsLeft, hereticCount)}" : string.Empty;
+        return targetRoles.Count > 0 ? CustomRoles.Inquisitor.GetColoredTextByRole($"{string.Format(GetString("InquisitorTargets"), string.Join(separator, targetRoles))}: {string.Format(GetString("InquisitorTargetsLeft"), hereticsLeft, hereticCount)}") : string.Empty;
     }
 
     public static void CheckHereticRevived()

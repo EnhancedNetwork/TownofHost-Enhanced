@@ -529,6 +529,23 @@ namespace TOHE.Modules.Rpc
         private readonly byte playerId;
         private readonly bool isOdd;
     }
+    class RpcSetInquisitor : BaseModdedRpc
+    {
+        public override byte RpcType => (byte)CustomRPC.SetInquisitor;
+        public RpcSetInquisitor(uint netId, byte playerId, byte targetId) : base(netId)
+        {
+            this.playerId = playerId;
+            this.targetId = targetId;
+        }
+        public override void SerializeRpcValues(MessageWriter msg)
+        {
+            msg.Write(playerId);
+            msg.Write(targetId);
+        }
+
+        private readonly byte playerId;
+        private readonly byte targetId;
+    }
     class RpcBenefactor : BaseModdedRpc
     {
         public override byte RpcType => (byte)CustomRPC.BenefactorRPC;
