@@ -116,13 +116,13 @@ internal class FortuneTeller : RoleBase
             }
             targetList.Add(target.PlayerId);
             var targetRole = target.GetCustomRole();
-            if (Illusionist.IsCovIllusioned(target.PlayerId)) targetRole = CustomRolesHelper.AllRoles.Where(role => role.IsEnable() && !role.IsAdditionRole() && role.IsCrewmate()).ToList().RandomElement();
+            if (Illusionist.IsCovIllusioned(target.PlayerId)) targetRole = CustomRolesHelper.AllRoles.Where(role => role.IsEnable() && !role.IsAdditionRole() && role.IsCrewmate() && !role.IsGhostRole()).ToList().RandomElement();
             else if (Illusionist.IsNonCovIllusioned(target.PlayerId)) targetRole = CustomRolesHelper.AllRoles.Where(role => role.IsEnable() && !role.IsAdditionRole() && role.IsCoven()).ToList().RandomElement();
             else if (target.Is(CustomRoles.Narc)) targetRole = CustomRoles.Sheriff;
 
             if (Lich.IsCursed(target)) targetRole = CustomRoles.Lich;
 
-            var activeRoleList = CustomRolesHelper.AllRoles.Where(role => (role.IsEnable() || role.RoleExist(countDead: true)) && role != targetRole && !role.IsAdditionRole()).ToList();
+            var activeRoleList = CustomRolesHelper.AllRoles.Where(role => (role.IsEnable() || role.RoleExist(countDead: true)) && role != targetRole && !role.IsAdditionRole() && !role.IsGhostRole()).ToList();
             var count = Math.Min(4, activeRoleList.Count);
             List<CustomRoles> roleList = [targetRole];
             var rand = IRandom.Instance;
@@ -149,7 +149,7 @@ internal class FortuneTeller : RoleBase
             var targetRole = target.GetCustomRole();
             string text = string.Empty;
 
-            if (Illusionist.IsCovIllusioned(target.PlayerId)) targetRole = CustomRolesHelper.AllRoles.Where(role => role.IsEnable() && !role.IsAdditionRole() && role.IsCrewmate()).ToList().RandomElement();
+            if (Illusionist.IsCovIllusioned(target.PlayerId)) targetRole = CustomRolesHelper.AllRoles.Where(role => role.IsEnable() && !role.IsAdditionRole() && role.IsCrewmate() && !role.IsGhostRole()).ToList().RandomElement();
             else if (Illusionist.IsNonCovIllusioned(target.PlayerId)) targetRole = CustomRolesHelper.AllRoles.Where(role => role.IsEnable() && !role.IsAdditionRole() && role.IsCoven()).ToList().RandomElement();
             else if (target.Is(CustomRoles.Narc)) targetRole = CustomRoles.Sheriff;
 
