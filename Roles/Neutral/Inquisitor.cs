@@ -211,6 +211,20 @@ internal class Inquisitor : RoleBase
         player.SetKillCooldown();
     }
 
+    public static bool GetInquisitorsIfHeretic(PlayerControl target, out HashSet<byte> inquisitors)
+    {
+        inquisitors = [];
+        foreach (var heretics in Targets)
+        {
+            if (heretics.Value.Contains(target.PlayerId))
+            {
+                inquisitors.Add(heretics.Key);
+            }
+        }
+
+        return inquisitors.Any();
+    }
+
     public override string PlayerKnowTargetColor(PlayerControl seer, PlayerControl target)
     {
         if (seer == null || target == null) return string.Empty;
@@ -297,8 +311,8 @@ internal class Inquisitor : RoleBase
         return targetRoles.Count > 0 ? CustomRoles.Inquisitor.GetColoredTextByRole($"{string.Format(GetString("InquisitorTargets"), string.Join(separator, targetRoles))}: {string.Format(GetString("InquisitorTargetsLeft"), hereticsLeft, actualHereticCount)}") : string.Empty;
     }
 
-    public static void CheckHereticRevived()
+    public static void HereticRevived(PlayerControl inquisitor)
     {
-        // TODO: This is for the edge case where a heretic is revived.
+        AliveHeretics[inquisitor.PlayerId]++;
     }
 }
