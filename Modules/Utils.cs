@@ -1481,27 +1481,28 @@ public static class Utils
             {
                 if (!Options.GradientTagsOpt.GetBool())
                 {
-                    name = Options.HideHostText.GetBool() ? $"<color={GetString("NameColor")}>{name}</color>"
-                                                      : $"<color={GetString("HostColor")}>{GetString("HostText")}</color><color={GetString("IconColor")}>{GetString("Icon")}</color><color={GetString("NameColor")}>{name}</color>";
+                    string hostColor = GetString("HostColor").Trim().Split(" ")[0];
+                    string nameColor = GetString("NameColor").Trim().Split(" ")[0];
+
+                    name = Options.HideHostText.GetBool() ? $"<color={nameColor}>{name}</color>"
+                                                      : $"<color={hostColor}>{GetString("HostText")}</color><color={GetString("IconColor")}>{GetString("Icon")}</color><color={nameColor}>{name}</color>";
                 }
                 else
                 {
-                    string hostColor = GetString("HostColor");
-                    string nameColor = GetString("NameColor");
+                    string[] hostColor = GetString("HostColor").Trim().Split(" ");
+                    string[] nameColor = GetString("NameColor").Trim().Split(" ");
 
-                    string coloredHost = $"<color={hostColor}>{GetString("HostText")}</color>";
-                    string coloredName = $"<color={nameColor}>{name}</color>";
+                    string coloredHost = $"<color={hostColor[0]}>{GetString("HostText")}</color>";
+                    string coloredName = $"<color={nameColor[0]}>{name}</color>";
 
-                    if (CheckGradientCode(hostColor))
+                    if (CheckGradientCode(GetString("HostColor").Trim()))
                     {
-                        var colors = hostColor.Split(" ");
-                        coloredHost = GradientColorText(colors[0], colors[1], GetString("HostText"));
+                        coloredHost = GradientColorText(hostColor[0], hostColor[1], GetString("HostText"));
                     }
 
-                    if (CheckGradientCode(nameColor))
+                    if (CheckGradientCode(GetString("NameColor").Trim()))
                     {
-                        var colors = nameColor.Split(" ");
-                        coloredName = GradientColorText(colors[0], colors[1], name);
+                        coloredName = GradientColorText(nameColor[0], nameColor[1], name);
                     }
 
                     name = Options.HideHostText.GetBool() ? coloredName
