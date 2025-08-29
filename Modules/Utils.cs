@@ -1479,8 +1479,36 @@ public static class Utils
         {
             if (GameStates.IsOnlineGame || GameStates.IsLocalGame)
             {
-                name = Options.HideHostText.GetBool() ? $"<color={GetString("NameColor")}>{name}</color>"
+                if (!Options.GradientTagsOpt.GetBool())
+                {
+                    name = Options.HideHostText.GetBool() ? $"<color={GetString("NameColor")}>{name}</color>"
                                                       : $"<color={GetString("HostColor")}>{GetString("HostText")}</color><color={GetString("IconColor")}>{GetString("Icon")}</color><color={GetString("NameColor")}>{name}</color>";
+                }
+                else
+                {
+                    string hostColor = GetString("HostColor");
+                    string nameColor = GetString("NameColor");
+
+                    string coloredHost = $"<color={hostColor}>{GetString("HostText")}</color>";
+                    string coloredName = $"<color={nameColor}>{name}</color>";
+
+                    if (CheckGradientCode(hostColor))
+                    {
+                        var colors = hostColor.Split(" ");
+                        coloredHost = GradientColorText(colors[0], colors[1], GetString("HostText"));
+                    }
+
+                    if (CheckGradientCode(nameColor))
+                    {
+                        var colors = nameColor.Split(" ");
+                        coloredName = GradientColorText(colors[0], colors[1], name);
+                    }
+
+                    name = Options.HideHostText.GetBool() ? coloredName
+                                                      : $"{coloredHost}<color={GetString("IconColor")}>{GetString("Icon")}</color>{coloredName}";
+                }
+
+                
             }
             if (Options.CurrentGameMode == CustomGameMode.FFA)
                 name = $"<color=#00ffff><size=1.7>{GetString("ModeFFA")}</size></color>\r\n" + name;
