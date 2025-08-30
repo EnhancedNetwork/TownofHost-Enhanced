@@ -1385,7 +1385,7 @@
   "CheatResponses": "When a cheating player is found",
   "NeutralRoleWinTogether": "<color=#7f8c8d>Neutrals</color> win together",
   "NeutralWinTogether": "All <color=#7f8c8d>Neutrals</color> win together",
-  "SpawnOneRandomKillingFraction": "<size=140%>Spawn One Random Killing Fraction</size>\n<size=80%>(<color=#7f8c8d>Neutral</color> <color=#ff0000>Killers</color>/<color=#ff174f>Apocalypse</color>, <color=#ac42f2>Coven</color>)</size>",
+  "SpawnOneRandomKillingFraction": "<size=140%>Spawn One Random Killing Faction</size>\n<size=80%>(<color=#7f8c8d>Neutral</color> <color=#ff0000>Killers</color>/<color=#ff174f>Apocalypse</color>, <color=#ac42f2>Coven</color>)</size>",
 
   "MenuTitle.Disable": "★ Disable ★",
   "MenuTitle.MapsSettings": "★ Maps ★",
@@ -3002,7 +3002,7 @@
   "LichChargeGained": "Charge gained",
   "LichCanVent": "<color=#80172C>Lich</color> can Vent",
   "LichKillButtonText": "Curse",
-  "LichHasImposterVision": "<color=#80172C>Licj</color> has <color=#ff1919>Impostor</color> Vision",
+  "LichHasImpostorVision": "<color=#80172C>Licj</color> has <color=#ff1919>Impostor</color> Vision",
 
   "ApocalypseIsNigh": "[ The Apocalypse Is Nigh! ]",
   "ApocalypseImmune": "This role is immune!",

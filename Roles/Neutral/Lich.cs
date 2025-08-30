@@ -44,8 +44,9 @@ internal class Lich : RoleBase
             .SetValueFormat(OptionFormat.Times);
         GetPassiveCharges = BooleanOptionItem.Create(Id + 11, "GetPassiveCharges", true, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Lich]);
         LichCanVent = BooleanOptionItem.Create(Id + 12, "LichCanVent", true, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Lich]);
-        // SoulCollector.DeathMeetingTimeIncrease = IntegerOptionItem.Create(Id + 13, "DeathMeetingTimeIncrease", new(0, 120, 1), 0, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.SoulCollector])
-        //     .SetValueFormat(OptionFormat.Seconds);
+        // Bind to SoulCollector setting
+        _ = IntegerOptionItem.Create(15313, "DeathMeetingTimeIncrease", new(0, 120, 1), 0, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.SoulCollector])
+            .SetValueFormat(OptionFormat.Seconds);
         LichHasImpostorVision = BooleanOptionItem.Create(Id + 14, "LichHasImpostorVision", true, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Lich]);
     }
 
@@ -66,7 +67,7 @@ internal class Lich : RoleBase
         LichPlayer = null;
     }
 
-    public override string GetProgressText(byte playerId, bool comms) => Utils.ColorString(Utils.GetRoleColor(CustomRoles.SoulCollector).ShadeColor(0.25f), $"({playerId.GetAbilityUseLimit()}/{LichPointsOpt.GetInt()})");
+    public override string GetProgressText(byte playerId, bool comms) => Utils.ColorString(Utils.GetRoleColor(CustomRoles.Lich).ShadeColor(0.25f), $"({playerId.GetAbilityUseLimit()}/{LichPointsOpt.GetInt()})");
 
     private void SendRPC()
     {
@@ -82,14 +83,14 @@ internal class Lich : RoleBase
     }
 
     public override string GetMark(PlayerControl seer, PlayerControl seen = null, bool isForMeeting = false)
-        => TargetId == seen.PlayerId ? Utils.ColorString(Utils.GetRoleColor(CustomRoles.Lich), "🜏") : string.Empty;
+        => TargetId == seen.PlayerId ? Utils.ColorString(Utils.GetRoleColor(CustomRoles.Lich), "§") : string.Empty;
 
     public override string GetMarkOthers(PlayerControl seer, PlayerControl target, bool isForMeeting = false)
     {
         if (_Player == null) return string.Empty;
         if (TargetId == target.PlayerId && seer.IsNeutralApocalypse() && seer.PlayerId != _Player.PlayerId && !Main.PlayerStates[seer.PlayerId].IsNecromancer)
         {
-            return Utils.ColorString(Utils.GetRoleColor(CustomRoles.Lich), "🜏");
+            return Utils.ColorString(Utils.GetRoleColor(CustomRoles.Lich), "§");
         }
         return string.Empty;
     }
