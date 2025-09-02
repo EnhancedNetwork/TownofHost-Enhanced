@@ -45,8 +45,8 @@ internal class Lich : RoleBase
         GetPassiveCharges = BooleanOptionItem.Create(Id + 11, "GetPassiveCharges", true, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Lich]);
         LichCanVent = BooleanOptionItem.Create(Id + 12, "LichCanVent", true, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Lich]);
         // Bind to SoulCollector setting
-        _ = IntegerOptionItem.Create(15313, "DeathMeetingTimeIncrease", new(0, 120, 1), 0, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.SoulCollector])
-            .SetValueFormat(OptionFormat.Seconds);
+        // _ = IntegerOptionItem.Create(15313, "DeathMeetingTimeIncrease", new(0, 120, 1), 0, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.SoulCollector])
+        //     .SetValueFormat(OptionFormat.Seconds); 
         LichHasImpostorVision = BooleanOptionItem.Create(Id + 14, "LichHasImpostorVision", true, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Lich]);
     }
 

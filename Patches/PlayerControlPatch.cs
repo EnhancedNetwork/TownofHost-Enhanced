@@ -1,5 +1,7 @@
 using AmongUs.GameOptions;
+using AmongUs.InnerNet.GameDataMessages;
 using Hazel;
+using InnerNet;
 using System;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -1689,6 +1691,25 @@ class EnterVentPatch
         }
     }
 }
+
+[HarmonyPatch(typeof(PlayerPhysics), nameof(PlayerPhysics.RpcEnterVent))]
+class RpcEnterVentPatch
+{
+    public static bool Prefix(PlayerPhysics __instance, [HarmonyArgument(0)] int id)
+    {
+        // This is identical to what the vanilla game did previously, but something seems to have changed that makes CoEnterVent not happen for host, so reverted to this
+        if (AmongUsClient.Instance.AmClient)
+        {
+            __instance.StopAllCoroutines();
+            __instance.StartCoroutine(__instance.CoEnterVent(id));
+        }
+        RpcEnterVentMessage rpcEnterVentMessage = new RpcEnterVentMessage(__instance.NetId, id);
+        AmongUsClient.Instance.LateBroadcastReliableMessage(rpcEnterVentMessage.CastFast<IGameDataMessage>());
+
+        return false;
+    }
+}
+
 [HarmonyPatch(typeof(PlayerPhysics._CoExitVent_d__48), nameof(PlayerPhysics._CoExitVent_d__48.MoveNext))]
 class CoExitVentPatch
 {
