@@ -2,6 +2,7 @@ using System;
 using TOHE.Modules;
 using TOHE.Roles.Core;
 using TOHE.Roles.Coven;
+using TOHE.Roles.Neutral;
 using static TOHE.Options;
 using static TOHE.Translator;
 using static TOHE.Utils;
@@ -85,7 +86,7 @@ internal class FortuneTeller : RoleBase
             {
                 var realTarget = GetPlayerById(VoodooMaster.Dolls[target.PlayerId].Where(x => GetPlayerById(x).IsAlive()).ToList().RandomElement());
                 SendMessage(string.Format(GetString("VoodooMasterTargetInMeeting"), realTarget.GetRealName()), Utils.GetPlayerListByRole(CustomRoles.VoodooMaster).First().PlayerId);
-                msg = string.Format(GetString("FortuneTellerCheck.TaskDone"), target.GetRealName(), GetString(realTarget.GetCustomRole().ToString()));
+                msg = string.Format(GetString("FortuneTellerCheck.TaskDone"), target.GetRealName(), GetString(realTarget.GetCustomRole().GetActualRoleName()));
             }
             else if (Illusionist.IsCovIllusioned(target.PlayerId))
             {
@@ -96,9 +97,13 @@ internal class FortuneTeller : RoleBase
                 msg = string.Format(GetString("FortuneTellerCheck.TaskDone"), target.GetRealName(), GetString(CustomRolesHelper.AllRoles.Where(role => role.IsEnable() && !role.IsAdditionRole() && role.IsCoven()).ToList().RandomElement().ToString()));
             }
             else if (target.Is(CustomRoles.Narc))
-                msg = string.Format(GetString("FortuneTellerCheck.TaskDone"), target.GetRealName(), GetString(CustomRoles.Sheriff.ToString()));
+                msg = string.Format(GetString("FortuneTellerCheck.TaskDone"), target.GetRealName(), GetString(CustomRoles.Sheriff.GetActualRoleName()));
             else
-                msg = string.Format(GetString("FortuneTellerCheck.TaskDone"), target.GetRealName(), GetString(target.GetCustomRole().ToString()));
+                msg = string.Format(GetString("FortuneTellerCheck.TaskDone"), target.GetRealName(), GetString(target.GetCustomRole().GetActualRoleName()));
+
+            if (Lich.IsCursed(target))
+                msg = string.Format(GetString("FortuneTellerCheck.TaskDone"), target.GetRealName(), GetString(CustomRoles.Lich.GetActualRoleName()));
+            
         }
         else if (RandomActiveRoles.GetBool())
         {
@@ -111,10 +116,13 @@ internal class FortuneTeller : RoleBase
             }
             targetList.Add(target.PlayerId);
             var targetRole = target.GetCustomRole();
-            if (Illusionist.IsCovIllusioned(target.PlayerId)) targetRole = CustomRolesHelper.AllRoles.Where(role => role.IsEnable() && !role.IsAdditionRole() && role.IsCrewmate()).ToList().RandomElement();
+            if (Illusionist.IsCovIllusioned(target.PlayerId)) targetRole = CustomRolesHelper.AllRoles.Where(role => role.IsEnable() && !role.IsAdditionRole() && role.IsCrewmate() && !role.IsGhostRole()).ToList().RandomElement();
             else if (Illusionist.IsNonCovIllusioned(target.PlayerId)) targetRole = CustomRolesHelper.AllRoles.Where(role => role.IsEnable() && !role.IsAdditionRole() && role.IsCoven()).ToList().RandomElement();
             else if (target.Is(CustomRoles.Narc)) targetRole = CustomRoles.Sheriff;
-            var activeRoleList = CustomRolesHelper.AllRoles.Where(role => (role.IsEnable() || role.RoleExist(countDead: true)) && role != targetRole && !role.IsAdditionRole()).ToList();
+
+            if (Lich.IsCursed(target)) targetRole = CustomRoles.Lich;
+
+            var activeRoleList = CustomRolesHelper.AllRoles.Where(role => (role.IsEnable() || role.RoleExist(countDead: true)) && role != targetRole && !role.IsAdditionRole() && !role.IsGhostRole()).ToList();
             var count = Math.Min(4, activeRoleList.Count);
             List<CustomRoles> roleList = [targetRole];
             var rand = IRandom.Instance;
@@ -141,9 +149,11 @@ internal class FortuneTeller : RoleBase
             var targetRole = target.GetCustomRole();
             string text = string.Empty;
 
-            if (Illusionist.IsCovIllusioned(target.PlayerId)) targetRole = CustomRolesHelper.AllRoles.Where(role => role.IsEnable() && !role.IsAdditionRole() && role.IsCrewmate()).ToList().RandomElement();
+            if (Illusionist.IsCovIllusioned(target.PlayerId)) targetRole = CustomRolesHelper.AllRoles.Where(role => role.IsEnable() && !role.IsAdditionRole() && role.IsCrewmate() && !role.IsGhostRole()).ToList().RandomElement();
             else if (Illusionist.IsNonCovIllusioned(target.PlayerId)) targetRole = CustomRolesHelper.AllRoles.Where(role => role.IsEnable() && !role.IsAdditionRole() && role.IsCoven()).ToList().RandomElement();
             else if (target.Is(CustomRoles.Narc)) targetRole = CustomRoles.Sheriff;
+
+            if (Lich.IsCursed(target)) targetRole = CustomRoles.Lich;
 
             text = GetTargetRoleList(completeRoleList.FirstOrDefault(x => x.Contains(targetRole)));
 

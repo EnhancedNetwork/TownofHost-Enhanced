@@ -1,5 +1,7 @@
 using AmongUs.GameOptions;
+using AmongUs.InnerNet.GameDataMessages;
 using Hazel;
+using InnerNet;
 using System;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -1333,14 +1335,25 @@ class FixedUpdateInNormalGamePatch
                 if (Illusionist.IsNonCovIllusioned(playerId))
                 {
                     var randomRole = CustomRolesHelper.AllRoles.Where(role => role.IsEnable() && !role.IsAdditionRole() && role.IsCoven()).ToList().RandomElement();
-                    blankRT.Clear().Append(randomRole.GetColoredTextByRole(GetString(randomRole.ToString())));
+                    blankRT.Clear().Append(randomRole.ToColoredString());
                     if (randomRole is CustomRoles.CovenLeader or CustomRoles.Jinx or CustomRoles.Illusionist or CustomRoles.VoodooMaster) // Roles with Ability Uses
                     {
                         blankRT.Append(randomRole.GetStaticRoleClass().GetProgressText(localPlayerId, false));
                     }
                     result.Clear().Append($"<size=1.3>{blankRT}</size>");
                 }
+                if (Lich.IsCursed(player) && Lich.IsDeceived(localPlayer, player))
+                {
+                    blankRT.Clear().Append(CustomRoles.Lich.ToColoredString());
+                    result.Clear().Append($"<size=1.3>{blankRT}</size>");
+                }
                 roleText.text = result.ToString();
+            }
+
+            if (localPlayer.IsAlive() && ExtendedPlayerControl.KnowRoleTarget(localPlayer, player) && Lich.IsCursed(player) && Lich.IsDeceived(localPlayer, player))
+            {
+                string blankRT = CustomRoles.Lich.ToColoredString();
+                roleText.text = $"<size=1.3>{blankRT}</size>";
             }
 
             if (!amongUsClient.IsGameStarted && amongUsClient.NetworkMode != NetworkModes.FreePlay)
@@ -1678,6 +1691,25 @@ class EnterVentPatch
         }
     }
 }
+
+[HarmonyPatch(typeof(PlayerPhysics), nameof(PlayerPhysics.RpcEnterVent))]
+class RpcEnterVentPatch
+{
+    public static bool Prefix(PlayerPhysics __instance, [HarmonyArgument(0)] int id)
+    {
+        // This is identical to what the vanilla game did previously, but something seems to have changed that makes CoEnterVent not happen for host, so reverted to this
+        if (AmongUsClient.Instance.AmClient)
+        {
+            __instance.StopAllCoroutines();
+            __instance.StartCoroutine(__instance.CoEnterVent(id));
+        }
+        RpcEnterVentMessage rpcEnterVentMessage = new RpcEnterVentMessage(__instance.NetId, id);
+        AmongUsClient.Instance.LateBroadcastReliableMessage(rpcEnterVentMessage.CastFast<IGameDataMessage>());
+
+        return false;
+    }
+}
+
 [HarmonyPatch(typeof(PlayerPhysics._CoExitVent_d__48), nameof(PlayerPhysics._CoExitVent_d__48.MoveNext))]
 class CoExitVentPatch
 {

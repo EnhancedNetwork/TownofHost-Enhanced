@@ -96,6 +96,7 @@ public enum CustomRPC : byte // 175/255 USED
     LightningSetGhostPlayer,
     SetConsigliere,
     SetGreedy,
+    SetInquisitor,
     BenefactorRPC,
     SetSwapperVotes,
     SetMarkedPlayer,
@@ -625,6 +626,9 @@ internal class RPCHandlerPatch
                 break;
             case CustomRPC.SetConsigliere:
                 Consigliere.ReceiveRPC(reader);
+                break;
+            case CustomRPC.SetInquisitor:
+                Inquisitor.ReceiveRPC(reader);
                 break;
             case CustomRPC.SetInvestgatorLimit:
                 Investigator.ReceiveRPC(reader);

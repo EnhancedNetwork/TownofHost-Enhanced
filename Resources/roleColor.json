@@ -89,6 +89,7 @@
   "PlagueBearer": "#e5f6b4",
   "Pestilence": "#343136",
   "SoulCollector": "#A675A1",
+  "Lich": "#677052",
   "Death": "#644661",
   "Baker": "#bf9f7a",
   "Famine": "#83461c",
@@ -249,5 +250,7 @@
   "Revenant": "#cc9329",
   "Runner": "#fffb00",
   "Requiter": "#ffc0cb",
-  "Narc": "#1e90ff"
+  "Narc": "#1e90ff",
+  "Rat": "#696969",
+  "Inquisitor": "#ab1822"
 }

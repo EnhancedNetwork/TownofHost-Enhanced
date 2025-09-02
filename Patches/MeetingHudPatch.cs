@@ -134,6 +134,11 @@ class CheckForEndVotingPatch
                         pc.GetRoleClass()?.OnVote(pc, voteTarget); // Role has voted
                         voteTarget.GetRoleClass()?.OnVoted(voteTarget, pc); // Role is voted
 
+                        if (Lich.IsCursed(pc))
+                        {
+                            Lich.OnTargetVote(pc);
+                        }
+
                         if (voteTarget.Is(CustomRoles.Aware))
                         {
                             Aware.OnVoted(pc, pva);
@@ -1047,17 +1052,20 @@ class MeetingHudStartPatch
         if (Eavesdropper.IsEnable)
             Eavesdropper.GetMessage();
 
-        // Add Mimic msg
-        if (MimicMsg != "")
-        {
-            MimicMsg = GetString("MimicDeadMsg") + "\n" + MimicMsg;
+        if (Rat.IsEnable)
+            Rat.GetMessage();
 
-            var isImpostorTeamList = Main.AllPlayerControls.Where(x => x.GetCustomRole().IsImpostorTeam()).ToArray();
-            foreach (var imp in isImpostorTeamList)
+        // Add Mimic msg
+            if (MimicMsg != "")
             {
-                AddMsg(MimicMsg, imp.PlayerId, ColorString(GetRoleColor(CustomRoles.Mimic), GetString("Mimic").ToUpper()));
+                MimicMsg = GetString("MimicDeadMsg") + "\n" + MimicMsg;
+
+                var isImpostorTeamList = Main.AllPlayerControls.Where(x => x.GetCustomRole().IsImpostorTeam()).ToArray();
+                foreach (var imp in isImpostorTeamList)
+                {
+                    AddMsg(MimicMsg, imp.PlayerId, ColorString(GetRoleColor(CustomRoles.Mimic), GetString("Mimic").ToUpper()));
+                }
             }
-        }
 
         msgToSend.Do(x => Logger.Info($"To:{x.Item2} {x.Item3} => {x.Item1}", "Skill Notice OnMeeting Start"));
 
@@ -1174,14 +1182,24 @@ class MeetingHudStartPatch
                 if (Illusionist.IsNonCovIllusioned(targetId))
                 {
                     var randomRole = CustomRolesHelper.AllRoles.Where(role => role.IsEnable() && !role.IsAdditionRole() && role.IsCoven()).ToList().RandomElement();
-                    blankRT.Clear().Append(ColorString(GetRoleColor(randomRole), GetString(randomRole.ToString())));
+                    blankRT.Clear().Append(ColorString(GetRoleColor(randomRole), GetString(randomRole.GetActualRoleName())));
                     if (randomRole.GetStaticRoleClass().IsMethodOverridden("GetProgressText")) // Roles with Ability Uses
                     {
                         blankRT.Append(randomRole.GetStaticRoleClass().GetProgressText(playerId, false));
                     }
                     result.Clear().Append($"<size={roleTextMeeting.fontSize}>{blankRT}</size>");
                 }
+                if (Lich.IsCursed(target) && Lich.IsDeceived(player, target))
+                {
+                    blankRT.Clear().Append(CustomRoles.Lich.ToColoredString());
+                    result.Clear().Append($"<size={roleTextMeeting.fontSize}>{blankRT}</size>");
+                }
                 roleTextMeeting.text = result.ToString();
+            }
+            if (player.IsAlive() && !target.AmOwner && ExtendedPlayerControl.KnowRoleTarget(player, target) && Lich.IsCursed(target) && Lich.IsDeceived(player, target))
+            {
+                string blankRT = CustomRoles.Lich.ToColoredString();
+                roleTextMeeting.text = $"<size={roleTextMeeting.fontSize}>{blankRT}</size>";
             }
 
             var suffixBuilder = new StringBuilder(32);
