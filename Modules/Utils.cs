@@ -263,7 +263,7 @@ public static class Utils
         }
         else if (player.IsNonHostModdedClient())
         {
-            var msg = new RpcKillFlash(PlayerControl.LocalPlayer.NetId, playKillSound);
+            var msg = new RpcKillFlash(PlayerControl.LocalPlayer.NetId, player.PlayerId, playKillSound);
             RpcUtils.LateBroadcastReliableMessage(msg);
         }
         else if (!ReactorCheck) player.ReactorFlash(0f); //Reactor flash for vanilla

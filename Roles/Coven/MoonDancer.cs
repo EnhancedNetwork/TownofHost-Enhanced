@@ -59,6 +59,7 @@ internal class MoonDancer : CovenManager
     {
         BatonPassList[playerId] = [];
         BlastedOffList[playerId] = [];
+        GetPlayerById(playerId)?.AddDoubleTrigger();
     }
     private void SyncBlastList()
     {
