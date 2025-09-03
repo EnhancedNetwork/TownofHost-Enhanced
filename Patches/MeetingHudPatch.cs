@@ -429,7 +429,8 @@ class CheckForEndVotingPatch
         var exileId = exiledPlayer.PlayerId;
         if (exileId is < 0 or > 254) return;
 
-        CustomSoundsManager.RPCPlayCustomSoundAll("Dramatic");
+        if (Options.PlayEjectSfx.GetBool())
+            CustomSoundsManager.RPCPlayCustomSoundAll("Dramatic");
 
         var realName = Main.AllPlayerNames[exiledPlayer.PlayerId];
         Main.LastVotedPlayer = realName;
@@ -1307,7 +1308,7 @@ class MeetingHudStartPatch
 
             var sb = new StringBuilder();
 
-            //pva.NameText.text = target.GetRealName(isMeeting: true);
+            pva.NameText.text = target.GetRealName(isMeeting: true);
             pva.NameText.text = pva.NameText.text.ApplyNameColorData(seer, target, true);
 
             //if (seer.KnowDeathReason(target))
@@ -1350,6 +1351,9 @@ class MeetingHudStartPatch
 
             pva.NameText.text += sb.ToString();
             pva.ColorBlindName.transform.localPosition -= new Vector3(1.35f, 0f, 0f);
+
+
+            pva.TargetPlayerId = target.PlayerId;
         }
 
         __instance.SortButtons();

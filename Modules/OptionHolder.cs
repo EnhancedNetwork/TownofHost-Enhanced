@@ -288,6 +288,7 @@ public static class Options
     public static OptionItem NumImpostorsHnS;
 
     // Confirm Ejection
+    public static OptionItem PlayEjectSfx;
     public static OptionItem CEMode;
     public static OptionItem ShowImpRemainOnEject;
     public static OptionItem ShowNKRemainOnEject;
@@ -1368,6 +1369,11 @@ public static class Options
         TextOptionItem.Create(10000024, "MenuTitle.Ejections", TabGroup.ModSettings)
             .SetGameMode(CustomGameMode.Standard)
             .SetColor(new Color32(255, 238, 232, byte.MaxValue));
+        
+        PlayEjectSfx = BooleanOptionItem.Create(60439, "PlayEjectSfx", false, TabGroup.ModSettings, false)
+            .SetGameMode(CustomGameMode.Standard)
+            .SetColor(new Color32(255, 238, 232, byte.MaxValue));
+        
         CEMode = StringOptionItem.Create(60440, "ConfirmEjectionsMode", ConfirmEjectionsMode, 2, TabGroup.ModSettings, false)
             .SetGameMode(CustomGameMode.Standard)
             .SetHeader(true)

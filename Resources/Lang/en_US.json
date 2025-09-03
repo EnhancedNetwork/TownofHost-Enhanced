@@ -1365,6 +1365,7 @@
   "KillFlashDuration": "Kill-Flash Duration",
   "NonCrewRandomCommonTasks": "Assign Random Common Tasks to Non-Crews",
   "UniqueNeutralRevealScreen": "Each <color=#7f8c8d>Neutral</color> Role Has Its Own Reveal Screen",
+  "PlayEjectSfx": "Play Eject Sound Effect",
   "ConfirmEjectionsMode": "Confirm Ejections Mode",
   "ConfirmEjections.None": "None",
   "ConfirmEjections.Team": "Team",
