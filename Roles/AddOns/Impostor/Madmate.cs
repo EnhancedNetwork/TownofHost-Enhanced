@@ -126,6 +126,7 @@ public static class Madmate
             (pc.Is(CustomRoles.Judge) && (!forGangster ? !JudgeCanBeMadmate.GetBool() : !Gangster.JudgeCanBeMadmate.GetBool())) ||
             (pc.Is(CustomRoles.Marshall) && (!forGangster ? !MarshallCanBeMadmate.GetBool() : !Gangster.MarshallCanBeMadmate.GetBool())) ||
             (pc.Is(CustomRoles.Retributionist) && (!forGangster ? !RetributionistCanBeMadmate.GetBool() : !Gangster.RetributionistCanBeMadmate.GetBool())) ||
-            (pc.Is(CustomRoles.Overseer) && (!forGangster ? !OverseerCanBeMadmate.GetBool() : !Gangster.OverseerCanBeMadmate.GetBool()));
+            (pc.Is(CustomRoles.Overseer) && (!forGangster ? !OverseerCanBeMadmate.GetBool() : !Gangster.OverseerCanBeMadmate.GetBool())) ||
+            (pc.IsPlayerCoven() && !forGangster && !Gangster.CovenCanBeMadmate.GetBool());
     }
 }

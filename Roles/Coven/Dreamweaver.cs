@@ -191,6 +191,13 @@ internal class Dreamweaver : CovenManager
             }
             else
             {
+                foreach (var target in InsomniaList[player])
+                {
+                    var targ = GetPlayerById(target);
+                    targ.SetAbilityUseLimit(0);
+                    targ.SetKillCooldownV3(999);
+                    targ.ResetKillCooldown();
+                }
                 foreach (var target in DreamwovenList[player])
                 {
                     SetInsomnia(GetPlayerById(player), GetPlayerById(target));
