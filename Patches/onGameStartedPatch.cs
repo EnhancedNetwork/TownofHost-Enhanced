@@ -349,6 +349,7 @@ internal class StartGameHostPatch
                         else
                         {
                             thiz.SendLateRejection(clientData.Id, DisconnectReasons.ClientTimeout);
+                            Logger.Info($"{clientData.Id} timed out.", "StartGameHost");
                             clientData.IsReady = true;
                             thiz.OnPlayerLeft(clientData, DisconnectReasons.ClientTimeout);
                         }

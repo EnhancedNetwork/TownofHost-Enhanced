@@ -265,6 +265,10 @@ internal class Arsonist : RoleBase
                 }
             }
         }
+        else
+        {
+            Logger.Warn("Arsonist Vented when IsGameStarted false", "Arsonist Ignite");
+        }
     }
 
     public static bool CanIgniteAnytime() => ArsonistCanIgniteAnytimeOpt == null ? false : ArsonistCanIgniteAnytimeOpt.GetBool();

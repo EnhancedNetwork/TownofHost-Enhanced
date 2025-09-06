@@ -158,7 +158,7 @@ internal class Lawyer : RoleBase
         }
     }
 
-    private bool IsTarget(byte playerId) => TargetId == playerId;
+    public bool IsTarget(byte playerId) => TargetId == playerId;
     public byte GetTargetId() => TargetId;
 
     public override bool HasTasks(NetworkedPlayerInfo player, CustomRoles role, bool ForRecompute)

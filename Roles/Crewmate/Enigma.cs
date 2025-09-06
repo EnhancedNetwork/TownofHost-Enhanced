@@ -1,3 +1,4 @@
+using TOHE.Roles.Neutral;
 using static TOHE.MeetingHudStartPatch;
 using static TOHE.Options;
 using static TOHE.Translator;
@@ -447,12 +448,15 @@ internal class Enigma : RoleBase
             switch (this.ClueStage)
             {
                 case 1:
+                    if (Lich.IsCursed(killer)) return GetString("EnigmaClueRole2");
                     if (killer.IsPlayerImpostorTeam()) return GetString("EnigmaClueRole1");
                     if (killer.IsPlayerNeutralTeam()) return GetString("EnigmaClueRole2");
                     if (killer.IsPlayerCovenTeam()) return GetString("EnigmaClueRole5");
                     return GetString("EnigmaClueRole3");
                 case 2:
+                    if (Lich.IsCursed(killer) && showStageClue) return string.Format(GetString("EnigmaClueRole4"), CustomRoles.Lich.ToColoredString());
                     if (showStageClue) return string.Format(GetString("EnigmaClueRole4"), killer.GetDisplayRoleAndSubName(killer, false, false));
+                    if (Lich.IsCursed(killer)) return GetString("EnigmaClueRole2");
                     if (killer.IsPlayerImpostorTeam()) return GetString("EnigmaClueRole1");
                     if (killer.IsPlayerNeutralTeam()) return GetString("EnigmaClueRole2");
                     if (killer.IsPlayerCovenTeam()) return GetString("EnigmaClueRole5");

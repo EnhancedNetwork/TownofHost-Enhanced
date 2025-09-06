@@ -1,3 +1,4 @@
+using System;
 using Hazel;
 using InnerNet;
 using TOHE.Modules;
@@ -17,6 +18,52 @@ public enum GameDataTag : byte
     ConsoleDeclareClientPlatformFlag = 205,
     PS4RoomRequest = 206,
     XboxDeclareXuid = 207,
+}
+
+[HarmonyPatch(typeof(InnerNetClient), nameof(InnerNetClient.HandleMessage))]
+class ClientHandleMessagePatch
+{
+    public static void Prefix(InnerNetClient __instance, MessageReader reader, SendOption sendOption)
+    {
+        try
+        {
+            if (reader.Tag == 3) // Tags.RemoveGame = 3
+            {
+                DisconnectReasons disconnectReasons = DisconnectReasons.ServerRequest;
+                if (reader.Position < reader.Length)
+                {
+                    disconnectReasons = (DisconnectReasons)reader.ReadByte();
+                }
+
+                var extraBytes = "";
+                while (reader.Position < reader.Length)
+                {
+                    extraBytes += reader.ReadByte().ToString();
+                    extraBytes += " ";
+                    if (extraBytes.Length > 32) break;
+                }
+                if (extraBytes == "") extraBytes = "None";
+
+                Logger.Info($"{__instance.ClientId} was disconnected on client-side / Reason: {disconnectReasons} / Junk Bytes: {extraBytes}", "ClientHandleMessagePatch Tag3");
+
+                __instance.EnqueueDisconnect(disconnectReasons, null);
+
+                return;
+            }
+            else if (reader.Tag == 4)
+            {
+                Logger.Info($"{__instance.ClientId} was disconnected by server.", "ClientHandleMessagePatch Tag4");
+            }
+            else
+            {
+                Logger.Info($"Received message with code {reader.Tag} from {__instance.ClientId}.", "ServerHandleMessagePatch");
+            }
+        }
+        catch (Exception e)
+        {
+            // Logger.Error($"Couldn't get disconnect info / Error: {e.Message}", "ClientHandleMessagePatch");
+        }
+    }
 }
 
 [HarmonyPatch(typeof(InnerNetClient), nameof(InnerNetClient.HandleGameDataInner))]

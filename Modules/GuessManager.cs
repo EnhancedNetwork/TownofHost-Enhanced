@@ -988,6 +988,12 @@ public static class GuessManager
                         listOfRoles.Add(CustomRoles.Death);
                 }
 
+                if (CustomRoles.Lich.IsEnable())
+                {
+                    if (!listOfRoles.Contains(CustomRoles.Death))
+                        listOfRoles.Add(CustomRoles.Death);
+                }
+
                 if (CustomRoles.Baker.IsEnable())
                 {
                     if (!listOfRoles.Contains(CustomRoles.Famine))

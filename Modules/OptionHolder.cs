@@ -56,6 +56,7 @@ public static class Options
             3 => CustomGameMode.HidenSeekTOHE, // HidenSeekTOHE must be after other game modes
             _ => CustomGameMode.Standard
         };
+    public static int prevGameMode = 0;
     public static readonly string[] gameModes =
     [
         "Standard",
@@ -287,6 +288,7 @@ public static class Options
     public static OptionItem NumImpostorsHnS;
 
     // Confirm Ejection
+    public static OptionItem PlayEjectSfx;
     public static OptionItem CEMode;
     public static OptionItem ShowImpRemainOnEject;
     public static OptionItem ShowNKRemainOnEject;
@@ -366,6 +368,7 @@ public static class Options
     public static OptionItem DisableShieldAnimations;
     public static OptionItem DisableKillAnimationOnGuess;
     public static OptionItem DisableVanillaRoles;
+    public static OptionItem DisableHiddenRoles;
     public static OptionItem DisableTaskWin;
     public static OptionItem DisableTaskWinIfAllCrewsAreDead;
     public static OptionItem DisableTaskWinIfAllCrewsAreConverted;
@@ -717,7 +720,7 @@ public static class Options
     private static System.Collections.IEnumerator CoLoadOptions()
     {
         //#######################################
-        // 31800 last id for roles/add-ons (Next use 31900)
+        // 32100 last id for roles/add-ons (Next use 32200)
         // Limit id for roles/add-ons --- "59999"
         //#######################################
 
@@ -1366,6 +1369,11 @@ public static class Options
         TextOptionItem.Create(10000024, "MenuTitle.Ejections", TabGroup.ModSettings)
             .SetGameMode(CustomGameMode.Standard)
             .SetColor(new Color32(255, 238, 232, byte.MaxValue));
+        
+        PlayEjectSfx = BooleanOptionItem.Create(60439, "PlayEjectSfx", false, TabGroup.ModSettings, false)
+            .SetGameMode(CustomGameMode.Standard)
+            .SetColor(new Color32(255, 238, 232, byte.MaxValue));
+        
         CEMode = StringOptionItem.Create(60440, "ConfirmEjectionsMode", ConfirmEjectionsMode, 2, TabGroup.ModSettings, false)
             .SetGameMode(CustomGameMode.Standard)
             .SetHeader(true)
@@ -1666,6 +1674,9 @@ public static class Options
             .SetGameMode(CustomGameMode.Standard)
             .SetColor(new Color32(255, 153, 153, byte.MaxValue));
         DisableVanillaRoles = BooleanOptionItem.Create(60562, "DisableVanillaRoles", true, TabGroup.ModSettings, false)
+            .SetGameMode(CustomGameMode.Standard)
+            .SetColor(new Color32(255, 153, 153, byte.MaxValue));
+        DisableHiddenRoles = BooleanOptionItem.Create(60568, "DisableHiddenRoles", false, TabGroup.ModSettings, false)
             .SetGameMode(CustomGameMode.Standard)
             .SetColor(new Color32(255, 153, 153, byte.MaxValue));
         DisableTaskWin = BooleanOptionItem.Create(60563, "DisableTaskWin", false, TabGroup.ModSettings, false)

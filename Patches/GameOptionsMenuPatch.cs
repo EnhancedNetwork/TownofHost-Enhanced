@@ -682,13 +682,15 @@ public static class StringOptionPatch
             {
                 if (Options.GameMode.GetInt() == 3 && !GameStates.IsHideNSeek) //Hide And Seek
                 {
-                    Options.GameMode.SetValue(0);
+                    if (Options.prevGameMode == 2) Options.GameMode.SetValue(0);
+                    else Options.GameMode.SetValue(2);
                 }
                 else if (Options.GameMode.GetInt() != 3 && GameStates.IsHideNSeek)
                 {
                     Options.GameMode.SetValue(3);
                 }
                 GameOptionsMenuPatch.ReOpenSettings(item.Name != "GameMode" ? 1 : 4);
+                Options.prevGameMode = Options.GameMode.GetInt();
             }
 
             NotificationPopperPatch.AddSettingsChangeMessage(index, item, false);

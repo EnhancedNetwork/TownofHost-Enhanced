@@ -83,9 +83,9 @@ internal class Spy : RoleBase
         if (killer == null || target == null) return false;
         if (killer.PlayerId == target.PlayerId) return true;
 
-        if (killer.GetAbilityUseLimit() > 0 && killer.IsAlive())
+        if (target.GetAbilityUseLimit() > 0 && target.IsAlive())
         {
-            killer.RpcRemoveAbilityUse();
+            target.RpcRemoveAbilityUse();
 
             SpyRedNameList[killer.PlayerId] = GetTimeStamp();
             SendRPC(killer.PlayerId);

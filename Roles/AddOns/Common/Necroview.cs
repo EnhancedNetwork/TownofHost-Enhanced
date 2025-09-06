@@ -1,3 +1,4 @@
+using TOHE.Roles.Neutral;
 using static TOHE.Options;
 
 namespace TOHE.Roles.AddOns.Common;
@@ -23,19 +24,21 @@ public class Necroview : IAddon
     {
         var customRole = target.GetCustomRole();
 
+        if (Lich.IsCursed(target)) return "7f8c8d";
+
         foreach (var SubRole in target.GetCustomSubRoles())
-        {
-            if (SubRole is CustomRoles.Charmed
-                or CustomRoles.Infected
-                or CustomRoles.Contagious
-                or CustomRoles.Egoist
-                or CustomRoles.Recruit
-                or CustomRoles.Soulless)
-                return "7f8c8d";
-            if (SubRole is CustomRoles.Admired
-                or CustomRoles.Narc)
-                return Main.roleColors[CustomRoles.Crewmate];
-        }
+            {
+                if (SubRole is CustomRoles.Charmed
+                    or CustomRoles.Infected
+                    or CustomRoles.Contagious
+                    or CustomRoles.Egoist
+                    or CustomRoles.Recruit
+                    or CustomRoles.Soulless)
+                    return "7f8c8d";
+                if (SubRole is CustomRoles.Admired
+                    or CustomRoles.Narc)
+                    return Main.roleColors[CustomRoles.Crewmate];
+            }
 
         if ((customRole.IsImpostorTeamV2() || customRole.IsMadmate() || target.Is(CustomRoles.Madmate)) && !target.Is(CustomRoles.Admired))
         {
