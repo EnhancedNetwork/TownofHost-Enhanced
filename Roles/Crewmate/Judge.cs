@@ -193,7 +193,6 @@ internal class Judge : RoleBase
                     return true;
                 }
                 else if (target.IsTransformedNeutralApocalypse()) judgeSuicide = true;
-                else if (target.Is(CustomRoles.Trickster)) judgeSuicide = true;
                 else if (Medic.IsProtected(target.PlayerId) && !Medic.GuesserIgnoreShield.GetBool())
                 {
                     pc.ShowInfoMessage(isUI, GetString("GuessShielded"));
@@ -205,6 +204,7 @@ internal class Judge : RoleBase
                     return true;
                 }
                 else if (pc.IsAnySubRole(x => x.IsConverted())) judgeSuicide = false;
+                else if (target.Is(CustomRoles.Trickster)) judgeSuicide = true;
                 else if (target.Is(CustomRoles.Rascal)) judgeSuicide = false;
                 else if (target.Is(CustomRoles.Narc)) judgeSuicide = true;
                 else if ((target.Is(CustomRoles.Sidekick) || target.Is(CustomRoles.Recruit)) && CanTrialSidekick.GetBool()) judgeSuicide = false;
