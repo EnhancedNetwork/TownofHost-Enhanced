@@ -4184,5 +4184,33 @@
   "InquisitorDiesOnMiss": "Die After Killing Non-Heretic",
   "InquisitorHereticDeadInMeeting": "A Heretic died in meeting.",
   "InquisitorTargets": "Heretics: {0}",
-  "InquisitorTargetsLeft": "Alive {0}/{1}"
+  "InquisitorTargetsLeft": "Alive {0}/{1}",
+
+  "MenuTitle.Draft": "Draft Mode",
+  "UseDraftMode": "Enable Draft Mode",
+  "DraftableCount": "Number of draftable roles per player",
+  "RoleBucket_0": "Bucket 1",
+  "RoleBucket_1": "Bucket 2",
+  "RoleBucket_2": "Bucket 3",
+  "RoleBucket_3": "Bucket 4",
+  "RoleBucket_4": "Bucket 5",
+  "RoleBucket_5": "Bucket 6",
+  "RoleBucket_6": "Bucket 7",
+  "RoleBucket_7": "Bucket 8",
+  "RoleBucket_8": "Bucket 9",
+  "RoleBucket_9": "Bucket 10",
+  "RoleBucket_10": "Bucket 11",
+  "RoleBucket_11": "Bucket 12",
+  "RoleBucket_12": "Bucket 13",
+  "RoleBucket_13": "Bucket 14",
+  "RoleBucket_14": "Bucket 15",
+
+  "StartDraftNoAccess": "You do not have acces to draft management commands",
+  "StartDraftWrongGameMode": "Can only start draft in Standard game mode",
+  "NoCurrentDraft": "No Current Draft",
+  "InvalidDraftSelection": "Invalid Draft Selection",
+
+  "DraftPoolMessage": "Your Draft Pool:\n{0}\nTo draft a role, do /draft [number] or /draft [role]",
+  "DraftSelectionCleared": "Draft Selection Cleared",
+  "DraftSelection": "Role: {0} selected"
 }

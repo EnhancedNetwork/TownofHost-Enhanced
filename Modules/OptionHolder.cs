@@ -3,6 +3,7 @@ using TOHE.Modules;
 using TOHE.Roles.AddOns;
 using TOHE.Roles.AddOns.Impostor;
 using TOHE.Roles.Core;
+using TOHE.Roles.Core.DraftAssign;
 using UnityEngine;
 
 namespace TOHE;
@@ -67,7 +68,15 @@ public static class Options
         "Hide&SeekTOHE", // HidenSeekTOHE must be after other game modes
     ];
 
-
+    public static OptionItem DraftMode;
+    public static OptionItem DraftableCount;
+    public static readonly string[] roleBuckets =
+    [
+        .. EnumHelper.GetAllValues<RoleBucket>().Where(x => x != RoleBucket.None).Select(x => x.ToString()),
+        .. CustomRolesHelper.AllRoles.Where(role => role.IsBucketableRole()).Select(x => x.ToString()),
+    ];
+    public static OptionItem[] draftBuckets = new OptionItem[15];
+    public static string ConvertRoleBucketToString(RoleBucket bucket) => $"RoleBucket.{bucket}";
 
     // 役職数・確率
     public static Dictionary<CustomRoles, int> roleCounts;
@@ -1363,6 +1372,28 @@ public static class Options
             .SetGameMode(CustomGameMode.HidenSeekTOHE)
             .SetValueFormat(OptionFormat.Players);
 
+        // Draft Mode
+        TextOptionItem.Create(10000033, "MenuTitle.Draft", TabGroup.ModSettings)
+            .SetGameMode(CustomGameMode.Standard)
+            .SetColor(new Color32(255, 238, 232, byte.MaxValue));
+        
+        DraftMode = BooleanOptionItem.Create(61000, "UseDraftMode", true, TabGroup.ModSettings, false)
+            .SetGameMode(CustomGameMode.Standard)
+            .SetHeader(true);
+
+        DraftableCount = IntegerOptionItem.Create(61001, "DraftableCount", new(1, 10, 1), 3, TabGroup.ModSettings, false)
+            .SetGameMode(CustomGameMode.Standard)
+            .SetParent(DraftMode);
+
+        // TODO: make role bucket/role text role colored
+        for (int i = 0; i < 15; i++)
+        {
+            draftBuckets[i] = StringOptionItem.Create(61002 + i, $"RoleBucket_{i}", roleBuckets, 0, TabGroup.ModSettings, false, useGetString: true)
+                .SetParent(DraftMode)
+                .SetGameMode(CustomGameMode.Standard);
+        }
+
+        Logger.Info("Draft Bucket Options set up", "OptionsHolder.CoLoadOptions");
 
 
         // Confirm Ejections Mode
