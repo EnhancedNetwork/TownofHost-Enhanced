@@ -2581,7 +2581,7 @@
   "updatePleaseWait": "請稍後......",
   "updateManually": "更新失敗，請嘗試更換網路重試或手動更新。",
   "updateInProgress": "更新中......",
-  "deletingFiles": "删除更新文件...",
+  "deletingFiles": "刪除更新文件中...",
   "updateRestart": "更新好啦!\n請重啟遊戲生效",
   "CanNotJoinPublicRoomNoLatest": "我們有一個重要的更新，請更新本模組\n否則您無法加入公開房間",
   "ModBrokenMessage": "模組檔案損壞，請重新安裝本模組",
