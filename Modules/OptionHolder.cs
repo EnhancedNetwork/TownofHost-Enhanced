@@ -1375,9 +1375,12 @@ public static class Options
             .SetValueFormat(OptionFormat.Players);
 
         // Draft Mode
-        TextOptionItem.Create(10000033, "MenuTitle.Draft", TabGroup.ModSettings)
+        if (PlayerControl.LocalPlayer.FriendCode.GetDevUser().IsDev)
+        {
+            TextOptionItem.Create(10000033, "MenuTitle.Draft", TabGroup.ModSettings)
             .SetGameMode(CustomGameMode.Standard)
             .SetColor(new Color32(255, 238, 232, byte.MaxValue));
+        }
         
         DraftMode = BooleanOptionItem.Create(61000, "UseDraftMode", true, TabGroup.ModSettings, false)
             .SetGameMode(CustomGameMode.Standard)
@@ -1395,18 +1398,16 @@ public static class Options
         DraftBuckets = MultipleStringOptionItem.Create(61003, 225, BucketCount.GetInt()+5, "RoleBucket", roleBuckets, 0, TabGroup.ModSettings, false, useGetString: false)
             .SetParent(BucketCount)
             .SetGameMode(CustomGameMode.Standard);
-        // for (int i = 0; i < 15; i++)
-        // {
-        //     draftBuckets[i] = StringOptionItem.Create(61002 + i, $"RoleBucket_{i}", roleBuckets, 0, TabGroup.ModSettings, false, useGetString: false)
-        //         .SetParent(DraftMode)
-        //         .SetGameMode(CustomGameMode.Standard);
-        // }
 
         Logger.Info("Draft Bucket Options set up", "OptionsHolder.CoLoadOptions");
 
+        if (!PlayerControl.LocalPlayer.FriendCode.GetDevUser().IsDev)
+        {
+            DraftMode.SetHidden(true);
+        }
 
         // Confirm Ejections Mode
-        TextOptionItem.Create(10000024, "MenuTitle.Ejections", TabGroup.ModSettings)
+            TextOptionItem.Create(10000024, "MenuTitle.Ejections", TabGroup.ModSettings)
             .SetGameMode(CustomGameMode.Standard)
             .SetColor(new Color32(255, 238, 232, byte.MaxValue));
         

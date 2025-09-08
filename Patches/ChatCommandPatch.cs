@@ -1638,6 +1638,10 @@ internal class ChatCommands
                     Logger.Info("Game Starting", "ChatCommand");
                     break;
                 case "/draft":
+                    if (!PlayerControl.LocalPlayer.FriendCode.GetDevUser().IsDev)
+                    {
+                        break;
+                    }
                     canceled = true;
                     if (!GameStates.IsLobby)
                     {
@@ -3651,6 +3655,10 @@ internal class ChatCommands
                 GameManager.Instance.LogicFlow.CheckEndCriteria();
                 break;
             case "/draft":
+                if (!PlayerControl.LocalPlayer.FriendCode.GetDevUser().IsDev)
+                {
+                    break;
+                }
                 if (!GameStates.IsLobby)
                 {
                     Utils.SendMessage(GetString("Message.OnlyCanUseInLobby"), player.PlayerId);
