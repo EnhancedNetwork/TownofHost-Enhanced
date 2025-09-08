@@ -56,7 +56,7 @@ class ClientHandleMessagePatch
             }
             else
             {
-                Logger.Info($"Received message with code {reader.Tag} from {__instance.ClientId}.", "ServerHandleMessagePatch");
+                // Logger.Info($"Received message with code {reader.Tag} from {__instance.ClientId}.", "ClientHandleMessagePatch");
             }
         }
         catch (Exception e)
