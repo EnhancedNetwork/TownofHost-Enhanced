@@ -70,11 +70,13 @@ public static class Options
 
     public static OptionItem DraftMode;
     public static OptionItem DraftableCount;
+    public static OptionItem BucketCount;
     public static readonly string[] roleBuckets =
     [
-        .. EnumHelper.GetAllValues<RoleBucket>().Where(x => x != RoleBucket.None).Select(x => x.ToString()),
-        .. CustomRolesHelper.AllRoles.Where(role => role.IsBucketableRole()).Select(x => x.ToString()),
+        .. EnumHelper.GetAllValues<RoleBucket>().Where(x => x != RoleBucket.None).Select(x => x.ToColoredString()),
+        .. CustomRolesHelper.AllRoles.Where(role => role.IsBucketableRole()).Select(x => x.ToColoredString()),
     ];
+    public static MultipleStringOptionItem DraftBuckets;
     public static OptionItem[] draftBuckets = new OptionItem[15];
     public static string ConvertRoleBucketToString(RoleBucket bucket) => $"RoleBucket.{bucket}";
 
@@ -1385,13 +1387,20 @@ public static class Options
             .SetGameMode(CustomGameMode.Standard)
             .SetParent(DraftMode);
 
-        // TODO: make role bucket/role text role colored
-        for (int i = 0; i < 15; i++)
-        {
-            draftBuckets[i] = StringOptionItem.Create(61002 + i, $"RoleBucket_{i}", roleBuckets, 0, TabGroup.ModSettings, false, useGetString: true)
-                .SetParent(DraftMode)
-                .SetGameMode(CustomGameMode.Standard);
-        }
+        BucketCount = IntegerOptionItem.Create(61002, "BucketCount", new(5, 225, 1), 15, TabGroup.ModSettings, false)
+            .SetGameMode(CustomGameMode.Standard)
+            .SetParent(DraftMode)
+            .RegisterUpdateValueEvent((obj, args) => BucketCountChanged(args));
+
+        DraftBuckets = MultipleStringOptionItem.Create(61003, 225, BucketCount.GetInt()+5, "RoleBucket", roleBuckets, 0, TabGroup.ModSettings, false, useGetString: false)
+            .SetParent(BucketCount)
+            .SetGameMode(CustomGameMode.Standard);
+        // for (int i = 0; i < 15; i++)
+        // {
+        //     draftBuckets[i] = StringOptionItem.Create(61002 + i, $"RoleBucket_{i}", roleBuckets, 0, TabGroup.ModSettings, false, useGetString: false)
+        //         .SetParent(DraftMode)
+        //         .SetGameMode(CustomGameMode.Standard);
+        // }
 
         Logger.Info("Draft Bucket Options set up", "OptionsHolder.CoLoadOptions");
 
@@ -2294,6 +2303,11 @@ public static class Options
 
         CustomRoleSpawnChances.Add(role, spawnOption);
         CustomRoleCounts.Add(role, countOption);
+    }
+    static void BucketCountChanged(OptionItem.UpdateValueEventArgs args)
+    {
+        DraftBuckets.Count = args.CurrentValue + 5;
+        DraftBuckets.Refresh();
     }
     public class OverrideTasksData
     {

@@ -186,7 +186,7 @@ internal class Pelican : RoleBase
                 tar.SetDeathReason(PlayerState.DeathReason.Eaten);
                 Main.PlayerStates[target.PlayerId].SetDead();
                 MurderPlayerPatch.AfterPlayerDeathTasks(killer, target, true);
-                Logger.Info($"{killer.GetRealName()} 消化了 {target.GetRealName()}", "Pelican");
+                Logger.Info($"{killer.GetRealName()} digested {target.GetRealName()}", "Pelican");
             }
             eatenList[pc.Key].Clear();
         }

@@ -820,12 +820,16 @@ public abstract class GameEndPredicate
             .Where(x => x.Is(Custom_Team.Crewmate) && x.GetCustomRole().GetRoleTypes() is RoleTypes.Crewmate or RoleTypes.Engineer or RoleTypes.Scientist or RoleTypes.Noisemaker or RoleTypes.Tracker or RoleTypes.CrewmateGhost or RoleTypes.GuardianAngel)
             .All(x => x.GetCustomSubRoles().Any(y => y.IsConverted()))) return false;
 
-        if (GameData.Instance.TotalTasks <= GameData.Instance.CompletedTasks)
+        // Only task win if crewmates have tasks
+        if (Main.AllPlayerControls.All(x => x.Is(Custom_Team.Crewmate) && x.myTasks.ToArray().All(y => y.IsComplete)))
         {
-            reason = GameOverReason.CrewmatesByTask;
-            ResetAndSetWinner(CustomWinner.Crewmate);
-            Logger.Info($"Game End By Completed All Tasks", "CheckGameEndBySabotage");
-            return true;
+            if (GameData.Instance.TotalTasks <= GameData.Instance.CompletedTasks)
+            {
+                reason = GameOverReason.CrewmatesByTask;
+                ResetAndSetWinner(CustomWinner.Crewmate);
+                Logger.Info($"Game End By Completed All Tasks", "CheckGameEndBySabotage");
+                return true;
+            }
         }
         return false;
     }

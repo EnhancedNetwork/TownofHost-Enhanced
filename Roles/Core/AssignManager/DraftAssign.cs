@@ -10,6 +10,8 @@ using TOHE.Roles.Impostor;
 using TOHE.Roles.Neutral;
 using TOHE.Roles.Vanilla;
 
+using static TOHE.Translator;
+
 namespace TOHE.Roles.Core.DraftAssign;
 
 public static class DraftAssign
@@ -312,12 +314,12 @@ public static class DraftAssign
 
     private static void LoadRoleBuckets()
     {
-        var bucketSettings = Options.draftBuckets;
+        var bucketSettings = Options.DraftBuckets;
 
         List<RoleBucket> RoleBuckets = [.. EnumHelper.GetAllValues<RoleBucket>().Where(x => x != RoleBucket.None)];
         List<CustomRoles> Roles = [.. CustomRolesHelper.AllRoles.Where(x => x.IsBucketableRole())];
 
-        foreach (var setting in bucketSettings)
+        foreach (var setting in bucketSettings.GetOptions())
         {
             var bucketId = setting.GetInt();
             if (bucketId < RoleBuckets.Count)
@@ -336,7 +338,7 @@ public static class DraftAssign
             else
             {
                 Logger.Error($"Role Bucket with Id {bucketId} not found.", "LoadRoleBuckets");
-            }            
+            }
         }
     }
 
@@ -345,24 +347,24 @@ public static class DraftAssign
         {
             RoleBucket.ImpostorCommon or RoleBucket.ImpostorRandom or RoleBucket.ImpostorHindering
                 or RoleBucket.ImpostorConcealing or RoleBucket.ImpostorSupport or RoleBucket.ImpostorKilling
-                    => CustomRoles.Impostor.GetColoredTextByRole(bucket.ToString()),
+                    => CustomRoles.Impostor.GetColoredTextByRole(GetString($"RoleBucket.{bucket}")),
 
             RoleBucket.CrewmateBasic or RoleBucket.CrewmateCommon or RoleBucket.CrewmateKilling
                 or RoleBucket.CrewmatePower or RoleBucket.CrewmateRandom or RoleBucket.CrewmateSupport
-                    => CustomRoles.Crewmate.GetColoredTextByRole(bucket.ToString()),
+                    => CustomRoles.Crewmate.GetColoredTextByRole(GetString($"RoleBucket.{bucket}")),
 
             RoleBucket.CovenCommon or RoleBucket.CovenKilling or RoleBucket.CovenPower
                 or RoleBucket.CovenRandom or RoleBucket.CovenTrickery or RoleBucket.CovenUtility
-                    => CustomRoles.Coven.GetColoredTextByRole(bucket.ToString()),
+                    => CustomRoles.Coven.GetColoredTextByRole(GetString($"RoleBucket.{bucket}")),
 
-            RoleBucket.NeutralBenign => CustomRoles.Amnesiac.GetColoredTextByRole(bucket.ToString()),
-            RoleBucket.NeutralChaos => CustomRoles.Pirate.GetColoredTextByRole(bucket.ToString()),
-            RoleBucket.NeutralApocalypse => CustomRoles.Apocalypse.GetColoredTextByRole(bucket.ToString()),
-            RoleBucket.NeutralEvil => CustomRoles.Jester.GetColoredTextByRole(bucket.ToString()),
-            RoleBucket.NeutralKilling => CustomRoles.Traitor.GetColoredTextByRole(bucket.ToString()),
-            RoleBucket.NeutralRandom => CustomRoles.Executioner.GetColoredTextByRole(bucket.ToString()),
+            RoleBucket.NeutralBenign => CustomRoles.Amnesiac.GetColoredTextByRole(GetString($"RoleBucket.{bucket}")),
+            RoleBucket.NeutralChaos => CustomRoles.Pirate.GetColoredTextByRole(GetString($"RoleBucket.{bucket}")),
+            RoleBucket.NeutralApocalypse => CustomRoles.Apocalypse.GetColoredTextByRole(GetString($"RoleBucket.{bucket}")),
+            RoleBucket.NeutralEvil => CustomRoles.Jester.GetColoredTextByRole(GetString($"RoleBucket.{bucket}")),
+            RoleBucket.NeutralKilling => CustomRoles.Traitor.GetColoredTextByRole(GetString($"RoleBucket.{bucket}")),
+            RoleBucket.NeutralRandom => CustomRoles.Executioner.GetColoredTextByRole(GetString($"RoleBucket.{bucket}")),
 
-            _ => CustomRoles.Crewmate.GetColoredTextByRole(bucket.ToString())
+            _ => CustomRoles.Crewmate.GetColoredTextByRole(GetString($"RoleBucket.{bucket}"))
         };
 
     private static void AssignRoleBuckets(List<PlayerControl> AllPlayers, IRandom rnd)
