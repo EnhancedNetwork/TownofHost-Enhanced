@@ -53,16 +53,16 @@ public class Main : BasePlugin
     public static ConfigEntry<string> DebugKeyInput { get; private set; }
 
     public const string PluginGuid = "com.0xdrmoe.townofhostenhanced";
-    public const string PluginVersion = "2025.0903.240.00100"; // YEAR.MMDD.VERSION.CANARYDEV
+    public const string PluginVersion = "2025.0909.240.00200"; // YEAR.MMDD.VERSION.CANARYDEV
     public const string PluginDisplayVersion = "2.4.0 Beta 1";
     public static readonly List<(int year, int month, int day, int revision)> SupportedVersionAU =
-        [
-            (2025, 4, 15, 0) // 2025.3.25 & 16.0.0
-        ];
+    [
+        (2025, 9, 9, 0) // 2025.3.25 & 16.0.0
+    ];
 
     /******************* Change one of the three variables to true before making a release. *******************/
     public static readonly bool devRelease = false; // Latest: V2.3.0 Alpha 9
-    public static readonly bool canaryRelease = true; // Latest: V2.2.0 Beta 4
+    public static readonly bool canaryRelease = true; // Latest: V2.4.0 Beta 1
     public static readonly bool fullRelease = false; // Latest: V2.2.0
 
     public static bool hasAccess = true;
@@ -91,8 +91,8 @@ public class Main : BasePlugin
     public static string credentialsText;
     public Coroutines coroutines;
     public Dispatcher dispatcher;
-    public static NormalGameOptionsV09 NormalOptions => GameOptionsManager.Instance.currentNormalGameOptions;
-    public static HideNSeekGameOptionsV09 HideNSeekOptions => GameOptionsManager.Instance.currentHideNSeekGameOptions;
+    public static NormalGameOptionsV10 NormalOptions => GameOptionsManager.Instance.currentNormalGameOptions;
+    public static HideNSeekGameOptionsV10 HideNSeekOptions => GameOptionsManager.Instance.currentHideNSeekGameOptions;
     //Client Options
     public static ConfigEntry<string> HideName { get; private set; }
     public static ConfigEntry<string> HideColor { get; private set; }
@@ -660,9 +660,9 @@ public class Main : BasePlugin
         ClassInjector.RegisterTypeInIl2Cpp<ShapeShifterPagingBehaviour>();
         ClassInjector.RegisterTypeInIl2Cpp<VitalsPagingBehaviour>();
 
-        NormalGameOptionsV09.RecommendedImpostors = NormalGameOptionsV09.MaxImpostors = Enumerable.Repeat(128, 128).ToArray();
-        NormalGameOptionsV09.MinPlayers = Enumerable.Repeat(4, 128).ToArray();
-        HideNSeekGameOptionsV09.MinPlayers = Enumerable.Repeat(4, 128).ToArray();
+        NormalGameOptionsV10.RecommendedImpostors = NormalGameOptionsV10.MaxImpostors = Enumerable.Repeat(128, 128).ToArray();
+        NormalGameOptionsV10.MinPlayers = Enumerable.Repeat(4, 128).ToArray();
+        HideNSeekGameOptionsV10.MinPlayers = Enumerable.Repeat(4, 128).ToArray();
         DisconnectPopup.ErrorMessages[DisconnectReasons.Hacking] = StringNames.ErrorHacking;
 
         Harmony.PatchAll();
@@ -671,7 +671,7 @@ public class Main : BasePlugin
         if (DebugModeManager.AmDebugger) ConsoleManager.CreateConsole();
 
         // InitializeFileHash();
-        FileHash = "niko_is_testing_shit_for_2025_04_15";
+        FileHash = "drafting_2025_09_09";
         TOHE.Logger.Msg("========= TOHE loaded! =========", "Plugin Load");
     }
 }
