@@ -30,7 +30,7 @@ internal class Lich : RoleBase
     private static byte TargetId;
     private static PlayerControl LichPlayer;
 
-    // Roles Decieved (that are implemented so far): Necroview, Sleuth, CopyCat, Detective, Enigma, FortuneTeller, Inspector, Investigator, Oracle, Psychic, Snitch, Consigliere, Visionary
+    // Roles Decieved (that are implemented so far): Necroview, Sleuth, CopyCat, Forensic, Enigma, FortuneTeller, Inspector, Investigator, Oracle, Psychic, Snitch, Consigliere, Visionary
     // Probably Decieved (needs testing): Mimic, Potion Master, Overseer, etc.
 
     // Not Decieved: Apoc, Lovers, Admirer, Executioner, Lawyer, Follower, Infectious, Jackal, Virus, Romantic, SchrodingersCat

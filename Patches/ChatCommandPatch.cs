@@ -1861,7 +1861,7 @@ internal class ChatCommands
             "增速師" or "增速者" or "增速" => GetString("SpeedBooster"),
             "法醫" or "法医" => GetString("Doctor"),
             "獨裁主義者" or "独裁者" or "独裁" => GetString("Dictator"),
-            "偵探" or "侦探" => GetString("Detective"),
+            "偵探" or "侦探" => GetString("Forensic"),
             "正義賭怪" or "正义赌怪" or "好赌" or "正义的赌怪" => GetString("NiceGuesser"),
             "賭場管理員" or "竞猜大师" or "竞猜" => GetString("GuessMaster"),
             "傳送師" or "传送师" => GetString("Transporter"),

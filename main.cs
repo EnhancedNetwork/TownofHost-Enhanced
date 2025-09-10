@@ -57,12 +57,12 @@ public class Main : BasePlugin
     public const string PluginDisplayVersion = "2.4.0 Beta 2";
     public static readonly List<(int year, int month, int day, int revision)> SupportedVersionAU =
     [
-        (2025, 9, 9, 0) // 2025.3.25 & 16.0.0
+        (2025, 9, 9, 0) // 2025.9.9 & 17.0.0
     ];
 
     /******************* Change one of the three variables to true before making a release. *******************/
     public static readonly bool devRelease = false; // Latest: V2.3.0 Alpha 9
-    public static readonly bool canaryRelease = true; // Latest: V2.4.0 Beta 1
+    public static readonly bool canaryRelease = true; // Latest: V2.4.0 Beta 2
     public static readonly bool fullRelease = false; // Latest: V2.2.0
 
     public static bool hasAccess = true;
@@ -813,7 +813,7 @@ public enum CustomRoles
     Crusader,
     Deceiver,
     Deputy,
-    // Detective,
+    Forensic,
     Dictator,
     Doctor,
     Enigma,
