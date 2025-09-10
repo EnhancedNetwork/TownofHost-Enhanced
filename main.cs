@@ -685,11 +685,13 @@ public enum CustomRoles
     Noisemaker,
     Scientist,
     Tracker,
+    Detective,
 
     // Impostor(Vanilla)
     Impostor,
     Phantom,
     Shapeshifter,
+    Viper,
 
     // Crewmate Vanilla Remakes
     CrewmateTOHE,
@@ -698,11 +700,13 @@ public enum CustomRoles
     NoisemakerTOHE,
     ScientistTOHE,
     TrackerTOHE,
+    DetectiveTOHE,
 
     // Impostor Vanilla Remakes
     ImpostorTOHE,
     PhantomTOHE,
     ShapeshifterTOHE,
+    ViperTOHE,
 
     // Impostor Ghost
     Bloodmoon,
@@ -809,7 +813,7 @@ public enum CustomRoles
     Crusader,
     Deceiver,
     Deputy,
-    Detective,
+    // Detective,
     Dictator,
     Doctor,
     Enigma,

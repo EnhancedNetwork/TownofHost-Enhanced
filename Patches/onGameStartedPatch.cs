@@ -440,6 +440,8 @@ internal class StartGameHostPatch
                     RoleTypes.Noisemaker => CustomRoles.Noisemaker,
                     RoleTypes.Phantom => CustomRoles.Phantom,
                     RoleTypes.Tracker => CustomRoles.Tracker,
+                    RoleTypes.Detective => CustomRoles.Detective,
+                    RoleTypes.Viper => CustomRoles.Viper,
                     _ => CustomRoles.NotAssigned
                 };
                 if (role == CustomRoles.NotAssigned) Logger.SendInGame(string.Format(GetString("Error.InvalidRoleAssignment"), pc?.Data?.PlayerName));
