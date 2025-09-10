@@ -33,7 +33,7 @@ class ShowFolderPatch
         float maxHeight = 0f;
         if (CustomRolesFolder != null && CustomRolesFolder.FolderName == taskFolder.FolderName)
         {
-            var crewBehaviour = DestroyableSingleton<RoleManager>.Instance.AllRoles.FirstOrDefault(role => role.Role == RoleTypes.Crewmate);
+            var crewBehaviour = DestroyableSingleton<RoleManager>.Instance.AllRoles.ToArray().FirstOrDefault(role => role.Role == RoleTypes.Crewmate);
             foreach (var cRole in CustomRolesHelper.AllRoles)
             {
                 /*if(cRole == CustomRoles.Crewmate ||

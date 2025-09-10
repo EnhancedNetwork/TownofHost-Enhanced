@@ -82,10 +82,10 @@ public static class CustomRolesHelper
     public static bool HasImpBasis(this CustomRoles role, bool ForDesyncRole = true)
         => role.GetVNRole() is CustomRoles.Impostor
             or CustomRoles.Shapeshifter
-            or CustomRoles.Phantom
+            or CustomRoles.Phantom or CustomRoles.ViperTOHE
             || (ForDesyncRole && role.GetDYRole() is RoleTypes.Impostor
                 or RoleTypes.Shapeshifter
-                or RoleTypes.Phantom);
+                or RoleTypes.Phantom or RoleTypes.Viper);
 
     /*
     public static bool IsExperimental(this CustomRoles role)
@@ -302,7 +302,8 @@ public static class CustomRolesHelper
         return role is
             CustomRoles.Impostor or
             CustomRoles.Shapeshifter or
-            CustomRoles.Phantom;
+            CustomRoles.Phantom or
+            CustomRoles.Viper;
     }
     public static bool IsCoven(this CustomRoles role)
     {

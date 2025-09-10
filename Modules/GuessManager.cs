@@ -943,6 +943,15 @@ public static class GuessManager
                 if (!listOfRoles.Contains(CustomRoles.EngineerTOHE))
                     listOfRoles.Add(CustomRoles.EngineerTOHE);
 
+                if (!listOfRoles.Contains(CustomRoles.TrackerTOHE))
+                    listOfRoles.Add(CustomRoles.TrackerTOHE);
+
+                if (!listOfRoles.Contains(CustomRoles.PhantomTOHE))
+                    listOfRoles.Add(CustomRoles.PhantomTOHE);
+
+                if (!listOfRoles.Contains(CustomRoles.DetectiveTOHE))
+                    listOfRoles.Add(CustomRoles.DetectiveTOHE);
+
                 if (!listOfRoles.Contains(CustomRoles.Amnesiac))
                     listOfRoles.Add(CustomRoles.Amnesiac);
 
