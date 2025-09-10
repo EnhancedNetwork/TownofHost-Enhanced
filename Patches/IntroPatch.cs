@@ -513,6 +513,12 @@ class BeginCrewmatePatch
             case CustomRoles.TrackerTOHE:
                 PlayerControl.LocalPlayer.Data.Role.IntroSound = GetIntroSound(RoleTypes.Tracker);
                 break;
+            case CustomRoles.DetectiveTOHE:
+                PlayerControl.LocalPlayer.Data.Role.IntroSound = GetIntroSound(RoleTypes.Detective);
+                break;
+            case CustomRoles.ViperTOHE:
+                PlayerControl.LocalPlayer.Data.Role.IntroSound = GetIntroSound(RoleTypes.Viper);
+                break;
             case CustomRoles.Celebrity:
             case CustomRoles.Sacrifist:
             case CustomRoles.Poisoner:
@@ -618,6 +624,7 @@ class BeginCrewmatePatch
             case CustomRoles.Twister:
                 PlayerControl.LocalPlayer.Data.Role.IntroSound = RoleManager.Instance.AllRoles.ToArray().FirstOrDefault((role) => role.Role == RoleTypes.Shapeshifter)?.UseSound;
                 break;
+
         }
 
         if (PlayerControl.LocalPlayer.Is(CustomRoles.Lovers))

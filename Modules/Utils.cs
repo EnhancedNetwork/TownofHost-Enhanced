@@ -651,7 +651,7 @@ public static class Utils
                 break;
             default:
                 // player based on an impostor not should have tasks
-                if (States.RoleClass.ThisRoleBase is CustomRoles.Impostor or CustomRoles.Shapeshifter or CustomRoles.Phantom)
+                if (States.RoleClass.ThisRoleBase is CustomRoles.Impostor or CustomRoles.Shapeshifter or CustomRoles.Phantom or CustomRoles.Viper)
                     hasTasks = false;
                 break;
         }

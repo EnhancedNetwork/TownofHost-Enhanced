@@ -37,6 +37,9 @@ public static class CustomRolesHelper
             CustomRoles.EngineerTOHE => CustomRoles.Engineer,
             CustomRoles.NoisemakerTOHE => CustomRoles.Noisemaker,
             CustomRoles.TrackerTOHE => CustomRoles.Tracker,
+            CustomRoles.DetectiveTOHE => CustomRoles.Detective,
+            CustomRoles.ViperTOHE => CustomRoles.Viper,
+
             _ => role.IsImpostor() ? CustomRoles.Impostor : CustomRoles.Crewmate,
         };
     }
@@ -100,10 +103,10 @@ public static class CustomRolesHelper
     public static bool HasImpBasis(this CustomRoles role, bool ForDesyncRole = true)
         => role.GetVNRole() is CustomRoles.Impostor
             or CustomRoles.Shapeshifter
-            or CustomRoles.Phantom
+            or CustomRoles.Phantom or CustomRoles.ViperTOHE
             || (ForDesyncRole && role.GetDYRole() is RoleTypes.Impostor
                 or RoleTypes.Shapeshifter
-                or RoleTypes.Phantom);
+                or RoleTypes.Phantom or RoleTypes.Viper);
 
     /*
     public static bool IsExperimental(this CustomRoles role)
@@ -320,7 +323,8 @@ public static class CustomRolesHelper
         return role is
             CustomRoles.Impostor or
             CustomRoles.Shapeshifter or
-            CustomRoles.Phantom;
+            CustomRoles.Phantom or
+            CustomRoles.Viper;
     }
     public static bool IsCoven(this CustomRoles role)
     {
@@ -1341,6 +1345,8 @@ public static class CustomRolesHelper
             CustomRoles.Noisemaker => RoleTypes.Noisemaker,
             CustomRoles.Phantom => RoleTypes.Phantom,
             CustomRoles.Tracker => RoleTypes.Tracker,
+            CustomRoles.Detective => RoleTypes.Detective,
+            CustomRoles.Viper => RoleTypes.Viper,
             _ => role.IsImpostor() ? RoleTypes.Impostor : RoleTypes.Crewmate,
         };
 
@@ -1357,6 +1363,8 @@ public static class CustomRolesHelper
             CustomRoles.Noisemaker => RoleTypes.Noisemaker,
             CustomRoles.Phantom => RoleTypes.Phantom,
             CustomRoles.Tracker => RoleTypes.Tracker,
+            CustomRoles.Detective => RoleTypes.Detective,
+            CustomRoles.Viper => RoleTypes.Viper,
             _ => role.IsImpostor() ? RoleTypes.Impostor : RoleTypes.Crewmate,
         };
     }
@@ -1400,7 +1408,9 @@ public static class CustomRolesHelper
             CustomRoles.Shapeshifter or
             CustomRoles.Noisemaker or
             CustomRoles.Phantom or
-            CustomRoles.Tracker;
+            CustomRoles.Tracker or
+            CustomRoles.Detective or
+            CustomRoles.Viper;
     }
     public static Custom_Team GetCustomRoleTeam(this CustomRoles role)
     {
@@ -1432,6 +1442,8 @@ public static class CustomRolesHelper
                 CustomRoles.Noisemaker => roleOpt.GetNumPerGame(RoleTypes.Noisemaker),
                 CustomRoles.Phantom => roleOpt.GetNumPerGame(RoleTypes.Phantom),
                 CustomRoles.Tracker => roleOpt.GetNumPerGame(RoleTypes.Tracker),
+                CustomRoles.Detective => roleOpt.GetNumPerGame(RoleTypes.Detective),
+                CustomRoles.Viper => roleOpt.GetNumPerGame(RoleTypes.Viper),
                 _ => 0
             };
         }
@@ -1456,6 +1468,8 @@ public static class CustomRolesHelper
                 CustomRoles.Noisemaker => roleOpt.GetChancePerGame(RoleTypes.Noisemaker),
                 CustomRoles.Phantom => roleOpt.GetChancePerGame(RoleTypes.Phantom),
                 CustomRoles.Tracker => roleOpt.GetChancePerGame(RoleTypes.Tracker),
+                CustomRoles.Detective => roleOpt.GetChancePerGame(RoleTypes.Detective),
+                CustomRoles.Viper => roleOpt.GetChancePerGame(RoleTypes.Viper),
                 _ => 0
             } / 100f;
         }
