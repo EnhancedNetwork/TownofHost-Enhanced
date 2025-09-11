@@ -68,9 +68,11 @@ public static class Options
         "Hide&SeekTOHE", // HidenSeekTOHE must be after other game modes
     ];
 
+    public static OptionItem DraftHeader;
     public static OptionItem DraftMode;
     public static OptionItem DraftableCount;
     public static OptionItem BucketCount;
+    public static bool devEnableDraft = false;
     public static readonly string[] roleBuckets =
     [
         .. EnumHelper.GetAllValues<RoleBucket>().Where(x => x != RoleBucket.None).Select(x => x.ToColoredString()),
@@ -1377,7 +1379,7 @@ public static class Options
 
         Logger.Info("Start of Draft Setup", "Draft Setup");
         // Draft Mode
-        TextOptionItem.Create(10000033, "MenuTitle.Draft", TabGroup.ModSettings)
+        DraftHeader = TextOptionItem.Create(10000033, "MenuTitle.Draft", TabGroup.ModSettings)
             .SetGameMode(CustomGameMode.Standard)
             .SetColor(new Color32(255, 238, 232, byte.MaxValue))
             .SetHidden((!PlayerControl.LocalPlayer?.FriendCode?.GetDevUser().IsDev) ?? true);

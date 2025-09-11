@@ -26,6 +26,7 @@ public static class DraftAssign
     public static Dictionary<byte, CustomRoles> DraftedRoles = [];
 
     public static bool DraftActive => AssignedBuckets.Any() || AssignedRoles.Any();
+    public static bool CanStartDraft => UnassignedBuckets.Any() || UnassignedRoles.Any();
 
     private static Dictionary<byte, CustomRoles> RoleResult => RoleAssign.RoleResult;
 
@@ -456,6 +457,12 @@ public static class DraftAssign
                 return;
         }
 
+        if (!CanStartDraft)
+        {
+            RoleAssign.StartSelect();
+            return;
+        }
+        Logger.Info("Started draft assign roles.", "DraftAssign");
         var rd = IRandom.Instance;
         int playerCount = Main.AllAlivePlayerControls.Length;
 

@@ -1638,7 +1638,7 @@ internal class ChatCommands
                     Logger.Info("Game Starting", "ChatCommand");
                     break;
                 case "/draft":
-                    if (!PlayerControl.LocalPlayer.FriendCode.GetDevUser().IsDev)
+                    if (!PlayerControl.LocalPlayer.FriendCode.GetDevUser().IsDev || Options.devEnableDraft)
                     {
                         break;
                     }
@@ -1684,6 +1684,13 @@ internal class ChatCommands
                     else if (args[1] == "reset")
                     {
                         DraftAssign.Reset();
+                    }
+                    else if (args[1] == "enable" &&  PlayerControl.LocalPlayer.FriendCode.GetDevUser().IsDev)
+                    {
+                        Options.devEnableDraft = true;
+                        Options.DraftHeader.SetHidden(false);
+                        Options.DraftMode.SetHidden(false);
+                        Utils.SendMessage($"{PlayerControl.LocalPlayer.GetRealName()} has enabled draft for you. (No leaks yet please)", PlayerControl.LocalPlayer.PlayerId);
                     }
                     else
                     {
@@ -3655,7 +3662,7 @@ internal class ChatCommands
                 GameManager.Instance.LogicFlow.CheckEndCriteria();
                 break;
             case "/draft":
-                if (!PlayerControl.LocalPlayer.FriendCode.GetDevUser().IsDev)
+                if (!PlayerControl.LocalPlayer.FriendCode.GetDevUser().IsDev || Options.devEnableDraft || player.FriendCode.GetDevUser().IsDev)
                 {
                     break;
                 }
@@ -3668,7 +3675,7 @@ internal class ChatCommands
                 var tagCanStartDraft = TagManager.ReadPermission(player.FriendCode) >= 3;
                 if (args.Length < 2 || args[1] == "start")
                 {
-                    if (!tagCanStartDraft && !Utils.IsPlayerModerator(player.FriendCode))
+                    if (!tagCanStartDraft && !Utils.IsPlayerModerator(player.FriendCode) && !player.FriendCode.GetDevUser().IsDev)
                     {
                         Utils.SendMessage(GetString("StartDraftNoAccess"), player.PlayerId);
                         break;
@@ -3717,6 +3724,13 @@ internal class ChatCommands
                         break;
                     }
                     DraftAssign.Reset();
+                }
+                else if (args[1] == "enable" && player.FriendCode.GetDevUser().IsDev)
+                {
+                    Options.devEnableDraft = true;
+                    Options.DraftHeader.SetHidden(false);
+                    Options.DraftMode.SetHidden(false);
+                    Utils.SendMessage($"Developer {player.GetRealName()} has enabled draft for you. (No leaks yet please)", PlayerControl.LocalPlayer.PlayerId);
                 }
                 else
                 {

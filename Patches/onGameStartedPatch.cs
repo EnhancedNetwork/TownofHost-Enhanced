@@ -388,7 +388,7 @@ internal class StartGameHostPatch
             // Select custom Roles/Add-ons
             EAC.OriginalRoles = [];
 
-            if (Options.DraftMode.GetBool())
+            if (Options.DraftMode.GetBool() && Options.devEnableDraft)
                 DraftAssign.StartSelect();
             else
                 RoleAssign.StartSelect();
