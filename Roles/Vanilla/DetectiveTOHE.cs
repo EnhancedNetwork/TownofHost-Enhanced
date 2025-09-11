@@ -6,7 +6,7 @@ internal class DetectiveTOHE : RoleBase
 {
     //===========================SETUP================================\\
     public override CustomRoles Role => CustomRoles.DetectiveTOHE;
-    private const int Id = 7900;
+    private const int Id = 32200;
     public override CustomRoles ThisRoleBase => CustomRoles.Detective;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.CrewmateVanilla;
     //==================================================================\\
