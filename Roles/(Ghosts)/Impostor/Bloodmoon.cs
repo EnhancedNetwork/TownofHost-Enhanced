@@ -86,9 +86,6 @@ internal class Bloodmoon : RoleBase
             && !target.IsNeutralApocalypse()
             && !PlayerDie.ContainsKey(target.PlayerId))
         {
-            RPC.PlaySoundRPC(Sounds.SabotageSound, target.PlayerId);
-            PlayerDie.Add(target.PlayerId, TimeTilDeath.GetInt());
-            LastTime.Add(target.PlayerId, GetTimeStamp());
             if (killer.RpcCheckAndMurder(target, true))
             {
                 RPC.PlaySoundRPC(Sounds.SabotageSound, target.PlayerId);

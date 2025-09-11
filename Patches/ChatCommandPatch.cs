@@ -3729,7 +3729,7 @@ internal class ChatCommands
                     }
                     else if (int.TryParse(args[1], out int index))
                     {
-                        (cmdResult, draftedRole) = player.DraftRole(draftRole);
+                        (cmdResult, draftedRole) = player.DraftRole(index);
                     }
                     else
                     {
