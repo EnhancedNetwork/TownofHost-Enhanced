@@ -357,7 +357,7 @@ public class GameStartManagerBeginGamePatch
 
         if (GameStates.IsNormalGame)
         {
-            Options.DefaultKillCooldown = Main.NormalOptions.KillCooldown;
+            Options.DefaultKillCooldown = Main.NormalOptions?.KillCooldown ?? 20;
             Main.LastKillCooldown.Value = Main.NormalOptions.KillCooldown;
             Main.NormalOptions.KillCooldown = 0f;
 
