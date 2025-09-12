@@ -197,6 +197,13 @@ internal class Medic : RoleBase
         Logger.Info($"{target.GetNameWithRole()} : Shield Shatter from the Medic", "Medic");
         return true;
     }
+    public override bool OnRoleGuess(bool isUI, PlayerControl target, PlayerControl pc, CustomRoles role, ref bool guesserSuicide)
+    {
+        if (role != CustomRoles.Medic) return false;
+        AfterMedicDeadTask(target);
+
+        return false;
+    }
     private void ChangeToCrewmate()
     {
         if (_Player == null) return;

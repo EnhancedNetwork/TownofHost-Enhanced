@@ -159,6 +159,11 @@ public static class Camouflage
                 {
                     pc.RpcRemovePet();
                 }
+
+                if (pc.inVent)
+                {
+                    pc.currentRoleAnimations.ToArray().ForEach(x => x.ToggleRenderer(false));
+                }
             }
             if (Main.CurrentServerIsVanilla && Options.BypassRateLimitAC.GetBool())
             {

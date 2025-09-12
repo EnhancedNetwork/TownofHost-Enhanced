@@ -44,16 +44,10 @@ internal class MoonDancer : CovenManager
     public override void Init()
     {
         BatonPassList.Clear();
-        addons.Clear();
         BlastedOffList.Clear();
         originalSpeed.Clear();
 
-        addons.AddRange(GroupedAddons[AddonTypes.Helpful]);
-        addons.AddRange(GroupedAddons[AddonTypes.Harmful]);
-        if (BatonPassEnabledAddons.GetBool())
-        {
-            addons = addons.Where(role => role.GetMode() != 0).ToList();
-        }
+        LoadAddons();
     }
     public override void Add(byte playerId)
     {
@@ -229,6 +223,16 @@ internal class MoonDancer : CovenManager
             DistributeAddOns(player);
         }
     }
+    private static void LoadAddons()
+    {
+        addons.Clear();
+        addons.AddRange(GroupedAddons[AddonTypes.Helpful]);
+        addons.AddRange(GroupedAddons[AddonTypes.Harmful]);
+        if (BatonPassEnabledAddons.GetBool())
+        {
+            addons = [.. addons.Where(role => role.GetMode() != 0)];
+        }
+    }
     private static void DistributeAddOns(PlayerControl md)
     {
         var rd = IRandom.Instance;
@@ -273,6 +277,7 @@ internal class MoonDancer : CovenManager
                 player.RpcSetCustomRole(addon, false, false);
                 Logger.Info("Addon Passed.", "MoonDancer");
             }
+            LoadAddons();
         }
         BatonPassList[md.PlayerId].Clear();
     }
