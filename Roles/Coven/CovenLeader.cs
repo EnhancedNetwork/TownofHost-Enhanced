@@ -62,7 +62,7 @@ internal class CovenLeader : CovenManager
         }
         return false;
     }
-    private void Retrain(PlayerControl killer, PlayerControl target)
+    private static void Retrain(PlayerControl killer, PlayerControl target)
     {
         if (killer.GetAbilityUseLimit() <= 0)
         {
@@ -80,11 +80,11 @@ internal class CovenLeader : CovenManager
             return;
         }
 
-        var roleList = CustomRolesHelper.AllRoles.Where(role => (role.IsCoven() && (role.IsEnable() && !role.RoleExist(countDead: true)))).ToList();
+        var roleList = CustomRolesHelper.AllRoles.Where(role => role.IsCoven() && role.IsEnable() && !role.RoleExist(countDead: true)).ToList();
         retrainPlayer[target.PlayerId] = roleList.RandomElement();
         // if every enabled coven role is already in the game then use one of them anyways
         if (retrainPlayer[target.PlayerId] == CustomRoles.Crewmate || retrainPlayer[target.PlayerId] == CustomRoles.CrewmateTOHE)
-            retrainPlayer[target.PlayerId] = CustomRolesHelper.AllRoles.Where(role => (role.IsCoven() && (role.IsEnable()))).ToList().RandomElement();
+            retrainPlayer[target.PlayerId] = CustomRolesHelper.AllRoles.Where(role => role.IsCoven() && role.IsEnable()).ToList().RandomElement();
         killer.ResetKillCooldown();
         killer.SetKillCooldown();
         if (IsHelper(killer, target))
