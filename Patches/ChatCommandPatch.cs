@@ -1638,7 +1638,7 @@ internal class ChatCommands
                     Logger.Info("Game Starting", "ChatCommand");
                     break;
                 case "/draft":
-                    if (!PlayerControl.LocalPlayer.FriendCode.GetDevUser().IsDev || Options.devEnableDraft)
+                    if (!PlayerControl.LocalPlayer.FriendCode.GetDevUser().IsDev && !Options.devEnableDraft)
                     {
                         break;
                     }
@@ -3662,7 +3662,7 @@ internal class ChatCommands
                 GameManager.Instance.LogicFlow.CheckEndCriteria();
                 break;
             case "/draft":
-                if (!PlayerControl.LocalPlayer.FriendCode.GetDevUser().IsDev || Options.devEnableDraft || player.FriendCode.GetDevUser().IsDev)
+                if (!PlayerControl.LocalPlayer.FriendCode.GetDevUser().IsDev && !Options.devEnableDraft && !player.FriendCode.GetDevUser().IsDev)
                 {
                     break;
                 }

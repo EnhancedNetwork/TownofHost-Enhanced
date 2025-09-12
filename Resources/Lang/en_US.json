@@ -2143,6 +2143,8 @@
   "HarvesterSettings.AmountStolen": "Add-ons stolen every steal",
   "HarvesterSettings.MaxAddonsCoven": "Maximum Add-ons <color=#ac42f2>Coven</color> can have",
   "HarvesterSettings.MaxAddonsSelf": "Maximum Add-ons the Harvester can have",
+  "HarvesterSettings.CanSwapRecruiting": "Can swap recruiting addons",
+  "HarvesterSettings.CanStealRecruiting": "Can steal recruiting addons",
   "Harvester.SwapListFull": "Your swap list is full!",
   "Harvester.PlayerAdded": "{0} added to swap list",
   "Harvester.ShapeshiftButton": "Swap Add-Ons",
