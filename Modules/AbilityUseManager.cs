@@ -49,4 +49,18 @@ public static class AbilityUseManager
         Utils.NotifyRoles(SpecifySeer: player, ForceLoop: false);
         if (log) Logger.Info($" {player.GetNameWithRole()} => {Math.Round(limit, 1)}", "SetAbilityUseLimit");
     }
+
+    public static bool CanAbilityLimitBeManip(this PlayerControl pc)
+    {
+        return pc.GetCustomRole() switch
+        {
+            CustomRoles.Lich or CustomRoles.SoulCollector or CustomRoles.Benefactor or CustomRoles.Berserker
+                or CustomRoles.Keeper or CustomRoles.Collector or CustomRoles.Doomsayer or CustomRoles.Maverick
+                or CustomRoles.Pirate or CustomRoles.Pixie or CustomRoles.PunchingBag or CustomRoles.Seeker
+                or CustomRoles.Taskinator or CustomRoles.Vector or CustomRoles.Vulture
+                    => false,
+
+            _ => true
+        };
+    }
 }

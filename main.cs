@@ -56,13 +56,13 @@ public class Main : BasePlugin
     public const string PluginVersion = "2025.0910.240.00200"; // YEAR.MMDD.VERSION.CANARYDEV
     public const string PluginDisplayVersion = "2.4.0 Beta 2";
     public static readonly List<(int year, int month, int day, int revision)> SupportedVersionAU =
-        [
-            (2025, 7, 15, 0) // 17.0.0
-        ];
+    [
+        (2025, 9, 9, 0) // 2025.9.9 & 17.0.0
+    ];
 
     /******************* Change one of the three variables to true before making a release. *******************/
     public static readonly bool devRelease = false; // Latest: V2.3.0 Alpha 9
-    public static readonly bool canaryRelease = true; // Latest: V2.2.0 Beta 4
+    public static readonly bool canaryRelease = true; // Latest: V2.4.0 Beta 2
     public static readonly bool fullRelease = false; // Latest: V2.2.0
 
     public static bool hasAccess = true;
@@ -671,7 +671,7 @@ public class Main : BasePlugin
         if (DebugModeManager.AmDebugger) ConsoleManager.CreateConsole();
 
         // InitializeFileHash();
-        FileHash = "niko_is_testing_shit_for_2025_04_15";
+        FileHash = "drafting_2025_09_09";
         TOHE.Logger.Msg("========= TOHE loaded! =========", "Plugin Load");
     }
 }
@@ -813,7 +813,7 @@ public enum CustomRoles
     Crusader,
     Deceiver,
     Deputy,
-    // Detective,
+    Forensic,
     Dictator,
     Doctor,
     Enigma,

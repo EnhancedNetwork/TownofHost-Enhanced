@@ -375,6 +375,11 @@ internal static class Crowded
                 }
             }
         }
+
+        public static void PostFix()
+        {
+            Logger.Info("Host Game finished is being called!", "CrowdedPatch");
+        }
     }
 }
 

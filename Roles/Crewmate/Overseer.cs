@@ -49,7 +49,7 @@ internal class Overseer : RoleBase
         CustomRoles.Bastion,
         CustomRoles.Dictator,
         CustomRoles.Doctor,
-        CustomRoles.Detective,
+        CustomRoles.Forensic,
         CustomRoles.Lookout,
         CustomRoles.Telecommunication,
         CustomRoles.NiceGuesser,

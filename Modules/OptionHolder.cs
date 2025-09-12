@@ -3,6 +3,7 @@ using TOHE.Modules;
 using TOHE.Roles.AddOns;
 using TOHE.Roles.AddOns.Impostor;
 using TOHE.Roles.Core;
+using TOHE.Roles.Core.DraftAssign;
 using UnityEngine;
 
 namespace TOHE;
@@ -67,7 +68,19 @@ public static class Options
         "Hide&SeekTOHE", // HidenSeekTOHE must be after other game modes
     ];
 
-
+    public static OptionItem DraftHeader;
+    public static OptionItem DraftMode;
+    public static OptionItem DraftableCount;
+    public static OptionItem BucketCount;
+    public static bool devEnableDraft = false;
+    public static readonly string[] roleBuckets =
+    [
+        .. EnumHelper.GetAllValues<RoleBucket>().Where(x => x != RoleBucket.None).Select(x => x.ToColoredString()),
+        .. CustomRolesHelper.AllRoles.Where(role => role.IsBucketableRole()).Select(x => x.ToColoredString()),
+    ];
+    public static MultipleStringOptionItem DraftBuckets;
+    public static OptionItem[] draftBuckets = new OptionItem[15];
+    public static string ConvertRoleBucketToString(RoleBucket bucket) => $"RoleBucket.{bucket}";
 
     // 役職数・確率
     public static Dictionary<CustomRoles, int> roleCounts;
@@ -720,7 +733,7 @@ public static class Options
     private static System.Collections.IEnumerator CoLoadOptions()
     {
         //#######################################
-        // 32100 last id for roles/add-ons (Next use 32200)
+        // 32200 last id for roles/add-ons (Next use 32300)
         // Limit id for roles/add-ons --- "59999"
         //#######################################
 
@@ -730,6 +743,7 @@ public static class Options
         OptionSaver.Initialize();
         GroupAddons();
 
+        Logger.Info("Settings loaded", "Load Options");
         yield return null;
 
         // Preset Option
@@ -858,7 +872,7 @@ public static class Options
         RemoveIncompatibleAddOnsMidGame = BooleanOptionItem.Create(60034, "RemoveIncompatibleAddOnsMidGame", true, TabGroup.Addons, false)
             .SetGameMode(CustomGameMode.Standard);
         #endregion
-
+        Logger.Info("Role/Addon settings setup", "Load Options");
         yield return null;
 
         #region Impostors Settings
@@ -934,7 +948,7 @@ public static class Options
         CustomRoleManager.GetNormalOptions(Custom_RoleType.ImpostorGhosts).ForEach(r => r.SetupCustomOption());
 
         #endregion
-
+        Logger.Info("Impostor settings setup", "Load Options");
         yield return null;
 
         #region Crewmates Settings
@@ -1011,7 +1025,7 @@ public static class Options
 
 
         #endregion
-
+        Logger.Info("Crewmate settings setup", "Load Options");
         yield return null;
 
         #region Neutrals Settings
@@ -1065,7 +1079,7 @@ public static class Options
 
         CustomRoleManager.GetNormalOptions(Custom_RoleType.NeutralApocalypse).ForEach(r => r.SetupCustomOption());
         #endregion
-
+        Logger.Info("Neutral settings setup", "Load Options");
         yield return null;
 
         #region Coven Settings
@@ -1104,7 +1118,7 @@ public static class Options
 
         CustomRoleManager.GetNormalOptions(Custom_RoleType.CovenUtility).ForEach(r => r.SetupCustomOption());
         #endregion
-
+        Logger.Info("Coven settings setup", "Load Options");
         yield return null;
 
         #region Add-Ons Settings
@@ -1161,7 +1175,7 @@ public static class Options
 
 
         #endregion
-
+        Logger.Info("Addon settings setup", "Load Options");
         yield return null;
 
         #region Experimental Roles/Add-ons Settings
@@ -1341,7 +1355,7 @@ public static class Options
             .SetColor(Color.cyan)
             .SetHeader(true);
         #endregion 
-
+        Logger.Info("System settings setup", "Load Options");
         yield return null;
 
         #region Game Settings
@@ -1363,17 +1377,48 @@ public static class Options
             .SetGameMode(CustomGameMode.HidenSeekTOHE)
             .SetValueFormat(OptionFormat.Players);
 
+        Logger.Info("Start of Draft Setup", "Draft Setup");
+        // Draft Mode
+        DraftHeader = TextOptionItem.Create(10000033, "MenuTitle.Draft", TabGroup.ModSettings)
+            .SetGameMode(CustomGameMode.Standard)
+            .SetColor(new Color32(255, 238, 232, byte.MaxValue))
+            .SetHidden((!PlayerControl.LocalPlayer?.FriendCode?.GetDevUser().IsDev) ?? true);
 
+        DraftMode = BooleanOptionItem.Create(61000, "UseDraftMode", true, TabGroup.ModSettings, false)
+            .SetGameMode(CustomGameMode.Standard)
+            .SetHeader(true);
+
+        DraftableCount = IntegerOptionItem.Create(61001, "DraftableCount", new(1, 10, 1), 3, TabGroup.ModSettings, false)
+            .SetGameMode(CustomGameMode.Standard)
+            .SetParent(DraftMode);
+
+        BucketCount = IntegerOptionItem.Create(61002, "BucketCount", new(5, 225, 1), 15, TabGroup.ModSettings, false)
+            .SetGameMode(CustomGameMode.Standard)
+            .SetParent(DraftMode)
+            .RegisterUpdateValueEvent((obj, args) => BucketCountChanged(args));
+
+        DraftBuckets = MultipleStringOptionItem.Create(61003, 225, BucketCount.GetInt() + 5, "RoleBucket", roleBuckets, 0, TabGroup.ModSettings, false, useGetString: false)
+            .SetParent(BucketCount)
+            .SetGameMode(CustomGameMode.Standard);
+
+        Logger.Info("Draft Bucket Options set up", "OptionsHolder.CoLoadOptions");
+
+        if ((!PlayerControl.LocalPlayer?.FriendCode?.GetDevUser().IsDev) ?? true)
+        {
+            DraftMode.SetHidden(true);
+        }
+
+        Logger.Info("End of Draft Setup", "Draft Setup");
 
         // Confirm Ejections Mode
         TextOptionItem.Create(10000024, "MenuTitle.Ejections", TabGroup.ModSettings)
-            .SetGameMode(CustomGameMode.Standard)
-            .SetColor(new Color32(255, 238, 232, byte.MaxValue));
-        
+        .SetGameMode(CustomGameMode.Standard)
+        .SetColor(new Color32(255, 238, 232, byte.MaxValue));
+
         PlayEjectSfx = BooleanOptionItem.Create(60439, "PlayEjectSfx", false, TabGroup.ModSettings, false)
             .SetGameMode(CustomGameMode.Standard)
             .SetColor(new Color32(255, 238, 232, byte.MaxValue));
-        
+
         CEMode = StringOptionItem.Create(60440, "ConfirmEjectionsMode", ConfirmEjectionsMode, 2, TabGroup.ModSettings, false)
             .SetGameMode(CustomGameMode.Standard)
             .SetHeader(true)
@@ -2122,7 +2167,7 @@ public static class Options
             .SetValueFormat(OptionFormat.Seconds)
             .SetColor(new Color32(217, 218, 255, byte.MaxValue));
         #endregion
-
+        Logger.Info("Game settings setup", "Load Options");
         yield return null;
 
         // End Load Settings
@@ -2263,6 +2308,11 @@ public static class Options
 
         CustomRoleSpawnChances.Add(role, spawnOption);
         CustomRoleCounts.Add(role, countOption);
+    }
+    static void BucketCountChanged(OptionItem.UpdateValueEventArgs args)
+    {
+        DraftBuckets.Count = args.CurrentValue + 5;
+        DraftBuckets.Refresh();
     }
     public class OverrideTasksData
     {

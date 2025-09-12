@@ -84,12 +84,15 @@ internal class Bloodmoon : RoleBase
             && !target.Is(CustomRoles.Jinx)
             && !target.Is(CustomRoles.CursedWolf)
             && !target.IsNeutralApocalypse()
-            && killer.RpcCheckAndMurder(target, true)
             && !PlayerDie.ContainsKey(target.PlayerId))
         {
-            RPC.PlaySoundRPC(Sounds.SabotageSound, target.PlayerId);
-            PlayerDie.Add(target.PlayerId, TimeTilDeath.GetInt());
-            LastTime.Add(target.PlayerId, GetTimeStamp());
+            if (killer.RpcCheckAndMurder(target, true))
+            {
+                RPC.PlaySoundRPC(Sounds.SabotageSound, target.PlayerId);
+                PlayerDie.Add(target.PlayerId, TimeTilDeath.GetInt());
+                LastTime.Add(target.PlayerId, GetTimeStamp());
+                SendRPC(target.PlayerId, true);
+            }
             killer.RpcResetAbilityCooldown();
             killer.RpcRemoveAbilityUse();
             SendRPC(target.PlayerId, true);

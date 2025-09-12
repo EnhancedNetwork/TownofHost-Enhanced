@@ -1265,6 +1265,8 @@ static class ExtendedPlayerControl
         {
             Main.AllPlayerKillCooldown[player.PlayerId] = 0.3f;
         }
+        
+        Logger.Info($"Set {player.name} cooldown to {Main.AllPlayerKillCooldown[player.PlayerId]}", "ResetKillCooldown");
     }
     public static bool IsNonCrewSheriff(this PlayerControl sheriff)
     {

@@ -76,6 +76,27 @@ public static class CustomRolesHelper
         CustomRoles.EvilSpirit;
 
     }
+    public static bool IsBucketableRole(this CustomRoles role)
+        => !role.IsGhostRole() && !role.IsVanilla() && !(role is CustomRoles.GM
+                    or CustomRoles.SpeedBooster
+                    or CustomRoles.Oblivious
+                    or CustomRoles.Flash
+                    or CustomRoles.NotAssigned
+                    or CustomRoles.SuperStar
+                    or CustomRoles.Oblivious
+                    or CustomRoles.Solsticer
+                    or CustomRoles.Killer
+                    or CustomRoles.Mini
+                    or CustomRoles.Onbound
+                    or CustomRoles.Rebound
+                    or CustomRoles.LastImpostor
+                    or CustomRoles.Mare
+                    or CustomRoles.Cyber
+                    or CustomRoles.Sloth
+                    or CustomRoles.Apocalypse
+                    or CustomRoles.Coven)
+            && !role.IsTNA() && !role.IsAdditionRole();
+
     public static bool HasGhostRole(this PlayerControl player) => player.GetCustomRole().IsGhostRole() || player.IsAnySubRole(x => x.IsGhostRole());
 
     // Role's basis role is an Impostor (regular imp,shapeshifter,phantom) role
@@ -855,7 +876,7 @@ public static class CustomRolesHelper
 
             case CustomRoles.Sleuth:
                 if (pc.Is(CustomRoles.Oblivious)
-                    || pc.Is(CustomRoles.Detective)
+                    || pc.Is(CustomRoles.Forensic)
                     || pc.Is(CustomRoles.Mortician)
                     || pc.Is(CustomRoles.Cleaner)
                     || pc.Is(CustomRoles.Medusa)
@@ -919,7 +940,7 @@ public static class CustomRolesHelper
                 break;
 
             case CustomRoles.Oblivious:
-                if (pc.Is(CustomRoles.Detective)
+                if (pc.Is(CustomRoles.Forensic)
                     || pc.Is(CustomRoles.Vulture)
                     || pc.Is(CustomRoles.Sleuth)
                     || pc.Is(CustomRoles.Cleaner)
@@ -1488,7 +1509,6 @@ public static class CustomRolesHelper
            CustomRoles.Quizmaster => Quizmaster.CanKillsAfterMark() ? CountTypes.Quizmaster : CountTypes.Crew,
            CustomRoles.Juggernaut => CountTypes.Juggernaut,
            CustomRoles.Infectious or CustomRoles.Infected => CountTypes.Infectious,
-           CustomRoles.Inquisitor => CountTypes.Inquisitor,
            CustomRoles.Crewpostor => CountTypes.Impostor,
            CustomRoles.Pyromaniac => CountTypes.Pyromaniac,
            CustomRoles.PlagueDoctor => CountTypes.PlagueDoctor,
@@ -1586,7 +1606,6 @@ public static class CustomRolesHelper
             CountTypes.Quizmaster => CustomRoles.Quizmaster,
             CountTypes.Juggernaut => CustomRoles.Juggernaut,
             CountTypes.Infectious => CustomRoles.Infectious,
-            CountTypes.Inquisitor => CustomRoles.Inquisitor,
             CountTypes.Pyromaniac => CustomRoles.Pyromaniac,
             CountTypes.Virus => CustomRoles.Virus,
             CountTypes.Pickpocket => CustomRoles.Pickpocket,
@@ -1601,6 +1620,48 @@ public static class CustomRolesHelper
             _ => throw new NotImplementedException()
         };
     public static bool HasSubRole(this PlayerControl pc) => Main.PlayerStates[pc.PlayerId].SubRoles.Any();
+
+    /// <summary>
+    /// Whether the role is in the given role bucket
+    /// </summary>
+    public static bool IsInRoleBucket(this CustomRoles role, RoleBucket bucket)
+    {
+        var roleType = role.GetStaticRoleClass().ThisRoleType;
+
+        return bucket switch
+        {
+            RoleBucket.ImpostorKilling => roleType is Custom_RoleType.ImpostorKilling,
+            RoleBucket.ImpostorSupport => roleType is Custom_RoleType.ImpostorSupport,
+            RoleBucket.ImpostorConcealing => roleType is Custom_RoleType.ImpostorConcealing,
+            RoleBucket.ImpostorHindering => roleType is Custom_RoleType.ImpostorHindering,
+            RoleBucket.ImpostorCommon => roleType is Custom_RoleType.ImpostorSupport or Custom_RoleType.ImpostorConcealing or Custom_RoleType.ImpostorHindering,
+            RoleBucket.ImpostorRandom => roleType is Custom_RoleType.ImpostorKilling or Custom_RoleType.ImpostorSupport or Custom_RoleType.ImpostorConcealing or Custom_RoleType.ImpostorHindering,
+
+            RoleBucket.CrewmateBasic => roleType is Custom_RoleType.CrewmateBasic,
+            RoleBucket.CrewmateSupport => roleType is Custom_RoleType.CrewmateSupport,
+            RoleBucket.CrewmateKilling => roleType is Custom_RoleType.CrewmateKilling,
+            RoleBucket.CrewmatePower => roleType is Custom_RoleType.CrewmatePower,
+            RoleBucket.CrewmateCommon => roleType is Custom_RoleType.CrewmateBasic or Custom_RoleType.CrewmateSupport or Custom_RoleType.CrewmateKilling,
+            RoleBucket.CrewmateRandom => roleType is Custom_RoleType.CrewmatePower or Custom_RoleType.CrewmateBasic or Custom_RoleType.CrewmateSupport or Custom_RoleType.CrewmateKilling,
+
+            RoleBucket.NeutralBenign => roleType is Custom_RoleType.NeutralBenign,
+            RoleBucket.NeutralEvil => roleType is Custom_RoleType.NeutralEvil,
+            RoleBucket.NeutralChaos => roleType is Custom_RoleType.NeutralChaos,
+            RoleBucket.NeutralKilling => roleType is Custom_RoleType.NeutralKilling,
+            RoleBucket.NeutralApocalypse => roleType is Custom_RoleType.NeutralApocalypse,
+            RoleBucket.NeutralRandom => roleType is Custom_RoleType.NeutralBenign or Custom_RoleType.NeutralEvil or Custom_RoleType.NeutralChaos or Custom_RoleType.NeutralKilling or Custom_RoleType.NeutralApocalypse,
+
+            RoleBucket.CovenPower => roleType is Custom_RoleType.CovenPower,
+            RoleBucket.CovenKilling => roleType is Custom_RoleType.CovenKilling,
+            RoleBucket.CovenTrickery => roleType is Custom_RoleType.CovenTrickery,
+            RoleBucket.CovenUtility => roleType is Custom_RoleType.CovenUtility,
+            RoleBucket.CovenCommon => roleType is Custom_RoleType.CovenTrickery or Custom_RoleType.CovenUtility,
+            RoleBucket.CovenRandom => roleType is Custom_RoleType.CovenPower or Custom_RoleType.CovenKilling or Custom_RoleType.CovenTrickery or Custom_RoleType.CovenUtility,
+
+            RoleBucket.Any => true,
+            _ => false
+        };
+    }
 }
 [Obfuscation(Exclude = true)]
 public enum Custom_Team
@@ -1668,7 +1729,6 @@ public enum CountTypes
     SerialKiller,
     Juggernaut,
     Infectious,
-    Inquisitor,
     Virus,
     Stalker,
     Pickpocket,
@@ -1686,4 +1746,44 @@ public enum CountTypes
     RuthlessRomantic,
     Shocker,
     Coven
+}
+[Obfuscation(Exclude = true)]
+public enum RoleBucket
+{
+    Any,
+
+    // Impostors
+    ImpostorKilling,
+    ImpostorSupport,
+    ImpostorConcealing,
+    ImpostorHindering,
+    ImpostorCommon, // Common = All except Killing
+    ImpostorRandom,
+
+    // Crewmate
+    CrewmateBasic,
+    CrewmateSupport,
+    CrewmateKilling,
+    CrewmatePower,
+    CrewmateCommon, // Common = All except Power
+    CrewmateRandom,
+
+    // Neutral
+    NeutralBenign,
+    NeutralEvil,
+    NeutralChaos,
+    NeutralKilling,
+    NeutralApocalypse,
+    NeutralRandom,
+
+    // Coven
+    CovenPower,
+    CovenKilling,
+    CovenTrickery,
+    CovenUtility,
+    CovenCommon, // Common = All except Power and Killing
+    CovenRandom,
+
+    
+    None
 }

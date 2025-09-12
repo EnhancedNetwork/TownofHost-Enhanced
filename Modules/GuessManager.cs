@@ -662,6 +662,8 @@ public static class GuessManager
                     CreateGuesserButton(__instance);
                 else if (PlayerControl.LocalPlayer.GetCustomRole() is CustomRoles.Doomsayer && !Options.PassiveNeutralsCanGuess.GetBool() && !Doomsayer.CheckCantGuess)
                     CreateGuesserButton(__instance);
+                else if (PlayerControl.LocalPlayer.IsAlive() && PlayerControl.LocalPlayer.Is(CustomRoles.Guesser))
+                    CreateGuesserButton(__instance);
             }
             else
             {

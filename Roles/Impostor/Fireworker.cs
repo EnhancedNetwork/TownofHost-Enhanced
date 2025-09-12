@@ -76,7 +76,7 @@ internal class Fireworker : RoleBase
 
     private static void SendRPC(byte playerId)
     {
-        Logger.Info($"Player{playerId}:SendRPC", "Fireworker");
+        Logger.Info($"Player{playerId}:SendRPC nowFireworkerCount:{nowFireworkerCount[playerId]} state:{state[playerId]}", "Fireworker");
         var msg = new RpcSendFireworkerState(PlayerControl.LocalPlayer.NetId, playerId, nowFireworkerCount[playerId], (int)state[playerId]);
         RpcUtils.LateBroadcastReliableMessage(msg);
     }

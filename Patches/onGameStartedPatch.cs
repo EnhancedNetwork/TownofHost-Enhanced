@@ -11,6 +11,7 @@ using TOHE.Modules.Rpc;
 using TOHE.Patches;
 using TOHE.Roles.Core;
 using TOHE.Roles.Core.AssignManager;
+using TOHE.Roles.Core.DraftAssign;
 using UnityEngine;
 using static TOHE.Translator;
 
@@ -386,7 +387,11 @@ internal class StartGameHostPatch
 
             // Select custom Roles/Add-ons
             EAC.OriginalRoles = [];
-            RoleAssign.StartSelect();
+
+            if (Options.DraftMode.GetBool() && Options.devEnableDraft)
+                DraftAssign.StartSelect();
+            else
+                RoleAssign.StartSelect();
             AddonAssign.StartSelect();
 
             // Set count Vanilla Roles

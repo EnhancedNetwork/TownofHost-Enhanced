@@ -58,7 +58,7 @@ class CoShowIntroPatch
             {
                 Logger.Warn($"Game ended? {GameStates.IsEnded}", "ShipStatus.Begin");
             }
-        }, 4f, "Assing Task For All");
+        }, 4f, "Assigning Task For All");
     }
 }
 [HarmonyPatch(typeof(IntroCutscene), nameof(IntroCutscene.CoBegin))]

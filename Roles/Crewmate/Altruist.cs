@@ -96,13 +96,13 @@ internal class Altruist : RoleBase
             RevivedPlayerId = deadPlayerId;
             //AllRevivedPlayerId.Add(deadPlayerId);
 
-            deadPlayer.RpcTeleport(deadBodyObject.transform.position);
-            deadPlayer.RpcRevive();
-
             _Player.SetDeathReason(PlayerState.DeathReason.Sacrificed);
             _Player.Data.IsDead = true;
             _Player.RpcExileV2();
             Main.PlayerStates[_Player.PlayerId].SetDead();
+
+            deadPlayer.RpcTeleport(deadBodyObject.transform.position);
+            deadPlayer.RpcRevive();
 
             if (ImpostorsCanGetsAlert.GetBool() || NeutralKillersCanGetsAlert.GetBool())
             {
