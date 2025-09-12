@@ -2011,6 +2011,7 @@
 
   "CovenLeaderMaxRetrains": "Maximum Retrains",
   "CovenLeaderRetrainCooldown": "Retrain Cooldown",
+  "CovenLeaderRetrainConvertsHelpers": "Retraining Converts Helpers if Coven Leader is Converted",
   "CovenLeaderRetrain": "Retrain offered",
   "CovenLeaderNoRetrain": "You have ran out of Retrains!",
   "CovenLeaderRetrainNonCoven": "You can't retrain a non-Coven!",
