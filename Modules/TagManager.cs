@@ -136,10 +136,10 @@ public static class TagManager
             string startColorCode = "ffff00";
             string endColorCode = "ffff00";
 
-            if (tag.Split(" ").Length == 2)
+            if (color.Split(" ").Length == 2)
             {
-                startColorCode = tag.Split(" ")[0];
-                endColorCode = tag.Split(" ")[1];
+                startColorCode = color.Split(" ")[0];
+                endColorCode = color.Split(" ")[1];
             }
             if (!Utils.CheckGradientCode(color))
             {
