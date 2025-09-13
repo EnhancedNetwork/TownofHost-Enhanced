@@ -174,7 +174,7 @@ internal class Jinx : CovenManager
     public override string GetMarkOthers(PlayerControl seer, PlayerControl target, bool isForMeeting = false)
     {
         if (_Player == null) return string.Empty;
-        if (IsJinxed(target.PlayerId) && ((seer.GetCustomRole().IsCovenTeam() && seer.PlayerId != _Player.PlayerId) || !seer.IsAlive()))
+        if (IsJinxed(target.PlayerId) && ((seer.GetCustomRole().IsCovenTeam() && seer.PlayerId != _Player.PlayerId) || !seer.IsAlive() && seer.PlayerId != _Player.PlayerId))
         {
             return ColorString(GetRoleColor(CustomRoles.Jinx), "⌘");
         }
