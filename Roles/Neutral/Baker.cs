@@ -77,6 +77,7 @@ internal class Baker : RoleBase
     private static (int, int) BreadedPlayerCount(byte playerId)
     {
         int breaded = 0, all = BreadNeededToTransform.GetInt();
+        if (all == 0 || Main.AllAlivePlayerControls.Length == 0) return (0, 100);
         foreach (var pc in Main.AllAlivePlayerControls)
         {
             if (pc.PlayerId == playerId) continue;

@@ -8,6 +8,7 @@ using UnityEngine;
 using System;
 using TOHE.Roles.Coven;
 using TOHE.Roles.Crewmate;
+using System.Text;
 
 namespace TOHE.Roles.Neutral;
 
@@ -96,6 +97,7 @@ internal class Inquisitor : RoleBase
 
             if (targetList.Any())
             {
+                StringBuilder sb = new();
                 var selectedTarget = targetList.RandomElement();
                 Targets[inquisitor.PlayerId].Add(selectedTarget.PlayerId);
                 TargetRoles[selectedTarget.PlayerId] = selectedTarget.GetCustomRole();
@@ -123,6 +125,7 @@ internal class Inquisitor : RoleBase
 
                     Targets[inquisitor.PlayerId].Add(selectedTarget.PlayerId);
                     TargetRoles[selectedTarget.PlayerId] = selectedTarget.GetCustomRole();
+                    sb.Append(selectedTarget.GetCustomRole());
 
                     teams.Add(selectedTarget.GetCustomRole().GetCustomRoleTeam());
 
@@ -132,7 +135,7 @@ internal class Inquisitor : RoleBase
                 actualHereticCount = Targets[inquisitor.PlayerId].Count;
                 AliveHeretics[inquisitor.PlayerId] = actualHereticCount;
 
-                Logger.Info($"{inquisitor?.GetNameWithRole()}:{Targets[inquisitor.PlayerId].Select(id => TargetRoles[id])}", "Inquisitor");
+                Logger.Info($"{inquisitor?.GetNameWithRole()}:{sb}", "Inquisitor");
             }
             else
             {
@@ -248,7 +251,10 @@ internal class Inquisitor : RoleBase
         if (InquiredList.ContainsKey(playerId))
             InquiredList[playerId].Add(reader.ReadByte());
         else
+        {
             InquiredList.Add(playerId, []);
+            InquiredList[playerId].Add(reader.ReadByte());
+        }
     }
 
     private bool IsTarget(PlayerControl player) => IsTarget(player.PlayerId);

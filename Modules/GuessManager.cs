@@ -555,9 +555,9 @@ public static class GuessManager
             result += mc[i];//匹配结果是完整的数字，此处可以不做拼接的
         }
 
-        if (int.TryParse(result, out int num))
+        if (byte.TryParse(result, out byte num))
         {
-            id = Convert.ToByte(num);
+            id = num;
         }
         else
         {

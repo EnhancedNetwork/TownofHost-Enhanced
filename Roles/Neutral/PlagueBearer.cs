@@ -138,6 +138,7 @@ internal class PlagueBearer : RoleBase
     }
     private static (int, int) PlaguedPlayerCount(byte playerId)
     {
+        if (Main.AllAlivePlayerControls.Length == 0) return (0, 100);
         int all = Main.AllAlivePlayerControls.Count(pc => pc.PlayerId != playerId);
         int plagued = Main.AllAlivePlayerControls.Count(pc => pc.PlayerId != playerId && IsPlagued(playerId, pc.PlayerId));
 
