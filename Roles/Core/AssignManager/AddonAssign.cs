@@ -211,6 +211,6 @@ public static class AddonAssign
 
         // logs the assigning
         var pc = ps.PlayerId.GetPlayer();
-        Logger.Info($"Assigned Narc to {pc?.Data?.PlayerName}({pc.PlayerId}). {pc?.Data?.PlayerName}'s Role: {pc.GetCustomRole()} + Narc", "Assign Narc");
+        Logger.Info($"Assigned Narc to {pc?.Data?.PlayerName}({pc?.PlayerId}). {pc?.Data?.PlayerName}'s Role: {pc?.GetCustomRole()} + Narc", "Assign Narc");
     }
 }

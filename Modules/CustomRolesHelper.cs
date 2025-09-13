@@ -1,5 +1,6 @@
 using AmongUs.GameOptions;
 using System;
+using TOHE.Roles.AddOns;
 using TOHE.Roles.AddOns.Common;
 using TOHE.Roles.AddOns.Crewmate;
 using TOHE.Roles.AddOns.Impostor;
@@ -577,6 +578,28 @@ public static class CustomRolesHelper
 
         return player.MainRole.IsCoven() || player.IsNecromancer;
     }
+    public static Dictionary<PlayerControl, List<CustomRoles>> GetAssignableAddons(this List<PlayerControl> players, List<CustomRoles> addons, bool includeCrew = true, bool includeImps = true, bool includeNeutral = true, bool includeCoven = true, bool noHarmfullToCrew = false, bool noHelpfullToEvil = false)
+        => players.ToDictionary(player => player,
+            pc => (!pc.Is(CustomRoles.Stubborn) &&
+                    (!Cleanser.CantGetAddon() || (Cleanser.CantGetAddon() && !pc.Is(CustomRoles.Cleansed))) &&
+                    (
+                        (includeCrew && pc.GetCustomRole().IsCrewmate())
+                        ||
+                        (includeImps && pc.GetCustomRole().IsImpostor())
+                        ||
+                        (includeNeutral && pc.GetCustomRole().IsNeutral())
+                        ||
+                        (includeCoven && pc.GetCustomRole().IsCoven())
+                    ) // Only check addon conflicts if player can get addons
+            ) ? addons.Where(
+                a =>
+                    !a.IsConverted() &&
+                    !(noHarmfullToCrew && pc.GetCustomRole().IsCrewmate() && Options.GroupedAddons[AddonTypes.Harmful].Contains(a)) &&
+                    !(noHelpfullToEvil && (pc.GetCustomRole().IsImpostor() || pc.GetCustomRole().IsNeutral() || pc.GetCustomRole().IsCoven()) && Options.GroupedAddons[AddonTypes.Helpful].Contains(a)) &&
+                    CheckAddonConfilct(a, pc, checkLimitAddons: false)
+                ).ToList()
+            : []
+        );
     public static bool CheckAddonConfilct(CustomRoles role, PlayerControl pc, bool checkLimitAddons = true, bool checkConditions = true)
     {
         // Only add-ons

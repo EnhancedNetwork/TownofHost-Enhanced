@@ -1034,9 +1034,9 @@ class FixedUpdateInNormalGamePatch
         byte playerId = player.PlayerId;
 
         var playerData = player.Data;
-        var playerClientId = player.GetClientId();
+        var playerClientId = player?.GetClientId() ?? byte.MaxValue;
 
-        bool playerAmOwner = player.AmOwner;
+        bool playerAmOwner = player?.AmOwner ?? false;
         var amongUsClient = AmongUsClient.Instance;
         bool amHost = amongUsClient.AmHost;
 
@@ -1479,7 +1479,7 @@ class FixedUpdateInNormalGamePatch
                 ? $"\n<size=1.7>『{CustomRoles.Doctor.GetColoredTextByRole(Utils.GetVitalText(playerId))}』</size>" : string.Empty);
 
             // code from EHR (Endless Host Roles by: Gurge44)
-            var currentText = player.cosmetics.nameText.text;
+            var currentText = player?.cosmetics?.nameText?.text ?? "";
             var changeTo = $"{RealName}{DeathReason}{Mark}\r\n{Suffix}";
             bool needUpdate = currentText != changeTo;
 
@@ -1507,14 +1507,14 @@ class FixedUpdateInNormalGamePatch
                 }
                 if (!localPlayer.IsAlive() && !player.IsAlive()) { offset += 0.1f; colorBlind -= 0.1f; }
 
-                roleText.transform.SetLocalY(offset);
-                player.cosmetics.colorBlindText.transform.SetLocalY(colorBlind);
+                roleText?.transform?.SetLocalY(offset);
+                player?.cosmetics?.colorBlindText?.transform?.SetLocalY(colorBlind);
             }
         }
         else
         {
             roleText.transform.SetLocalY(0.2f);
-            player.cosmetics.colorBlindText.transform.SetLocalY(-0.32f);
+            player?.cosmetics?.colorBlindText?.transform?.SetLocalY(-0.32f);
         }
     }
     public static void LoversSuicide(byte deathId = 0x7f, bool isExiled = false)

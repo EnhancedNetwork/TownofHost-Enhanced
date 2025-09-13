@@ -21,8 +21,10 @@ internal class Harvester : CovenManager
     private static OptionItem AmountStolen;
     private static OptionItem MaxAddonsCoven;
     private static OptionItem MaxAddonsSelf;
+    private static OptionItem CanSwapRecruiting;
+    private static OptionItem CanStealRecruiting;
 
-    private static readonly Dictionary<byte, List<byte>> SwapPlayers = new Dictionary<byte, List<byte>>();
+    private static readonly Dictionary<byte, List<byte>> SwapPlayers = [];
 
     public override void SetupCustomOption()
     {
@@ -37,6 +39,8 @@ internal class Harvester : CovenManager
             .SetValueFormat(OptionFormat.Times);
         MaxAddonsSelf = IntegerOptionItem.Create(Id + 14, "HarvesterSettings.MaxAddonsSelf", new(1, 100, 1), 5, TabGroup.CovenRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Harvester])
             .SetValueFormat(OptionFormat.Times);
+        CanSwapRecruiting = BooleanOptionItem.Create(Id + 15, "HarvesterSettings.CanSwapRecruiting", false, TabGroup.CovenRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Harvester]);
+        CanStealRecruiting = BooleanOptionItem.Create(Id + 16, "HarvesterSettings.CanStealRecruiting", false, TabGroup.CovenRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Harvester]);
     }
     public override void Init()
     {
@@ -62,14 +66,14 @@ internal class Harvester : CovenManager
     public override bool OnCheckShapeshift(PlayerControl shapeshifter, PlayerControl target, ref bool resetCooldown, ref bool shouldAnimate)
     {
         shouldAnimate = false;
-        if (SwapPlayers[shapeshifter.PlayerId].Count() >= 2)
+        if (SwapPlayers[shapeshifter.PlayerId].Count >= 2)
         {
             shapeshifter.Notify(GetString("Harvester.SwapListFull"));
             return false;
         }
         if (shapeshifter == null || target == null) return false;
 
-        if (SwapPlayers[shapeshifter.PlayerId].Count() == 0)
+        if (SwapPlayers[shapeshifter.PlayerId].Count == 0)
         {
             SwapPlayers[shapeshifter.PlayerId].Add(target.PlayerId);
             Logger.Info($"{target.GetRealName()} is SwapPlayer1", "Harvester");
@@ -90,10 +94,11 @@ internal class Harvester : CovenManager
         if (harvester == null) return;
         if (!harvester.IsAlive()) return;
         // this code is so bad, but it works
+        bool stealRecruiting = CanStealRecruiting.GetBool();
         if (killer.IsPlayerCoven())
         {
             var stolen = 0;
-            List<CustomRoles> addons = new(deadPlayer.GetCustomSubRoles());
+            List<CustomRoles> addons = [.. deadPlayer.GetCustomSubRoles().Where(x => stealRecruiting || !x.IsBetrayalAddonV2())];
             foreach (CustomRoles addon in addons)
             {
                 if (stolen >= AmountStolen.GetInt()) break;
@@ -101,14 +106,14 @@ internal class Harvester : CovenManager
                 Main.PlayerStates[deadPlayer.PlayerId].RemoveSubRole(addon);
                 killer.RpcSetCustomRole(addon, false, false);
                 stolen++;
-                Logger.Info($"{addon.ToString()} from {deadPlayer.GetNameWithRole()} given to {killer.GetNameWithRole()}", "Harvester");
+                Logger.Info($"{addon} from {deadPlayer.GetNameWithRole()} given to {killer.GetNameWithRole()}", "Harvester");
             }
             Logger.Info($"{deadPlayer.GetNameWithRole()}'s addons given to {killer.GetNameWithRole()}; {stolen} addons stolen total", "Harvester");
         }
         else if (HasNecronomicon(harvester) && !killer.IsPlayerCoven())
         {
             var stolen = 0;
-            List<CustomRoles> addons = new(deadPlayer.GetCustomSubRoles());
+            List<CustomRoles> addons = [.. deadPlayer.GetCustomSubRoles().Where(x => stealRecruiting || !x.IsBetrayalAddonV2())];
             foreach (CustomRoles addon in addons)
             {
                 if (stolen > AmountStolen.GetInt()) break;
@@ -116,7 +121,7 @@ internal class Harvester : CovenManager
                 Main.PlayerStates[deadPlayer.PlayerId].RemoveSubRole(addon);
                 harvester.RpcSetCustomRole(addon, false, false);
                 stolen++;
-                Logger.Info($"{addon.ToString()} from {deadPlayer.GetNameWithRole()} given to {harvester.GetNameWithRole()}", "Harvester");
+                Logger.Info($"{addon} from {deadPlayer.GetNameWithRole()} given to {harvester.GetNameWithRole()}", "Harvester");
             }
             Logger.Info($"{deadPlayer.GetNameWithRole()}'s addons given to {harvester.GetNameWithRole()}; {stolen} addons stolen total", "Harvester");
         }
@@ -124,7 +129,7 @@ internal class Harvester : CovenManager
     public override void OnReportDeadBody(PlayerControl reporter, NetworkedPlayerInfo target)
     {
         if (!CustomRoles.Harvester.RoleExist()) return;
-        if (SwapPlayers[_Player.PlayerId].Count() != 2) return;
+        if (SwapPlayers[_Player.PlayerId].Count != 2) return;
         SwapAddons(GetPlayerById(SwapPlayers[_Player.PlayerId][0]), GetPlayerById(SwapPlayers[_Player.PlayerId][1]));
     }
     public override void AfterMeetingTasks()
@@ -139,10 +144,11 @@ internal class Harvester : CovenManager
     }
     private void SwapAddons(PlayerControl player1, PlayerControl player2)
     {
-        if (SwapPlayers[_Player.PlayerId].Count() != 2) return;
+        if (SwapPlayers[_Player.PlayerId].Count != 2) return;
         if (player1 == null || player2 == null) return;
-        List<CustomRoles> addons1 = new(player1.GetCustomSubRoles());
-        List<CustomRoles> addons2 = new(player2.GetCustomSubRoles());
+        bool swapRecruiting = CanSwapRecruiting.GetBool();
+        List<CustomRoles> addons1 = [.. player1.GetCustomSubRoles().Where(x => swapRecruiting || !x.IsBetrayalAddonV2())];
+        List<CustomRoles> addons2 = [.. player2.GetCustomSubRoles().Where(x => swapRecruiting || !x.IsBetrayalAddonV2())];
         foreach (CustomRoles addon in addons1)
         {
             Main.PlayerStates[player1.PlayerId].RemoveSubRole(addon);

@@ -159,7 +159,7 @@ internal class Inquisitor : RoleBase
     public static bool IsUseKillButton(PlayerControl pc)
         => !HaveMissed.Contains(pc.PlayerId);
 
-    public override bool ForcedCheckMurderAsKiller(PlayerControl killer, PlayerControl target)
+    public override bool OnCheckMurderAsKiller(PlayerControl killer, PlayerControl target)
     {
         if (killer.CheckDoubleTrigger(target, () => { CheckIfHeretic(killer, target); }))
         {

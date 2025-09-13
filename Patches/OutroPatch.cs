@@ -127,7 +127,8 @@ class EndGamePatch
         if (!MainRoleLog.Contains('\n')) MainRoleLog = "";
 
         if (GameStates.IsNormalGame)
-            Main.NormalOptions.KillCooldown = Options.DefaultKillCooldown;
+            if (Options.DefaultKillCooldown <= 150f)
+                Main.NormalOptions.KillCooldown = Options.DefaultKillCooldown;
 
         //winnerListÒâ¬Òé╗ÒââÒâê
         EndGameResult.CachedWinners = new Il2CppSystem.Collections.Generic.List<CachedPlayerData>();
