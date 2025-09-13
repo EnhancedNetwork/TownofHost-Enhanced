@@ -112,7 +112,8 @@ public static class Madmate
             pc.Is(CustomRoles.Paranoia) ||
             pc.Is(CustomRoles.Vigilante) ||
             (pc.Is(CustomRoles.NiceMini) && Mini.Age >= 18) ||
-            (pc.Is(CustomRoles.Hurried) && !Hurried.CanBeOnMadMate.GetBool())
+            (pc.Is(CustomRoles.Hurried) && !Hurried.CanBeOnMadMate.GetBool()) ||
+            (CovenManager.HasNecronomicon(pc.PlayerId) && pc.Is(CustomRoles.CovenLeader))
             );
     }
     public static bool CheckCanBeMadmate(this PlayerControl pc, bool forGangster = false)
@@ -125,6 +126,7 @@ public static class Madmate
             (pc.Is(CustomRoles.Judge) && (!forGangster ? !JudgeCanBeMadmate.GetBool() : !Gangster.JudgeCanBeMadmate.GetBool())) ||
             (pc.Is(CustomRoles.Marshall) && (!forGangster ? !MarshallCanBeMadmate.GetBool() : !Gangster.MarshallCanBeMadmate.GetBool())) ||
             (pc.Is(CustomRoles.Retributionist) && (!forGangster ? !RetributionistCanBeMadmate.GetBool() : !Gangster.RetributionistCanBeMadmate.GetBool())) ||
-            (pc.Is(CustomRoles.Overseer) && (!forGangster ? !OverseerCanBeMadmate.GetBool() : !Gangster.OverseerCanBeMadmate.GetBool()));
+            (pc.Is(CustomRoles.Overseer) && (!forGangster ? !OverseerCanBeMadmate.GetBool() : !Gangster.OverseerCanBeMadmate.GetBool())) ||
+            (pc.IsPlayerCoven() && !forGangster && !Gangster.CovenCanBeMadmate.GetBool());
     }
 }

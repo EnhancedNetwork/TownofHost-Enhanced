@@ -1,7 +1,8 @@
 using Hazel;
-using InnerNet;
+using TOHE.Modules.Rpc;
 using TOHE.Roles.Core;
 using TOHE.Roles.Coven;
+using TOHE.Roles.Neutral;
 using static TOHE.Options;
 using static TOHE.Utils;
 
@@ -58,12 +59,11 @@ internal class Psychic : RoleBase
     }
     private void SendRPC()
     {
-        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, SendOption.Reliable);
-        writer.WriteNetObject(_Player);
+        var writer = MessageWriter.Get(SendOption.Reliable);
         writer.Write(RedPlayer.Count);
         foreach (var pc in RedPlayer)
             writer.Write(pc);
-        AmongUsClient.Instance.FinishRpcImmediately(writer);
+        RpcUtils.LateBroadcastReliableMessage(new RpcSyncRoleSkill(PlayerControl.LocalPlayer.NetId, _Player.NetId, writer));
     }
     public override void ReceiveRPC(MessageReader reader, PlayerControl pc)
     {
@@ -83,23 +83,30 @@ internal class Psychic : RoleBase
     public override void OnReportDeadBody(PlayerControl reported, NetworkedPlayerInfo target)
     {
         if (Fresh.GetBool() || RedPlayer == null || RedPlayer.Count < 1)
+        {
+            if (Fresh.GetBool())
+            {
+                RedPlayer.Clear(); // Force generate new red names so its freshed?
+            }
+
             GetRedName();
+        }
     }
     private void GetRedName()
     {
-        if (!_Player.IsAlive() || !AmongUsClient.Instance.AmHost) return;
+        if (_Player == null || !_Player.IsAlive() || !AmongUsClient.Instance.AmHost) return;
 
-        List<PlayerControl> BadListPc = Main.AllAlivePlayerControls.Where(x => Illusionist.IsNonCovIllusioned(x.PlayerId) ||
-        (x.Is(Custom_Team.Impostor) && !x.Is(CustomRoles.Trickster) && !x.Is(CustomRoles.Admired)) ||
+        List<PlayerControl> BadListPc = [.. Main.AllAlivePlayerControls.Where(x => Illusionist.IsNonCovIllusioned(x.PlayerId) ||
+        (x.Is(Custom_Team.Impostor) && !x.Is(CustomRoles.Trickster) && !x.Is(CustomRoles.Admired) && !x.Is(CustomRoles.Narc)) ||
         x.IsAnySubRole(x => x.IsConverted()) ||
         (x.GetCustomRole().IsCrewKiller() && CkshowEvil.GetBool()) ||
         (x.GetCustomRole().IsNE() && NEshowEvil.GetBool()) ||
         (x.GetCustomRole().IsNC() && NCshowEvil.GetBool()) ||
         (x.GetCustomRole().IsNB() && NBshowEvil.GetBool()) ||
         (x.GetCustomRole().IsNK() && NKshowEvil.GetBool()) ||
-        (x.GetCustomRole().IsNA() && NAshowEvil.GetBool()) ||
+        ((x.GetCustomRole().IsNA() || Lich.IsCursed(x)) && NAshowEvil.GetBool()) ||
         (x.GetCustomRole().IsCoven() && CovshowEvil.GetBool())
-        ).ToList();
+        )];
 
         var randomBadPlayer = BadListPc.RandomElement();
         List<byte> AllList = [];

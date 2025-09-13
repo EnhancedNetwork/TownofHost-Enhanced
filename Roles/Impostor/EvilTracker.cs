@@ -1,6 +1,7 @@
 using AmongUs.GameOptions;
 using Hazel;
 using System.Text;
+using TOHE.Modules.Rpc;
 using UnityEngine;
 using static TOHE.Options;
 using static TOHE.Translator;
@@ -77,11 +78,12 @@ internal class EvilTracker : RoleBase
         CanSetTarget.Add(playerId, CurrentTargetMode != TargetMode.Never);
 
         ImpostorsId[playerId] = [];
+        var pc = playerId.GetPlayer();
 
         foreach (var target in Main.AllAlivePlayerControls)
         {
             var targetId = target.PlayerId;
-            if (targetId != playerId && target.Is(Custom_Team.Impostor))
+            if (targetId != playerId && (pc.Is(CustomRoles.Narc) ? target.IsPolice() : target.CheckImpCanSeeAllies(CheckAsTarget: true)))
             {
                 ImpostorsId[playerId].Add(targetId);
                 if (AmongUsClient.Instance.AmHost)
@@ -111,11 +113,11 @@ internal class EvilTracker : RoleBase
     public static bool IsTrackTarget(PlayerControl seer, PlayerControl target)
         => seer.IsAlive() && playerIdList.Contains(seer.PlayerId)
         && target.IsAlive() && seer != target
-        && (target.Is(Custom_Team.Impostor) || GetTargetId(seer.PlayerId) == target.PlayerId);
+        && ((seer.Is(CustomRoles.Narc) ? target.IsPolice() : target.CheckImpCanSeeAllies(CheckAsTarget: true)) || GetTargetId(seer.PlayerId) == target.PlayerId);
 
     public override bool OnCheckShapeshift(PlayerControl shapeshifter, PlayerControl target, ref bool resetCooldown, ref bool shouldAnimate)
     {
-        if (target.Is(Custom_Team.Impostor) || !CanTarget(shapeshifter.PlayerId)) return false;
+        if (!CanTarget(shapeshifter.PlayerId) || IsTrackTarget(shapeshifter, target)) return false;
 
         SetTarget(shapeshifter.PlayerId, target.PlayerId);
 
@@ -166,10 +168,8 @@ internal class EvilTracker : RoleBase
     }
     private static void SendRPC(byte trackerId, byte targetId)
     {
-        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SetEvilTrackerTarget, SendOption.Reliable, -1);
-        writer.Write(trackerId);
-        writer.Write(targetId);
-        AmongUsClient.Instance.FinishRpcImmediately(writer);
+        var msg = new RpcSetEvilTrackerTarget(PlayerControl.LocalPlayer.NetId, trackerId, targetId);
+        RpcUtils.LateBroadcastReliableMessage(msg);
     }
     public static void ReceiveRPC(MessageReader reader)
     {

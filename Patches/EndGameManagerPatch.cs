@@ -1,4 +1,5 @@
 using TMPro;
+using TOHE.Roles.Core.DraftAssign;
 using UnityEngine;
 using static TOHE.Translator;
 
@@ -15,6 +16,8 @@ public class EndGameManagerPatch
     {
         if (!AmongUsClient.Instance.AmHost || !Options.AutoPlayAgain.GetBool()) return;
         IsRestarting = false;
+
+        DraftAssign.Reset();
 
         _ = new LateTask(() =>
         {

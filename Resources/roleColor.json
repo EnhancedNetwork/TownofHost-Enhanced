@@ -32,6 +32,8 @@
   "Doctor": "#80ffdd",
   "Dictator": "#df9b00",
   "Detective": "#7160e8",
+  "Forensic": "#7160e8",
+  "DetectiveTOHE": "#7160e8",
   "NiceGuesser": "#f0e68c",
   "Knight": "#7a7a7a",
   "Transporter": "#42D1FF",
@@ -79,6 +81,7 @@
   "Spy": "#34495E",
   "Randomizer": "#FFA500",
   "Enigma": "#676798",
+  "Socialite": "#ecd7bd",
   "Arsonist": "#ff6633",
   "Pyromaniac": "#fc8a4c",
   "Ventguard": "#ffa5ff",
@@ -88,6 +91,7 @@
   "PlagueBearer": "#e5f6b4",
   "Pestilence": "#343136",
   "SoulCollector": "#A675A1",
+  "Lich": "#677052",
   "Death": "#644661",
   "Baker": "#bf9f7a",
   "Famine": "#83461c",
@@ -245,5 +249,10 @@
   "Sloth": "#376db8",
   "Eavesdropper": "#ffe6bf",
   "Shocker": "#CCCC00",
-  "Revenant": "#cc9329"
+  "Revenant": "#cc9329",
+  "Runner": "#fffb00",
+  "Requiter": "#ffc0cb",
+  "Narc": "#1e90ff",
+  "Rat": "#696969",
+  "Inquisitor": "#ab1822"
 }

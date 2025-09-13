@@ -32,6 +32,7 @@ public class Lazy : IAddon
             return false;
 
         if (player.GetCustomRole().IsNeutral()
+            || player.GetCustomRole().IsCoven()
             || player.GetCustomRole().IsImpostor()
             || (player.GetCustomRole().IsTasklessCrewmate() && !TasklessCrewCanBeLazy.GetBool())
             || (player.GetCustomRole().IsTaskBasedCrewmate() && !TaskBasedCrewCanBeLazy.GetBool()))

@@ -1,6 +1,7 @@
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
+using System.Globalization;
 using System.IO;
 using System.Net.Http;
 using System.Threading;
@@ -48,6 +49,9 @@ public class ModUpdater
 
     public static IEnumerator PrefixCoroutine()
     {
+        Logger.Info("User Facing Version: " + DestroyableSingleton<ReferenceDataManager>.Instance.Refdata.userFacingVersion + " " + Constants.extraBuildVersionInfo, "CheckRelease");
+        Logger.Info("Constants Version: " + string.Format("{0}.{1}.{2}.{3}", Constants.Year, Constants.Month, Constants.Day, Constants.Revision) + " " + Constants.GetBroadcastVersion(), "CheckRelease");
+
         CheckCustomRegions();
         NewVersionCheck();
         DeleteOldFiles();
@@ -161,7 +165,7 @@ public class ModUpdater
         if (firstNotify && hasUpdate)
         {
             firstNotify = false;
-            
+
             if (!string.IsNullOrEmpty(latestTitleModName))
                 ShowPopupWithTwoButtons(string.Format(GetString("NewUpdateAvailable"), latestTitleModName), GetString("update"), onClickOnFirstButton: () => StartUpdate(downloadUrl));
         }
@@ -219,11 +223,20 @@ public class ModUpdater
         }
         else
         {
+            string[] tag = data["tag_name"]?.ToString()[1..].Split(".");
+            Logger.Info($"{tag[0]}.{tag[1]}.{tag[2]}", "PluginVersion");
+            Logger.Info($"{Main.PluginVersion.Substring(10, 1)}.{Main.PluginVersion.Substring(11, 1)}.{Main.PluginVersion.Substring(12, 1)}.{Main.PluginVersion.Substring(14, 3)}", "PluginVersion");
+
+            var pluginNum = int.Parse(Main.PluginVersion.Substring(10, 1)) * 10000000 + int.Parse(Main.PluginVersion.Substring(11, 1)) * 1000000 + int.Parse(Main.PluginVersion.Substring(12, 1)) * 100000 + int.Parse(Main.PluginVersion.Substring(14, 3), CultureInfo.InvariantCulture) * 100;
+            var versionNum = int.Parse(tag[0]) * 10000000 + int.Parse(tag[1]) * 1000000 + int.Parse($"{tag[2][0]}") * 100000 + (tag[2][1] == 'b' ? int.Parse(tag[2][2..]) : 999) * 100;
+
+            hasUpdate = versionNum > pluginNum;
+
             string publishedAt = data["published_at"]?.ToString();
             latestVersion = DateTime.TryParse(publishedAt, out DateTime parsedDate) ? parsedDate : DateTime.MinValue;
             latestTitle = $"Day: {latestVersion?.Day} Month: {latestVersion?.Month} Year: {latestVersion?.Year}";
 
-            JArray assets = data["assets"].TryCast<JArray>();
+            JArray assets = data["assets"].CastFast<JArray>();
             for (int i = 0; i < assets.Count; i++)
             {
                 string assetName = assets[i]["name"].ToString();
@@ -233,12 +246,6 @@ public class ModUpdater
                     Logger.Info($"Github downloadUrl is set to {downloadUrl}", "CheckRelease");
                 }
             }
-
-            DateTime pluginTimestamp = DateTime.ParseExact(Main.PluginVersion.Substring(5, 4), "MMdd", System.Globalization.CultureInfo.InvariantCulture);
-            int year = int.Parse(Main.PluginVersion.Substring(0, 4));
-            pluginTimestamp = pluginTimestamp.AddYears(year - pluginTimestamp.Year);
-            Logger.Info($"Day: {pluginTimestamp.Day} Month: {pluginTimestamp.Month} Year: {pluginTimestamp.Year}", "PluginVersion");
-            hasUpdate = latestVersion?.Date > pluginTimestamp.Date;
         }
 
         Logger.Info("hasupdate: " + hasUpdate, "Github");
@@ -464,7 +471,7 @@ public class ModUpdater
                 firstButtonGetChild.GetComponent<TMP_Text>().text = firstButtonText;
                 firstButton.GetComponent<PassiveButton>().OnClick = new();
                 if (onClickOnFirstButton != null)
-                    firstButton.GetComponent<PassiveButton>().OnClick.AddListener((UnityEngine.Events.UnityAction)(() => { onClickOnFirstButton(); InfoPopupV2.Close();}));
+                    firstButton.GetComponent<PassiveButton>().OnClick.AddListener((UnityEngine.Events.UnityAction)(() => { onClickOnFirstButton(); InfoPopupV2.Close(); }));
                 else firstButton.GetComponent<PassiveButton>().OnClick.AddListener((UnityEngine.Events.UnityAction)(() => InfoPopupV2.Close()));
             }
             if (secondButton != null)

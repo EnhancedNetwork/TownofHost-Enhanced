@@ -172,6 +172,11 @@ internal static class Crowded
                     {
                         GameOptionsManager.Instance.GameHostOptions.SetInt(Int32OptionNames.MaxPlayers, 15);
                     }
+
+                    if (GameOptionsManager.Instance.GameHostOptions.NumImpostors > 3)
+                    {
+                        GameOptionsManager.Instance.GameHostOptions.SetInt(Int32OptionNames.NumImpostors, 3);
+                    }
                 }
                 if (instance)
                 {
@@ -212,10 +217,10 @@ internal static class Crowded
         }
     }
 
-    [HarmonyPatch(typeof(NormalGameOptionsV08), nameof(NormalGameOptionsV08.AreInvalid))]
-    public static class NormalGameOptionsV08_AreInvalid
+    [HarmonyPatch(typeof(NormalGameOptionsV10), nameof(NormalGameOptionsV10.AreInvalid))]
+    public static class NormalGameOptions_AreInvalid
     {
-        public static bool Prefix(NormalGameOptionsV08 __instance, ref bool __result)
+        public static bool Prefix(NormalGameOptionsV10 __instance, ref bool __result)
         {
             __result = __instance.NumImpostors < 0 || __instance.KillDistance < 0 || __instance.KillCooldown < 0 || __instance.PlayerSpeedMod <= 0;
 
@@ -345,6 +350,37 @@ internal static class Crowded
             __instance.gameObject.AddComponent<VitalsPagingBehaviour>().vitalsMinigame = __instance;
         }
     }
+
+    [HarmonyPatch(typeof(PSManager), nameof(PSManager.CreateGame))]
+    [HarmonyPatch(typeof(CreateGameOptions), nameof(CreateGameOptions.ContinueStart))]
+    public static class BeforeHostGamePatch
+    {
+        public static void Prefix()
+        {
+            Logger.Info("Host Game is being called!", "CrowdedPatch");
+
+            if (GameStates.IsVanillaServer && !GameStates.IsLocalGame)
+            {
+                if (GameOptionsManager.Instance.GameHostOptions != null)
+                {
+                    if (GameOptionsManager.Instance.GameHostOptions.MaxPlayers > 15)
+                    {
+                        GameOptionsManager.Instance.GameHostOptions.SetInt(Int32OptionNames.MaxPlayers, 15);
+                    }
+
+                    if (GameOptionsManager.Instance.GameHostOptions.NumImpostors > 3)
+                    {
+                        GameOptionsManager.Instance.GameHostOptions.SetInt(Int32OptionNames.NumImpostors, 3);
+                    }
+                }
+            }
+        }
+
+        public static void PostFix()
+        {
+            Logger.Info("Host Game finished is being called!", "CrowdedPatch");
+        }
+    }
 }
 
 [Obfuscation(Exclude = true, ApplyToMembers = true)]
@@ -380,9 +416,10 @@ public class AbstractPagingBehaviour : MonoBehaviour
 
     public virtual void Update()
     {
-        if (Input.GetKeyDown(KeyCode.UpArrow) || Input.GetKeyDown(KeyCode.LeftArrow) || Input.mouseScrollDelta.y > 0f)
+        bool chatIsOpen = HudManager.Instance.Chat.IsOpenOrOpening;
+        if (Input.GetKeyDown(KeyCode.UpArrow) || Input.GetKeyDown(KeyCode.LeftArrow) || (!chatIsOpen && Input.mouseScrollDelta.y > 0f))
             Cycle(false);
-        else if (Input.GetKeyDown(KeyCode.DownArrow) || Input.GetKeyDown(KeyCode.RightArrow) || Input.mouseScrollDelta.y < 0f)
+        else if (Input.GetKeyDown(KeyCode.DownArrow) || Input.GetKeyDown(KeyCode.RightArrow) || (!chatIsOpen && Input.mouseScrollDelta.y < 0f))
             Cycle(true);
     }
 
@@ -408,9 +445,25 @@ public class MeetingHudPagingBehaviour : AbstractPagingBehaviour
 
     [HideFromIl2Cpp]
     public IEnumerable<PlayerVoteArea> Targets => meetingHud.playerStates.OrderBy(p => p.AmDead);
-    public override int MaxPageIndex => (Targets.Count() - 1) / MaxPerPage;
+    public override int MaxPageIndex
+    {
+        get
+        {
+            if (maxPageIndex == -1)
+            {
+                maxPageIndex = (Targets.Count() - 1) / MaxPerPage;
+            }
+            return maxPageIndex;
+        }
+    }
 
-    public override void Start() => OnPageChanged();
+    private int maxPageIndex = -1;
+
+    public override void Start()
+    {
+        maxPageIndex = -1;
+        OnPageChanged();
+    }
 
     public override void Update()
     {

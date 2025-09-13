@@ -427,14 +427,18 @@ public static class ToggleOptionPatch
         }
         return true;
     }
-    [HarmonyPatch(nameof(ToggleOption.UpdateValue)), HarmonyPrefix]
+
+    // For unknown reason UpdateValue patch is not called. Have to patch toggle directly
+    [HarmonyPatch(nameof(ToggleOption.Toggle)), HarmonyPrefix]
     private static bool UpdateValuePrefix(ToggleOption __instance)
     {
         if (ModGameOptionsMenu.OptionList.TryGetValue(__instance, out var index))
         {
+            __instance.CheckMark.enabled = !__instance.CheckMark.enabled;
             var item = OptionItem.AllOptions[index];
             //Logger.Info($"{item.Name}, {index}", "ToggleOption.UpdateValue.TryGetValue");
-            item.SetValue(__instance.GetBool() ? 1 : 0);
+            item.SetValue(__instance.GetBool() ? 1 : 0, true, true, true);
+            __instance.OnValueChanged.Invoke(__instance);
             NotificationPopperPatch.AddSettingsChangeMessage(index, item, false);
             return false;
         }
@@ -482,6 +486,9 @@ public static class NumberOptionPatch
             case StringNames.GameNumImpostors:
                 __instance.ValidRange = new(0f, GameOptionsManager.Instance.CurrentGameOptions.MaxPlayers / 2);
                 break;
+            case StringNames.CapacityLabel:
+                __instance.ValidRange = new(4, 127);
+                break;
         }
 
         if (ModGameOptionsMenu.OptionList.TryGetValue(__instance, out var index))
@@ -503,12 +510,13 @@ public static class NumberOptionPatch
 
             if (item is IntegerOptionItem integerOptionItem)
             {
-                integerOptionItem.SetValue(integerOptionItem.Rule.GetNearestIndex(__instance.GetInt()));
+                integerOptionItem.SetValue(integerOptionItem.Rule.GetNearestIndex(__instance.GetInt()), true, true, true);
             }
             else if (item is FloatOptionItem floatOptionItem)
             {
-                floatOptionItem.SetValue(floatOptionItem.Rule.GetNearestIndex(__instance.GetFloat()));
+                floatOptionItem.SetValue(floatOptionItem.Rule.GetNearestIndex(__instance.GetFloat()), true, true, true);
             }
+
             NotificationPopperPatch.AddSettingsChangeMessage(index, item, false);
             return false;
         }
@@ -668,19 +676,21 @@ public static class StringOptionPatch
             var item = OptionItem.AllOptions[index];
             //Logger.Info($"{item.Name}, {index}", "StringOption.UpdateValue.TryAdd");
 
-            item.SetValue(__instance.GetInt());
+            item.SetValue(__instance.GetInt(), true, true, true);
 
             if (item is PresetOptionItem || (item is StringOptionItem && item.Name == "GameMode"))
             {
-                if (Options.GameMode.GetInt() == 2 && !GameStates.IsHideNSeek) //Hide And Seek
+                if (Options.GameMode.GetInt() == 3 && !GameStates.IsHideNSeek) //Hide And Seek
                 {
-                    Options.GameMode.SetValue(0);
+                    if (Options.prevGameMode == 2) Options.GameMode.SetValue(0);
+                    else Options.GameMode.SetValue(2);
                 }
-                else if (Options.GameMode.GetInt() != 2 && GameStates.IsHideNSeek)
+                else if (Options.GameMode.GetInt() != 3 && GameStates.IsHideNSeek)
                 {
-                    Options.GameMode.SetValue(2);
+                    Options.GameMode.SetValue(3);
                 }
                 GameOptionsMenuPatch.ReOpenSettings(item.Name != "GameMode" ? 1 : 4);
+                Options.prevGameMode = Options.GameMode.GetInt();
             }
 
             NotificationPopperPatch.AddSettingsChangeMessage(index, item, false);

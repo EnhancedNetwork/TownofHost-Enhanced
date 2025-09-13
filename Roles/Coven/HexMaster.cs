@@ -1,6 +1,5 @@
-using AmongUs.GameOptions;
 using Hazel;
-using InnerNet;
+using TOHE.Modules.Rpc;
 using TOHE.Roles.Core;
 using UnityEngine;
 using static TOHE.Options;
@@ -26,6 +25,7 @@ internal class HexMaster : CovenManager
     private static OptionItem HexCooldown;
     private static OptionItem CovenCanGetMovingHex;
     private static OptionItem MovingHexPassCooldown;
+    private static OptionItem CanKillTNA;
 
     private static readonly Dictionary<byte, List<byte>> HexedPlayer = [];
     public static byte CurrentHexedPlayer = byte.MaxValue;
@@ -58,6 +58,7 @@ internal class HexMaster : CovenManager
         CovenCanGetMovingHex = BooleanOptionItem.Create(Id + 14, "HexMasterCovenCanGetMovingHex", false, TabGroup.CovenRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.HexMaster]);
         HexesLookLikeSpells = BooleanOptionItem.Create(Id + 11, "HexesLookLikeSpells", false, TabGroup.CovenRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.HexMaster]);
         //HasImpostorVision = BooleanOptionItem.Create(Id + 12, GeneralOption.ImpostorVision,  true, TabGroup.CovenRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.HexMaster]);
+        CanKillTNA = BooleanOptionItem.Create(Id + 16, "CanKillTNA", false, TabGroup.CovenRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.HexMaster]);
     }
     public override void Init()
     {
@@ -81,19 +82,18 @@ internal class HexMaster : CovenManager
     {
         if (regularHex)
         {
-            MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.DoHex, SendOption.Reliable, -1);
-            writer.Write(hexId);
-            writer.Write(target);
-            AmongUsClient.Instance.FinishRpcImmediately(writer);
+            var msg = new RpcDoHex(PlayerControl.LocalPlayer.NetId, hexId, target);
+            RpcUtils.LateBroadcastReliableMessage(msg);
         }
         else
         {
-            MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, SendOption.Reliable, -1);
-            writer.WriteNetObject(GetPlayerById(hexId));
+            var player = Utils.GetPlayerById(hexId);
+            if (player == null) return;
+
+            var writer = MessageWriter.Get(SendOption.Reliable);
             writer.Write(newHex);
             writer.Write(oldHex);
-            AmongUsClient.Instance.FinishRpcImmediately(writer);
-
+            RpcUtils.LateBroadcastReliableMessage(new RpcSyncRoleSkill(PlayerControl.LocalPlayer.NetId, player.NetId, writer));
         }
     }
     public static void ReceiveRPC(MessageReader reader, bool regularHex)
@@ -310,7 +310,7 @@ internal class HexMaster : CovenManager
             {
                 var min = targetDistance.OrderBy(c => c.Value).FirstOrDefault();
                 var target = min.Key.GetPlayer();
-                var KillRange = GameOptionsData.KillDistances[Mathf.Clamp(GameOptionsManager.Instance.currentNormalGameOptions.KillDistance, 0, 2)];
+                var KillRange = ExtendedPlayerControl.GetKillDistances();
                 if (min.Value <= KillRange && !player.inVent && !player.inMovingPlat && !target.inVent && !target.inMovingPlat && player.RpcCheckAndMurder(target, true))
                 {
                     PassHex(player, target);
@@ -330,6 +330,7 @@ internal class HexMaster : CovenManager
         {
             var dic = HexedPlayer.Where(x => x.Value.Contains(pc.PlayerId));
             if (!dic.Any()) continue;
+            if (pc.IsTransformedNeutralApocalypse() && !CanKillTNA.GetBool()) continue;
             var whichId = dic.FirstOrDefault().Key;
             var hexmaster = Utils.GetPlayerById(whichId);
             if (hexmaster != null && hexmaster.IsAlive())
@@ -342,7 +343,7 @@ internal class HexMaster : CovenManager
             }
             else
             {
-                Main.AfterMeetingDeathPlayers.Remove(pc.PlayerId);
+                if (pc.GetDeathReason() is not PlayerState.DeathReason.Suicide) Main.AfterMeetingDeathPlayers.Remove(pc.PlayerId);
             }
         }
         CheckForEndVotingPatch.TryAddAfterMeetingDeathPlayers(PlayerState.DeathReason.Hex, [.. hexedIdList]);
