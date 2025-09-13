@@ -595,7 +595,7 @@ public static class CustomRolesHelper
                 a =>
                     !a.IsConverted() &&
                     !(noHarmfullToCrew && pc.GetCustomRole().IsCrewmate() && Options.GroupedAddons[AddonTypes.Harmful].Contains(a)) &&
-                    !(noHelpfullToEvil && (pc.GetCustomRole().IsImpostor() || pc.GetCustomRole().IsNeutral() || pc.GetCustomRole().IsCoven()) && Options.GroupedAddons[AddonTypes.Harmful].Contains(a)) &&
+                    !(noHelpfullToEvil && (pc.GetCustomRole().IsImpostor() || pc.GetCustomRole().IsNeutral() || pc.GetCustomRole().IsCoven()) && Options.GroupedAddons[AddonTypes.Helpful].Contains(a)) &&
                     CheckAddonConfilct(a, pc, checkLimitAddons: false)
                 ).ToList()
             : []
