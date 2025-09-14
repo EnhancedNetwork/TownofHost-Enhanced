@@ -52,12 +52,15 @@ internal class Catalyst : RoleBase
             {
                 killer.RpcRemoveAbilityUse();
                 target.RpcIncreaseAbilityUseLimitBy(1);
-                var targetCooldown = Main.AllPlayerKillCooldown[target.PlayerId] * (1 - CatalyzeCDReduction.GetFloat()/100);
+                var targetCooldown = Main.AllPlayerKillCooldown[target.PlayerId] * (1 - CatalyzeCDReduction.GetFloat() / 100);
                 target.SetKillCooldownV3(targetCooldown);
 
                 killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Catalyst), GetString("CatalystCatalyzePlayer")));
                 target.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Catalyst), GetString("PlayerCatalyzed")));
                 killer.SetKillCooldown();
+
+                killer.RPCPlayCustomSound("Onichian");
+                target.RPCPlayCustomSound("Onichian");
             }
             else
             {
