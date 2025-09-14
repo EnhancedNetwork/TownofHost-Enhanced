@@ -11,6 +11,7 @@ internal class Catalyst : RoleBase
     //===========================SETUP================================\\
     public override CustomRoles Role => CustomRoles.Catalyst;
     private const int Id = 32300;
+    public override bool IsExperimental => true;
     public override bool IsDesyncRole => true;
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.CrewmateSupport;
@@ -23,11 +24,11 @@ internal class Catalyst : RoleBase
     public override void SetupCustomOption()
     {
         SetupRoleOptions(Id, TabGroup.CrewmateRoles, CustomRoles.Catalyst);
-        CatalyzeCooldown = FloatOptionItem.Create(Id + 10, "CatalyzeCooldown", new(0f, 180f, 2.5f), 10f, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Catalyst])
+        CatalyzeCooldown = FloatOptionItem.Create(Id + 10, "CatalyzeCooldown", new(0f, 180f, 2.5f), 25f, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Catalyst])
             .SetValueFormat(OptionFormat.Seconds);
         CatalyzeCDReduction = FloatOptionItem.Create(Id + 11, "CatalyzeCDReduction", new(0f, 90f, 5f), 40f, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Catalyst])
             .SetValueFormat(OptionFormat.Percent);
-        CatalyzeMax = IntegerOptionItem.Create(Id + 12, "CatalyzeMax", new(1, 30, 1), 15, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Catalyst])
+        CatalyzeMax = IntegerOptionItem.Create(Id + 12, "CatalyzeMax", new(1, 30, 1), 3, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Catalyst])
             .SetValueFormat(OptionFormat.Times);
     }
     public override void Init()

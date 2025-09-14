@@ -499,6 +499,7 @@ public static class Utils
 
         if (Lich.IsCursed(target) && Lich.IsDeceived(seer, target))
         {
+            Logger.Info($"{seer.GetRealName()} was deceived by Lich", "GetRoleAndSubText");
             targetMainRole = CustomRoles.Lich;
         }
 
@@ -507,7 +508,7 @@ public static class Utils
 
         try
         {
-            if (targetSubRoles.Any())
+            if (targetSubRoles.Any() && targetMainRole != CustomRoles.Lich)
             {
                 var oldRoleText = RoleText.ToString();
 
@@ -2100,18 +2101,17 @@ public static class Utils
                             TargetRoleText = $"<size={fontSize}>{BlankRT}</size>\r\n";
                         }
 
-                        if (seer.IsAlive() && Lich.IsCursed(target) && Lich.IsDeceived(seer, target))
-                        {
-                            BlankRT = ColorString(GetRoleColor(CustomRoles.Lich), GetString(CustomRoles.Lich.GetActualRoleName()));
-                            TargetRoleText = $"<size={fontSize}>{BlankRT}</size>\r\n";
+                        // if (seer.IsAlive() && Lich.IsCursed(target) && Lich.IsDeceived(seer, target))
+                        // {
+                        //     BlankRT = ColorString(GetRoleColor(CustomRoles.Lich), GetString(CustomRoles.Lich.GetActualRoleName()));
+                        //     TargetRoleText = $"<size={fontSize}>{BlankRT}</size>\r\n";
                             
-                            if (!Overseer.IsRevealedPlayer(seer, target))
-                                TargetRoleText = KnowRoleTarget ? TargetRoleText : "";
-                        }
+                        //     TargetRoleText = KnowRoleTarget ? TargetRoleText : "";
+                        // }
 
                         // ====== Target player name ======
 
-                            string TargetPlayerName = target.GetRealName(isForMeeting);
+                        string TargetPlayerName = target.GetRealName(isForMeeting);
 
                         var tempNameText = seer.GetRoleClass()?.NotifyPlayerName(seer, target, TargetPlayerName, isForMeeting);
                         if (tempNameText != string.Empty)

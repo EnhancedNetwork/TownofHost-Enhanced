@@ -17,7 +17,7 @@ internal class Doppelganger : RoleBase
     public override Custom_RoleType ThisRoleType => Custom_RoleType.NeutralKilling;
     //==================================================================\\
 
-    private static readonly Dictionary<byte, byte> targets;
+    private static readonly Dictionary<byte, byte> targets = [];
 
     private static OptionItem KillCooldown;
     private static OptionItem CanVent;
@@ -61,7 +61,7 @@ internal class Doppelganger : RoleBase
             return true;
         }
 
-        targets[killer.PlayerId] = target.PlayerId ;
+        targets[killer.PlayerId] = target.PlayerId;
 
         killer.RpcRemoveAbilityUse();
 

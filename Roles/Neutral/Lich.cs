@@ -144,7 +144,7 @@ internal class Lich : RoleBase
 
         SendRPC();
         _Player.Notify(GetString("LichChargeGained"));
-    }   
+    }
 
     public static void OnTargetVote(PlayerControl target)
     {
@@ -157,11 +157,14 @@ internal class Lich : RoleBase
     public static bool IsCursed(PlayerControl player) => player.PlayerId == TargetId;
     public static bool IsDeceived(PlayerControl seer, PlayerControl target)
     {
-        if (seer == null|| target == null) return false;
+        if (seer == null || target == null) return false;
         if (seer == target) return false;
         if (!seer.IsAlive()) return false;
 
         if (seer.Is(CustomRoles.GM) || target.Is(CustomRoles.GM)) return false;
+
+        bool targetHasState = Main.PlayerStates.TryGetValue(target.PlayerId, out var targetState);
+        bool seerHasState = Main.PlayerStates.TryGetValue(seer.PlayerId, out var seerState);
 
         if (seer.IsNeutralApocalypse()) return false;
         if (target.GetCustomRole().IsRevealingRole(seer) || target.IsAnySubRole(role => role.IsRevealingRole(seer))) return false;
@@ -176,19 +179,19 @@ internal class Lich : RoleBase
         // Coven Team
         if (seer.Is(Custom_Team.Coven) && target.Is(Custom_Team.Coven)) return false;
         if (seer.Is(CustomRoles.Enchanted) && target.Is(Custom_Team.Coven) && Ritualist.EnchantedKnowsCoven.GetBool()) return false;
-        if (Main.PlayerStates[seer.PlayerId].IsNecromancer && target.Is(Custom_Team.Coven)) return false;
-        if (Main.PlayerStates[target.PlayerId].IsNecromancer && seer.Is(Custom_Team.Coven)) return false;
+        if (seerHasState && seerState.IsNecromancer && target.Is(Custom_Team.Coven)) return false;
+        if (targetHasState && targetState.IsNecromancer && seer.Is(Custom_Team.Coven)) return false;
         if (seer.Is(Custom_Team.Coven) && target.Is(CustomRoles.Enchanted)) return false;
-        if (Main.PlayerStates[seer.PlayerId].IsNecromancer && target.Is(CustomRoles.Enchanted)) return false;
-        if (Main.PlayerStates[target.PlayerId].IsNecromancer && seer.Is(CustomRoles.Enchanted)) return false;
+        if (seerHasState && seerState.IsNecromancer && target.Is(CustomRoles.Enchanted)) return false;
+        if (targetHasState && targetState.IsNecromancer && seer.Is(CustomRoles.Enchanted)) return false;
         if (seer.Is(CustomRoles.Enchanted) && target.Is(CustomRoles.Enchanted) && Ritualist.EnchantedKnowsEnchanted.GetBool()) return false;
 
         // Cultist
         if (Cultist.NameRoleColor(seer, target)) return false;
 
         // Admirer
-        if (seer.Is(CustomRoles.Admirer) && !Main.PlayerStates[seer.PlayerId].IsNecromancer && target.Is(CustomRoles.Admired)) return false;
-        if (seer.Is(CustomRoles.Admired) && target.Is(CustomRoles.Admirer) && !Main.PlayerStates[target.PlayerId].IsNecromancer) return false;
+        if (seer.Is(CustomRoles.Admirer) && !(seerHasState && seerState.IsNecromancer) && target.Is(CustomRoles.Admired)) return false;
+        if (seer.Is(CustomRoles.Admired) && target.Is(CustomRoles.Admirer) && !(seerHasState && seerState.IsNecromancer)) return false;
 
         // Infectious
         if (Infectious.InfectedKnowColorOthersInfected(seer, target)) return false;
@@ -203,11 +206,11 @@ internal class Lich : RoleBase
         if (NarcManager.KnowRoleOfTarget(seer, target)) return false;
 
         if (Main.GodMode.Value && seer.IsHost()) return false;
-        if (Options.CurrentGameMode == CustomGameMode.FFA) return false;
+        if (CurrentGameMode == CustomGameMode.FFA) return false;
 
         if (target.GetRoleClass().OthersKnowTargetRoleColor(seer, target)) return false;
         if (Workaholic.OthersKnowWorka(target)) return false;
-        if (target.Is(CustomRoles.Gravestone) && Main.PlayerStates[target.Data.PlayerId].IsDead) return false;
+        if (target.Is(CustomRoles.Gravestone) && targetHasState && targetState.IsDead) return false;
 
         // if (player.GetBetrayalAddon(forRecruiter: true) != CustomRoles.NotAssigned && player.GetBetrayalAddon(true) == target.GetBetrayalAddon(true)) return false;
         if (seer.Is(CustomRoles.Lovers) && target.Is(CustomRoles.Lovers)) return false;
@@ -215,8 +218,8 @@ internal class Lich : RoleBase
         if (seer.Is(CustomRoles.Executioner) && (seer.GetRoleClass() as Executioner).IsTarget(target.PlayerId)) return false;
         if (seer.Is(CustomRoles.Lawyer) && (seer.GetRoleClass() as Lawyer).IsTarget(target.PlayerId)) return false;
 
-        if (seer.Is(CustomRoles.Follower) && Follower.BetPlayer[seer.PlayerId] == target.PlayerId) return false;
-        if (Follower.BetPlayer[target.PlayerId] == seer.PlayerId && target.Is(CustomRoles.Follower)) return false;
+        if (seer.Is(CustomRoles.Follower) && Follower.BetPlayer.TryGetValue(seer.PlayerId, out var followed) && followed == target.PlayerId) return false;
+        if (Follower.BetPlayer.TryGetValue(seer.PlayerId, out var followed2) && followed2 == seer.PlayerId && target.Is(CustomRoles.Follower)) return false;
 
         if (seer.Is(CustomRoles.Romantic) && seer.GetRoleClass().KnowRoleTarget(seer, target)) return false;
         if (seer.Is(CustomRoles.SchrodingersCat) && seer.GetRoleClass().KnowRoleTarget(seer, target)) return false;
@@ -239,5 +242,10 @@ internal class Lich : RoleBase
             player.Notify(GetString("SoulCollectorToDeath"));
             player.RpcGuardAndKill(player);
         }
+    }
+    
+    public override void SetAbilityButtonText(HudManager hud, byte id)
+    {
+        hud.KillButton.OverrideText(GetString("LichKillButtonText"));
     }
 }

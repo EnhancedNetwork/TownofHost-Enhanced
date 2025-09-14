@@ -1342,19 +1342,21 @@ class FixedUpdateInNormalGamePatch
                     }
                     result.Clear().Append($"<size=1.3>{blankRT}</size>");
                 }
-                if (Lich.IsCursed(player) && Lich.IsDeceived(localPlayer, player))
-                {
-                    blankRT.Clear().Append(CustomRoles.Lich.ToColoredString());
-                    result.Clear().Append($"<size=1.3>{blankRT}</size>");
-                }
+                // if (Lich.IsCursed(player) && Lich.IsDeceived(localPlayer, player))
+                // {
+                //     blankRT.Clear().Append(CustomRoles.Lich.ToColoredString());
+                //     blankRT.Append(CustomRoles.Lich.GetStaticRoleClass().GetProgressText(localPlayerId, false));
+                //     result.Clear().Append($"<size=1.3>{blankRT}</size>");
+                // }
                 roleText.text = result.ToString();
             }
 
-            if (localPlayer.IsAlive() && ExtendedPlayerControl.KnowRoleTarget(localPlayer, player) && Lich.IsCursed(player) && Lich.IsDeceived(localPlayer, player))
-            {
-                string blankRT = CustomRoles.Lich.ToColoredString();
-                roleText.text = $"<size=1.3>{blankRT}</size>";
-            }
+            // if (localPlayer.IsAlive() && Lich.IsCursed(player) && Lich.IsDeceived(localPlayer, player))
+            // {
+            //     StringBuilder blankRT = new(CustomRoles.Lich.ToColoredString());
+            //     blankRT.Append(CustomRoles.Lich.GetStaticRoleClass().GetProgressText(localPlayerId, false));
+            //     roleText.text = $"<size=1.3>{blankRT}</size>";
+            // }
 
             if (!amongUsClient.IsGameStarted && amongUsClient.NetworkMode != NetworkModes.FreePlay)
             {

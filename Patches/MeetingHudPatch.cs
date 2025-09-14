@@ -1190,11 +1190,11 @@ class MeetingHudStartPatch
                     }
                     result.Clear().Append($"<size={roleTextMeeting.fontSize}>{blankRT}</size>");
                 }
-                if (Lich.IsCursed(target) && Lich.IsDeceived(player, target))
-                {
-                    blankRT.Clear().Append(CustomRoles.Lich.ToColoredString());
-                    result.Clear().Append($"<size={roleTextMeeting.fontSize}>{blankRT}</size>");
-                }
+                // if (Lich.IsCursed(target) && Lich.IsDeceived(player, target))
+                // {
+                //     blankRT.Clear().Append(CustomRoles.Lich.ToColoredString());
+                //     result.Clear().Append($"<size={roleTextMeeting.fontSize}>{blankRT}</size>");
+                // }
                 roleTextMeeting.text = result.ToString();
             }
             if (player.IsAlive() && !target.AmOwner && ExtendedPlayerControl.KnowRoleTarget(player, target) && Lich.IsCursed(target) && Lich.IsDeceived(player, target))
