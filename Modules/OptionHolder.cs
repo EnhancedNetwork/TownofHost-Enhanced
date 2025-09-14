@@ -16,6 +16,7 @@ public enum CustomGameMode
     FFA = 0x02,
 
     SpeedRun = 0x04,
+    ShapeshiftWars = 0x05,
 
     HidenSeekTOHE = 0x08, // HidenSeekTOHE must be after other game modes
     All = int.MaxValue
@@ -54,7 +55,8 @@ public static class Options
             1 => CustomGameMode.FFA,
 
             2 => CustomGameMode.SpeedRun,
-            3 => CustomGameMode.HidenSeekTOHE, // HidenSeekTOHE must be after other game modes
+            3 => CustomGameMode.ShapeshiftWars,
+            4 => CustomGameMode.HidenSeekTOHE, // HidenSeekTOHE must be after other game modes
             _ => CustomGameMode.Standard
         };
     public static int prevGameMode = 0;
@@ -64,6 +66,7 @@ public static class Options
         "FFA",
 
         "SpeedRun",
+        "ShapeshiftWars",
 
         "Hide&SeekTOHE", // HidenSeekTOHE must be after other game modes
     ];
