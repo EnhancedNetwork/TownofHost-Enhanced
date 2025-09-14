@@ -804,6 +804,7 @@ public enum CustomRoles
     Benefactor,
     Bodyguard,
     Captain,
+    Catalyst,
     Celebrity,
     Chameleon,
     ChiefOfPolice,
