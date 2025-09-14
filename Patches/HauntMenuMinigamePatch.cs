@@ -1,5 +1,6 @@
 using TOHE.Roles.Crewmate;
 using TOHE.Roles.Impostor;
+using TOHE.Roles.Neutral;
 
 namespace TOHE.Patches;
 
@@ -22,6 +23,7 @@ public static class HauntMenuMinigameSetFilterTextPatch
             {
                 if (Nemesis.PreventKnowRole(seer)) return false;
                 if (Retributionist.PreventKnowRole(seer)) return false;
+                if (Doppelganger.PreventKnowRole(seer)) return false;
 
                 if (!Options.GhostCanSeeOtherRoles.GetBool())
                     return false;

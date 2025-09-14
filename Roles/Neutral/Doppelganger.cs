@@ -17,10 +17,13 @@ internal class Doppelganger : RoleBase
     public override Custom_RoleType ThisRoleType => Custom_RoleType.NeutralKilling;
     //==================================================================\\
 
+    private static readonly List<byte> targets = [];
+
     private static OptionItem KillCooldown;
     private static OptionItem CanVent;
     private static OptionItem HasImpostorVision;
     private static OptionItem MaxSteals;
+    private static OptionItem PreventTargetSeeRoles;
 
     public override void SetupCustomOption()
     {
@@ -31,6 +34,8 @@ internal class Doppelganger : RoleBase
         CanVent = BooleanOptionItem.Create(Id + 12, GeneralOption.CanVent, true, TabGroup.NeutralRoles, false)
             .SetParent(CustomRoleSpawnChances[CustomRoles.Doppelganger]);
         HasImpostorVision = BooleanOptionItem.Create(Id + 13, GeneralOption.ImpostorVision, true, TabGroup.NeutralRoles, false)
+            .SetParent(CustomRoleSpawnChances[CustomRoles.Doppelganger]);
+        PreventTargetSeeRoles = BooleanOptionItem.Create(Id + 14, "DoppleTargetPreventSeeRoles", false, TabGroup.NeutralRoles, false)
             .SetParent(CustomRoleSpawnChances[CustomRoles.Doppelganger]);
     }
     public override void Add(byte playerId)
@@ -54,6 +59,8 @@ internal class Doppelganger : RoleBase
         {
             return true;
         }
+
+        targets.Add(target.PlayerId);
 
         killer.RpcRemoveAbilityUse();
 
@@ -83,5 +90,13 @@ internal class Doppelganger : RoleBase
         killer.ResetKillCooldown();
         killer.SetKillCooldown();
         return true;
+    }
+
+    public static bool PreventKnowRole(PlayerControl seer)
+    {
+        if (seer.IsAlive()) return false;
+        if (PreventTargetSeeRoles.GetBool() && !targets.Contains(seer.PlayerId))
+            return true;
+        return false;
     }
 }
