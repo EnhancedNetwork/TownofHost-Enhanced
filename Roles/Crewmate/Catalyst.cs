@@ -55,6 +55,7 @@ internal class Catalyst : RoleBase
                 target.SetKillCooldownV3(targetCooldown);
 
                 killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Catalyst), GetString("CatalystCatalyzePlayer")));
+                target.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Catalyst), GetString("PlayerCatalyzed")));
                 killer.SetKillCooldown();
             }
             else
@@ -71,5 +72,5 @@ internal class Catalyst : RoleBase
     {
         hud.KillButton.OverrideText(GetString("CatalystCatalyzeText"));
     }
-    // public override Sprite GetKillButtonSprite(PlayerControl player, bool shapeshifting) => CustomButton.Get("Catalyst");
+    // public override Sprite GetKillButtonSprite(PlayerControl player, bool shapeshifting) => CustomButton.Get("Catalyze");
 }
