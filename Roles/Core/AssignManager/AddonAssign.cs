@@ -177,7 +177,8 @@ public static class AddonAssign
                 || pc.Is(CustomRoles.EvilMini)
                 || (pc.GetCustomRole().IsCrewmate() && !Options.CrewCanBeInLove.GetBool())
                 || (pc.GetCustomRole().IsNeutral() && !Options.NeutralCanBeInLove.GetBool())
-                || (pc.GetCustomRole().IsImpostor() && !Options.ImpCanBeInLove.GetBool()))
+                || (pc.GetCustomRole().IsImpostor() && !Options.ImpCanBeInLove.GetBool())
+                || (pc.GetCustomRole().IsCoven() && !Options.CovenCanBeInLove.GetBool()))
                 continue;
 
             allPlayers.Add(pc);
