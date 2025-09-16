@@ -155,6 +155,7 @@ internal class Lich : RoleBase
             (LichPlayer.GetRoleClass() as Lich).OnTargetVote();
     }
 
+    public static bool IsCursed(byte playerId) => playerId == TargetId;
     public static bool IsCursed(PlayerControl player) => player.PlayerId == TargetId;
     public static bool IsDeceived(PlayerControl seer, PlayerControl target)
     {
@@ -226,6 +227,28 @@ internal class Lich : RoleBase
         if (seer.Is(CustomRoles.SchrodingersCat) && seer.GetRoleClass().KnowRoleTarget(seer, target)) return false;
 
         return true;
+    }
+    public static bool IsDeceived(byte seerId, byte targetId)
+    {
+        try
+        {
+            if (seerId == targetId) return false;
+
+            if (Main.PlayerStates[seerId].IsDead) return false;
+
+            var seerRole = Main.PlayerStates[seerId].MainRole;
+            var seerSubRoles = Main.PlayerStates[seerId].SubRoles;
+            var targetRole = Main.PlayerStates[targetId].MainRole;
+            var targetSubRoles = Main.PlayerStates[targetId].SubRoles;
+
+            if (seerRole is CustomRoles.GM || targetRole is CustomRoles.GM) return false;
+
+            return IsDeceived(seerId.GetPlayer(), targetId.GetPlayer());
+        }
+        catch
+        {
+            return false;
+        }
     }
 
     public override void AfterMeetingTasks()

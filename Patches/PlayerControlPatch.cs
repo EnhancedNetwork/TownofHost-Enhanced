@@ -1365,6 +1365,9 @@ class FixedUpdateInNormalGamePatch
                     player.cosmetics.nameText.text = playerData?.PlayerName;
             }
 
+            if (!roleText.isActiveAndEnabled && roleText.enabled)
+                roleText.gameObject.SetActive(true);
+
             if (Main.VisibleTasksCount)
                 roleText.text += Utils.GetProgressText(player);
 
@@ -1513,6 +1516,7 @@ class FixedUpdateInNormalGamePatch
                 roleText?.transform?.SetLocalY(offset);
                 player?.cosmetics?.colorBlindText?.transform?.SetLocalY(colorBlind);
             }
+            // Logger.Info($"Role Name for {player.GetRealName()}: {roleText.text}; is enabled: {roleText.enabled}; {roleText.fontSize}", "FixedUpdateInNormalGame.DoPostfix");
         }
         else
         {
@@ -1520,55 +1524,55 @@ class FixedUpdateInNormalGamePatch
             player?.cosmetics?.colorBlindText?.transform?.SetLocalY(-0.32f);
         }
     }
-    public static void LoversSuicide(byte deathId = 0x7f, bool isExiled = false)
-    {
-        if (Options.LoverSuicide.GetBool() && Main.isLoversDead == false)
-        {
-            foreach (var loversPlayer in Main.LoversPlayers.ToArray())
-            {
-                if (!loversPlayer.Is(CustomRoles.Lovers)) continue;
-                if (loversPlayer.IsAlive() && loversPlayer.PlayerId != deathId) continue;
+    // public static void LoversSuicide(byte deathId = 0x7f, bool isExiled = false)
+    // {
+    //     if (Options.LoverSuicide.GetBool() && Main.isLoversDead == false)
+    //     {
+    //         foreach (var loversPlayer in Main.LoversPlayers.ToArray())
+    //         {
+    //             if (!loversPlayer.Is(CustomRoles.Lovers)) continue;
+    //             if (loversPlayer.IsAlive() && loversPlayer.PlayerId != deathId) continue;
 
-                Main.isLoversDead = true;
-                foreach (var partnerPlayer in Main.LoversPlayers.ToArray())
-                {
-                    if (loversPlayer.PlayerId == partnerPlayer.PlayerId) continue;
+    //             Main.isLoversDead = true;
+    //             foreach (var partnerPlayer in Main.LoversPlayers.ToArray())
+    //             {
+    //                 if (loversPlayer.PlayerId == partnerPlayer.PlayerId) continue;
 
-                    if (partnerPlayer.PlayerId != deathId && partnerPlayer.IsAlive())
-                    {
-                        if (partnerPlayer.Is(CustomRoles.Lovers))
-                        {
-                            partnerPlayer.SetDeathReason(PlayerState.DeathReason.FollowingSuicide);
+    //                 if (partnerPlayer.PlayerId != deathId && partnerPlayer.IsAlive())
+    //                 {
+    //                     if (partnerPlayer.Is(CustomRoles.Lovers))
+    //                     {
+    //                         partnerPlayer.SetDeathReason(PlayerState.DeathReason.FollowingSuicide);
 
-                            if (isExiled)
-                            {
-                                if (Main.PlayersDiedInMeeting.Contains(deathId))
-                                {
-                                    partnerPlayer.Data.IsDead = true;
-                                    partnerPlayer.RpcExileV2();
-                                    Main.PlayerStates[partnerPlayer.PlayerId].SetDead();
-                                    if (MeetingHud.Instance?.state is MeetingHud.VoteStates.Discussion or MeetingHud.VoteStates.NotVoted or MeetingHud.VoteStates.Voted)
-                                    {
-                                        MeetingHud.Instance?.CheckForEndVoting();
-                                    }
-                                    MurderPlayerPatch.AfterPlayerDeathTasks(partnerPlayer, partnerPlayer, true);
-                                    _ = new LateTask(() => HudManager.Instance?.SetHudActive(false), 0.3f, "SetHudActive in LoversSuicide", shoudLog: false);
-                                }
-                                else
-                                {
-                                    CheckForEndVotingPatch.TryAddAfterMeetingDeathPlayers(PlayerState.DeathReason.FollowingSuicide, partnerPlayer.PlayerId);
-                                }
-                            }
-                            else
-                            {
-                                partnerPlayer.RpcMurderPlayer(partnerPlayer);
-                            }
-                        }
-                    }
-                }
-            }
-        }
-    }
+    //                         if (isExiled)
+    //                         {
+    //                             if (Main.PlayersDiedInMeeting.Contains(deathId))
+    //                             {
+    //                                 partnerPlayer.Data.IsDead = true;
+    //                                 partnerPlayer.RpcExileV2();
+    //                                 Main.PlayerStates[partnerPlayer.PlayerId].SetDead();
+    //                                 if (MeetingHud.Instance?.state is MeetingHud.VoteStates.Discussion or MeetingHud.VoteStates.NotVoted or MeetingHud.VoteStates.Voted)
+    //                                 {
+    //                                     MeetingHud.Instance?.CheckForEndVoting();
+    //                                 }
+    //                                 MurderPlayerPatch.AfterPlayerDeathTasks(partnerPlayer, partnerPlayer, true);
+    //                                 _ = new LateTask(() => HudManager.Instance?.SetHudActive(false), 0.3f, "SetHudActive in LoversSuicide", shoudLog: false);
+    //                             }
+    //                             else
+    //                             {
+    //                                 CheckForEndVotingPatch.TryAddAfterMeetingDeathPlayers(PlayerState.DeathReason.FollowingSuicide, partnerPlayer.PlayerId);
+    //                             }
+    //                         }
+    //                         else
+    //                         {
+    //                             partnerPlayer.RpcMurderPlayer(partnerPlayer);
+    //                         }
+    //                     }
+    //                 }
+    //             }
+    //         }
+    //     }
+    // }
 }
 [HarmonyPatch(typeof(PlayerControl._Start_d__82), nameof(PlayerControl._Start_d__82.MoveNext))]
 class PlayerStartPatch

@@ -1696,7 +1696,7 @@
   "FlashSpeed": "<color=#ff8400>Flash</color> Speed",
   "SlothSpeed": "<color=#376db8>Sloth</color> Speed",
   "LoverSuicide": "<color=#ff9ace>Lovers</color> die together",
-  "NumberOfLovers": "Number of <color=#ff9ace>Lover Pairs</color> (x2 members)",
+  "NumberOfLovers": "Number of <color=#ff9ace>Lovers</color>",
   "LoverKnowRoles": "<color=#ff9ace>Lovers</color> know the roles of each other",
   "FreezeTime": "Freeze time",
   "TimeThiefDecreaseMeetingTime": "Lower Meeting Time by",

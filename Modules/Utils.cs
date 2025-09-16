@@ -477,14 +477,6 @@ public static class Utils
         var targetMainRole = Main.PlayerStates[targetId].MainRole;
         var targetSubRoles = Main.PlayerStates[targetId].SubRoles;
 
-        var seer = GetPlayerById(seerId);
-        var target = GetPlayerById(targetId);
-
-        if (seer == null || target == null)
-        {
-            return (RoleText.ToString(), RoleColor);
-        }
-
         // If a player is possessed by the Dollmaster swap each other's role and add-ons for display for every other client other than Dollmaster and target.
         if (DollMaster.IsControllingPlayer)
         {
@@ -497,9 +489,8 @@ public static class Utils
             }
         }
 
-        if (Lich.IsCursed(target) && Lich.IsDeceived(seer, target))
+        if (Lich.IsCursed(targetId) && Lich.IsDeceived(seerId, targetId))
         {
-            Logger.Info($"{seer.GetRealName()} was deceived by Lich", "GetRoleAndSubText");
             targetMainRole = CustomRoles.Lich;
         }
 
@@ -508,8 +499,13 @@ public static class Utils
 
         try
         {
-            if (targetSubRoles.Any() && targetMainRole != CustomRoles.Lich)
+            if (targetSubRoles.Any())
             {
+                var seer = GetPlayerById(seerId);
+                var target = GetPlayerById(targetId);
+
+                if (seer == null || target == null) return (RoleText.ToString(), RoleColor);
+
                 var oldRoleText = RoleText.ToString();
 
                 // if player last imp
@@ -587,10 +583,12 @@ public static class Utils
                 }
             }
 
+            // Logger.Info($"{seerId} sees {targetId} as {RoleText}", "GetRoleAndSubText");
             return (RoleText.ToString(), RoleColor);
         }
         catch
         {
+            // Logger.Info($"{seerId} sees {targetId} as {RoleText}", "GetRoleAndSubText.Catch");
             return (RoleText.ToString(), RoleColor);
         }
     }
@@ -1879,7 +1877,7 @@ public static class Utils
             string fontSizeDeathReason = "1.6";
             if (isForMeeting && (seer.GetClient().PlatformData.Platform is Platforms.Playstation or Platforms.Xbox or Platforms.Switch)) fontSize = "70%";
 
-            //logger.Info("NotifyRoles-Loop1-" + seer.GetNameWithRole() + ":START");
+            // Logger.Info(seer.GetNameWithRole() + ":START", "NotifyRoles-Loop1");
 
             var seerRole = seer.GetCustomRole();
             var seerRoleClass = seer.GetRoleClass();
@@ -2032,7 +2030,7 @@ public static class Utils
                     if (seer != target && seer != DollMaster.DollMasterTarget)
                         target = DollMaster.SwapPlayerInfo(realTarget); // If a player is possessed by the Dollmaster swap each other's controllers.
 
-                    //logger.Info("NotifyRoles-Loop2-" + target.GetNameWithRole() + ":START");
+                    // Logger.Info(target.GetNameWithRole() + ":START", "NotifyRoles-Loop2");
 
                     // Hide player names in during Mushroom Mixup if seer is alive and desync impostor
                     if (!CamouflageIsForMeeting && MushroomMixupIsActive && target.IsAlive() && (!seer.Is(Custom_Team.Impostor) || Main.PlayerStates[seer.PlayerId].IsNecromancer) && seer.HasDesyncRole())

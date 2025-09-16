@@ -1,9 +1,6 @@
-using AmongUs.GameOptions;
 using Hazel;
-using Rewired;
 using TOHE.Modules.Rpc;
 using static TOHE.Options;
-using static TOHE.Translator;
 
 namespace TOHE.Roles.AddOns.Common;
 
@@ -118,6 +115,8 @@ public class Lovers : IAddon
         hasHeartbreak.Add((loverless, playerId), hadHeartbreak);
 
         loverless = byte.MaxValue;
+
+        SendRPC();
     }
     public static byte GetLoverId(PlayerControl player) => GetLoverId(player.PlayerId);
     public static byte GetLoverId(byte playerId)
@@ -215,7 +214,7 @@ public class Lovers : IAddon
     public static string GetMarkOthers(PlayerControl seer, PlayerControl seen)
     {
         string colorCode = Utils.GetRoleColorCode(CustomRoles.Lovers);
-        if (AreLovers(seer, seen))
+        if (AreLovers(seer, seen) || (seer.Is(CustomRoles.Lovers) && seer.PlayerId == seen.PlayerId))
         {
             return $"<color={colorCode}>♥</color>";
         }
@@ -231,6 +230,7 @@ public class Lovers : IAddon
 
     public static void SendRPC()
     {
+        if (!AmongUsClient.Instance.AmHost) return;
         var msg = new RpcSetLoverPairs(PlayerControl.LocalPlayer.NetId, loverPairs.Count, loverPairs, loverless);
         RpcUtils.LateBroadcastReliableMessage(msg);
     }
@@ -238,14 +238,18 @@ public class Lovers : IAddon
     {
         loverPairs.Clear();
         int count = reader.ReadInt32();
+        Logger.Info($"Received {count} lover pairs.", "Lovers.ReceiveRPC");
 
         for (int i = 0; i < count; i++)
         {
             var pair = (reader.ReadByte(), reader.ReadByte());
             loverPairs.Add(pair);
+            Logger.Info($"{pair.Item1.GetPlayer().GetRealName()} ♥ {pair.Item2.GetPlayer().GetRealName()}", "Lovers.ReceiveRPC");
         }
 
         loverless = reader.ReadByte();
+
+        Logger.Info($"{loverless.GetPlayer().GetRealName()} has no lover, how sad.", "Lovers.ReceiveRPC");
     }
 
     public static void CheckWin()

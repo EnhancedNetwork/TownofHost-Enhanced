@@ -71,10 +71,6 @@ public static class NameColorManager
         // Bounties
         if (seer.Is(CustomRoles.BountyHunter) && BountyHunter.GetTarget(seer) == target.PlayerId) color = "bf1313";
 
-        // This is probably redundant with Inquisitor.PlayerKnowTargetColor
-        // // Heretics
-        // if (seer.Is(CustomRoles.Inquisitor) && Inquisitor.CanSeeIsHeretic(seer, target)) color = "a21b16ff";
-
         // Amnesiac
         if (seer.GetCustomRole() == target.GetCustomRole() && seer.GetCustomRole().IsNK()) color = Main.roleColors[seer.GetCustomRole()];
 
