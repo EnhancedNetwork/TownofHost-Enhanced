@@ -1,6 +1,7 @@
 using AmongUs.GameOptions;
 using Hazel;
 using TOHE.Modules.Rpc;
+using TOHE.Roles.AddOns.Common;
 using TOHE.Roles.AddOns.Impostor;
 using TOHE.Roles.Coven;
 using TOHE.Roles.Neutral;
@@ -150,7 +151,7 @@ internal class BountyHunter : RoleBase
     {
         if (target == null || player == null) return false;
 
-        if (player.Is(CustomRoles.Lovers) && target.Is(CustomRoles.Lovers)) return false;
+        if (Lovers.AreLovers(player, target)) return false;
 
         if (target.Is(CustomRoles.Romantic)
             && Romantic.BetPlayer.TryGetValue(target.PlayerId, out byte romanticPartner) && romanticPartner == player.PlayerId) return false;

@@ -655,12 +655,14 @@ class CheckForEndVotingPatch
             }
         }
 
+        Lovers.OnCheckForEndVoting(deathReason, playerIds);
+
         foreach (var playerId in playerIds)
         {
-            if (CustomRoles.Lovers.IsEnable() && deathReason == PlayerState.DeathReason.Vote && !Main.isLoversDead && Main.LoversPlayers.FirstOrDefault(lp => lp.PlayerId == playerId) != null)
-            {
-                FixedUpdateInNormalGamePatch.LoversSuicide(playerId, true);
-            }
+            // if (CustomRoles.Lovers.IsEnable() && deathReason == PlayerState.DeathReason.Vote && !Main.isLoversDead && Main.LoversPlayers.FirstOrDefault(lp => lp.PlayerId == playerId) != null)
+            // {
+            //     FixedUpdateInNormalGamePatch.LoversSuicide(playerId, true);
+            // }
 
             RevengeOnExile(playerId);
         }
@@ -1336,11 +1338,12 @@ class MeetingHudStartPatch
                 switch (TargetSubRole)
                 {
                     case CustomRoles.Lovers:
-                        if (seer.Is(CustomRoles.Lovers) || seer.Data.IsDead)
-                        {
-                            sb.Append(CustomRoles.Lovers.GetColoredTextByRole("♥"));
-                            //isLover = true;
-                        }
+                        // if (seer.Is(CustomRoles.Lovers) || seer.Data.IsDead)
+                        // {
+                        //     sb.Append(CustomRoles.Lovers.GetColoredTextByRole("♥"));
+                        //     //isLover = true;
+                        // }
+                        sb.Append(Lovers.GetMarkOthers(seer, target));
                         break;
                     case CustomRoles.Cyber when Cyber.CyberKnown.GetBool():
                         sb.Append(CustomRoles.Cyber.GetColoredTextByRole("★"));

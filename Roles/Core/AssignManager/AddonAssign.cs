@@ -1,4 +1,5 @@
 using System;
+using TOHE.Roles.AddOns.Common;
 using TOHE.Roles.AddOns.Impostor;
 
 namespace TOHE.Roles.Core.AssignManager;
@@ -11,7 +12,7 @@ public static class AddonAssign
     {
         switch (role)
         {
-            case CustomRoles.Lovers:
+            // case CustomRoles.Lovers:
             case CustomRoles.Workhorse:
             case CustomRoles.LastImpostor:
             case CustomRoles.Narc:
@@ -124,7 +125,11 @@ public static class AddonAssign
             for (var i = 0; i < count; i++)
             {
                 // if the number of all players is 0
-                if (!allPlayers.Any()) return;
+                if (!allPlayers.Any()) 
+                {
+                    if (role == CustomRoles.Lovers && i % 2 != 0) Logger.Warn("Odd number of lovers assigned.", "AssignSubRoles:Lovers");
+                    return;
+                }
 
                 // Select player
                 var player = allPlayers.RandomElement();
@@ -195,8 +200,8 @@ public static class AddonAssign
             Main.PlayerStates[player.PlayerId].SetSubRole(role);
             Logger.Info($"Registered Lovers: {player?.Data?.PlayerName} = {player.GetCustomRole()} + {role}", "Assign Lovers");
         }
-        if (Main.LoversPlayers.Any())
-            RPC.SyncLoversPlayers();
+        if (AmongUsClient.Instance.AmHost && Main.LoversPlayers.Any())
+            Lovers.SendRPC();
     }
 
     public static void StartAssigningNarc()

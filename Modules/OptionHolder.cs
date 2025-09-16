@@ -1147,8 +1147,8 @@ public static class Options
             if (addonType.Key == AddonTypes.Impostor)
                 Madmate.SetupCustomMenuOptions();
 
-            if (addonType.Key == AddonTypes.Misc)
-                SetupLoversRoleOptionsToggle(23600);
+            // if (addonType.Key == AddonTypes.Misc)
+            //     SetupLoversRoleOptionsToggle(23600);
 
             if (addonType.Key == AddonTypes.Experimental)
                 NarcManager.SetUpOptionsForNarc();

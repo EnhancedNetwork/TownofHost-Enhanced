@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using TOHE.Modules;
 using TOHE.Modules.Rpc;
 using TOHE.Patches;
+using TOHE.Roles.AddOns.Common;
 using TOHE.Roles.AddOns.Impostor;
 using TOHE.Roles.Core;
 using TOHE.Roles.Coven;
@@ -78,6 +79,7 @@ public enum CustomRPC : byte // 175/255 USED
     DoHex,
     SniperSync,
     SetLoversPlayers,
+    SetLoverPairs,
     SendFireworkerState,
     SetCurrentDousingTarget,
     SetEvilTrackerTarget,
@@ -454,6 +456,9 @@ internal class RPCHandlerPatch
                 int count = reader.ReadInt32();
                 for (int i = 0; i < count; i++)
                     Main.LoversPlayers.Add(Utils.GetPlayerById(reader.ReadByte()));
+                break;
+            case CustomRPC.SetLoverPairs:
+                Lovers.ReceiveRPC(reader);
                 break;
             case CustomRPC.BetterCheck: // Better Among Us RPC
                 {

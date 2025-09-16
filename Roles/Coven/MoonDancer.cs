@@ -251,7 +251,7 @@ internal class MoonDancer : CovenManager
             var addon = addons.RandomElement();
             var helpful = GroupedAddons[AddonTypes.Helpful].Where(addons.Contains).ToList();
             var harmful = GroupedAddons[AddonTypes.Harmful].Where(addons.Contains).ToList();
-            if (player.GetCustomRole().IsCovenTeam() || (player.Is(CustomRoles.Lovers) && md.Is(CustomRoles.Lovers)))
+            if (player.GetCustomRole().IsCovenTeam() || Lovers.AreLovers(player, md))
             {
                 if (helpful.Count <= 0)
                 {

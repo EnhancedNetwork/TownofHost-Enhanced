@@ -1186,7 +1186,7 @@ class FixedUpdateInNormalGamePatch
                         CovenManager.NecronomiconCheck();
 
                         if (CustomRoles.Lovers.IsEnable())
-                            LoversSuicide();
+                            Lovers.OnFixedUpdate(player, lowLoad, nowTime, timerLowLoad);
 
                         if (Rainbow.IsEnabled && Main.IntroDestroyed)
                             Rainbow.OnFixedUpdate();
@@ -1443,14 +1443,15 @@ class FixedUpdateInNormalGamePatch
                     if (player.Is(CustomRoles.Cyber) && Cyber.CyberKnown.GetBool())
                         Mark.Append(CustomRoles.Cyber.GetColoredTextByRole("★"));
 
-                    if (player.Is(CustomRoles.Lovers) && localPlayer.Is(CustomRoles.Lovers))
-                    {
-                        Mark.Append(CustomRoles.Lovers.GetColoredTextByRole("♥"));
-                    }
-                    else if (player.Is(CustomRoles.Lovers) && localPlayer.Data.IsDead)
-                    {
-                        Mark.Append(CustomRoles.Lovers.GetColoredTextByRole("♥"));
-                    }
+                    Mark.Append(Lovers.GetMarkOthers(localPlayer, player));
+                    // if (player.Is(CustomRoles.Lovers) && localPlayer.Is(CustomRoles.Lovers))
+                    // {
+                    //     Mark.Append(CustomRoles.Lovers.GetColoredTextByRole("♥"));
+                    // }
+                    // else if (player.Is(CustomRoles.Lovers) && localPlayer.Data.IsDead)
+                    // {
+                    //     Mark.Append(CustomRoles.Lovers.GetColoredTextByRole("♥"));
+                    // }
                     break;
             }
 
@@ -1525,6 +1526,7 @@ class FixedUpdateInNormalGamePatch
         {
             foreach (var loversPlayer in Main.LoversPlayers.ToArray())
             {
+                if (!loversPlayer.Is(CustomRoles.Lovers)) continue;
                 if (loversPlayer.IsAlive() && loversPlayer.PlayerId != deathId) continue;
 
                 Main.isLoversDead = true;

@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using TOHE.Modules;
 using TOHE.Patches;
+using TOHE.Roles.AddOns.Common;
 using TOHE.Roles.AddOns.Impostor;
 using TOHE.Roles.Core;
 using TOHE.Roles.Core.AssignManager;
@@ -335,12 +336,13 @@ class BeginCrewmatePatch
         {
             teamToDisplay = new Il2CppSystem.Collections.Generic.List<PlayerControl>();
             teamToDisplay.Add(PlayerControl.LocalPlayer);
+            teamToDisplay.Add(Main.AllAlivePlayerControls.FirstOrDefault(p => Lovers.AreLovers(p, PlayerControl.LocalPlayer)));
 
-            foreach (var pc in Main.AllAlivePlayerControls)
-            {
-                if (pc.Is(CustomRoles.Lovers) && pc != PlayerControl.LocalPlayer)
-                    teamToDisplay.Add(pc);
-            }
+            // foreach (var pc in Main.AllAlivePlayerControls)
+            // {
+            //     if (pc.Is(CustomRoles.Lovers) && pc != PlayerControl.LocalPlayer)
+            //         teamToDisplay.Add(pc);
+            // }
 
             __instance.overlayHandle.color = new Color32(255, 154, 206, byte.MaxValue);
             return true;

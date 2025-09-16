@@ -306,16 +306,18 @@ class GameEndCheckerForNormal
 
                 if (CustomRoles.Lovers.RoleExist() && !reason.Equals(GameOverReason.CrewmatesByTask))
                 {
-                    if (!(!Main.LoversPlayers.ToArray().All(p => p.IsAlive()) && Options.LoverSuicide.GetBool()))
-                    {
-                        if (WinnerTeam is CustomWinner.Crewmate or CustomWinner.Impostor or CustomWinner.Jackal or CustomWinner.Pelican)
-                        {
-                            ResetAndSetWinner(CustomWinner.Lovers);
-                            Main.AllPlayerControls
-                                .Where(p => p.Is(CustomRoles.Lovers))
-                                .Do(p => WinnerIds.Add(p.PlayerId));
-                        }
-                    }
+                    Lovers.CheckWin();
+                    // // if not (not all lovers alive and lovers suicide)
+                    // if (!(!Main.LoversPlayers.ToArray().All(p => p.IsAlive()) && Options.LoverSuicide.GetBool()))
+                    // {
+                    //     if (WinnerTeam is CustomWinner.Crewmate or CustomWinner.Impostor or CustomWinner.Jackal or CustomWinner.Pelican or CustomWinner.Coven)
+                    //     {
+                    //         ResetAndSetWinner(CustomWinner.Lovers);
+                    //         Main.AllPlayerControls
+                    //             .Where(p => p.Is(CustomRoles.Lovers))
+                    //             .Do(p => WinnerIds.Add(p.PlayerId));
+                    //     }
+                    // }
                 }
 
 
@@ -485,24 +487,25 @@ class GameEndCheckerForNormal
                     //Lovers follow winner
                     if (WinnerTeam is not CustomWinner.Lovers)
                     {
-                        var loverArray = Main.AllPlayerControls.Where(x => x.Is(CustomRoles.Lovers)).ToArray();
+                        Lovers.CheckAdditionalWin();
+                        // var loverArray = Main.AllPlayerControls.Where(x => x.Is(CustomRoles.Lovers)).ToArray();
 
-                        foreach (var lover in loverArray)
-                        {
-                            if (WinnerIds.Any(x => Utils.GetPlayerById(x).Is(CustomRoles.Lovers)) && !WinnerIds.Contains(lover.PlayerId))
-                            {
-                                WinnerIds.Add(lover.PlayerId);
-                                AdditionalWinnerTeams.Add(AdditionalWinners.Lovers);
-                            }
-                        }
+                        // foreach (var lover in loverArray)
+                        // {
+                        //     if (WinnerIds.Any(x => Utils.GetPlayerById(x).Is(CustomRoles.Lovers)) && !WinnerIds.Contains(lover.PlayerId))
+                        //     {
+                        //         WinnerIds.Add(lover.PlayerId);
+                        //         AdditionalWinnerTeams.Add(AdditionalWinners.Lovers);
+                        //     }
+                        // }
                     }
 
-                    if (WinnerTeam == CustomWinner.Lovers || AdditionalWinnerTeams.Contains(AdditionalWinners.Lovers))
-                    {
-                        Main.AllPlayerControls
-                            .Where(p => p.Is(CustomRoles.Lovers) && !WinnerIds.Contains(p.PlayerId))
-                            .Do(p => WinnerIds.Add(p.PlayerId));
-                    }
+                    // if (WinnerTeam == CustomWinner.Lovers || AdditionalWinnerTeams.Contains(AdditionalWinners.Lovers))
+                    // {
+                    //     Main.AllPlayerControls
+                    //         .Where(p => p.Is(CustomRoles.Lovers) && !WinnerIds.Contains(p.PlayerId))
+                    //         .Do(p => WinnerIds.Add(p.PlayerId));
+                    // }
 
                     /*Keep Schrodinger cat win condition at last*/
                     Main.AllPlayerControls.Where(pc => pc.Is(CustomRoles.SchrodingersCat)).ToList().ForEach(SchrodingersCat.SchrodingerWinCondition);
@@ -676,7 +679,7 @@ class GameEndCheckerForNormal
                 return true;
             }
 
-            else if (Main.AllAlivePlayerControls.Length > 0 && Main.AllAlivePlayerControls.All(p => p.Is(CustomRoles.Lovers))) // if lover is alive lover wins
+            else if (Main.AllAlivePlayerControls.Length == 2 && Lovers.AreLovers(Main.AllAlivePlayerControls[0], Main.AllAlivePlayerControls[1])) // if lover is alive lover wins
             {
                 reason = GameOverReason.ImpostorsByKill;
                 ResetAndSetWinner(CustomWinner.Lovers);

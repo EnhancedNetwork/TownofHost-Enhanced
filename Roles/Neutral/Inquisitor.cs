@@ -9,6 +9,7 @@ using System;
 using TOHE.Roles.Coven;
 using TOHE.Roles.Crewmate;
 using System.Text;
+using TOHE.Roles.AddOns.Common;
 
 namespace TOHE.Roles.Neutral;
 
@@ -90,7 +91,7 @@ internal class Inquisitor : RoleBase
                 if (playerId == target.PlayerId) continue;
                 else if (Targets[inquisitor.PlayerId].Contains(target.PlayerId)) continue;
                 if (NotTargetable.Contains(target.GetCustomRole())) continue;
-                if (inquisitor.Is(CustomRoles.Lovers) && target.Is(CustomRoles.Lovers)) continue;
+                if (Lovers.AreLovers(inquisitor, target)) continue;
 
                 targetList.Add(target);
             }

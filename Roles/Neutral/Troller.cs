@@ -230,7 +230,6 @@ internal class Troller : RoleBase
                 foreach (var role in addons)
                 {
                     if (role is CustomRoles.LastImpostor ||
-                        role is CustomRoles.Lovers || // Causes issues involving Lovers Suicide
                         role.IsBetrayalAddon())
                     {
                         addons.Remove(role);

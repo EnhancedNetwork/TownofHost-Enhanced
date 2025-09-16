@@ -8,6 +8,7 @@ using static TOHE.Options;
 using static TOHE.Translator;
 using TOHE.Roles.Coven;
 using TOHE.Roles.Crewmate;
+using TOHE.Roles.AddOns.Common;
 
 namespace TOHE.Roles.Neutral;
 
@@ -213,7 +214,7 @@ internal class Lich : RoleBase
         if (target.Is(CustomRoles.Gravestone) && targetHasState && targetState.IsDead) return false;
 
         // if (player.GetBetrayalAddon(forRecruiter: true) != CustomRoles.NotAssigned && player.GetBetrayalAddon(true) == target.GetBetrayalAddon(true)) return false;
-        if (seer.Is(CustomRoles.Lovers) && target.Is(CustomRoles.Lovers)) return false;
+        if (seer.IsLoverWith(target)) return false;
 
         if (seer.Is(CustomRoles.Executioner) && (seer.GetRoleClass() as Executioner).IsTarget(target.PlayerId)) return false;
         if (seer.Is(CustomRoles.Lawyer) && (seer.GetRoleClass() as Lawyer).IsTarget(target.PlayerId)) return false;

@@ -248,6 +248,26 @@ namespace TOHE.Modules.Rpc
         private readonly HashSet<PlayerControl> loversList;
     }
 
+    class RpcSetLoverPairs(uint netId, int pairCount, List<(byte, byte)> loverPairs, byte loverless) : BaseModdedRpc(netId)
+    {
+        public override byte RpcType => (byte)CustomRPC.SetLoversPlayers;
+
+        public override void SerializeRpcValues(MessageWriter msg)
+        {
+            msg.Write(pairCount);
+            foreach (var pair in loverPairs)
+            {
+                msg.Write(pair.Item1);
+                msg.Write(pair.Item2);
+            }
+            msg.Write(loverless);
+        }
+
+        private readonly int pairCount = pairCount;
+        private readonly List<(byte, byte)> loverPairs = loverPairs;
+        private readonly byte loverless = loverless;
+    }
+
     class RpcSendFireworkerState : BaseModdedRpc
     {
         public override byte RpcType => (byte)CustomRPC.SendFireworkerState;

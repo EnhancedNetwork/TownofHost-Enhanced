@@ -8,6 +8,7 @@ using System.Text.RegularExpressions;
 using TOHE.Modules;
 using TOHE.Modules.Rpc;
 using TOHE.Patches;
+using TOHE.Roles.AddOns.Common;
 using TOHE.Roles.Core.AssignManager;
 using TOHE.Roles.Crewmate;
 using static TOHE.Translator;
@@ -382,12 +383,13 @@ class OnPlayerLeftPatch
             {
                 if (data.Character.Is(CustomRoles.Lovers) && !data.Character.Data.IsDead)
                 {
-                    foreach (var lovers in Main.LoversPlayers.ToArray())
-                    {
-                        Main.isLoversDead = true;
-                        Main.LoversPlayers.Remove(lovers);
-                        Main.PlayerStates[lovers.PlayerId].RemoveSubRole(CustomRoles.Lovers);
-                    }
+                    Lovers.OnPartnerLeft(data.Character.PlayerId);
+                    // foreach (var lovers in Main.LoversPlayers.ToArray())
+                    // {
+                    //     Main.isLoversDead = true;
+                    //     Main.LoversPlayers.Remove(lovers);
+                    //     Main.PlayerStates[lovers.PlayerId].RemoveSubRole(CustomRoles.Lovers);
+                    // }
                 }
 
                 Spiritualist.RemoveTarget(data.Character.PlayerId);

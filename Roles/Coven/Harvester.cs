@@ -98,7 +98,7 @@ internal class Harvester : CovenManager
         if (killer.IsPlayerCoven())
         {
             var stolen = 0;
-            List<CustomRoles> addons = [.. deadPlayer.GetCustomSubRoles().Where(x => stealRecruiting || !x.IsBetrayalAddonV2())];
+            List<CustomRoles> addons = [.. deadPlayer.GetCustomSubRoles().Where(x => (CanSwapRecruiting.GetBool() || !x.IsAddonAssignedMidGame()) && !x.IsImpOnlyAddon())];
             foreach (CustomRoles addon in addons)
             {
                 if (stolen >= AmountStolen.GetInt()) break;
@@ -147,8 +147,8 @@ internal class Harvester : CovenManager
         if (SwapPlayers[_Player.PlayerId].Count != 2) return;
         if (player1 == null || player2 == null) return;
         bool swapRecruiting = CanSwapRecruiting.GetBool();
-        List<CustomRoles> addons1 = [.. player1.GetCustomSubRoles().Where(x => swapRecruiting || !x.IsBetrayalAddonV2())];
-        List<CustomRoles> addons2 = [.. player2.GetCustomSubRoles().Where(x => swapRecruiting || !x.IsBetrayalAddonV2())];
+        List<CustomRoles> addons1 = [.. player1.GetCustomSubRoles().Where(x => (swapRecruiting || !x.IsAddonAssignedMidGame()) && !x.IsImpOnlyAddon())];
+        List<CustomRoles> addons2 = [.. player2.GetCustomSubRoles().Where(x => (swapRecruiting || !x.IsAddonAssignedMidGame()) && !x.IsImpOnlyAddon())];
         foreach (CustomRoles addon in addons1)
         {
             Main.PlayerStates[player1.PlayerId].RemoveSubRole(addon);
