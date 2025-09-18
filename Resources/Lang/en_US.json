@@ -1889,6 +1889,7 @@
   "JudgeCanTrialMadmate": "Can trial <color=#ff1919>Madmates</color>",
   "JudgeCanTrialCharmed": "Can trial <color=#cf6acd>Charmed</color> players",
   "JudgeCanTrialEnchanted": "Can trial <color=#ac42f2>Enchanted</color> players",
+  "JudgeCanTrialAdmired": "Can trial <color=#ee43c3>Admired</color> players",
   "JudgeDead": "Sorry, you can't trial players after death.",
   "JudgeTrialMaxMeetingMsg": "\nNo more meeting trials left!",
   "JudgeTrialMaxGameMsg": "\nNo more trials left!",
@@ -2141,6 +2142,7 @@
   "PoisonerPoisonButtonText": "Poison",
 
   "NecromancerRevengeTime": "Necronomicon Ability time",
+  "Necromancer.PreventKillerButtoning": "Prevent killer from callling meeting while hunted",
   "NecromancerRevenge": "You have {0}s to kill <color=#ff1919>{1}</color>",
   "NecromancerSuccess": "Necromancy complete! You live to see another day.",
   "NecromancerHide": "Venting is disabled, hide from the Necromancer!",

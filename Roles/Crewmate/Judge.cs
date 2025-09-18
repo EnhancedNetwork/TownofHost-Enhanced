@@ -37,6 +37,7 @@ internal class Judge : RoleBase
     private static OptionItem CanTrialNeutralC;
     private static OptionItem CanTrialNeutralA;
     private static OptionItem CanTrialCoven;
+    private static OptionItem CanTrialAdmired;
 
     private static readonly Dictionary<byte, int> TrialLimitMeeting = [];
     private static readonly Dictionary<byte, int> TrialLimitGame = [];
@@ -61,6 +62,7 @@ internal class Judge : RoleBase
         CanTrialNeutralK = BooleanOptionItem.Create(Id + 15, "JudgeCanTrialNeutralK", true, TabGroup.CrewmateRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Judge]);
         CanTrialNeutralA = BooleanOptionItem.Create(Id + 22, "JudgeCanTrialNeutralA", true, TabGroup.CrewmateRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Judge]);
         CanTrialCoven = BooleanOptionItem.Create(Id + 23, "JudgeCanTrialCoven", true, TabGroup.CrewmateRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Judge]);
+        CanTrialAdmired = BooleanOptionItem.Create(Id + 23, "JudgeCanTrialAdmired", true, TabGroup.CrewmateRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Judge]);
         TryHideMsg = BooleanOptionItem.Create(Id + 11, "JudgeTryHideMsg", true, TabGroup.CrewmateRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Judge])
             .SetColor(Color.green);
     }
@@ -192,6 +194,7 @@ internal class Judge : RoleBase
                     pc.ShowInfoMessage(isUI, GetString("GuessSolsticer"));
                     return true;
                 }
+                else if (target.Is(CustomRoles.Admired) && !CanTrialAdmired.GetBool()) judgeSuicide = true;
                 else if (target.IsTransformedNeutralApocalypse()) judgeSuicide = true;
                 else if (Medic.IsProtected(target.PlayerId) && !Medic.GuesserIgnoreShield.GetBool())
                 {
