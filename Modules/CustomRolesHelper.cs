@@ -1367,6 +1367,7 @@ public static class CustomRolesHelper
                     || pc.Is(CustomRoles.Mini)
                     || pc.Is(CustomRoles.NiceMini)
                     || pc.Is(CustomRoles.EvilMini)
+                    || pc.Is(CustomRoles.Cupid)
                 )
                     return false;
                 break;

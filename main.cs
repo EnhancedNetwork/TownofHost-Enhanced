@@ -882,6 +882,7 @@ public enum CustomRoles
     BloodKnight,
     Collector,
     Cultist,
+    Cupid,
     CursedSoul,
     Death,
     Demon,
@@ -1139,6 +1140,7 @@ public enum AdditionalWinners
 {
     None = -1,
     Lovers = CustomRoles.Lovers,
+    Cupid = CustomRoles.Cupid,
     Opportunist = CustomRoles.Opportunist,
     Executioner = CustomRoles.Executioner,
     Lawyer = CustomRoles.Lawyer,

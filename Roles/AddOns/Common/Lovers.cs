@@ -1,5 +1,6 @@
 using Hazel;
 using TOHE.Modules.Rpc;
+using TOHE.Roles.Neutral;
 using static TOHE.Options;
 
 namespace TOHE.Roles.AddOns.Common;
@@ -11,7 +12,7 @@ public class Lovers : IAddon
     public AddonTypes Type => AddonTypes.Misc;
     private static readonly List<(byte, byte)> loverPairs = [];
     private static readonly Dictionary<(byte, byte), bool> hasHeartbreak = [];
-    private static byte loverless = byte.MaxValue;
+    public static byte loverless = byte.MaxValue;
     public static bool IsEnable => loverPairs.Any();
 
     public static OptionItem LoverKnowRoles;
@@ -176,6 +177,8 @@ public class Lovers : IAddon
 
             if (p1.IsAlive() && pair.Item1 != deathId && p2.IsAlive() && pair.Item2 != deathId) continue;
 
+            if (Cupid.IsCupidLoverPair(p1, p2)) continue;
+
             hasHeartbreak[pair] = true;
 
             // Switch order so p1 is the dead one
@@ -218,7 +221,7 @@ public class Lovers : IAddon
         {
             return $"<color={colorCode}>♥</color>";
         }
-        else if (!seer.IsAlive() && seen.Is(CustomRoles.Lovers))
+        else if ((!seer.IsAlive() || Cupid.IsCupidLover(seer, seen)) && seen.Is(CustomRoles.Lovers))
         {
             byte loverId = GetLoverId(seen);
             return $"<color={colorCode}>♥{loverId}</color>";
@@ -265,6 +268,7 @@ public class Lovers : IAddon
             {
                 CustomWinnerHolder.WinnerIds.Add(pair.Item1);
                 CustomWinnerHolder.WinnerIds.Add(pair.Item2);
+                
             }
         }
     }

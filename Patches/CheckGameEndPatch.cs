@@ -500,6 +500,8 @@ class GameEndCheckerForNormal
                         // }
                     }
 
+                    Cupid.CheckAdditionalWin();
+
                     // if (WinnerTeam == CustomWinner.Lovers || AdditionalWinnerTeams.Contains(AdditionalWinners.Lovers))
                     // {
                     //     Main.AllPlayerControls
@@ -680,6 +682,13 @@ class GameEndCheckerForNormal
             }
 
             else if (Main.AllAlivePlayerControls.Length == 2 && Lovers.AreLovers(Main.AllAlivePlayerControls[0], Main.AllAlivePlayerControls[1])) // if lover is alive lover wins
+            {
+                reason = GameOverReason.ImpostorsByKill;
+                ResetAndSetWinner(CustomWinner.Lovers);
+                return true;
+            }
+
+            else if (Main.AllAlivePlayerControls.Length == 3 && Cupid.IsPolycule(Main.AllAlivePlayerControls)) // Cupid & Lovers win
             {
                 reason = GameOverReason.ImpostorsByKill;
                 ResetAndSetWinner(CustomWinner.Lovers);
