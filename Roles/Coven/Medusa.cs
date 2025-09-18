@@ -153,7 +153,7 @@ internal class Medusa : CovenManager
     public override string GetMarkOthers(PlayerControl seer, PlayerControl target, bool isForMeeting = false)
     {
         if (_Player == null) return string.Empty;
-        if (IsStoned(seer.PlayerId, target.PlayerId) && ((seer.GetCustomRole().IsCovenTeam() && seer.PlayerId != _Player.PlayerId) || !seer.IsAlive()))
+        if (IsStoned(seer.PlayerId, target.PlayerId) && ((seer.GetCustomRole().IsCovenTeam() && seer.PlayerId != _Player.PlayerId) || !seer.IsAlive() && seer.PlayerId != _Player.PlayerId))
         {
             return ColorString(GetRoleColor(CustomRoles.Medusa), "♻");
         }

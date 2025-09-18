@@ -769,7 +769,7 @@ class ReportDeadBodyPatch
                     Logger.Info("The button has been canceled because the sabotage is active", "ReportDeadBody");
                     return false;
                 }
-                if (playerRoleClass.OnCheckStartMeeting(__instance) == false)
+                if (playerRoleClass.OnCheckStartMeeting(__instance) == false || (Necromancer.Killer == __instance && Necromancer.PreventKillerButtoning.GetBool()))
                 {
                     Logger.Info($"Player has role class: {playerRoleClass} - the start of the meeting has been cancelled", "ReportDeadBody");
                     return false;

@@ -24,7 +24,7 @@ internal class Necromancer : CovenManager
     private static OptionItem RevengeTime;
     private static OptionItem AbilityDuration;
     private static OptionItem AbilityCooldown;
-
+    public static OptionItem PreventKillerButtoning;
 
     public static PlayerControl Killer = null;
     private static bool IsRevenge = false;
@@ -44,6 +44,7 @@ internal class Necromancer : CovenManager
             .SetValueFormat(OptionFormat.Seconds);
         RevengeTime = IntegerOptionItem.Create(Id + 11, "NecromancerRevengeTime", new(0, 60, 1), 30, TabGroup.CovenRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Necromancer])
             .SetValueFormat(OptionFormat.Seconds);
+        PreventKillerButtoning = BooleanOptionItem.Create(Id + 16, "Necromancer.PreventKillerButtoning", true, TabGroup.CovenRoles, false).SetParent(RevengeTime);
         //CanVent = BooleanOptionItem.Create(Id + 12, GeneralOption.CanVent, true, TabGroup.CovenRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Necromancer]);
         //HasImpostorVision = BooleanOptionItem.Create(Id + 13, GeneralOption.ImpostorVision, true, TabGroup.CovenRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Necromancer]);
         AbilityDuration = FloatOptionItem.Create(Id + 14, GeneralOption.AbilityDuration, new(0f, 300f, 2.5f), 60f, TabGroup.CovenRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Necromancer])
