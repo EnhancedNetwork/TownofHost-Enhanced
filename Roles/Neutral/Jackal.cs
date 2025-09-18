@@ -58,7 +58,7 @@ internal class Jackal : RoleBase
     {
         Jackal_SidekickCountMode_Jackal,
         CountMode_None,
-        Jackal_SidekickCountMode_Original,
+        CountMode_Original,
     }
 
     public override void SetupCustomOption()
