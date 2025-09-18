@@ -24,6 +24,7 @@ internal class Baker : RoleBase
     public static OptionItem FamineStarveCooldown;
     private static OptionItem BTOS2Baker;
     private static OptionItem ApocCanSeeReveals;
+    private static OptionItem RevealsPersist;
     private static OptionItem TransformNoMoreBread;
     private static OptionItem RegenBread;
     public static OptionItem CanVent;
@@ -46,6 +47,7 @@ internal class Baker : RoleBase
                 .SetValueFormat(OptionFormat.Seconds);
         BTOS2Baker = BooleanOptionItem.Create(Id + 12, "BakerBreadGivesEffects", true, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Baker]);
         ApocCanSeeReveals = BooleanOptionItem.Create(Id + 16, "BakerApocCanSeeReveals", true, TabGroup.NeutralRoles, false).SetParent(BTOS2Baker);
+        RevealsPersist = BooleanOptionItem.Create(Id + 17, "BakerRevealsPersist", true, TabGroup.NeutralRoles, false).SetParent(ApocCanSeeReveals);
         TransformNoMoreBread = BooleanOptionItem.Create(Id + 13, "BakerTransformNoMoreBread", true, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Baker]);
         CanVent = BooleanOptionItem.Create(Id + 14, "BakerCanVent", true, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Baker]);
         RegenBread = BooleanOptionItem.Create(Id + 15, "BakerRegenBread", true, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Baker]);
@@ -138,6 +140,7 @@ internal class Baker : RoleBase
         foreach (var baker in RevealList.Keys)
         {
             if (RevealList[baker].Contains(target.PlayerId)) result = true;
+            if (!baker.GetPlayer().IsAlive() && !RevealsPersist.GetBool()) result = false;
         }
         return result;
     }
