@@ -1521,7 +1521,7 @@
   "TrackerBase_TrackingCooldown": "Tracking Cooldown",
   "TrackerBase_TrackingDuration": "Tracking Duration",
   "TrackerBase_TrackingDelay": "Tracking Delay",
-  "DetectiveBase_DetectiveSuspectLimit": "Suspects per Case",
+  "DetectiveBase_DetectiveSuspectLimit": "Sospechosos por Caso",
   "ViperBase_ViperDissolveTime": "Dissolve Time",
   "MareAddSpeedInLightsOut": "Velocidad adicional durante sabotaje de luces",
   "MareKillCooldownInLightsOut": "Tiempo de espera para matar en la oscuridad",
