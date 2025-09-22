@@ -267,6 +267,71 @@ public class PlayerState(byte playerId)
             }
         }
 
+        var pc = PlayerId.GetPlayer();
+        if (pc == null) return;
+
+        // check for role addon
+        if (pc.Is(CustomRoles.Madmate))
+        {
+            countTypes = Madmate.MadmateCountMode.GetInt() switch
+            {
+                0 => CountTypes.OutOfGame,
+                1 => CountTypes.Impostor,
+                2 => countTypes,
+                _ => throw new NotImplementedException()
+            };
+        }
+        if (pc.Is(CustomRoles.Charmed))
+        {
+            countTypes = Cultist.CharmedCountMode.GetInt() switch
+            {
+                0 => CountTypes.OutOfGame,
+                1 => CountTypes.Cultist,
+                2 => countTypes,
+                _ => throw new NotImplementedException()
+            };
+        }
+        if (pc.Is(CustomRoles.Recruit))
+        {
+            countTypes = Jackal.SidekickCountMode.GetInt() switch
+            {
+                0 => CountTypes.Jackal,
+                1 => CountTypes.OutOfGame,
+                2 => countTypes,
+                _ => throw new NotImplementedException()
+            };
+        }
+        if (pc.Is(CustomRoles.Infected))
+        {
+            countTypes = CountTypes.Infectious;
+        }
+        if (pc.Is(CustomRoles.Contagious))
+        {
+            countTypes = Virus.ContagiousCountMode.GetInt() switch
+            {
+                0 => CountTypes.OutOfGame,
+                1 => CountTypes.Virus,
+                2 => countTypes,
+                _ => throw new NotImplementedException()
+            };
+        }
+        if (pc.Is(CustomRoles.Admired) || pc.Is(CustomRoles.Narc))
+        {
+            countTypes = CountTypes.Crew;
+        }
+        if (pc.Is(CustomRoles.Soulless))
+        {
+            countTypes = CountTypes.OutOfGame;
+        }
+        if (pc.Is(CustomRoles.Enchanted))
+        {
+            countTypes = CountTypes.Coven;
+        }
+        if (Main.PlayerStates[pc.PlayerId].IsNecromancer)
+        {
+            countTypes = CountTypes.Coven;
+        }
+
         if (!AmongUsClient.Instance.AmHost) return;
         var msg = new RpcRemoveSubRole(PlayerControl.LocalPlayer.NetId, PlayerId, addOn);
         RpcUtils.LateBroadcastReliableMessage(msg);

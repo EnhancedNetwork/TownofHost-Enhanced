@@ -3328,6 +3328,7 @@
   "CopyButtonText": "Copy",
   "CopyCrewVar": "Can copy evil variants of Crewmate roles",
   "CopyTeamChangingAddon": "Can copy team changing Add-on",
+  "CopyOnlyEnabledRoles": "Copy Only Enabled Roles",
 
   "MaxCleanserUses": "Maximum Cleanses",
   "CleansedCanGetAddon": "Cleansed player can get Add-on",

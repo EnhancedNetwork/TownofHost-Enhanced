@@ -20,7 +20,7 @@ public class Oiiai : IAddon
     private static OptionItem ShouldChangeRoleOnNeutral;
     private static OptionItem ChangeNeutralRole;
 
-    public static readonly List<string> ChangeRoles = new List<string>();
+    public static readonly List<string> ChangeRoles = [];
 
     public static readonly CustomRoles[] NRoleChangeRoles =
     [

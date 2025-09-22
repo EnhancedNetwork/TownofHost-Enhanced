@@ -117,15 +117,20 @@ internal class Merchant : RoleBase
         // CustomRoles addon = addons.RandomElement();
 
         var AllAlivePlayer =
-            Main.AllAlivePlayerControls.Where(x =>
-                x.PlayerId != player.PlayerId).ToList()
-                .GetAssignableAddons(addons, OptionCanTargetCrew.GetBool(), OptionCanTargetImpostor.GetBool(), OptionCanTargetNeutral.GetBool(), OptionCanTargetCoven.GetBool());
+            Main.AllAlivePlayerControls
+                .Where(x => x.PlayerId != player.PlayerId)
+                .ToList()
+                .GetAssignableAddons(addons, OptionCanTargetCrew.GetBool(), OptionCanTargetImpostor.GetBool(), OptionCanTargetNeutral.GetBool(), OptionCanTargetCoven.GetBool())
+                .Where(x => x.Value.Any())
+                .ToDictionary(x => x.Key, x => x.Value);
 
         if (AllAlivePlayer.Count > 0)
         {
             var target = AllAlivePlayer.RandomElement();
             PlayerControl targetPlayer = target.Key;
             CustomRoles addon = target.Value.RandomElement();
+
+            Logger.Info($"Merchant sold {addon} to {targetPlayer.GetRealName()}", "Merchant");
 
             targetPlayer.RpcSetCustomRole(addon, false, false);
             targetPlayer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Merchant), GetString("MerchantAddonSell")));

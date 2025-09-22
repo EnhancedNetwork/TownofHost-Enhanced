@@ -591,7 +591,7 @@ public static class CustomRolesHelper
                         (includeCoven && pc.GetCustomRole().IsCoven())
                     ) // Only check addon conflicts if player can get addons
             ) ? addons.Where(
-                a =>
+                a => a.IsAdditionRole() &&
                     !a.IsConverted() &&
                     !(noHarmfullToCrew && pc.GetCustomRole().IsCrewmate() && Options.GroupedAddons[AddonTypes.Harmful].Contains(a)) &&
                     !(noHelpfullToEvil && (pc.GetCustomRole().IsImpostor() || pc.GetCustomRole().IsNeutral() || pc.GetCustomRole().IsCoven()) && Options.GroupedAddons[AddonTypes.Helpful].Contains(a)) &&
@@ -1370,6 +1370,10 @@ public static class CustomRolesHelper
                     || pc.Is(CustomRoles.Cupid)
                 )
                     return false;
+                break;
+
+            case CustomRoles.Rat:
+                if (pc.Is(CustomRoles.God)) return false;
                 break;
         }
 

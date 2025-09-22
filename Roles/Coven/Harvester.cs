@@ -116,7 +116,7 @@ internal class Harvester : CovenManager
             List<CustomRoles> addons = [.. deadPlayer.GetCustomSubRoles().Where(x => stealRecruiting || !x.IsBetrayalAddonV2())];
             foreach (CustomRoles addon in addons)
             {
-                if (stolen > AmountStolen.GetInt()) break;
+                if (stolen >= AmountStolen.GetInt()) break;
                 if (harvester.GetCustomSubRoles().Count >= MaxAddonsSelf.GetInt()) break;
                 Main.PlayerStates[deadPlayer.PlayerId].RemoveSubRole(addon);
                 harvester.RpcSetCustomRole(addon, false, false);

@@ -21,6 +21,7 @@ internal class CopyCat : RoleBase
     private static OptionItem KillCooldown;
     private static OptionItem CopyCrewVar;
     private static OptionItem CopyTeamChangingAddon;
+    private static OptionItem CopyOnlyEnabledRoles;
 
     private static float CurrentKillCooldown = new();
     private static readonly Dictionary<byte, List<CustomRoles>> OldAddons = [];
@@ -32,6 +33,7 @@ internal class CopyCat : RoleBase
             .SetValueFormat(OptionFormat.Seconds);
         CopyCrewVar = BooleanOptionItem.Create(Id + 13, "CopyCrewVar", true, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.CopyCat]);
         CopyTeamChangingAddon = BooleanOptionItem.Create(Id + 14, "CopyTeamChangingAddon", false, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.CopyCat]);
+        CopyOnlyEnabledRoles = BooleanOptionItem.Create(Id + 15, "CopyOnlyEnabledRoles", false, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.CopyCat]);
     }
 
     public override void Init()
@@ -148,29 +150,35 @@ internal class CopyCat : RoleBase
                 CustomRoles.PotionMaster when PotionMaster.CurrentPotion() is 0 => CustomRoles.Overseer,
                 CustomRoles.PotionMaster when PotionMaster.CurrentPotion() is 1 => CustomRoles.Medic,
                 CustomRoles.Sacrifist => CustomRoles.Alchemist,
-                CustomRoles.MoonDancer => CustomRoles.Merchant,
+                CustomRoles.MoonDancer or CustomRoles.Harvester or CustomRoles.Bandit => CustomRoles.Merchant,
                 CustomRoles.Ritualist => CustomRoles.Admirer,
                 CustomRoles.Jinx => CustomRoles.Crusader,
                 CustomRoles.Trickster or CustomRoles.Illusionist => CustomRolesHelper.AllRoles.Where(role => role.IsEnable() && !role.IsAdditionRole() && role.IsCrewmate() && !BlackList(role)).ToList().RandomElement(),
                 CustomRoles.Instigator => CustomRoles.Requiter,
+                CustomRoles.Jackal => CustomRoles.ChiefOfPolice,
+                CustomRoles.Sidekick => CustomRoles.Sheriff,
                 _ => role
             };
         }
         if (Lich.IsCursed(target)) role = CustomRoles.Lich;
-        if (role.IsCrewmate())
+        if (role.IsCrewmate() && (role.IsEnable() || !CopyOnlyEnabledRoles.GetBool()))
         {
             if (role != CustomRoles.CopyCat)
             {
-                killer.RpcChangeRoleBasis(role);
-                killer.RpcSetCustomRole(role, false, false);
-                killer.GetRoleClass()?.OnAdd(killer.PlayerId);
-                killer.SyncSettings();
-                Dictionary<byte, List<CustomRoles>> CurrentAddons = new();
-                CurrentAddons[killer.PlayerId] = [];
+                Dictionary<byte, List<CustomRoles>> CurrentAddons = new()
+                {
+                    [killer.PlayerId] = []
+                };
                 foreach (var addon in killer.GetCustomSubRoles())
                 {
                     CurrentAddons[killer.PlayerId].Add(addon);
                 }
+
+                killer.RpcChangeRoleBasis(role);
+                killer.RpcSetCustomRole(role, false, false);
+                killer.GetRoleClass()?.OnAdd(killer.PlayerId);
+                killer.SyncSettings();
+                
                 foreach (var addon in CurrentAddons[killer.PlayerId])
                 {
                     if (!CustomRolesHelper.CheckAddonConfilct(addon, killer))
