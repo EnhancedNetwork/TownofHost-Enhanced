@@ -561,6 +561,7 @@ public static class GuessManager
         }
         else
         {
+            Logger.Warn($"{msg}::{result} could not be parsed as a byte", "MsgToPlayerAndRole");
             //并不是玩家编号，判断是否颜色
             //byte color = GetColorFromMsg(msg);
             //好吧我不知道怎么取某位玩家的颜色，等会了的时候再来把这里补上
@@ -1160,10 +1161,10 @@ public static class GuessManager
     {
         Logger.Msg($"{pc}", "PlayerControl pc");
 
-        int PlayerId = reader.ReadInt32();
+        byte PlayerId = reader.ReadByte();
         Logger.Msg($"{PlayerId}", "Player Id");
 
-        CustomRoles role = (CustomRoles)reader.ReadInt32();
+        CustomRoles role = (CustomRoles)reader.ReadPackedInt32();
         Logger.Msg($"{role}", "Role Int32");
         Logger.Msg($"{GetString(role.ToString())}", "Role String");
 

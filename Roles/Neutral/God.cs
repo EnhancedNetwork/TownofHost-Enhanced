@@ -41,5 +41,5 @@ internal class God : RoleBase
     }
 
     public override bool KnowRoleTarget(PlayerControl seer, PlayerControl target) => seer.Is(CustomRoles.God);
-    public override string PlayerKnowTargetColor(PlayerControl seer, PlayerControl target) => Main.roleColors[target.GetCustomRole()];
+    public override string PlayerKnowTargetColor(PlayerControl seer, PlayerControl target) => seer.Is(CustomRoles.God) ? Main.roleColors[target.GetCustomRole()] : string.Empty;
 }

@@ -60,6 +60,7 @@ internal class Traitor : RoleBase
     }
     public override string PlayerKnowTargetColor(PlayerControl seer, PlayerControl target)
     {
+        if (!seer.Is(CustomRoles.Traitor)) return string.Empty;
         if (Main.PlayerStates[seer.PlayerId].IsNecromancer || Main.PlayerStates[target.PlayerId].IsNecromancer) return string.Empty;
         if (target.Is(Custom_Team.Impostor))
         {
@@ -67,7 +68,7 @@ internal class Traitor : RoleBase
         }
         else if (target.Is(CustomRoles.Madmate) && KnowMadmate.GetBool())
         {
-            return "BB0F0F";
+            return Main.roleColors[CustomRoles.Madmate];
         }
 
         else return string.Empty;

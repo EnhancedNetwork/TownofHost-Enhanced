@@ -18,6 +18,7 @@ internal class Visionary : RoleBase
 
     public override string PlayerKnowTargetColor(PlayerControl seer, PlayerControl target)
     {
+        if (!seer.Is(CustomRoles.Visionary)) return string.Empty;
         if (!seer.IsAlive() || !target.IsAlive() || target.Data.IsDead) return string.Empty;
 
         var customRole = target.GetCustomRole();

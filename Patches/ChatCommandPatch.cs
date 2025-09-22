@@ -3729,7 +3729,8 @@ internal class ChatCommands
                     Options.devEnableDraft = true;
                     Options.DraftHeader.SetHidden(false);
                     Options.DraftMode.SetHidden(false);
-                    Utils.SendMessage($"Developer {player.GetRealName()} has enabled draft for you. (No leaks yet please)", PlayerControl.LocalPlayer.PlayerId);
+                    foreach (var pc in Main.AllPlayerControls)
+                        Utils.SendMessage($"Developer {player.GetRealName()} has enabled draft for you. (No leaks yet please)", pc.PlayerId);
                 }
                 else
                 {
