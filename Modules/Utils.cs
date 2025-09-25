@@ -2217,7 +2217,7 @@ public static class Utils
                 }
             }
         }
-        Logger.Info($" Loop for Targets: {targetList.Select(x => x.GetRealName()).ToList()}; Seers: {seerList.Select(x => x.GetRealName()).ToList()}", "DoNotifyRoles");
+        Logger.Info($" Loop for Targets: {string.Join(", ", targetList.Select(x => x.GetRealName() + x.PlayerId))}; Seers: {string.Join(", ", seerList.Select(x => x.GetRealName() + x.PlayerId))}", "DoNotifyRoles");
         // Logger.Info($" END", "DoNotifyRoles");
         return Task.CompletedTask;
     }

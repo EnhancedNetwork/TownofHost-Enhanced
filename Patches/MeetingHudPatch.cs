@@ -1295,7 +1295,7 @@ class MeetingHudStartPatch
             var seerRoleClass = seer.GetRoleClass();
 
             // if based role is Shapeshifter/Phantom and is Desync Shapeshifter/Phantom
-            if (seerRoleClass?.ThisRoleBase.GetRoleTypes() is RoleTypes.Shapeshifter or RoleTypes.Phantom && seer.HasDesyncRole())
+            if (seerRoleClass?.ThisRoleBase.GetRoleTypes() is RoleTypes.Shapeshifter or RoleTypes.Phantom or RoleTypes.Impostor && seer.HasDesyncRole())
             {
                 // When target is impostor, set name color as white
                 target.cosmetics.SetNameColor(Color.white);
@@ -1333,7 +1333,7 @@ class MeetingHudStartPatch
             }
 
             //bool isLover = false;
-            foreach (var TargetSubRole in target.GetCustomSubRoles().ToArray())
+            foreach (var TargetSubRole in target.GetCustomSubRoles())
             {
                 switch (TargetSubRole)
                 {
@@ -1359,7 +1359,7 @@ class MeetingHudStartPatch
             pva.TargetPlayerId = target.PlayerId;
         }
 
-        __instance.SortButtons();
+        // __instance.SortButtons();
     }
 }
 [HarmonyPatch(typeof(MeetingHud), nameof(MeetingHud.Update))]
