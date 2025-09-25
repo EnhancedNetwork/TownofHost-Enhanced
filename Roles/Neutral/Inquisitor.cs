@@ -268,7 +268,8 @@ internal class Inquisitor : RoleBase
 
         AliveHeretics[_Player.PlayerId]--;
 
-        CheckWin();
+        if (_Player.Is(CustomRoles.Inquisitor) && _Player.IsAlive())
+            CheckWin();
 
         if (inMeeting)
         {

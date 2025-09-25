@@ -1860,7 +1860,7 @@ public static class Utils
             MushroomMixupIsActive = IsActive(SystemTypes.MushroomMixupSabotage);
         }
 
-        Logger.Info($" START - Count Seers: {seerList.Length} & Count Target: {targetList.Length}", "DoNotifyRoles");
+        // Logger.Info($" START - Count Seers: {seerList.Length} & Count Target: {targetList.Length}", "DoNotifyRoles");
 
         //seer: player who updates the nickname/role/mark
         //target: seer updates nickname/role/mark of other targets
@@ -2013,12 +2013,12 @@ public static class Utils
             }
 
             // Start run loop for target only when condition is "true"
-            if (ForceLoop && (seer.Data.IsDead || !seer.IsAlive()
+            if (seer.Data.IsDead || !seer.IsAlive()
                 || seerList.Length == 1
                 || targetList.Length == 1
                 || MushroomMixupIsActive
                 || NoCache
-                || ForceLoop))
+                || ForceLoop)
             {
                 foreach (var realTarget in targetList)
                 {
@@ -2217,8 +2217,8 @@ public static class Utils
                 }
             }
         }
-        //Logger.Info($" Loop for Targets: {}", "DoNotifyRoles", force: true);
-        Logger.Info($" END", "DoNotifyRoles");
+        Logger.Info($" Loop for Targets: {targetList.Select(x => x.GetRealName()).ToList()}; Seers: {seerList.Select(x => x.GetRealName()).ToList()}", "DoNotifyRoles");
+        // Logger.Info($" END", "DoNotifyRoles");
         return Task.CompletedTask;
     }
     public static void MarkEveryoneDirtySettings()

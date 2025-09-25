@@ -188,7 +188,7 @@ internal class Agitater : RoleBase
 
 
         player.Notify(GetString("AgitaterPassNotify"));
-        target.Notify(GetString("AgitaterTargetNotify"));
+        target.Notify(GetString("AgitaterTargetNotify"), hasPriority: true);
 
         SendRPC(CurrentBombedPlayer, LastBombedPlayer);
         Logger.Msg($"{player.GetNameWithRole()} passed bomb to {target.GetNameWithRole()}", "Agitater Pass");

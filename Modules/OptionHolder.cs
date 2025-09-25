@@ -71,7 +71,7 @@ public static class Options
     public static OptionItem DraftHeader;
     public static OptionItem DraftMode;
     public static OptionItem DraftableCount;
-    public static OptionItem BucketCount;
+    // public static OptionItem BucketCount;
     public static bool devEnableDraft = false;
     public static readonly string[] roleBuckets =
     [
@@ -1392,13 +1392,13 @@ public static class Options
             .SetGameMode(CustomGameMode.Standard)
             .SetParent(DraftMode);
 
-        BucketCount = IntegerOptionItem.Create(61002, "BucketCount", new(5, 225, 1), 15, TabGroup.ModSettings, false)
-            .SetGameMode(CustomGameMode.Standard)
-            .SetParent(DraftMode)
-            .RegisterUpdateValueEvent((obj, args) => BucketCountChanged(args));
+        // BucketCount = IntegerOptionItem.Create(61002, "BucketCount", new(5, 225, 1), 15, TabGroup.ModSettings, false)
+        //     .SetGameMode(CustomGameMode.Standard)
+        //     .SetParent(DraftMode)
+        //     .RegisterUpdateValueEvent((obj, args) => BucketCountChanged(args));
 
-        DraftBuckets = MultipleStringOptionItem.Create(61003, 225, BucketCount.GetInt() + 5, "RoleBucket", roleBuckets, 0, TabGroup.ModSettings, false, useGetString: false)
-            .SetParent(BucketCount)
+        DraftBuckets = MultipleStringOptionItem.Create(61003, 225, 15, "RoleBucket", roleBuckets, 0, TabGroup.ModSettings, false, useGetString: false)
+            .SetParent(DraftableCount)
             .SetGameMode(CustomGameMode.Standard);
 
         Logger.Info("Draft Bucket Options set up", "OptionsHolder.CoLoadOptions");

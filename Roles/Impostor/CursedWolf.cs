@@ -38,7 +38,7 @@ internal class CursedWolf : RoleBase
         killer.RpcGuardAndKill(target);
         target.RpcGuardAndKill(target);
 
-        killer.RpcRemoveAbilityUse();
+        target.RpcRemoveAbilityUse();
 
         if (KillAttacker.GetBool() && target.RpcCheckAndMurder(killer, true))
         {

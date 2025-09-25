@@ -87,7 +87,6 @@ internal class Dreamweaver : CovenManager
         }
         if (IsDreamwoven(seen.PlayerId))
         {
-            isForMeeting = true;
             return ColorString(new Color32(255, 255, 255, 255), "☁");
         }
         return string.Empty;
@@ -102,8 +101,8 @@ internal class Dreamweaver : CovenManager
         }
         if (IsDreamwoven(target.PlayerId) && (seer.IsPlayerCovenTeam() || target.PlayerId == seer.PlayerId || !seer.IsAlive()))
         {
-            isForMeeting = true;
-            return ColorString(new Color32(255, 255, 255, 255), "☁");
+            if (isForMeeting)
+                return ColorString(new Color32(255, 255, 255, 255), "☁");
         }
         return string.Empty;
     }
