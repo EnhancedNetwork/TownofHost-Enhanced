@@ -8,7 +8,7 @@ public class Rat : IAddon
 {
     public CustomRoles Role => CustomRoles.Rat;
     private const int Id = 31900;
-    public AddonTypes Type => AddonTypes.Experimental;
+    public AddonTypes Type => AddonTypes.Helpful;
     private static readonly HashSet<byte> playerList = [];
     public static bool IsEnable = false;
     public static OptionItem ratRoleCount;

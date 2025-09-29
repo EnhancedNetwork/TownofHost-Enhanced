@@ -177,7 +177,7 @@ internal class Dictator : RoleBase
         {
             foreach (var pva in __instance.playerStates)
             {
-                if (pva.transform.Find("DictatorButton") != null)
+                if (pva?.transform?.Find("DictatorButton") != null)
                     UnityEngine.Object.Destroy(pva.transform.Find("DictatorButton").gameObject);
             }
         }

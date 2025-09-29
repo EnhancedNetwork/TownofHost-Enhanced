@@ -65,6 +65,7 @@ internal class Harvester : CovenManager
     }
     public override bool OnCheckShapeshift(PlayerControl shapeshifter, PlayerControl target, ref bool resetCooldown, ref bool shouldAnimate)
     {
+        resetCooldown = false;
         shouldAnimate = false;
         if (SwapPlayers[shapeshifter.PlayerId].Count >= 2)
         {
@@ -82,6 +83,7 @@ internal class Harvester : CovenManager
         {
             SwapPlayers[shapeshifter.PlayerId].Add(target.PlayerId);
             Logger.Info($"{target.GetRealName()} is SwapPlayer2", "Harvester");
+            resetCooldown = true;
         }
         shapeshifter.Notify(string.Format(GetString("Harvester.PlayerAdded"), target.GetRealName()));
         return false;

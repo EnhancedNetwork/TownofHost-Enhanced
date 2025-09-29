@@ -87,7 +87,7 @@ internal class Follower : RoleBase
         if (!KnowTargetRole.GetBool()) return false;
         return seer.Is(CustomRoles.Follower) && BetPlayer.TryGetValue(seer.PlayerId, out var tar) && tar == target.PlayerId;
     }
-    public override bool OnCheckMurderAsKiller(PlayerControl killer, PlayerControl target)
+    public override bool ForcedCheckMurderAsKiller(PlayerControl killer, PlayerControl target)
     {
         if (killer.PlayerId == target.PlayerId) return true;
         if (BetPlayer.TryGetValue(killer.PlayerId, out var tar) && tar == target.PlayerId) return false;
