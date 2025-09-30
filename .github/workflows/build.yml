@@ -8,7 +8,7 @@ on:
       - synchronize
       - reopened
     branches-ignore:
-      - '**l10n_main'
+      - "**l10n_main"
 
 jobs:
   build:
@@ -17,14 +17,24 @@ jobs:
       group: pr#${{ github.event.pull_request.number }}
       cancel-in-progress: true
 
+    strategy:
+      matrix:
+        platform: [AnyCPU, Android]
+
     steps:
-    - uses: actions/checkout@v4
-    - name: Create token.env file
-      run: echo "Github Actions" > token.env
-    - name: Setup .NET
-      id: setup-dotnet
-      uses: actions/setup-dotnet@v4
-    - name: Restore dependencies
-      run: dotnet restore
-    - name: Build
-      run: dotnet build --no-restore
+      - uses: actions/checkout@v4
+      - name: Create token.env file
+        run: echo "Github Actions" > token.env
+      - name: Setup .NET
+        id: setup-dotnet
+        uses: actions/setup-dotnet@v4
+      - name: Restore dependencies
+        run: dotnet restore
+
+      - name: Build for ${{ matrix.platform }}
+        run: dotnet build --no-restore --configuration Release --property:Platform=${{ matrix.platform }}
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: TOHE-${{ matrix.platform }}-PR${{ github.event.pull_request.number }}
+          path: bin/Release/net6.0/${{ matrix.platform }}/TOHE.dll
