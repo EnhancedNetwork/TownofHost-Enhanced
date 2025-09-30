@@ -65,6 +65,7 @@ public abstract class CovenManager : RoleBase // NO, THIS IS NOT A ROLE
     {
         byte NecroId = reader.ReadByte();
         necroHolder = NecroId;
+        Logger.Info($"{necroHolder.GetPlayer()?.GetRealName()} now has Necronomicon", "ReceiveNecroRPC");
     }
     public override void ApplyGameOptions(IGameOptions opt, byte playerId)
     {

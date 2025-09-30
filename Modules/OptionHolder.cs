@@ -741,6 +741,7 @@ public static class Options
         // Start Load Settings
         if (IsLoaded) yield break;
         OptionSaver.Initialize();
+        OptionCopier.Initialize();
         GroupAddons();
 
         Logger.Info("Settings loaded", "Load Options");
