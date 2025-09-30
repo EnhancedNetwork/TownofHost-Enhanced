@@ -74,12 +74,22 @@ public class ModUpdater
         }
     }
 
+#if ANDROID
+    static string RegionConfigPath = Path.Combine(UnityEngine.Application.persistentDataPath, "BepInEx", "config", "at.duikbo.regioninstall.cfg");
+    static string MiniRegionInstallPath = Path.Combine(UnityEngine.Application.persistentDataPath, "BepInEx", "plugins", "Mini.RegionInstall.dll");
+#else
     const string RegionConfigPath = "./BepInEx/config/at.duikbo.regioninstall.cfg";
     const string MiniRegionInstallPath = "./BepInEx/plugins/Mini.RegionInstall.dll";
+#endif
+
     const string RegionConfigResource = "TOHE.Resources.at.duikbo.regioninstall.cfg";
     const string MiniRegionInstallResource = "TOHE.Resources.Mini.RegionInstall.dll";
     private static void CheckCustomRegions()
     {
+#if ANDROID
+        Logger.Info($"Skip check on Android platform", "CheckCustomRegions");
+        return;
+#endif
         var regions = ServerManager.Instance.AvailableRegions;
         var hasCustomRegions = false;
         var forceUpdate = false;
@@ -271,20 +281,33 @@ public class ModUpdater
     }
     public static void StartUpdate(string url)
     {
-        ShowPopup(GetString("updatePleaseWait"), StringNames.Cancel, false);
-        Task.Run(() => DownloadDLLAsync(url));
+#if ANDROID
+        ShowPopup(GetString("AndroidUpdateNotSupported"), StringNames.Close, true, InfoPopup.Close);
+        Logger.Warn("Update download is not supported on Android platform", "StartUpdate");
         return;
+#else
+    ShowPopup(GetString("updatePleaseWait"), StringNames.Cancel, false);
+    Task.Run(() => DownloadDLLAsync(url));
+    return;
+#endif
     }
     public static bool NewVersionCheck()
     {
         try
         {
             var fileName = Assembly.GetExecutingAssembly().Location;
-            if (Directory.Exists("TOH_DATA") && File.Exists(@"./TOHE-DATA/BanWords.txt"))
+#if ANDROID
+            if (Directory.Exists(Path.Combine(UnityEngine.Application.persistentDataPath, "TOH_DATA")) &&
+                File.Exists(Path.Combine(UnityEngine.Application.persistentDataPath, "TOHE-DATA", "BanWords.txt")))
             {
-                DirectoryInfo di = new("TOH_DATA");
+                DirectoryInfo di = new(Path.Combine(UnityEngine.Application.persistentDataPath, "TOH_DATA"));
+#else
+        if (Directory.Exists("TOH_DATA") && File.Exists(@"./TOHE-DATA/BanWords.txt"))
+        {
+            DirectoryInfo di = new("TOH_DATA");
+#endif
                 di.Delete(true);
-                Logger.Warn("Deleting old data´╝ÜTOH_DATA", "NewVersionCheck");
+                Logger.Warn("Deleting old data：TOH_DATA", "NewVersionCheck");
             }
         }
         catch (Exception ex)
