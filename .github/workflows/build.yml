@@ -19,7 +19,7 @@ jobs:
 
     strategy:
       matrix:
-        platform: [AnyCPU, Android]
+        platform: ["Any CPU", "Android"]
 
     steps:
       - uses: actions/checkout@v4
