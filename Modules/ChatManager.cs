@@ -12,23 +12,25 @@ namespace TOHE.Modules.ChatManager
     public class ChatManager
     {
         public static bool cancel = false;
-        private static readonly List<Dictionary<byte, string>> chatHistory = [];
-        private static readonly Dictionary<byte, string> LastSystemChatMsg = [];
+        private static readonly List<(byte, string)> chatHistory = [];
+        private static readonly Dictionary<byte, List<string>> LastSystemChatMsgs = [];
         private const int maxHistorySize = 20;
         public static List<string> ChatSentBySystem = [];
         public static QuickChatSpamMode quickChatSpamMode => (QuickChatSpamMode)UseQuickChatSpamCheat.GetInt();
         public static void ResetHistory()
         {
             chatHistory.Clear();
-            LastSystemChatMsg.Clear();
+            LastSystemChatMsgs.Clear();
         }
         public static void ClearLastSysMsg()
         {
-            LastSystemChatMsg.Clear();
+            LastSystemChatMsgs.Clear();
         }
         public static void AddSystemChatHistory(byte playerId, string msg)
         {
-            LastSystemChatMsg[playerId] = msg;
+            if (!LastSystemChatMsgs.ContainsKey(playerId))
+                LastSystemChatMsgs[playerId] = [];
+            LastSystemChatMsgs[playerId].Add(msg);
         }
         public static bool CheckCommond(ref string msg, string command, bool exact = true)
         {
@@ -144,10 +146,7 @@ namespace TOHE.Modules.ChatManager
                 if (!player.IsAlive()) return;
                 message = msg;
                 //Logger.Warn($"Logging msg : {message}","Checking Exile");
-                Dictionary<byte, string> newChatEntry = new()
-                    {
-                        { player.PlayerId, message }
-                    };
+                var newChatEntry = (player.PlayerId, message);
                 chatHistory.Add(newChatEntry);
 
                 if (chatHistory.Count > maxHistorySize)
@@ -175,8 +174,7 @@ namespace TOHE.Modules.ChatManager
                 }
                 else
                 {
-                    var firstAlivePlayer = Main.AllAlivePlayerControls.OrderBy(x => x.PlayerId).FirstOrDefault();
-                    if (firstAlivePlayer == null) firstAlivePlayer = PlayerControl.LocalPlayer;
+                    var firstAlivePlayer = Main.AllAlivePlayerControls.OrderBy(x => x.PlayerId).FirstOrDefault() ?? PlayerControl.LocalPlayer;
 
                     var title = "<color=#aaaaff>" + GetString("DefaultSystemMessageTitle") + "</color>";
                     var name = firstAlivePlayer?.Data?.PlayerName;
@@ -260,8 +258,8 @@ namespace TOHE.Modules.ChatManager
             for (int i = 0; i < chatHistory.Count; i++)
             {
                 var entry = chatHistory[i];
-                var senderId = entry.Keys.First();
-                var senderMessage = entry[senderId];
+                var senderId = entry.Item1;
+                var senderMessage = entry.Item2;
                 var senderPlayer = senderId.GetPlayer();
                 if (senderPlayer == null) continue;
 
@@ -286,12 +284,13 @@ namespace TOHE.Modules.ChatManager
                     senderPlayer.Die(DeathReason.Kill, true);
                 }
             }
-            foreach (var playerId in LastSystemChatMsg.Keys.ToArray())
+            foreach (var playerId in LastSystemChatMsgs.Keys.ToArray())
             {
                 var pc = playerId.GetPlayer();
                 if (pc == null && playerId != byte.MaxValue) continue;
                 var title = "<color=#FF0000>" + GetString("LastMessageReplay") + "</color>";
-                Utils.SendMessage(LastSystemChatMsg[playerId], playerId, title: title, noReplay: true);
+                foreach (var message in LastSystemChatMsgs[playerId])
+                    Utils.SendMessage(message, playerId, title: title, noReplay: true);
             }
         }
     }
