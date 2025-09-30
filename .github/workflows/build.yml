@@ -14,7 +14,7 @@ jobs:
   build:
     runs-on: ubuntu-latest
     concurrency:
-      group: pr#${{ github.event.pull_request.number }}
+      group: pr#${{ github.event.pull_request.number }}-${{ matrix.platform }}
       cancel-in-progress: true
 
     strategy:
@@ -32,9 +32,4 @@ jobs:
         run: dotnet restore
 
       - name: Build for ${{ matrix.platform }}
-        run: dotnet build --no-restore --configuration Release --property:Platform=${{ matrix.platform }}
-      - name: Upload build artifacts
-        uses: actions/upload-artifact@v4
-        with:
-          name: TOHE-${{ matrix.platform }}-PR${{ github.event.pull_request.number }}
-          path: bin/Release/net6.0/${{ matrix.platform }}/TOHE.dll
+        run: dotnet build --no-restore --configuration Release -p:Platform="${{ matrix.platform }}"
