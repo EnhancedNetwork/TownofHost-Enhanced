@@ -339,6 +339,8 @@ internal class Baker : RoleBase
 
         if (AllHasBread(player) || (TransformNoMoreBread.GetBool() && BreadedPlayerCount(player.PlayerId).Item1 >= Main.AllAlivePlayerControls.Where(x => !x.IsNeutralApocalypse() && !Main.PlayerStates[x.PlayerId].IsNecromancer).Count()))
         {
+            var bread = BreadedPlayerCount(player.PlayerId);
+            Logger.Info($"{player.GetRealName()} transformed to Famine with {bread.Item1}/{bread.Item2} bread", "Baker");
             player.RpcChangeRoleBasis(CustomRoles.Famine);
             player.RpcSetCustomRole(CustomRoles.Famine);
             player.GetRoleClass()?.OnAdd(_Player.PlayerId);

@@ -187,10 +187,10 @@ internal class Jackal : RoleBase
             Logger.Info("Jackal run out of recruits or Recruit disabled?", "Jackal");
             return true;
         }
-        bool TargetCanBeSidekick = (CanRecruitCoven.GetBool() && target.IsPlayerCovenTeam())
+        bool TargetCanBeSidekick = ((CanRecruitCoven.GetBool() && target.IsPlayerCovenTeam())
         || (CanRecruitNeutral.GetBool() && target.IsPlayerNeutralTeam() && !target.GetCustomRole().IsNA())
         || (CanRecruitImpostor.GetBool() && target.IsPlayerImpostorTeam())
-        || target.IsPlayerCrewmateTeam();
+        || target.IsPlayerCrewmateTeam()) && !target.Is(CustomRoles.Loyal);
 
         switch (SidekickAssignMode.GetInt())
         {
@@ -429,7 +429,7 @@ internal class Jackal : RoleBase
                     newJackal.GetRoleClass()?.OnRemove(newJackal.PlayerId);
                     newJackal.RpcChangeRoleBasis(CustomRoles.Jackal);
                     newJackal.RpcSetCustomRole(CustomRoles.Jackal);
-                    newJackal.GetRoleClass()?.OnAdd(target.PlayerId);
+                    newJackal.GetRoleClass()?.OnAdd(newJackal.PlayerId);
 
                     Main.PlayerStates[newJackal.PlayerId].RemoveSubRole(CustomRoles.Recruit);
                     newJackal.PlayerId.SetAbilityUseLimit(RestoreLimitOnNewJackal.GetBool() && CanRecruitSidekick.GetBool() ? SidekickRecruitLimitOpt.GetInt() : 0);

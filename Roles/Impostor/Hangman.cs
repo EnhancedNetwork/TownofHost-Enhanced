@@ -55,9 +55,18 @@ internal class Hangman : RoleBase
             target.SetRealKiller(killer);
 
             killer.SetKillCooldown();
+            DoAddOnTriggers(killer, target);
             return false;
         }
         return true;
+    }
+
+    private void DoAddOnTriggers(PlayerControl killer, PlayerControl target)
+    {
+        if (killer.Is(CustomRoles.Stealer))
+            Stealer.OnMurderPlayer(killer, target);
+        if (killer.Is(CustomRoles.Tricky))
+            Tricky.AfterPlayerDeathTasks(target);
     }
 
     public override Sprite GetAbilityButtonSprite(PlayerControl player, bool shapeshifting) => shapeshifting ? CustomButton.Get("Hangman") : null;
