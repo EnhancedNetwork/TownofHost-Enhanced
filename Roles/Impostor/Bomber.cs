@@ -62,7 +62,8 @@ internal class Bomber : RoleBase
         Logger.Info("The bomb went off", playerRole.ToString());
         CustomSoundsManager.RPCPlayCustomSoundAll("Boom");
 
-        _ = new Explosion(5f, 0.5f, shapeshifter.GetCustomPosition());
+        if (AmongUsClient.Instance.AmHost)
+            _ = new Explosion(5f, 0.5f, shapeshifter.GetCustomPosition());
 
         foreach (var target in Main.AllPlayerControls)
         {
