@@ -77,12 +77,21 @@ class CoBeginPatch
     }
 }
 
+#if !ANDROID
 [HarmonyPatch(typeof(IntroCutscene._ShowRole_d__41), nameof(IntroCutscene._ShowRole_d__41.MoveNext))]
+#else
+[HarmonyPatch(typeof(IntroCutscene._ShowRole_d__40), nameof(IntroCutscene._ShowRole_d__40.MoveNext))]
+#endif
+
 class SetUpRoleTextPatch
 {
     public static bool IsInIntro = false;
 
-    public static void Postfix(IntroCutscene._ShowRole_d__41 __instance, ref bool __result)
+#if !ANDROID
+    public static void Prefix(IntroCutscene._ShowRole_d__41 __instance, ref bool __result)
+#else
+    public static void Prefix(IntroCutscene._ShowRole_d__40 __instance, ref bool __result)
+#endif
     {
         if (__instance.__1__state == 1 && __result) // while wait for 2.5s
         {
@@ -344,22 +353,27 @@ class BeginCrewmatePatch
             //         teamToDisplay.Add(pc);
             // }
 
+#if !ANDROID
             __instance.overlayHandle.color = new Color32(255, 154, 206, byte.MaxValue);
+#endif
             return true;
         }
         else if (PlayerControl.LocalPlayer.Is(CustomRoles.Egoist))
         {
             teamToDisplay = new Il2CppSystem.Collections.Generic.List<PlayerControl>();
             teamToDisplay.Add(PlayerControl.LocalPlayer);
-
+#if !ANDROID
             __instance.overlayHandle.color = new Color32(86, 0, 255, byte.MaxValue);
+#endif
             return true;
         }
         else if ((role.IsMadmate() || PlayerControl.LocalPlayer.Is(CustomRoles.Madmate)) && !PlayerControl.LocalPlayer.Is(CustomRoles.Narc))
         {
             teamToDisplay = new Il2CppSystem.Collections.Generic.List<PlayerControl>();
             __instance.BeginImpostor(teamToDisplay);
+#if !ANDROID
             __instance.overlayHandle.color = Palette.ImpostorRed;
+#endif
             return false;
         }
         else if (PlayerControl.LocalPlayer.IsPlayerCoven())
@@ -767,8 +781,9 @@ class BeginImpostorPatch
                     }
                 }
             }
-
+#if !ANDROID
             __instance.overlayHandle.color = Palette.ImpostorRed;
+#endif
             return true;
         }
 
@@ -779,7 +794,9 @@ class BeginImpostorPatch
             yourTeam.Add(PlayerControl.LocalPlayer);
             foreach (var pc in Main.AllPlayerControls.Where(x => !x.AmOwner)) yourTeam.Add(pc);
             __instance.BeginCrewmate(yourTeam);
+#if !ANDROID
             __instance.overlayHandle.color = Palette.CrewmateBlue;
+#endif
             return false;
         }
 
@@ -789,7 +806,9 @@ class BeginImpostorPatch
             yourTeam.Add(PlayerControl.LocalPlayer);
             foreach (var pc in Main.AllPlayerControls.Where(x => !x.AmOwner)) yourTeam.Add(pc);
             __instance.BeginCrewmate(yourTeam);
+#if !ANDROID
             __instance.overlayHandle.color = new Color32(127, 140, 141, byte.MaxValue);
+#endif
             return false;
         }
 
@@ -812,8 +831,9 @@ class BeginImpostorPatch
                     yourTeam.Add(pc);
                 }
             }
-
+#if !ANDROID
             __instance.overlayHandle.color = Palette.ImpostorRed;
+#endif
             return true; // manually return true here,otherwise the intro screen wont load at all
         }
 
@@ -823,7 +843,9 @@ class BeginImpostorPatch
             yourTeam.Add(PlayerControl.LocalPlayer);
             foreach (var pc in Main.AllPlayerControls.Where(x => !x.AmOwner)) yourTeam.Add(pc);
             __instance.BeginCrewmate(yourTeam);
+#if !ANDROID
             __instance.overlayHandle.color = new Color32(172, 66, 242, byte.MaxValue);
+#endif
             return false;
         }
 
@@ -836,6 +858,8 @@ class BeginImpostorPatch
         BeginCrewmatePatch.Postfix(__instance);
     }
 }
+
+#if !ANDROID
 [HarmonyPatch(typeof(IntroCutscene), nameof(IntroCutscene.OnDestroy))]
 class IntroCutsceneDestroyPatch
 {
@@ -996,3 +1020,178 @@ class IntroCutsceneDestroyPatch
         Logger.Info("OnDestroy", "IntroCutscene");
     }
 }
+#else
+[HarmonyPatch(typeof(ShipStatus), nameof(ShipStatus.StartSFX))]
+[HarmonyPatch(typeof(FungleShipStatus), nameof(FungleShipStatus.StartSFX))]
+class IntroCutsceneDestroyPatch
+{
+    public static void Prefix()
+    {
+        if (TutorialManager.Instance != null)
+        {
+            return;
+        }
+
+        Logger.Info("IntroCutscene destroyed called ShipStatus.StartSFX", "IntroCutscene");
+
+        if (AmongUsClient.Instance.AmHost && !AmongUsClient.Instance.IsGameOver)
+        {
+            // Host is desync role
+            if (PlayerControl.LocalPlayer.HasDesyncRole())
+            {
+                PlayerControl.LocalPlayer.Data.Role.AffectedByLightAffectors = false;
+
+                foreach (var target in PlayerControl.AllPlayerControls.GetFastEnumerator())
+                {
+                    // Set all players as killable players
+                    target.Data.Role.CanBeKilled = true;
+
+                    // When target is impostor, set name color as white
+                    target.cosmetics.SetNameColor(Color.white);
+                    target.Data.Role.NameColor = Color.white;
+                }
+            }
+            if (Main.PlayerStates[PlayerControl.LocalPlayer.PlayerId].IsNecromancer)
+            {
+                PlayerControl.LocalPlayer.Data.Role.AffectedByLightAffectors = false;
+
+                foreach (var target in PlayerControl.AllPlayerControls.GetFastEnumerator().Where(x => !x.IsPlayerCoven()))
+                {
+                    // Set all players as killable players
+                    target.Data.Role.CanBeKilled = true;
+
+                    // When target is Impostor, set name color as white
+                    target.cosmetics.SetNameColor(Color.white);
+                    target.Data.Role.NameColor = Color.white;
+                }
+            }
+        }
+    }
+    public static void Postfix()
+    {
+        if (TutorialManager.Instance != null)
+        {
+            return;
+        }
+
+        if (!GameStates.IsInGame) return;
+
+        Main.IntroDestroyed = true;
+
+        foreach (var pc in Main.AllPlayerControls)
+        {
+            // Set roleAssigned as false for override role for modded players
+            // For override role for vanilla clients we use "Data.Disconnected" while assign
+            pc.roleAssigned = false;
+        }
+
+        if (!GameStates.AirshipIsActive)
+        {
+            foreach (var state in Main.PlayerStates.Values)
+            {
+                state.HasSpawned = true;
+            }
+        }
+
+        CustomRoleManager.Add();
+
+        if (AmongUsClient.Instance.AmHost)
+        {
+            if (GameStates.IsNormalGame && !GameStates.AirshipIsActive)
+            {
+                foreach (var pc in PlayerControl.AllPlayerControls.GetFastEnumerator())
+                {
+                    pc.RpcResetAbilityCooldown();
+
+                    if (Options.FixFirstKillCooldown.GetBool() && Options.CurrentGameMode != CustomGameMode.FFA)
+                    {
+                        _ = new LateTask(() =>
+                        {
+                            if (pc != null)
+                            {
+                                pc.ResetKillCooldown();
+
+                                if (Main.AllPlayerKillCooldown.TryGetValue(pc.PlayerId, out var killTimer) && (killTimer - 2f) > 0f)
+                                {
+                                    pc.SetKillCooldown(Options.ChangeFirstKillCooldown.GetBool() ? Options.FixKillCooldownValue.GetFloat() - 2f : killTimer - 2f);
+                                }
+                            }
+                        }, 2f, $"Fix Kill Cooldown Task for playerId {pc.PlayerId}");
+                    }
+                }
+            }
+
+            if (Options.CurrentGameMode is CustomGameMode.SpeedRun)
+            {
+                SpeedRun.StartedAt = Utils.GetTimeStamp();
+                SpeedRun.RpcSyncSpeedRunStates();
+            }
+
+            foreach (var player in Main.AllPlayerControls)
+            {
+                if (player.Is(CustomRoles.GM) && !AntiBlackout.IsCached)
+                {
+                    player.RpcExile();
+                    Main.PlayerStates[player.PlayerId].SetDead();
+                }
+            }
+
+
+            if (GhostRoleAssign.forceRole.Any()) // Incase user has /up access
+            {
+                // Needs to be delayed for the game to load it properly
+                _ = new LateTask(() =>
+                {
+                    GhostRoleAssign.forceRole.Do(x =>
+                    {
+                        var plr = x.Key.GetPlayer();
+                        plr.RpcExile();
+                        Main.PlayerStates[x.Key].SetDead();
+
+                    });
+                }, 3f, "Set Dev Ghost-Roles");
+            }
+
+            bool chatVisible = Options.CurrentGameMode switch
+            {
+
+                CustomGameMode.FFA => FFAManager.FFA_ShowChatInGame.GetBool(),
+                CustomGameMode.SpeedRun => SpeedRun.SpeedRun_ShowChatInGame.GetBool(),
+
+                _ => false
+            };
+            try
+            {
+                if (chatVisible)
+                {
+                    Utils.SetChatVisibleForEveryone();
+                }
+            }
+            catch (Exception error)
+            {
+                Logger.Error($"Error: {error}", "Gamemode chat visible");
+            }
+
+            Utils.CheckAndSetVentInteractions();
+
+            if (Main.CurrentServerIsVanilla && Options.BypassRateLimitAC.GetBool())
+            {
+                Main.Instance.StartCoroutine(Utils.NotifyEveryoneAsync());
+            }
+            else
+            {
+                Utils.NotifyRoles();
+            }
+        }
+
+        try
+        {
+            if (!GameStates.IsEnded)
+                DestroyableSingleton<HudManager>.Instance.SetHudActive(true);
+        }
+        catch { }
+
+        Logger.Info("OnDestroy", "IntroCutscene");
+    }
+}
+#endif

@@ -1,8 +1,13 @@
 using Hazel;
 using System;
 using System.IO;
-using System.Runtime.InteropServices;
 using TOHE.Modules.Rpc;
+
+#if !ANDROID
+using System.Runtime.InteropServices;
+#else
+using UnityEngine;
+#endif
 
 namespace TOHE.Modules;
 
