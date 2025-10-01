@@ -131,7 +131,16 @@ internal class ChatCommands
                     }
                 }
                 break;
+            case "/save":
+            case "/savepreset":
+                canceled = true;
+                string saveFileName = "template";
+                if (args.Length >= 2)
+                    saveFileName = args[1];
 
+                string saveFile = OptionCopier.Save(fileName: saveFileName);
+                Utils.SendMessage(string.Format(GetString("PresetSaved"), saveFile), PlayerControl.LocalPlayer.PlayerId);
+                break;
             default:
                 Main.isChatCommand = false;
                 break;
@@ -1721,6 +1730,16 @@ internal class ChatCommands
                             Utils.SendMessage(string.Format(GetString("DraftSelection"), draftedRole.ToColoredString()), PlayerControl.LocalPlayer.PlayerId);
                         }
                     }
+                    break;
+                case "/load":
+                case "/loadpreset":
+                    canceled = true;
+                    string loadFileName = "template";
+                    if (args.Length >= 2)
+                        loadFileName = args[1];
+
+                    string loadFile = OptionCopier.Load(fileName: loadFileName);
+                    Utils.SendMessage(string.Format(GetString("PresetLoaded"), loadFile), PlayerControl.LocalPlayer.PlayerId);
                     break;
                 case "/spam":
                     canceled = true;

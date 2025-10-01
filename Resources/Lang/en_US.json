@@ -4233,6 +4233,9 @@
   "Cupid.Protect": "Protect",
   "Cupid.Charm": "Charm",
 
+  "PresetSaved": "Preset Saved to:\n\n{0}",
+  "PresetLoaded": "Preset Loaded from:\n\n{0}",
+
   "MenuTitle.Draft": "Draft Mode",
   "UseDraftMode": "Enable Draft Mode",
   "DraftableCount": "Number of draftable roles per player",

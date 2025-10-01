@@ -8,7 +8,7 @@ public static class OptionCopier
     [Obfuscation(Exclude = true)]
     private static readonly DirectoryInfo SaveDataDirectoryInfo = new("./TOHE-DATA/Presets/");
 
-    private static FileInfo OptionCopierFileInfo(string fileName) => new($"{SaveDataDirectoryInfo.FullName}/{(fileName.EndsWith(".json") ? fileName : fileName + ".json")}");
+    private static FileInfo OptionCopierFileInfo(string fileName) => new($"{SaveDataDirectoryInfo.FullName}/{(fileName.EndsWith(".preset") ? fileName : fileName + ".preset")}");
 
     public static void Initialize()
     {
@@ -63,7 +63,8 @@ public static class OptionCopier
         }
     }
     /// <summary>Save current options to json file</summary>
-    public static void Save(int presetNum = -1, string fileName = "template")
+    /// <returns>file path saved to</returns>
+    public static string Save(int presetNum = -1, string fileName = "template")
     {
         // if (AmongUsClient.Instance != null && !AmongUsClient.Instance.AmHost) return;
 
@@ -78,16 +79,19 @@ public static class OptionCopier
         {
             var jsonString = JsonSerializer.Serialize(GenerateOptionsData(presetNum), new JsonSerializerOptions { WriteIndented = true, });
             File.WriteAllText(OptionCopierFileInfo(fileName).FullName, jsonString);
+            return OptionCopierFileInfo(fileName).FullName;
         }
         catch (System.Exception error)
         {
             Logger.Error($"Error: {error}", "OptionCopier.Save");
+            return $"Error: {error.Message}";
         }
     }
     /// <summary>Read options from json file</summary>
-    public static void Load(int presetNum = -1, string fileName = "template")
+    /// /// <returns>file path loaded from</returns>
+    public static string Load(int presetNum = -1, string fileName = "template")
     {
-        if (AmongUsClient.Instance != null && !AmongUsClient.Instance.AmHost) return;
+        if (AmongUsClient.Instance != null && !AmongUsClient.Instance.AmHost) return "Error: Not Host";
         if (presetNum == -1) presetNum = OptionItem.CurrentPreset;
 
         var jsonString = File.ReadAllText(OptionCopierFileInfo(fileName).FullName);
@@ -96,9 +100,10 @@ public static class OptionCopier
         {
             Logger.Info("Save default value as option data is empty", "Option Copier");
             Save(presetNum, fileName);
-            return;
+            return "Preset was empty, saving over it";
         }
         LoadOptionsData(JsonSerializer.Deserialize<SerializablePresetData>(jsonString), presetNum, fileName);
+        return OptionCopierFileInfo(fileName).FullName;
     }
 
     public static string GetOptionPath(this OptionItem option)
@@ -106,7 +111,17 @@ public static class OptionCopier
         if (option.Parent == null)
             return option.Name;
 
-        return $"{option.Parent.Name}/{option.Name}";
+        var name = option.Name;
+
+        if (option.ReplacementDictionary != null)
+        {
+            foreach (var rd in option.ReplacementDictionary)
+            {
+                name = name.Replace(rd.Key, rd.Value);
+            }
+        }
+
+        return $"{option.Parent.Name}/{name.RemoveHtmlTags()}";
     }
 
     public static object GetValueObject(this OptionItem option) => option switch
