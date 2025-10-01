@@ -47,4 +47,15 @@ public class StringOptionItem(int id, string name, int defaultValue, TabGroup ta
     {
         base.SetValue(Rule.RepeatIndex(value), doSync);
     }
+    public override void SetValue(object afterValue, bool doSync = true)
+    {
+        if (afterValue is string sVal)
+        {
+            var index = Selections.ToList().IndexOf(sVal);
+            if (index != -1)
+                SetValue(index, doSync);
+        }
+        else
+            base.SetValue(afterValue, doSync);
+    }
 }

@@ -30,4 +30,17 @@ public class FloatOptionItem(int id, string name, float defaultValue, TabGroup t
     {
         base.SetValue(Rule.RepeatIndex(value), doSync);
     }
+    public override void SetValue(object afterValue, bool doSync = true)
+    {
+        float? value = null;
+        if (afterValue is float fVal)
+            value = fVal;
+        else if (afterValue is double dVal)
+            value = (float)dVal;
+
+        if (value != null)
+            base.SetValue(Rule.GetNearestIndex(value.Value), doSync);
+        else
+            base.SetValue(afterValue, doSync);
+    }
 }

@@ -269,6 +269,15 @@ public abstract class OptionItem
         CallUpdateValueEvent(beforeValue, afterValue);
         Refresh();
     }
+    public virtual void SetValue(object afterValue, bool doSync = true)
+    {
+        if (afterValue is int iVal)
+            SetValue(iVal, doSync);
+        else
+        {
+            Logger.Error($"Invalid value type: {afterValue}", "OptionItem.SetValue");
+        }
+    }
 
     public static OptionItem operator ++(OptionItem item)
         => item.Do(item => item.SetValue(item.CurrentValue + 1));

@@ -31,4 +31,11 @@ public class IntegerOptionItem(int id, string name, int defaultValue, TabGroup t
     {
         base.SetValue(Rule.RepeatIndex(value), doSync);
     }
+    public override void SetValue(object afterValue, bool doSync = true)
+    {
+        if (afterValue is int iVal)
+            base.SetValue(Rule.GetNearestIndex(iVal), doSync);
+        else
+            base.SetValue(afterValue, doSync);
+    }
 }
