@@ -91,11 +91,12 @@ internal class Bloodmoon : RoleBase
                 RPC.PlaySoundRPC(Sounds.SabotageSound, target.PlayerId);
                 PlayerDie.Add(target.PlayerId, TimeTilDeath.GetInt());
                 LastTime.Add(target.PlayerId, GetTimeStamp());
+                killer.RpcResetAbilityCooldown();
+                killer.RpcRemoveAbilityUse();
                 SendRPC(target.PlayerId, true);
+                return false;
             }
-            killer.RpcResetAbilityCooldown();
-            killer.RpcRemoveAbilityUse();
-            SendRPC(target.PlayerId, true);
+            killer.Notify(ColorString(GetRoleColor(CustomRoles.Gangster), GetString("CantBlood")));
         }
         return false;
     }

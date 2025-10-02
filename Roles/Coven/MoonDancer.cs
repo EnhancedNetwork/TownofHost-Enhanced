@@ -323,7 +323,7 @@ internal class MoonDancer : CovenManager
         }
         else
         {
-            hud.KillButton.OverrideText(GetString("MoonDancerKillButton"));
+            hud.KillButton.OverrideText(GetString("MoonDancerKillButtonText"));
         }
     }
 }
