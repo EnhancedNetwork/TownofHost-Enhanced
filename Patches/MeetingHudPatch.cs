@@ -27,7 +27,7 @@ class CheckForEndVotingPatch
     {
         if (!AmongUsClient.Instance.AmHost) return true;
 
-        //Meeting Skip with vote counting on keystroke (m + delete)
+        //Meeting Skip with vote counting on keystroke (F6)
         var shouldSkip = false;
         if (Input.GetKeyDown(KeyCode.F6))
         {

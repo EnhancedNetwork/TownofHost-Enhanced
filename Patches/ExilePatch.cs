@@ -181,12 +181,12 @@ class ExileControllerWrapUpPatch
 
                     Logger.Info($"{player?.GetNameWithRole().RemoveHtmlTags()} died with {x.Value}", "AfterMeetingDeath");
 
+                    if (x.Value == PlayerState.DeathReason.Suicide)
+                        player?.SetRealKiller(player, true);
+
                     state.deathReason = x.Value;
                     state.SetDead();
                     player?.RpcExileV2();
-
-                    if (x.Value == PlayerState.DeathReason.Suicide)
-                        player?.SetRealKiller(player, true);
 
                     MurderPlayerPatch.AfterPlayerDeathTasks(player, player, true);
                 });

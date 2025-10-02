@@ -3708,6 +3708,11 @@ internal class ChatCommands
                         }
                     }
                 }
+                else if (args[1] == "desc" || args[1] == "description")
+                {
+                    if (args.Length > 2) args[1] = args[2];
+                    goto case "/dd";
+                }
                 else if (args[1] == "add")
                 {
                     if (!tagCanStartDraft && !Utils.IsPlayerModerator(player.FriendCode))
@@ -3776,6 +3781,9 @@ internal class ChatCommands
                         SendRolesInfo(draftedRole.ToString(), player.PlayerId, isDev: player.FriendCode.GetDevUser().DeBug);
                     }
                 }
+                break;
+            case "/dd":
+            case "/draftdescription":
                 break;
             case "/exe":
             case "/уничтожить":

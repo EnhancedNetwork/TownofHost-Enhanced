@@ -139,7 +139,7 @@ internal class Virus : RoleBase
             }
             else
             {
-                Main.AfterMeetingDeathPlayers.Remove(infectedId);
+                if (infected.GetDeathReason() is not PlayerState.DeathReason.Suicide) Main.AfterMeetingDeathPlayers.Remove(infectedId);
             }
         }
 

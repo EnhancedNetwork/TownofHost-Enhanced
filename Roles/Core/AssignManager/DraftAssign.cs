@@ -650,6 +650,36 @@ public static class DraftAssign
 
     public static void SendDraftDescription(this PlayerControl player, int index)
     {
-        // TODO
+        byte playerId = player.PlayerId;
+        var result = CustomRoles.NotAssigned;
+        if (DraftPools.TryGetValue(player.PlayerId, out List<CustomRoles> pool))
+        {
+            result = pool[index];
+        }
+        else if (AssignedRoles.TryGetValue(player.PlayerId, out CustomRoles assignedRole))
+        {
+            result = assignedRole;
+        }
+
+        if (result == CustomRoles.NotAssigned)
+            return;
+
+        var Des = result.GetInfoLong();
+        var title = "▲" + $"<color=#ffffff>" + result.GetRoleTitle() + "</color>\n";
+        var Conf = new StringBuilder();
+        string rlHex = Utils.GetRoleColorCode(result);
+        if (Options.CustomRoleSpawnChances.ContainsKey(result))
+        {
+            Utils.ShowChildrenSettings(Options.CustomRoleSpawnChances[result], ref Conf);
+            var cleared = Conf.ToString();
+            var Setting = $"<color={rlHex}>{GetString(result.ToString())} {GetString("Settings:")}</color>\n";
+            Conf.Clear().Append($"<color=#ffffff>" + $"<size={ChatCommands.Csize}>" + Setting + cleared + "</size>" + "</color>");
+
+        }
+        // Show role info
+        Utils.SendMessage(Des, playerId, title, noReplay: true);
+
+        // Show role settings
+        Utils.SendMessage("", playerId, Conf.ToString(), noReplay: true);
     }
 }

@@ -192,7 +192,7 @@ internal class Death : RoleBase
             }
             else
             {
-                Main.AfterMeetingDeathPlayers.Remove(pc.PlayerId);
+                if (pc.GetDeathReason() is not PlayerState.DeathReason.Suicide) Main.AfterMeetingDeathPlayers.Remove(pc.PlayerId);
             }
         }
         CheckForEndVotingPatch.TryAddAfterMeetingDeathPlayers(PlayerState.DeathReason.Armageddon, [.. deathList]);
