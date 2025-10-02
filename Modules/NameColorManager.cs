@@ -14,6 +14,7 @@ public static class NameColorManager
 {
     public static string ApplyNameColorData(this string name, PlayerControl seer, PlayerControl target, bool isMeeting)
     {
+        if (name.IsNullOrWhiteSpace()) name = "Player";
         if (!AmongUsClient.Instance.IsGameStarted) return name;
 
         if (!TryGetData(seer, target, out var colorCode))

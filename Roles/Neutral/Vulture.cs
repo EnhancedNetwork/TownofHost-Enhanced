@@ -173,6 +173,8 @@ internal class Vulture : RoleBase
             var player = apc.GetPlayer();
             if (player == null) continue;
 
+            LocateArrow.RemoveAllTarget(apc);
+
             _ = new LateTask(() =>
             {
                 if (GameStates.IsInTask && player.IsAlive())
