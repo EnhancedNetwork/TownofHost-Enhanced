@@ -24,10 +24,17 @@ namespace TOHE;
 [HarmonyPatch(typeof(ChatController), nameof(ChatController.SendChat))]
 internal class ChatCommands
 {
+#if !ANDROID
     private static readonly string modLogFiles = @"./TOHE-DATA/ModLogs.txt";
     private static readonly string modTagsFiles = @"./TOHE-DATA/Tags/MOD_TAGS";
     private static readonly string sponsorTagsFiles = @"./TOHE-DATA/Tags/SPONSOR_TAGS";
     private static readonly string vipTagsFiles = @"./TOHE-DATA/Tags/VIP_TAGS";
+#else
+    private static readonly string modLogFiles = Path.Combine(UnityEngine.Application.persistentDataPath, "TOHE-DATA", "ModLogs.txt");
+    private static readonly string modTagsFiles = Path.Combine(UnityEngine.Application.persistentDataPath, "TOHE-DATA", "MOD_TAGS");
+    private static readonly string sponsorTagsFiles = Path.Combine(UnityEngine.Application.persistentDataPath, "TOHE-DATA", "SPONSOR_TAGS");
+    private static readonly string vipTagsFiles = Path.Combine(UnityEngine.Application.persistentDataPath, "TOHE-DATA", "VIP_TAGS");
+#endif
 
     private static readonly Dictionary<char, int> Pollvotes = [];
     private static readonly Dictionary<char, string> PollQuestions = [];
