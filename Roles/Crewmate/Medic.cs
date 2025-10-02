@@ -120,7 +120,7 @@ internal class Medic : RoleBase
     }
 
     public static bool IsProtected(byte id)
-        => GlobalProtectedList.Contains(id) && Main.PlayerStates.TryGetValue(id, out var ps) && !ps.IsDead;
+        => GlobalProtectedList.Contains(id) && Main.PlayerStates.TryGetValue(id, out var ps) && !ps.IsDead && ProtectedPlayers.Any(x => x.Value.Contains(id));
 
     private bool IsProtect(byte id)
         => ProtectedList.Contains(id) && Main.PlayerStates.TryGetValue(id, out var ps) && !ps.IsDead;
