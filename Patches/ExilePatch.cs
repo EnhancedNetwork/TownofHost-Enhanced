@@ -188,6 +188,9 @@ class ExileControllerWrapUpPatch
                     state.SetDead();
                     player?.RpcExileV2();
 
+                    // Just to be sure
+                    _ = new LateTask(() => player?.RpcExileV2(), 0.5f, "Extra Exile to be Sure");
+
                     MurderPlayerPatch.AfterPlayerDeathTasks(player, player, true);
                 });
 
