@@ -16,6 +16,7 @@ public class Rat : IAddon
     public static OptionItem canFindImp;
     public static OptionItem canFindNeutral;
     public static OptionItem canFindCoven;
+    public static OptionItem canFindAddons;
     public void SetupCustomOption()
     {
         SetupAdtRoleOptions(Id, CustomRoles.Rat, canSetNum: true, tab: TabGroup.Addons, teamSpawnOptions: true);
@@ -24,6 +25,7 @@ public class Rat : IAddon
         canFindImp = BooleanOptionItem.Create(Id + 12, "RatCanFindImp", true, TabGroup.Addons, false).SetParent(CustomRoleSpawnChances[CustomRoles.Rat]);
         canFindNeutral = BooleanOptionItem.Create(Id + 13, "RatCanFindNeutral", true, TabGroup.Addons, false).SetParent(CustomRoleSpawnChances[CustomRoles.Rat]);
         canFindCoven = BooleanOptionItem.Create(Id + 14, "RatCanFindCoven", true, TabGroup.Addons, false).SetParent(CustomRoleSpawnChances[CustomRoles.Rat]);
+        canFindAddons = BooleanOptionItem.Create(Id + 15, "RatCanFindAddons", true, TabGroup.Addons, false).SetParent(CustomRoleSpawnChances[CustomRoles.Rat]);
     }
     public void Init()
     {
@@ -48,7 +50,7 @@ public class Rat : IAddon
 
         int n = ratRoleCount.GetInt();
         int i = 0;
-        List<CustomRoles> listOfRoles = [.. CustomRolesHelper.AllRoles.Where(role => !role.IsGhostRole() && role.IsEnable() && !role.RoleExist(countDead: true) && ((role.IsCrewmate()&&canFindCrew.GetBool())||(role.IsImpostor()&&canFindImp.GetBool())||(role.IsNeutral()&&canFindNeutral.GetBool())||(role.IsCoven()&&canFindCoven.GetBool()))).Shuffle()];
+        List<CustomRoles> listOfRoles = [.. CustomRolesHelper.AllRoles.Where(role => !role.IsGhostRole() && role.IsEnable() && !role.RoleExist(countDead: true) && ((role.IsCrewmate()&&canFindCrew.GetBool())||(role.IsImpostor()&&canFindImp.GetBool())||(role.IsNeutral()&&canFindNeutral.GetBool())||(role.IsCoven()&&canFindCoven.GetBool())||(role.IsAdditionRole()&&canFindAddons.GetBool()))).Shuffle()];
         string separator = TranslationController.Instance.currentLanguage.languageID is SupportedLangs.English or SupportedLangs.Russian ? "], [" : "】, 【";
         if (n > listOfRoles.Count) n = listOfRoles.Count;
 
