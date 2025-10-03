@@ -141,6 +141,16 @@ internal class ChatCommands
                 string saveFile = OptionCopier.Save(fileName: saveFileName);
                 Utils.SendMessage(string.Format(GetString("PresetSaved"), saveFile), PlayerControl.LocalPlayer.PlayerId);
                 break;
+            case "/docs":
+                if (!PlayerControl.LocalPlayer.FriendCode.GetDevUser().IsDev) break;
+                canceled = true;
+                int roleId = 500;
+                if (args.Length >= 2)
+                    roleId = int.Parse(args[1]);
+
+                if (roleId != 500)
+                    ((CustomRoles)roleId).GenerateDocs();
+                break;
             default:
                 Main.isChatCommand = false;
                 break;

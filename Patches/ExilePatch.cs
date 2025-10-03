@@ -220,7 +220,7 @@ class ExileControllerWrapUpPatch
                                 player.ResetKillCooldown();
                                 if (Main.AllPlayerKillCooldown.TryGetValue(player.PlayerId, out var killTimer) && (killTimer - 2f) > 0f)
                                 {
-                                    player.SetKillCooldown(Options.ChangeFirstKillCooldown.GetBool() ? Options.FixKillCooldownValue.GetFloat() - 2f : killTimer - 2f);
+                                    player.SetKillCooldown(killTimer - 2f);
                                 }
                             }
                         }
