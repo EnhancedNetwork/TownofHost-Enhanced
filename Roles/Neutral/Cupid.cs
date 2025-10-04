@@ -153,14 +153,17 @@ internal class Cupid : RoleBase
         if (shapeshifter == null || target == null) return false;
 
         AddTarget(shapeshifter, target);
+
+        resetCooldown = false;
         
         return false;
     }
 
     private void AddTarget(PlayerControl cupid, PlayerControl target)
     {
-        if (!CustomRolesHelper.CheckAddonConfilct(CustomRoles.Lovers, target, checkLimitAddons: false))
+        if (!CustomRolesHelper.CheckAddonConfilct(CustomRoles.Lovers, target, checkLimitAddons: false, checkConditions: false))
         {
+            Logger.Info($"Can't Charm {target.GetNameWithRole()}", "Cupid");
             cupid.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Cultist), GetString("Cupid.CantCharm")));
             return;
         }
