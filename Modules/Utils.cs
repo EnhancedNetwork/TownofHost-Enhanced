@@ -2737,6 +2737,20 @@ public static class Utils
         vanillasend.Recycle();
     }
 
+    public static bool CheckTresspassing(PlayerControl killer, PlayerControl target)
+    {
+        if (killer == target) return false;
+
+        if (killer.IsSameTeammate(target, out var _)) return false;
+
+        if (!Witness.AllMurderTresspass.ContainsKey(killer.PlayerId))
+            Witness.AllMurderTresspass.Add(killer.PlayerId, new(tresspass: GetTimeStamp()));
+        else
+            Witness.AllMurderTresspass[killer.PlayerId].SetTresspass(GetTimeStamp());
+
+        return true;
+    }
+
     public static int AllPlayersCount => Main.PlayerStates.Values.Count(state => state.countTypes != CountTypes.OutOfGame);
     public static int AllAlivePlayersCount => Main.AllAlivePlayerControls.Count(pc => !pc.Is(CountTypes.OutOfGame));
     public static bool IsAllAlive => Main.PlayerStates.Values.All(state => state.countTypes == CountTypes.OutOfGame || !state.IsDead);

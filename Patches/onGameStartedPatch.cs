@@ -12,6 +12,7 @@ using TOHE.Patches;
 using TOHE.Roles.Core;
 using TOHE.Roles.Core.AssignManager;
 using TOHE.Roles.Core.DraftAssign;
+using TOHE.Roles.Crewmate;
 using UnityEngine;
 using static TOHE.Translator;
 
@@ -75,7 +76,7 @@ internal class ChangeRoleSettings
 
             Main.CheckShapeshift.Clear();
             Main.ShapeshiftTarget.Clear();
-            Main.AllKillers.Clear();
+            Witness.AllMurderTresspass.Clear();
             Main.OverDeadPlayerList.Clear();
             Main.UnShapeShifter.Clear();
             Main.DeadPassedMeetingPlayers.Clear();

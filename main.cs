@@ -177,7 +177,6 @@ public class Main : BasePlugin
     public static readonly Dictionary<byte, float> AllPlayerSpeed = [];
     public static readonly Dictionary<byte, float> LastAllPlayerSpeed = [];
     public static readonly HashSet<byte> PlayersDiedInMeeting = [];
-    public static readonly Dictionary<byte, long> AllKillers = [];
     public static readonly Dictionary<byte, (NetworkedPlayerInfo.PlayerOutfit outfit, string name)> OvverideOutfit = [];
     public static readonly Dictionary<byte, bool> CheckShapeshift = [];
     public static readonly Dictionary<byte, byte> ShapeshiftTarget = [];
