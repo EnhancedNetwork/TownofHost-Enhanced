@@ -291,8 +291,18 @@ public class Lovers : IAddon
     {
         var loverId = GetLoverId(playerId);
 
-        Main.PlayerStates[playerId].RemoveSubRole(CustomRoles.Lovers);
-        Main.PlayerStates[loverId].RemoveSubRole(CustomRoles.Lovers);
+        var pair = loverPairs.First(x => x.Item1 == playerId || x.Item2 == loverId);
+        loverPairs.Remove(pair);
+
+        if (loverless != byte.MaxValue)
+        {
+            loverPairs.Add((loverId, loverless));
+            loverless = byte.MaxValue;
+        }
+        else
+        {
+            loverless = loverId;
+        }
     }
 }
 

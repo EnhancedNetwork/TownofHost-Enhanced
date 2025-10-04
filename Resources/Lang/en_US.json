@@ -4214,6 +4214,7 @@
   "RatCanFindImp": "Can Find <color=#ff1919>Impostor</color> Roles",
   "RatCanFindNeutral": "Can Find <color=#7f8c8d>Neutral</color> Roles",
   "RatCanFindCoven": "Can Find <color=#ac42f2>Coven</color> Roles",
+  "RatCanFindAddons": "Can Find Addons",
   "RatMsgTitle": "Roles Sniffed",
   "RatRoleList": "Your nose tells you that no one is <b>{0}</b>.",
 

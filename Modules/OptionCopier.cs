@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using System.IO;
 using System.Text.Json;
 
@@ -79,6 +80,10 @@ public static class OptionCopier
         {
             var jsonString = JsonSerializer.Serialize(GenerateOptionsData(presetNum), new JsonSerializerOptions { WriteIndented = true, });
             File.WriteAllText(OptionCopierFileInfo(fileName).FullName, jsonString);
+
+            ProcessStartInfo psi = new("Explorer.exe") { Arguments = "/e,/select," + OptionCopierFileInfo(fileName).FullName.Replace("/", "\\") };
+            Process.Start(psi);
+
             return OptionCopierFileInfo(fileName).FullName;
         }
         catch (System.Exception error)

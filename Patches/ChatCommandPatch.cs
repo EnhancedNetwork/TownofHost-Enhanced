@@ -136,7 +136,7 @@ internal class ChatCommands
                 canceled = true;
                 string saveFileName = "template";
                 if (args.Length >= 2)
-                    saveFileName = args[1];
+                    saveFileName = string.Join(" ", args[1..]);
 
                 string saveFile = OptionCopier.Save(fileName: saveFileName);
                 Utils.SendMessage(string.Format(GetString("PresetSaved"), saveFile), PlayerControl.LocalPlayer.PlayerId);
@@ -1746,7 +1746,7 @@ internal class ChatCommands
                     canceled = true;
                     string loadFileName = "template";
                     if (args.Length >= 2)
-                        loadFileName = args[1];
+                        loadFileName = string.Join(" ", args[1..]);
 
                     string loadFile = OptionCopier.Load(fileName: loadFileName);
                     Utils.SendMessage(string.Format(GetString("PresetLoaded"), loadFile), PlayerControl.LocalPlayer.PlayerId);
