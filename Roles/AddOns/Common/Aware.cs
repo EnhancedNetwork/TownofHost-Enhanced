@@ -1,3 +1,5 @@
+using TOHE.Roles.Coven;
+using TOHE.Roles.Neutral;
 using static TOHE.Options;
 using static TOHE.Translator;
 
@@ -47,6 +49,8 @@ public class Aware : IAddon
 
         switch (killerRole)
         {
+            case CustomRoles.Baker when Baker.CurrentBread() == 0:
+            case CustomRoles.PotionMaster when PotionMaster.CurrentPotion() == 0:
             case CustomRoles.Consigliere:
             case CustomRoles.Overseer:
                 if (!AwareInteracted.ContainsKey(target.PlayerId))
