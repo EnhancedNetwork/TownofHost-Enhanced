@@ -433,6 +433,7 @@ internal class Jackal : RoleBase
 
                     Main.PlayerStates[newJackal.PlayerId].RemoveSubRole(CustomRoles.Recruit);
                     newJackal.PlayerId.SetAbilityUseLimit(RestoreLimitOnNewJackal.GetBool() && CanRecruitSidekick.GetBool() ? SidekickRecruitLimitOpt.GetInt() : 0);
+                    Logger.Info($"New Jackal was given {newJackal.PlayerId.GetAbilityUseLimit()} uses", "Jackal");
 
                     if (inMeeting)
                     {
