@@ -143,7 +143,7 @@ public static class RoleDocsGenerator
         Custom_RoleType.CrewmateSupport or Custom_RoleType.CrewmateKilling or Custom_RoleType.CrewmatePower or
         Custom_RoleType.CrewmateGhosts => "Crewmates",
         Custom_RoleType.NeutralBenign or Custom_RoleType.NeutralEvil or Custom_RoleType.NeutralChaos or
-        Custom_RoleType.NeutralKilling or Custom_RoleType.NeutralApocalypse => "Neutrals",
+        Custom_RoleType.NeutralKilling or Custom_RoleType.NeutralApocalypse or Custom_RoleType.NeutralPariah => "Neutrals",
         Custom_RoleType.CovenPower or Custom_RoleType.CovenKilling or Custom_RoleType.CovenTrickery or
         Custom_RoleType.CovenUtility => "Coven",
         _ => "None"
@@ -166,6 +166,7 @@ public static class RoleDocsGenerator
         Custom_RoleType.NeutralEvil => "Evil",
         Custom_RoleType.NeutralChaos => "Chaos",
         Custom_RoleType.NeutralApocalypse => "Apocalypse",
+        Custom_RoleType.NeutralPariah => "Pariah",
         Custom_RoleType.CovenTrickery => "Trickey",
         Custom_RoleType.CovenUtility => "Utility",
         _ => "None"

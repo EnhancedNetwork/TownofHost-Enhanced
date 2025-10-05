@@ -311,6 +311,11 @@ public static class CustomRolesHelper
         return role.GetStaticRoleClass().ThisRoleType
             is Custom_RoleType.NeutralChaos;
     }
+    public static bool IsNP(this CustomRoles role)
+    {
+        return role.GetStaticRoleClass().ThisRoleType
+            is Custom_RoleType.NeutralPariah;
+    }
     public static bool IsImpostor(this CustomRoles role) // IsImp
     {
         if (role.GetStaticRoleClass().ThisRoleType is
@@ -1432,7 +1437,7 @@ public static class CustomRolesHelper
     /// <summary>
     /// Role is not impostor nor rascal nor madmate nor converting nor neutral or role is trickster.
     /// </summary>
-    public static bool IsCrewmateTeamV2(this CustomRoles role) => !(role.IsImpostorTeamV2() || role.IsNeutralTeamV2()) || role == CustomRoles.Trickster;
+    public static bool IsCrewmateTeamV2(this CustomRoles role) => !(role.IsImpostorTeamV2() || role.IsNeutralTeamV2() || role.IsCovenTeam()) || role == CustomRoles.Trickster;
     /// <summary>
     /// Role is Enchanted Or Coven
     /// </summary>
@@ -1693,7 +1698,8 @@ public static class CustomRolesHelper
             RoleBucket.NeutralChaos => roleType is Custom_RoleType.NeutralChaos,
             RoleBucket.NeutralKilling => roleType is Custom_RoleType.NeutralKilling,
             RoleBucket.NeutralApocalypse => roleType is Custom_RoleType.NeutralApocalypse,
-            RoleBucket.NeutralRandom => roleType is Custom_RoleType.NeutralBenign or Custom_RoleType.NeutralEvil or Custom_RoleType.NeutralChaos or Custom_RoleType.NeutralKilling or Custom_RoleType.NeutralApocalypse,
+            RoleBucket.NeutralPariah => roleType is Custom_RoleType.NeutralPariah,
+            RoleBucket.NeutralRandom => roleType is Custom_RoleType.NeutralBenign or Custom_RoleType.NeutralEvil or Custom_RoleType.NeutralChaos or Custom_RoleType.NeutralKilling or Custom_RoleType.NeutralApocalypse or Custom_RoleType.NeutralPariah,
 
             RoleBucket.CovenPower => roleType is Custom_RoleType.CovenPower,
             RoleBucket.CovenKilling => roleType is Custom_RoleType.CovenKilling,
@@ -1743,6 +1749,7 @@ public enum Custom_RoleType
     NeutralChaos,
     NeutralKilling,
     NeutralApocalypse,
+    NeutralPariah,
 
     // Coven
     CovenPower,
@@ -1818,6 +1825,7 @@ public enum RoleBucket
     NeutralChaos,
     NeutralKilling,
     NeutralApocalypse,
+    NeutralPariah,
     NeutralRandom,
 
     // Coven

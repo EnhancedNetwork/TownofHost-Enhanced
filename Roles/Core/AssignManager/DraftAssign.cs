@@ -202,6 +202,8 @@ public static class DraftAssign
             .. Enumerable.Range(DraftPools.Keys.Max(), UnassignedDraftPools.Count)
         ];
 
+        bool twiceOver = false;
+
         int bucketId = 0;
         while (AlwaysRoles.Any())
         {
@@ -218,21 +220,27 @@ public static class DraftAssign
 
                 AlwaysRoles.Remove(bucketRole);
             }
-            else
-            {
-                Logger.Warn($"Not enough enabled roles in bucket {bucket} to assign.", "StartDraft");
-                GetPool(id).Add(CustomRoles.NotAssigned);
-            }
 
             info.AssignedCount++;
             if (info.AssignedCount >= info.MaxCount) while (ChanceRoles.Contains(bucketRole)) AlwaysRoles.Remove(bucketRole);
 
             bucketId++;
-            if (bucketId >= bucketCount) bucketId = 0;
+            if (bucketId >= bucketCount)
+            {
+                bucketId = 0;
+                if (DraftPools.Any(x => x.Value.Count >= maxDraftRoles))
+                {
+                    if (!twiceOver) twiceOver = true;
+                    else goto AfterPoolsAssigned;
+                }
+            }
 
             if (DraftPools.All(x => x.Value.Count >= maxDraftRoles)) goto AfterPoolsAssigned;
         }
 
+        twiceOver = false;
+
+        Dictionary<int, bool> hasRolesFound = PoolIds.ToDictionary(x => x, x => true);
         while (ChanceRoles.Any())
         {
             var id = PoolIds[bucketId];
@@ -255,14 +263,30 @@ public static class DraftAssign
             }
             else
             {
-                Logger.Warn($"Not enough enabled roles in bucket {bucket} to assign.", "StartDraft");
-                GetPool(id).Add(CustomRoles.NotAssigned);
+                hasRolesFound[id] = false;
             }
 
             bucketId++;
-            if (bucketId >= bucketCount) bucketId = 0;
+            if (bucketId >= bucketCount)
+            {
+                bucketId = 0;
+                if (DraftPools.Any(x => x.Value.Count >= maxDraftRoles))
+                {
+                    if (!twiceOver) twiceOver = true;
+                    else goto AfterPoolsAssigned;
+                }
+            }
 
             if (DraftPools.All(x => x.Value.Count >= maxDraftRoles)) goto AfterPoolsAssigned;
+            if (hasRolesFound.Any(x => !x.Value)) break;
+        }
+
+        foreach (var id in hasRolesFound.Where(x => !x.Value))
+        {
+            var bucket = GetBucket(id.Key);
+
+            Logger.Warn($"Not enough enabled roles in bucket {bucket} to assign.", "StartDraft");
+            // GetPool(id.Key).Add(CustomRoles.Crewmate);
         }
 
     AfterPoolsAssigned:
@@ -315,6 +339,11 @@ public static class DraftAssign
         }
     }
 
+    public static void LoadRoleDecks()
+    {
+        // TODO: Implement LoadRoleDecks logic.
+    }
+
     private static void LoadRoleBuckets()
     {
         var bucketSettings = Options.DraftBuckets;
@@ -361,6 +390,7 @@ public static class DraftAssign
                     => CustomRoles.Coven.GetColoredTextByRole(GetString($"RoleBucket.{bucket}")),
 
             RoleBucket.NeutralBenign => CustomRoles.Amnesiac.GetColoredTextByRole(GetString($"RoleBucket.{bucket}")),
+            RoleBucket.NeutralPariah => CustomRoles.Starspawn.GetColoredTextByRole(GetString($"RoleBucket.{bucket}")),
             RoleBucket.NeutralChaos => CustomRoles.Pirate.GetColoredTextByRole(GetString($"RoleBucket.{bucket}")),
             RoleBucket.NeutralApocalypse => CustomRoles.Apocalypse.GetColoredTextByRole(GetString($"RoleBucket.{bucket}")),
             RoleBucket.NeutralEvil => CustomRoles.Jester.GetColoredTextByRole(GetString($"RoleBucket.{bucket}")),
@@ -682,4 +712,6 @@ public static class DraftAssign
         // Show role settings
         Utils.SendMessage("", playerId, Conf.ToString(), noReplay: true);
     }
+
+
 }

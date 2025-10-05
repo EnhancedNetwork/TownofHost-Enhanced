@@ -471,6 +471,8 @@ internal class Jackal : RoleBase
                 }
                 hasConverted = true;
             }
+
+            Logger.Info($"Jackal convert result: {hasConverted}", "Jackal");
         }
     }
 

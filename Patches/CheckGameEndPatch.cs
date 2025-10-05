@@ -509,6 +509,8 @@ class GameEndCheckerForNormal
                     //         .Do(p => WinnerIds.Add(p.PlayerId));
                     // }
 
+                    PariahManager.CheckAdditionalWin();
+
                     /*Keep Schrodinger cat win condition at last*/
                     Main.AllPlayerControls.Where(pc => pc.Is(CustomRoles.SchrodingersCat)).ToList().ForEach(SchrodingersCat.SchrodingerWinCondition);
                 }

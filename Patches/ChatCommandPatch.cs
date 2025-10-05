@@ -62,6 +62,7 @@ internal class ChatCommands
         //if (text.Length >= 3) if (text[..2] == "/r" && text[..3] != "/rn" && text[..3] != "/rs") args[0] = "/r";
         if (text.Length >= 4) if (text[..3] == "/up") args[0] = "/up";
 
+        if (Main.Daybreak) goto Canceled;
         if (GuessManager.GuesserMsg(PlayerControl.LocalPlayer, text)) goto Canceled;
         if (Judge.TrialMsg(PlayerControl.LocalPlayer, text)) goto Canceled;
         if (President.EndMsg(PlayerControl.LocalPlayer, text)) goto Canceled;
@@ -75,6 +76,7 @@ internal class ChatCommands
         if (Medium.MsMsg(PlayerControl.LocalPlayer, text)) goto Canceled;
         if (PlayerControl.LocalPlayer.GetRoleClass() is Swapper sw && sw.SwapMsg(PlayerControl.LocalPlayer, text)) goto Canceled;
         if (PlayerControl.LocalPlayer.GetRoleClass() is Dictator dt && dt.ExilePlayer(PlayerControl.LocalPlayer, text)) goto Canceled;
+        if (PlayerControl.LocalPlayer.GetRoleClass() is Starspawn st && st.DaybreakMessage(PlayerControl.LocalPlayer, text)) goto Canceled;
         Directory.CreateDirectory(modTagsFiles);
         Directory.CreateDirectory(vipTagsFiles);
         Directory.CreateDirectory(sponsorTagsFiles);
@@ -1684,6 +1686,11 @@ internal class ChatCommands
                             }
                         }
                     }
+                    else if (args[1] == "desc" || args[1] == "description")
+                    {
+                        if (args.Length > 2) args[1] = args[2];
+                        goto case "/dd";
+                    }
                     else if (args[1] == "add")
                     {
                         var addResult = DraftAssign.AddPlayersToDraft();
@@ -1704,7 +1711,7 @@ internal class ChatCommands
                     {
                         DraftAssign.Reset();
                     }
-                    else if (args[1] == "enable" &&  PlayerControl.LocalPlayer.FriendCode.GetDevUser().IsDev)
+                    else if (args[1] == "enable" && PlayerControl.LocalPlayer.FriendCode.GetDevUser().IsDev)
                     {
                         Options.devEnableDraft = true;
                         Options.DraftHeader.SetHidden(false);
@@ -1718,6 +1725,7 @@ internal class ChatCommands
                         if (int.TryParse(args[1], out int index))
                         {
                             (cmdResult, draftedRole) = PlayerControl.LocalPlayer.DraftRole(index);
+                            PlayerControl.LocalPlayer.SendDraftDescription(index);
                         }
                         else
                         {
@@ -1739,6 +1747,18 @@ internal class ChatCommands
                         {
                             Utils.SendMessage(string.Format(GetString("DraftSelection"), draftedRole.ToColoredString()), PlayerControl.LocalPlayer.PlayerId);
                         }
+                    }
+                    break;
+                case "/dd":
+                case "/draftdescription":
+                    if (int.TryParse(args[1], out int index2))
+                    {
+                        PlayerControl.LocalPlayer.SendDraftDescription(index2);
+                    }
+                    else
+                    {
+                        Utils.SendMessage(GetString("InvalidDraftSelection"), PlayerControl.LocalPlayer.PlayerId);
+                        break;
                     }
                     break;
                 case "/load":
@@ -2312,6 +2332,8 @@ internal class ChatCommands
         canceled = false;
         if (!AmongUsClient.Instance.AmHost) return;
 
+        if (Main.Daybreak) return;
+
         if (!Blackmailer.CheckBlackmaile(player)) ChatManager.SendMessage(player, text);
 
         if (text.StartsWith("\n")) text = text[1..];
@@ -2335,6 +2357,7 @@ internal class ChatCommands
         if (player.GetRoleClass() is Exorcist ex && ex.CheckCommand(player, text)) { canceled = true; Logger.Info($"Is Exorcist command", "OnReceiveChat"); return; }
         if (player.GetRoleClass() is Dictator dt && dt.ExilePlayer(player, text)) { canceled = true; Logger.Info($"Is Dictator command", "OnReceiveChat"); return; }
         if (Ritualist.RitualistMsgCheck(player, text)) { canceled = true; Logger.Info($"Is Ritualist command", "OnReceiveChat"); return; }
+        if (player.GetRoleClass() is Starspawn st && st.DaybreakMessage(player, text)) { canceled = true; Logger.Info($"Is Starspawn command", "OnReceiveChat"); return; }
 
         Directory.CreateDirectory(modTagsFiles);
         Directory.CreateDirectory(vipTagsFiles);
@@ -3768,6 +3791,7 @@ internal class ChatCommands
                     if (int.TryParse(args[1], out int index))
                     {
                         (cmdResult, draftedRole) = player.DraftRole(index);
+                        player.SendDraftDescription(index);
                     }
                     else
                     {
@@ -3794,6 +3818,15 @@ internal class ChatCommands
                 break;
             case "/dd":
             case "/draftdescription":
+                if (int.TryParse(args[1], out int index2))
+                {
+                    player.SendDraftDescription(index2);
+                }
+                else
+                {
+                    Utils.SendMessage(GetString("InvalidDraftSelection"), player.PlayerId);
+                    break;
+                }
                 break;
             case "/exe":
             case "/уничтожить":

@@ -21,6 +21,7 @@ internal class Executioner : RoleBase
     private static OptionItem CanTargetNeutralBenign;
     private static OptionItem CanTargetNeutralEvil;
     private static OptionItem CanTargetNeutralChaos;
+    private static OptionItem CanTargetNeutralPariah;
     private static OptionItem CanTargetNeutralApocalypse;
     private static OptionItem CanTargetCoven;
     public static OptionItem KnowTargetRole;
@@ -57,6 +58,7 @@ internal class Executioner : RoleBase
         CanTargetImpostor = BooleanOptionItem.Create(Id + 10, "CanTargetImpostor", false, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Executioner]);
         CanTargetNeutralKiller = BooleanOptionItem.Create(Id + 12, "CanTargetNeutralKiller", false, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Executioner]);
         CanTargetNeutralBenign = BooleanOptionItem.Create(Id + 14, "CanTargetNeutralBenign", false, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Executioner]);
+        CanTargetNeutralPariah = BooleanOptionItem.Create(Id + 20, "CanTargetNeutralPariah", false, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Executioner]);
         CanTargetNeutralEvil = BooleanOptionItem.Create(Id + 15, "CanTargetNeutralEvil", false, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Executioner]);
         CanTargetNeutralChaos = BooleanOptionItem.Create(Id + 16, "CanTargetNeutralChaos", false, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Executioner]);
         CanTargetNeutralApocalypse = BooleanOptionItem.Create(Id + 17, "CanTargetNeutralApocalypse", false, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Executioner]);
@@ -94,6 +96,7 @@ internal class Executioner : RoleBase
                 else if (!CanTargetNeutralApocalypse.GetBool() && target.GetCustomRole().IsNA()) continue;
                 else if (!CanTargetNeutralKiller.GetBool() && target.GetCustomRole().IsNK()) continue;
                 else if (!CanTargetNeutralBenign.GetBool() && target.GetCustomRole().IsNB()) continue;
+                else if (!CanTargetNeutralPariah.GetBool() && target.GetCustomRole().IsNP()) continue;
                 else if (!CanTargetNeutralEvil.GetBool() && target.GetCustomRole().IsNE()) continue;
                 else if (!CanTargetNeutralChaos.GetBool() && target.GetCustomRole().IsNC()) continue;
                 else if (!CanTargetCoven.GetBool() && target.Is(Custom_Team.Coven)) continue;

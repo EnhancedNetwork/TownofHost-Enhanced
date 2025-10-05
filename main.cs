@@ -218,6 +218,7 @@ public class Main : BasePlugin
     public static int BardCreations = 0;
     public static int MeetingsPassed = 0;
     public static long LastMeetingEnded = Utils.GetTimeStamp();
+    public static bool Daybreak;
 
 
     public static PlayerControl[] AllPlayerControls
@@ -933,6 +934,7 @@ public enum CustomRoles
     Specter,
     Spiritcaller,
     Stalker,
+    Starspawn,
     Sunnyboy,
     Taskinator,
     Terrorist,
@@ -1138,6 +1140,7 @@ public enum CustomWinner
 public enum AdditionalWinners
 {
     None = -1,
+    NeutralPariah = -2,
     Lovers = CustomRoles.Lovers,
     Cupid = CustomRoles.Cupid,
     Opportunist = CustomRoles.Opportunist,

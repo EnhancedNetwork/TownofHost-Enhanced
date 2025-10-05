@@ -602,6 +602,12 @@ public static class Options
     public static OptionItem TransformedNeutralApocalypseCanBeGuessed;
     public static OptionItem ApocCanSeeEachOthersAddOns;
 
+    // Neutral Pariah
+    public static OptionItem PariahWinWhenDead;
+    public static OptionItem PariahHasImpVis;
+    public static OptionItem PariahImpVisMode;
+    public static OptionItem PariahCanVent;
+    public static OptionItem PariahVentMode;
 
     // Coven
     public static OptionItem CovenRolesMinPlayer;
@@ -733,7 +739,7 @@ public static class Options
     private static System.Collections.IEnumerator CoLoadOptions()
     {
         //#######################################
-        // 32400 last id for roles/add-ons (Next use 32500)
+        // 32500 last id for roles/add-ons (Next use 32600)
         // Limit id for roles/add-ons --- "59999"
         //#######################################
 
@@ -1066,6 +1072,29 @@ public static class Options
             .SetColor(new Color32(127, 140, 141, byte.MaxValue));
 
         CustomRoleManager.GetNormalOptions(Custom_RoleType.NeutralKilling).ForEach(r => r.SetupCustomOption());
+
+        TextOptionItem.Create(10000116, "RoleType.NeutralPariah", TabGroup.NeutralRoles)
+            .SetGameMode(CustomGameMode.Standard)
+            .SetColor(new Color32(127, 140, 141, byte.MaxValue));
+
+        PariahWinWhenDead = BooleanOptionItem.Create(10000117, "PariahWinWhenDead", false, TabGroup.NeutralRoles, false)
+            .SetGameMode(CustomGameMode.Standard);
+
+        PariahHasImpVis = BooleanOptionItem.Create(10000117, "PariahHasImpVis", true, TabGroup.NeutralRoles, false)
+            .SetGameMode(CustomGameMode.Standard)
+            .SetHeader(true);
+        PariahImpVisMode = StringOptionItem.Create(10000118, "PariahImpVisMode", EnumHelper.GetAllNames<PariahManager.VisOptionList>(), 0, TabGroup.NeutralRoles, false)
+            .SetGameMode(CustomGameMode.Standard)
+            .SetParent(PariahHasImpVis);
+        PariahManager.RunSetUpImpVisOptions(170032);
+        PariahCanVent = BooleanOptionItem.Create(10000119, "PariahCanVent", true, TabGroup.NeutralRoles, false)
+            .SetGameMode(CustomGameMode.Standard);
+        PariahVentMode = StringOptionItem.Create(10000120, "PariahVentMode", EnumHelper.GetAllNames<PariahManager.VentOptionList>(), 0, TabGroup.NeutralRoles, false)
+            .SetGameMode(CustomGameMode.Standard)
+            .SetParent(PariahCanVent);
+        PariahManager.RunSetUpVentOptions(270032);
+
+        CustomRoleManager.GetNormalOptions(Custom_RoleType.NeutralPariah).ForEach(r => r.SetupCustomOption());
 
         TextOptionItem.Create(10000115, "RoleType.NeutralApocalypse", TabGroup.NeutralRoles)
             .SetGameMode(CustomGameMode.Standard)
