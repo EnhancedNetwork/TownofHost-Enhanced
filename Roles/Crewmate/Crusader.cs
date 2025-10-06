@@ -70,7 +70,8 @@ internal class Crusader : RoleBase
             or CustomRoles.Bodyguard
             or CustomRoles.Veteran
             or CustomRoles.Deputy
-            or CustomRoles.Crusader)
+            or CustomRoles.Crusader
+            or CustomRoles.Jinx)
             return false;
 
         if (crusader.CheckForInvalidMurdering(killer) && crusader.RpcCheckAndMurder(killer, true))

@@ -139,7 +139,9 @@ internal class Jinx : CovenManager
         if (killerRole is CustomRoles.Taskinator
             or CustomRoles.Bodyguard
             or CustomRoles.Veteran
-            or CustomRoles.Deputy)
+            or CustomRoles.Deputy
+            or CustomRoles.Crusader
+            or CustomRoles.Jinx)
             return false;
 
         if (killer.GetCustomRole().IsCovenTeam() && !CovenCanDieToJinx.GetBool()) return false;
