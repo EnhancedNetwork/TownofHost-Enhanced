@@ -396,13 +396,24 @@ internal class Jackal : RoleBase
 
     private static readonly object OnMurderPlayerAsTargetLock = new();
 
+    private static bool InConversion = false;
+
     public override void OnMurderPlayerAsTarget(PlayerControl killer, PlayerControl target, bool inMeeting, bool isSuidice)
     {
-        lock (OnMurderPlayerAsTargetLock)
+        if (!InConversion)
         {
-            if (_Player == null || !target.Is(CustomRoles.Jackal) || target.IsAlive() || target.PlayerId != _Player.PlayerId) return;
+            InConversion = true;
+            if (_Player == null || !target.Is(CustomRoles.Jackal) || target.IsAlive() || target.PlayerId != _Player.PlayerId)
+            {
+                InConversion = false;
+                return;
+            }
 
-            if (hasConverted) return;
+            if (hasConverted)
+            {
+                InConversion = false;
+                return;
+            }
 
             if (SidekickTurnIntoJackal.GetBool())
             {
@@ -418,6 +429,7 @@ internal class Jackal : RoleBase
                 {
                     Logger.Info("Jackal dead, but no alive sidekick can be assigned!", "Jackal");
                     hasConverted = true;
+                    InConversion = false;
                     return;
                 }
 
@@ -472,8 +484,7 @@ internal class Jackal : RoleBase
                 }
                 hasConverted = true;
             }
-
-            Logger.Info($"Jackal convert result: {hasConverted}", "Jackal");
+            InConversion = false;
         }
     }
 
