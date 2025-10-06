@@ -95,6 +95,7 @@ public static class CustomRolesHelper
                     or CustomRoles.Cyber
                     or CustomRoles.Sloth
                     or CustomRoles.Apocalypse
+                    or CustomRoles.Pariah
                     or CustomRoles.Coven)
             && !role.IsTNA() && !role.IsAdditionRole();
 
@@ -282,7 +283,7 @@ public static class CustomRolesHelper
     }
     public static bool IsNonNK(this CustomRoles role) // ROLE ASSIGNING, NOT NEUTRAL TYPE
     {
-        return role.IsNB() || role.IsNE() || role.IsNC();
+        return role.IsNB() || role.IsNE() || role.IsNC() || role.IsNP();
     }
     public static bool IsNA(this CustomRoles role)
     {
@@ -1571,6 +1572,7 @@ public static class CustomRolesHelper
            CustomRoles.RuthlessRomantic => CountTypes.RuthlessRomantic,
            CustomRoles.Shocker => CountTypes.Shocker,
            CustomRoles.SchrodingersCat => CountTypes.None,
+           var p when p.IsNP() => CountTypes.None,
            CustomRoles.Solsticer => CountTypes.None,
            CustomRoles.Revenant => CountTypes.None,
            _ => role.IsImpostorTeam() ? CountTypes.Impostor : CountTypes.Crew,

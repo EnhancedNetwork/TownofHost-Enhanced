@@ -390,7 +390,7 @@ public static class DraftAssign
                     => CustomRoles.Coven.GetColoredTextByRole(GetString($"RoleBucket.{bucket}")),
 
             RoleBucket.NeutralBenign => CustomRoles.Amnesiac.GetColoredTextByRole(GetString($"RoleBucket.{bucket}")),
-            RoleBucket.NeutralPariah => CustomRoles.Starspawn.GetColoredTextByRole(GetString($"RoleBucket.{bucket}")),
+            RoleBucket.NeutralPariah => CustomRoles.Pariah.GetColoredTextByRole(GetString($"RoleBucket.{bucket}")),
             RoleBucket.NeutralChaos => CustomRoles.Pirate.GetColoredTextByRole(GetString($"RoleBucket.{bucket}")),
             RoleBucket.NeutralApocalypse => CustomRoles.Apocalypse.GetColoredTextByRole(GetString($"RoleBucket.{bucket}")),
             RoleBucket.NeutralEvil => CustomRoles.Jester.GetColoredTextByRole(GetString($"RoleBucket.{bucket}")),

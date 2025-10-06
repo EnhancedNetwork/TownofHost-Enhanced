@@ -906,6 +906,7 @@ public enum CustomRoles
     Lich,
     Maverick,
     Opportunist,
+    Pariah,
     Pelican,
     Pestilence,
     Pickpocket,
@@ -1140,7 +1141,7 @@ public enum CustomWinner
 public enum AdditionalWinners
 {
     None = -1,
-    NeutralPariah = -2,
+    NeutralPariah = CustomRoles.Pariah,
     Lovers = CustomRoles.Lovers,
     Cupid = CustomRoles.Cupid,
     Opportunist = CustomRoles.Opportunist,
