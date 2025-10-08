@@ -1080,16 +1080,16 @@ public static class Options
         PariahWinWhenDead = BooleanOptionItem.Create(10000117, "PariahWinWhenDead", false, TabGroup.NeutralRoles, false)
             .SetGameMode(CustomGameMode.Standard);
 
-        PariahHasImpVis = BooleanOptionItem.Create(10000117, "PariahHasImpVis", true, TabGroup.NeutralRoles, false)
+        PariahHasImpVis = BooleanOptionItem.Create(10000118, "PariahHasImpVis", true, TabGroup.NeutralRoles, false)
             .SetGameMode(CustomGameMode.Standard)
             .SetHeader(true);
-        PariahImpVisMode = StringOptionItem.Create(10000118, "PariahImpVisMode", EnumHelper.GetAllNames<PariahManager.VisOptionList>(), 0, TabGroup.NeutralRoles, false)
+        PariahImpVisMode = StringOptionItem.Create(10000119, "PariahImpVisMode", EnumHelper.GetAllNames<PariahManager.VisOptionList>(), 0, TabGroup.NeutralRoles, false)
             .SetGameMode(CustomGameMode.Standard)
             .SetParent(PariahHasImpVis);
         PariahManager.RunSetUpImpVisOptions(170032);
-        PariahCanVent = BooleanOptionItem.Create(10000119, "PariahCanVent", true, TabGroup.NeutralRoles, false)
+        PariahCanVent = BooleanOptionItem.Create(10000120, "PariahCanVent", true, TabGroup.NeutralRoles, false)
             .SetGameMode(CustomGameMode.Standard);
-        PariahVentMode = StringOptionItem.Create(10000120, "PariahVentMode", EnumHelper.GetAllNames<PariahManager.VentOptionList>(), 0, TabGroup.NeutralRoles, false)
+        PariahVentMode = StringOptionItem.Create(10000121, "PariahVentMode", EnumHelper.GetAllNames<PariahManager.VentOptionList>(), 0, TabGroup.NeutralRoles, false)
             .SetGameMode(CustomGameMode.Standard)
             .SetParent(PariahCanVent);
         PariahManager.RunSetUpVentOptions(270032);

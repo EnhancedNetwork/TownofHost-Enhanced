@@ -27,10 +27,10 @@ internal class Starspawn : PariahManager
 
     public override void SetupCustomOption()
     {
-        SetupRoleOptions(Id, TabGroup.NeutralRoles, CustomRoles.Cupid);
+        SetupRoleOptions(Id, TabGroup.NeutralRoles, CustomRoles.Starspawn);
         IsolateCooldown = FloatOptionItem.Create(Id + 10, "Starspawn.IsolateCooldown", new(0f, 180f, 2.5f), 30f, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Starspawn])
             .SetValueFormat(OptionFormat.Seconds);
-        TryHideMsg = BooleanOptionItem.Create(Id + 5, "StarspawnTryHideMsg", true, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Starspawn]);
+        TryHideMsg = BooleanOptionItem.Create(Id + 11, "StarspawnTryHideMsg", true, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Starspawn]);
     }
 
     public bool DaybreakMessage(PlayerControl pc, string msg)
