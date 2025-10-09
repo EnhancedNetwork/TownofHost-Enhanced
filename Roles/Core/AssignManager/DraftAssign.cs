@@ -728,6 +728,12 @@ public static class DraftAssign
 
         Utils.SendMessage(string.Format(template, slotsFormatted), player.PlayerId, title, noReplay: true);
     }
+
+    private static readonly Dictionary<string, string> PremadeDecks = new()
+    {
+        ["AllAny"] = "Any\nAny\nAny\nAny\nAny\nAny\nAny\nAny\nAny\nAny\nAny\nAny\nAny\nAny\nAny",
+        ["Double Gang"] = "Crewmate Power\nCrewmate Power\nCrewmate Basic\nCrewmate Basic\nCrewmate Killing\nCrewmate Support\nCrewmate Support\nCrewmate Common\nCrewmate Common\nCrewmate Common\nGangster\nGangster\nDoomsayer | Inquisitor\nDoppleganger\nNeutral Pariah"
+    };
 }
 
 public class RoleSlot(HashSet<RoleBucket> buckets, HashSet<CustomRoles> roles)
