@@ -20,7 +20,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        platform: ["Any CPU", "Android"]
+        platform: ["Windows", "Android"]
 
     steps:
       - uses: actions/checkout@v4

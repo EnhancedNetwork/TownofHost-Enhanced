@@ -7,7 +7,7 @@
 		<Description>Town Of Host Enhanced</Description>
 		<Authors>Moe</Authors>
 		<LangVersion>12.0</LangVersion>
-		<Platforms>AnyCPU;Android</Platforms>
+		<Platforms>Windows;Android</Platforms>
 		<!--<AmongUs>C:\Program Files\Epic Games\AmongUs</AmongUs>-->
 		<Configurations>Debug;Release;Canary</Configurations>
 		<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
@@ -18,7 +18,7 @@
 	<PropertyGroup Condition=" '$(Platform)' == 'Android' ">
 		<DefineConstants>TRACE;ANDROID</DefineConstants>
 	</PropertyGroup>
-	<PropertyGroup Condition=" '$(Platform)' == 'AnyCPU' ">
+	<PropertyGroup Condition=" '$(Platform)' == 'Windows' ">
 		<DefineConstants>TRACE;PC</DefineConstants>
 	</PropertyGroup>
 	
@@ -29,7 +29,7 @@
 
 	<ItemGroup>
 		<PackageReference Condition="$(Platform)=='Android'" Include="AmongUs.GameLibs.Android" Version="2025.9.9" PrivateAssets="all" />
-		<PackageReference Condition="$(Platform)=='AnyCPU'" Include="AmongUs.GameLibs.Steam" Version="2025.9.9" PrivateAssets="all" />
+		<PackageReference Condition="$(Platform)=='Windows'" Include="AmongUs.GameLibs.Steam" Version="2025.9.9" PrivateAssets="all" />
 		
 		<PackageReference Include="BepInEx.IL2CPP.MSBuild" Version="2.1.0-rc.1">
 			<PrivateAssets>all</PrivateAssets>

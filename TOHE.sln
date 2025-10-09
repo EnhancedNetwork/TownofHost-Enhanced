@@ -1,37 +1,37 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
-VisualStudioVersion = 17.5.33424.131
+VisualStudioVersion = 17.14.36414.22 d17.14
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TOHE", "TOHE.csproj", "{9FA38997-C44D-4B7B-B99C-9938C03C6656}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TOHE", "TOHE.csproj", "{5662C988-912C-3D07-8454-0C0AC7960BFC}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Canary|Android = Canary|Android
-		Canary|Any CPU = Canary|Any CPU
+		Canary|Windows = Canary|Windows
 		Debug|Android = Debug|Android
-		Debug|Any CPU = Debug|Any CPU
+		Debug|Windows = Debug|Windows
 		Release|Android = Release|Android
-		Release|Any CPU = Release|Any CPU
+		Release|Windows = Release|Windows
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{9FA38997-C44D-4B7B-B99C-9938C03C6656}.Canary|Android.ActiveCfg = Canary|Android
-		{9FA38997-C44D-4B7B-B99C-9938C03C6656}.Canary|Android.Build.0 = Canary|Android
-		{9FA38997-C44D-4B7B-B99C-9938C03C6656}.Canary|Any CPU.ActiveCfg = Canary|Any CPU
-		{9FA38997-C44D-4B7B-B99C-9938C03C6656}.Canary|Any CPU.Build.0 = Canary|Any CPU
-		{9FA38997-C44D-4B7B-B99C-9938C03C6656}.Debug|Android.ActiveCfg = Debug|Android
-		{9FA38997-C44D-4B7B-B99C-9938C03C6656}.Debug|Android.Build.0 = Debug|Android
-		{9FA38997-C44D-4B7B-B99C-9938C03C6656}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{9FA38997-C44D-4B7B-B99C-9938C03C6656}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{9FA38997-C44D-4B7B-B99C-9938C03C6656}.Release|Android.ActiveCfg = Release|Android
-		{9FA38997-C44D-4B7B-B99C-9938C03C6656}.Release|Android.Build.0 = Release|Android
-		{9FA38997-C44D-4B7B-B99C-9938C03C6656}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{9FA38997-C44D-4B7B-B99C-9938C03C6656}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5662C988-912C-3D07-8454-0C0AC7960BFC}.Canary|Android.ActiveCfg = Canary|Android
+		{5662C988-912C-3D07-8454-0C0AC7960BFC}.Canary|Android.Build.0 = Canary|Android
+		{5662C988-912C-3D07-8454-0C0AC7960BFC}.Canary|Windows.ActiveCfg = Canary|Windows
+		{5662C988-912C-3D07-8454-0C0AC7960BFC}.Canary|Windows.Build.0 = Canary|Windows
+		{5662C988-912C-3D07-8454-0C0AC7960BFC}.Debug|Android.ActiveCfg = Debug|Android
+		{5662C988-912C-3D07-8454-0C0AC7960BFC}.Debug|Android.Build.0 = Debug|Android
+		{5662C988-912C-3D07-8454-0C0AC7960BFC}.Debug|Windows.ActiveCfg = Debug|Windows
+		{5662C988-912C-3D07-8454-0C0AC7960BFC}.Debug|Windows.Build.0 = Debug|Windows
+		{5662C988-912C-3D07-8454-0C0AC7960BFC}.Release|Android.ActiveCfg = Release|Android
+		{5662C988-912C-3D07-8454-0C0AC7960BFC}.Release|Android.Build.0 = Release|Android
+		{5662C988-912C-3D07-8454-0C0AC7960BFC}.Release|Windows.ActiveCfg = Release|Windows
+		{5662C988-912C-3D07-8454-0C0AC7960BFC}.Release|Windows.Build.0 = Release|Windows
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
-		SolutionGuid = {5AC0BC24-9DDB-45FA-AD1A-22609BFC37F4}
+		SolutionGuid = {69993BBD-F0B4-4F67-9150-24F0F7BE822B}
 	EndGlobalSection
 EndGlobal
