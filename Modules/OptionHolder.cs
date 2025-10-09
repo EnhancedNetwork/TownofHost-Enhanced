@@ -1080,7 +1080,7 @@ public static class Options
         PariahWinWhenDead = BooleanOptionItem.Create(10000117, "PariahWinWhenDead", false, TabGroup.NeutralRoles, false)
             .SetGameMode(CustomGameMode.Standard);
 
-        PariahHasImpVis = BooleanOptionItem.Create(10000117, "PariahHasImpVis", true, TabGroup.NeutralRoles, false)
+        PariahHasImpVis = BooleanOptionItem.Create(10000121, "PariahHasImpVis", true, TabGroup.NeutralRoles, false)
             .SetGameMode(CustomGameMode.Standard)
             .SetHeader(true);
         PariahImpVisMode = StringOptionItem.Create(10000118, "PariahImpVisMode", EnumHelper.GetAllNames<PariahManager.VisOptionList>(), 0, TabGroup.NeutralRoles, false)
