@@ -4264,12 +4264,14 @@
   "DraftPoolMessage": "Your Draft Pool:\n{0}\n\nTo draft a role, do /draft [number]\n/draft -1 to clear your draft pick",
   "DraftSelectionCleared": "Draft Selection Cleared",
   "DraftSelection": "Role: {0} selected",
+  "DraftDeckTemplate": "Deck List:\n\n- {0}",
+  "DraftDeck": "Role Deck",
 
   "RoleBucket.Any": "Any",
   "RoleBucket.ImpostorKilling": "Impostor Killing",
   "RoleBucket.ImpostorSupport": "Impostor Support",
   "RoleBucket.ImpostorConcealing": "Impostor Concealing",
   "RoleBucket.ImpostorHindering": "Impostor Hindering",
-  "RoleBucket.ImpostorCommon": "Imposotor Common",
-  "RoleBucket.ImpostorRandom": "Imposotor Random"
+  "RoleBucket.ImpostorCommon": "Impostor Common",
+  "RoleBucket.ImpostorRandom": "Impostor Random"
 }
