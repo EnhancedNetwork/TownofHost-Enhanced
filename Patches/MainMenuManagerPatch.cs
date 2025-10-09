@@ -112,6 +112,8 @@ public static class MainMenuManagerPatch
         // FPS
         Application.targetFrameRate = Main.UnlockFPS.Value ? 165 : 60;
         // In Starlight there is a official patch for this.
+#else
+        Main.UnlockFPS.Value = false;
 #endif
 
         __instance.screenTint.gameObject.transform.localPosition += new Vector3(1000f, 0f);
