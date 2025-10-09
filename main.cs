@@ -673,7 +673,9 @@ public class Main : BasePlugin
         Harmony.PatchAll();
 
         // ConsoleManager.DetachConsole();
+#if !ANDROID
         if (DebugModeManager.AmDebugger) ConsoleManager.CreateConsole();
+#endif
 
         // InitializeFileHash();
         FileHash = "drafting_2025_09_09";

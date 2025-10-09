@@ -83,7 +83,7 @@ class CoBeginPatch
 [HarmonyPatch(typeof(IntroCutscene._ShowRole_d__40), nameof(IntroCutscene._ShowRole_d__40.MoveNext))]
 #endif
 
-class SetUpRoleTextPatch
+public class SetUpRoleTextPatch
 {
     public static bool IsInIntro = false;
 
@@ -93,7 +93,8 @@ class SetUpRoleTextPatch
     public static void Prefix(IntroCutscene._ShowRole_d__40 __instance, ref bool __result)
 #endif
     {
-        if (__instance.__1__state == 1 && __result) // while wait for 2.5s
+        Logger.Info($"IntroCutScene.CoShowRole {__instance.__1__state} + {__result}", "IntroCutScene.CoShowRole.Prefix");
+        if (__instance.__1__state == 0) // RoleName displayed here
         {
             IntroCutscene introCutscene = __instance.__4__this;
 
@@ -1021,18 +1022,14 @@ class IntroCutsceneDestroyPatch
     }
 }
 #else
-[HarmonyPatch(typeof(ShipStatus), nameof(ShipStatus.StartSFX))]
-[HarmonyPatch(typeof(FungleShipStatus), nameof(FungleShipStatus.StartSFX))]
-class IntroCutsceneDestroyPatch
+[HarmonyPatch(typeof(IntroCutscene._ShowRole_d__40), nameof(IntroCutscene._ShowRole_d__40.MoveNext))]
+public class IntroCutsceneDestroyPatch
 {
-    public static void Prefix()
+    public static void Prefix(IntroCutscene._ShowRole_d__40 __instance, ref bool __result)
     {
-        if (TutorialManager.Instance != null)
-        {
-            return;
-        }
-
-        Logger.Info("IntroCutscene destroyed called ShipStatus.StartSFX", "IntroCutscene");
+        if (__instance.__1__state != 1) return;
+        
+        Logger.Info("IntroCutscene destroyed for Starlight", "IntroCutscene");
 
         if (AmongUsClient.Instance.AmHost && !AmongUsClient.Instance.IsGameOver)
         {
@@ -1066,17 +1063,11 @@ class IntroCutsceneDestroyPatch
                 }
             }
         }
-    }
-    public static void Postfix()
-    {
-        if (TutorialManager.Instance != null)
-        {
-            return;
-        }
 
         if (!GameStates.IsInGame) return;
 
         Main.IntroDestroyed = true;
+        Logger.Info("Marked Main.IntroDestroyed to true", "IntroCutscene");
 
         foreach (var pc in Main.AllPlayerControls)
         {
