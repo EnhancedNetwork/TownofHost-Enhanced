@@ -42,6 +42,11 @@ public static class OptionsMenuBehaviourStartPatch
             Main.AutoRehost.Value = false;
         }
 
+#if ANDROID
+        Main.UnlockFPS.Value = false;
+#endif
+
+#if !ANDROID
         if (UnlockFPS == null || UnlockFPS.ToggleButton == null)
         {
             UnlockFPS = ClientOptionItem.Create("UnlockFPS", Main.UnlockFPS, __instance, UnlockFPSButtonToggle);
@@ -51,6 +56,8 @@ public static class OptionsMenuBehaviourStartPatch
                 Logger.SendInGame(string.Format(Translator.GetString("FPSSetTo"), Application.targetFrameRate));
             }
         }
+#endif
+
         if (ShowFPS == null || ShowFPS.ToggleButton == null)
         {
             ShowFPS = ClientOptionItem.Create("ShowFPS", Main.ShowFPS, __instance);
@@ -142,6 +149,8 @@ public static class OptionsMenuBehaviourStartPatch
         {
             EnableCustomDecorations = ClientOptionItem.Create("EnableCustomDecorations", Main.EnableCustomDecorations, __instance);
         }
+
+#if !ANDROID
         if (SwitchVanilla == null || SwitchVanilla.ToggleButton == null)
         {
             SwitchVanilla = ClientOptionItem.Create("SwitchVanilla", Main.SwitchVanilla, __instance, SwitchVanillaButtonToggle);
@@ -151,6 +160,7 @@ public static class OptionsMenuBehaviourStartPatch
                 Main.Instance.Unload();
             }
         }
+#endif
 
 #if DEBUG
         if (EOSManager.Instance.friendCode.GetDevUser().DeBug)

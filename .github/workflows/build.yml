@@ -8,23 +8,27 @@ on:
       - synchronize
       - reopened
     branches-ignore:
-      - '**l10n_main'
+      - "**l10n_main"
 
 jobs:
   build:
     runs-on: ubuntu-latest
     concurrency:
-      group: pr#${{ github.event.pull_request.number }}
+      group: pr#${{ github.event.pull_request.number }}-${{ matrix.platform }}
       cancel-in-progress: true
 
+    strategy:
+      fail-fast: false
+      matrix:
+        platform: ["Windows", "Android"]
+
     steps:
-    - uses: actions/checkout@v4
-    - name: Create token.env file
-      run: echo "Github Actions" > token.env
-    - name: Setup .NET
-      id: setup-dotnet
-      uses: actions/setup-dotnet@v4
-    - name: Restore dependencies
-      run: dotnet restore
-    - name: Build
-      run: dotnet build --no-restore
+      - uses: actions/checkout@v4
+      - name: Create token.env file
+        run: echo "Github Actions" > token.env
+      - name: Setup .NET
+        id: setup-dotnet
+        uses: actions/setup-dotnet@v4
+
+      - name: Build for ${{ matrix.platform }}
+        run: dotnet build -c Release -p:Platform=${{ matrix.platform }}

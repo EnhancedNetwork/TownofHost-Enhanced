@@ -4255,6 +4255,8 @@
   "DraftSelectionCleared": "Draft Selection Cleared",
   "DraftSelection": "Role: {0} selected",
 
+  "AndroidUpdateNotSupported": "ModUpdater is unavailable on StarLight.\nPlease update via StarLight manage page.",
+
   "RoleBucket.Any": "Any",
   "RoleBucket.ImpostorKilling": "Impostor Killing",
   "RoleBucket.ImpostorSupport": "Impostor Support",

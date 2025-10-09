@@ -6,11 +6,13 @@ namespace TOHE.Modules;
 // https://github.com/tukasa0001/TownOfHost/blob/main/Modules/OptionSaver.cs
 public static class OptionSaver
 {
-    [Obfuscation(Exclude = true)]
+#if ANDROID
+    private static readonly DirectoryInfo SaveDataDirectoryInfo = new(Path.Combine(UnityEngine.Application.persistentDataPath, "TOHE-DATA", "SaveData"));
+    private static readonly FileInfo OptionSaverFileInfo = new(Path.Combine(UnityEngine.Application.persistentDataPath, "TOHE-DATA", "SaveData", "Options.json"));
+#else
     private static readonly DirectoryInfo SaveDataDirectoryInfo = new("./TOHE-DATA/SaveData/");
-    [Obfuscation(Exclude = true)]
     private static readonly FileInfo OptionSaverFileInfo = new($"{SaveDataDirectoryInfo.FullName}/Options.json");
-
+#endif
     public static void Initialize()
     {
         if (!SaveDataDirectoryInfo.Exists)
