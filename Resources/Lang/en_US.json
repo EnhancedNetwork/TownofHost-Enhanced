@@ -3406,6 +3406,7 @@
   "MoleVentButtonText": "Dig",
   "MoleVentCooldown": "Dig Cooldown",
 
+  "AddictSuicideTimer": "Time Until Suicide",
   "AddictVentButtonText": "Get Fix",
   "AddictInvulnerbilityTimeAfterVent": "<color=#008000>Invulnerability</color> Time",
   "AddictSpeedWhileInvulnerble": "Movement speed while <color=#008000>Invulnerable</color>",
