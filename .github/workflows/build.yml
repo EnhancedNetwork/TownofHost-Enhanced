@@ -33,4 +33,4 @@ jobs:
         run: dotnet restore
 
       - name: Build for ${{ matrix.platform }}
-        run: dotnet build --no-restore --configuration Release -p:Platform=${{ matrix.platform }}
+        run: dotnet build --no-restore -c Release -p:Platform=${{ matrix.platform }}
