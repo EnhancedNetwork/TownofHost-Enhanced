@@ -29,8 +29,6 @@ jobs:
       - name: Setup .NET
         id: setup-dotnet
         uses: actions/setup-dotnet@v4
-      - name: Restore dependencies
-        run: dotnet restore
 
       - name: Build for ${{ matrix.platform }}
-        run: dotnet build --no-restore -c Release -p:Platform=${{ matrix.platform }}
+        run: dotnet build -c Release -p:Platform=${{ matrix.platform }}
