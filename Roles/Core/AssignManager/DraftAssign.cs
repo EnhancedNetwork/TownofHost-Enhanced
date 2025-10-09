@@ -341,7 +341,11 @@ public static class DraftAssign
         }
     }
 
+#if !ANDROID
     private const string ROLEDECK_FOLDER_NAME = "TOHE-DATA/RoleDecks";
+#else
+    private static readonly string ROLEDECK_FOLDER_NAME = Path.Combine(UnityEngine.Application.persistentDataPath, "TOHE-DATA", "RoleDecks");
+#endif
     public static void LoadRoleDecks()
     {
         RoleDecks.Clear();
