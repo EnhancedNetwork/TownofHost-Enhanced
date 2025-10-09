@@ -2314,6 +2314,8 @@
 
   "RejectShapeshift.AbilityWasUsed": "Ability was used",
 
+  "EscapistMarkButtonText": "Mark",
+  "EscapistTeleportButtonText": "Teleport",
   "EscapisMtarkedPosition": "You marked self-position",
 
   "InvestigateCooldown": "Investigate Cooldown",
