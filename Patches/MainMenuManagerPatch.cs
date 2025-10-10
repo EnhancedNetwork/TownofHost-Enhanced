@@ -239,7 +239,7 @@ public static class MainMenuManagerPatch
                 new(-1.8f, -1.1f, 1f),
                 new(0, 255, 255, byte.MaxValue),
                 new(75, 255, 255, byte.MaxValue),
-                (UnityEngine.Events.UnityAction)(() => Application.OpenURL(Main.DonationInviteUrl)),
+                (UnityEngine.Events.UnityAction)(() => Utils.OpenUrl(Main.DonationInviteUrl)),
                 GetString("SupportUs")); //"Donation"
         }
         donationButton.gameObject.SetActive(Main.ShowDonationButton);
@@ -252,7 +252,7 @@ public static class MainMenuManagerPatch
                 new(-1.8f, -1.5f, 1f),
                 new(153, 153, 153, byte.MaxValue),
                 new(209, 209, 209, byte.MaxValue),
-                (UnityEngine.Events.UnityAction)(() => Application.OpenURL(Main.GitHubInviteUrl)),
+                (UnityEngine.Events.UnityAction)(() => Utils.OpenUrl(Main.GitHubInviteUrl)),
                 GetString("GitHub")); //"GitHub"
         }
         gitHubButton.gameObject.SetActive(Main.ShowGitHubButton);
@@ -265,7 +265,7 @@ public static class MainMenuManagerPatch
                 new(-1.8f, -1.9f, 1f),
                 new(88, 101, 242, byte.MaxValue),
                 new(148, 161, byte.MaxValue, byte.MaxValue),
-                (UnityEngine.Events.UnityAction)(() => Application.OpenURL(Main.DiscordInviteUrl)),
+                (UnityEngine.Events.UnityAction)(() => Utils.OpenUrl(Main.DiscordInviteUrl)),
                 GetString("Discord")); //"Discord"
         }
         discordButton.gameObject.SetActive(Main.ShowDiscordButton);
@@ -278,7 +278,7 @@ public static class MainMenuManagerPatch
                 new(-1.8f, -2.3f, 1f),
                 new(251, 81, 44, byte.MaxValue),
                 new(211, 77, 48, byte.MaxValue),
-                (UnityEngine.Events.UnityAction)(() => Application.OpenURL(Main.WebsiteInviteUrl)),
+                (UnityEngine.Events.UnityAction)(() => Utils.OpenUrl(Main.WebsiteInviteUrl)),
                 GetString("Website")); //"Website"
         }
         websiteButton.gameObject.SetActive(Main.ShowWebsiteButton);

@@ -2750,6 +2750,31 @@ public static class Utils
         vanillasend.Recycle();
     }
 
+    public static void OpenUrl(string url)
+    {
+#if Windows
+        Application.OpenURL(url);
+        return;
+#elif ANDROID
+        try
+        {
+            AndroidJavaClass unityPlayer = new("com.unity3d.player.UnityPlayer");
+            {
+                AndroidJavaObject currentActivity = unityPlayer.GetStatic<AndroidJavaObject>("currentActivity");
+                AndroidJavaObject intent = new AndroidJavaObject("android.content.Intent", "android.intent.action.VIEW", new AndroidJavaObject("android.net.Uri", url));
+                currentActivity.Call("startActivity", intent);
+            }
+        }
+        catch (Exception e)
+        {
+            Logger.Error($"Error opening URL on Android: {e}", "OpenUrl");
+        }
+
+        return;
+#endif
+        Logger.Error("Unsupported platform for OpenUrl", "OpenUrl");
+    }
+
     public static int AllPlayersCount => Main.PlayerStates.Values.Count(state => state.countTypes != CountTypes.OutOfGame);
     public static int AllAlivePlayersCount => Main.AllAlivePlayerControls.Count(pc => !pc.Is(CountTypes.OutOfGame));
     public static bool IsAllAlive => Main.PlayerStates.Values.All(state => state.countTypes == CountTypes.OutOfGame || !state.IsDead);
