@@ -436,6 +436,7 @@ public static class Utils
         if (Main.roleColors.TryGetValue(role, out var hexColor))
         {
             _ = ColorUtility.TryParseHtmlString(hexColor, out var color);
+            color.a = 0.99f; // ff aplha hex can sometimes make a role's color get censored
             return color;
         }
         return Color.white;
