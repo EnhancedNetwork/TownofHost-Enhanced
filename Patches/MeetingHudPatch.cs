@@ -1052,12 +1052,12 @@ class MeetingHudStartPatch
                 Main.AllAlivePlayerControls.Where(x => x.GetRealKiller()?.PlayerId == pc.PlayerId).Do(x => MimicMsg += $"\n{x.GetNameWithRole(true)}");
         }
 
-        if (Eavesdropper.IsEnable)
-            Eavesdropper.GetMessage();
-
         if (Rat.IsEnable)
             Rat.GetMessage();
 
+        if (Eavesdropper.IsEnable)
+            Eavesdropper.GetMessage();
+            
         // Add Mimic msg
         if (MimicMsg != "")
         {
