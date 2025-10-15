@@ -51,8 +51,10 @@ public class Aware : IAddon
         {
             case CustomRoles.Baker when Baker.CurrentBread() == 0:
             case CustomRoles.PotionMaster when PotionMaster.CurrentPotion() == 0:
+            case CustomRoles.Investigator:
             case CustomRoles.Consigliere:
             case CustomRoles.Overseer:
+            case CustomRoles.CopyCat:
                 if (!AwareInteracted.ContainsKey(target.PlayerId))
                 {
                     AwareInteracted.Add(target.PlayerId, []);
@@ -91,6 +93,7 @@ public class Aware : IAddon
         {
             case CustomRoles.FortuneTeller:
             case CustomRoles.Oracle:
+            case CustomRoles.Inspector:
                 AwareInteracted[pva.VotedFor].Add(Utils.GetRoleName(pc.GetCustomRole()));
                 break;
         }

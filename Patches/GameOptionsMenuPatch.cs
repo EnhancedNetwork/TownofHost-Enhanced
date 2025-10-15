@@ -1,5 +1,6 @@
 using BepInEx.Unity.IL2CPP.Utils.Collections;
 using System;
+using System.Collections.Concurrent;
 using TMPro;
 using TOHE.Patches;
 using UnityEngine;
@@ -12,9 +13,9 @@ namespace TOHE;
 public static class ModGameOptionsMenu
 {
     public static int TabIndex = 0;
-    public static Il2CppSystem.Collections.Generic.Dictionary<OptionBehaviour, int> OptionList = new();
-    public static Il2CppSystem.Collections.Generic.Dictionary<int, OptionBehaviour> BehaviourList = new();
-    public static Il2CppSystem.Collections.Generic.Dictionary<int, CategoryHeaderMasked> CategoryHeaderList = new();
+    public static ConcurrentDictionary<int, int> OptionList = new();
+    public static ConcurrentDictionary<int, OptionBehaviour> BehaviourList = new();
+    public static ConcurrentDictionary<int, CategoryHeaderMasked> CategoryHeaderList = new();
 }
 [HarmonyPatch(typeof(GameOptionsMenu))]
 public static class GameOptionsMenuPatch
@@ -96,7 +97,6 @@ public static class GameOptionsMenuPatch
                 if (option is TextOptionItem) continue;
 
                 var baseGameSetting = GetSetting(option);
-                if (baseGameSetting == null) continue;
 
 
                 OptionBehaviour optionBehaviour;
@@ -112,7 +112,7 @@ public static class GameOptionsMenuPatch
 
                             optionBehaviour.SetClickMask(__instance.ButtonClickMask);
                             optionBehaviour.SetUpFromData(baseGameSetting, 20);
-                            ModGameOptionsMenu.OptionList.TryAdd(optionBehaviour, index);
+                            ModGameOptionsMenu.OptionList.TryAdd(optionBehaviour.GetInstanceID(), index);
                             break;
                         }
                     case OptionTypes.String:
@@ -122,14 +122,14 @@ public static class GameOptionsMenuPatch
 
                             OptionBehaviourSetSizeAndPosition(optionBehaviour, option, baseGameSetting.Type);
 
-                            if (option.Name == "Preset" && !ModGameOptionsMenu.OptionList.ContainsValue(index))
+                            if (option.Name == "Preset" && !ModGameOptionsMenu.OptionList.Any(x => x.Value == index))
                             {
                                 GameSettingMenuPatch.PresetBehaviour = optionBehaviour as StringOption;
                             }
 
                             optionBehaviour.SetClickMask(__instance.ButtonClickMask);
                             optionBehaviour.SetUpFromData(baseGameSetting, 20);
-                            ModGameOptionsMenu.OptionList.TryAdd(optionBehaviour, index);
+                            ModGameOptionsMenu.OptionList.TryAdd(optionBehaviour.GetInstanceID(), index);
                             break;
                         }
                     case OptionTypes.Float:
@@ -142,7 +142,7 @@ public static class GameOptionsMenuPatch
 
                             optionBehaviour.SetClickMask(__instance.ButtonClickMask);
                             optionBehaviour.SetUpFromData(baseGameSetting, 20);
-                            ModGameOptionsMenu.OptionList.TryAdd(optionBehaviour, index);
+                            ModGameOptionsMenu.OptionList.TryAdd(optionBehaviour.GetInstanceID(), index);
                             break;
                         }
                     default:
@@ -152,7 +152,7 @@ public static class GameOptionsMenuPatch
                 optionBehaviour.transform.localPosition = new(0.952f, num, -2f);
                 optionBehaviour.SetClickMask(__instance.ButtonClickMask);
                 optionBehaviour.SetUpFromData(baseGameSetting, 20);
-                ModGameOptionsMenu.OptionList.TryAdd(optionBehaviour, index);
+                ModGameOptionsMenu.OptionList.TryAdd(optionBehaviour.GetInstanceID(), index);
                 ModGameOptionsMenu.BehaviourList.TryAdd(index, optionBehaviour);
                 optionBehaviour.gameObject.SetActive(enabled);
                 optionBehaviour.OnValueChanged = new Action<OptionBehaviour>(__instance.ValueChanged);
@@ -295,7 +295,7 @@ public static class GameOptionsMenuPatch
     {
         if (__instance == null || ModGameOptionsMenu.TabIndex < 3) return true;
 
-        if (ModGameOptionsMenu.OptionList.TryGetValue(option, out var index))
+        if (ModGameOptionsMenu.OptionList.TryGetValue(option.GetInstanceID(), out var index))
         {
             var item = OptionItem.AllOptions[index];
             if (item != null && item.Children.Count > 0) ReCreateSettings(__instance);
@@ -417,10 +417,9 @@ public static class ToggleOptionPatch
     [HarmonyPatch(nameof(ToggleOption.Initialize)), HarmonyPrefix]
     private static bool InitializePrefix(ToggleOption __instance)
     {
-        if (ModGameOptionsMenu.OptionList.TryGetValue(__instance, out var index))
+        if (ModGameOptionsMenu.OptionList.TryGetValue(__instance.GetInstanceID(), out var index))
         {
             var item = OptionItem.AllOptions[index];
-            //Logger.Info($"{item.Name}, {index}", "ToggleOption.Initialize.TryGetValue");
             __instance.TitleText.text = item.GetName();
             __instance.CheckMark.enabled = item.GetBool();
             return false;
@@ -432,7 +431,7 @@ public static class ToggleOptionPatch
     [HarmonyPatch(nameof(ToggleOption.Toggle)), HarmonyPrefix]
     private static bool UpdateValuePrefix(ToggleOption __instance)
     {
-        if (ModGameOptionsMenu.OptionList.TryGetValue(__instance, out var index))
+        if (ModGameOptionsMenu.OptionList.TryGetValue(__instance.GetInstanceID(), out var index))
         {
             __instance.CheckMark.enabled = !__instance.CheckMark.enabled;
             var item = OptionItem.AllOptions[index];
@@ -491,7 +490,7 @@ public static class NumberOptionPatch
                 break;
         }
 
-        if (ModGameOptionsMenu.OptionList.TryGetValue(__instance, out var index))
+        if (ModGameOptionsMenu.OptionList.TryGetValue(__instance.GetInstanceID(), out var index))
         {
             var item = OptionItem.AllOptions[index];
             __instance.TitleText.text = item.GetName();
@@ -503,7 +502,7 @@ public static class NumberOptionPatch
     [HarmonyPatch(nameof(NumberOption.UpdateValue)), HarmonyPrefix]
     private static bool UpdateValuePrefix(NumberOption __instance)
     {
-        if (ModGameOptionsMenu.OptionList.TryGetValue(__instance, out var index))
+        if (ModGameOptionsMenu.OptionList.TryGetValue(__instance.GetInstanceID(), out var index))
         {
             var item = OptionItem.AllOptions[index];
             //Logger.Info($"{item.Name}, {index}", "NumberOption.UpdateValue.TryGetValue");
@@ -525,7 +524,7 @@ public static class NumberOptionPatch
     [HarmonyPatch(nameof(NumberOption.FixedUpdate)), HarmonyPrefix]
     private static bool FixedUpdatePrefix(NumberOption __instance)
     {
-        if (ModGameOptionsMenu.OptionList.TryGetValue(__instance, out var index))
+        if (ModGameOptionsMenu.OptionList.TryGetValue(__instance.GetInstanceID(), out var index))
         {
             __instance.MinusBtn.SetInteractable(true);
             __instance.PlusBtn.SetInteractable(true);
@@ -601,7 +600,7 @@ public static class StringOptionPatch
     [HarmonyPatch(nameof(StringOption.Initialize)), HarmonyPrefix]
     private static bool InitializePrefix(StringOption __instance)
     {
-        if (ModGameOptionsMenu.OptionList.TryGetValue(__instance, out var index))
+        if (ModGameOptionsMenu.OptionList.TryGetValue(__instance.GetInstanceID(), out var index))
         {
             var item = OptionItem.AllOptions[index];
             var name = item.GetName();
@@ -642,10 +641,9 @@ public static class StringOptionPatch
         icon.FindChild("ButtonSprite").GetComponent<SpriteRenderer>().color = clr;
         var GameOptionsButton = icon.GetComponent<GameOptionButton>();
         GameOptionsButton.OnClick = new();
-        GameOptionsButton.OnClick.AddListener((UnityEngine.Events.UnityAction)(() =>
+        GameOptionsButton.OnClick.AddListener((Action)(() =>
         {
-
-            if (ModGameOptionsMenu.OptionList.TryGetValue(__instance, out var index))
+            if (ModGameOptionsMenu.OptionList.TryGetValue(__instance.GetInstanceID(), out var index))
             {
                 var item = OptionItem.AllOptions[index];
                 var name = item.GetName();
@@ -665,13 +663,12 @@ public static class StringOptionPatch
         GameOptionsButton.interactableHoveredColor = clr2;
         icon.localPosition += new Vector3(-0.8f, 0f, 0f);
         icon.SetAsLastSibling();
-
     }
 
     [HarmonyPatch(nameof(StringOption.UpdateValue)), HarmonyPrefix]
     private static bool UpdateValuePrefix(StringOption __instance)
     {
-        if (ModGameOptionsMenu.OptionList.TryGetValue(__instance, out var index))
+        if (ModGameOptionsMenu.OptionList.TryGetValue(__instance.GetInstanceID(), out var index))
         {
             var item = OptionItem.AllOptions[index];
             //Logger.Info($"{item.Name}, {index}", "StringOption.UpdateValue.TryAdd");
@@ -701,7 +698,7 @@ public static class StringOptionPatch
     [HarmonyPatch(nameof(StringOption.FixedUpdate)), HarmonyPrefix]
     private static bool FixedUpdatePrefix(StringOption __instance)
     {
-        if (ModGameOptionsMenu.OptionList.TryGetValue(__instance, out var index))
+        if (ModGameOptionsMenu.OptionList.TryGetValue(__instance.GetInstanceID(), out var index))
         {
             var item = OptionItem.AllOptions[index];
             __instance.MinusBtn.SetInteractable(true);

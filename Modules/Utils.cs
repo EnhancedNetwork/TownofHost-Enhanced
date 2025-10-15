@@ -436,6 +436,7 @@ public static class Utils
         if (Main.roleColors.TryGetValue(role, out var hexColor))
         {
             _ = ColorUtility.TryParseHtmlString(hexColor, out var color);
+            color.a = 0.99f; // ff aplha hex can sometimes make a role's color get censored
             return color;
         }
         return Color.white;
@@ -1379,14 +1380,22 @@ public static class Utils
     public static bool IsPlayerModerator(string friendCode)
     {
         if (friendCode == "") return false;
+#if ANDROID
+        var friendCodesFilePath = Path.Combine(UnityEngine.Application.persistentDataPath, "TOHE-DATA", "Moderators.txt");
+#else
         var friendCodesFilePath = @"./TOHE-DATA/Moderators.txt";
+#endif
         var friendCodes = File.ReadAllLines(friendCodesFilePath);
         return friendCodes.Any(code => code.Contains(friendCode));
     }
     public static bool IsPlayerVIP(string friendCode)
     {
         if (friendCode == "") return false;
+#if ANDROID
+        var friendCodesFilePath = Path.Combine(UnityEngine.Application.persistentDataPath, "TOHE-DATA", "VIP-List.txt");
+#else
         var friendCodesFilePath = @"./TOHE-DATA/VIP-List.txt";
+#endif
         var friendCodes = File.ReadAllLines(friendCodesFilePath);
         return friendCodes.Any(code => code.Contains(friendCode));
     }
@@ -1538,7 +1547,11 @@ public static class Utils
         {
             if (IsPlayerVIP(player.FriendCode))
             {
+#if ANDROID
+                string colorFilePath = Path.Combine(UnityEngine.Application.persistentDataPath, "TOHE-DATA", "Tags", "VIP_TAGS", $"{player.FriendCode}.txt");
+#else
                 string colorFilePath = @$"./TOHE-DATA/Tags/VIP_TAGS/{player.FriendCode}.txt";
+#endif
                 //static color
                 if (!Options.GradientTagsOpt.GetBool())
                 {
@@ -1582,7 +1595,11 @@ public static class Utils
         {
             if (IsPlayerModerator(player.FriendCode))
             {
+#if ANDROID
+                string colorFilePath = Path.Combine(UnityEngine.Application.persistentDataPath, "TOHE-DATA", "Tags", "MOD_TAGS", $"{player.FriendCode}.txt");
+#else
                 string colorFilePath = @$"./TOHE-DATA/Tags/MOD_TAGS/{player.FriendCode}.txt";
+#endif
                 //static color
                 if (!Options.GradientTagsOpt.GetBool())
                 {

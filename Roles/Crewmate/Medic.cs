@@ -200,6 +200,8 @@ internal class Medic : RoleBase
     public override bool OnRoleGuess(bool isUI, PlayerControl target, PlayerControl pc, CustomRoles role, ref bool guesserSuicide)
     {
         if (role != CustomRoles.Medic) return false;
+        if (target.Is(CustomRoles.Onbound) || target.Is(CustomRoles.Rebound)) return false;
+        
         AfterMedicDeadTask(target);
 
         return false;

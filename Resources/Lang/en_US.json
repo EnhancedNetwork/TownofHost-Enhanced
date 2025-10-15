@@ -2321,6 +2321,8 @@
 
   "RejectShapeshift.AbilityWasUsed": "Ability was used",
 
+  "EscapistMarkButtonText": "Mark",
+  "EscapistTeleportButtonText": "Teleport",
   "EscapisMtarkedPosition": "You marked self-position",
 
   "InvestigateCooldown": "Investigate Cooldown",
@@ -3415,6 +3417,7 @@
   "MoleVentButtonText": "Dig",
   "MoleVentCooldown": "Dig Cooldown",
 
+  "AddictSuicideTimer": "Time Until Suicide",
   "AddictVentButtonText": "Get Fix",
   "AddictInvulnerbilityTimeAfterVent": "<color=#008000>Invulnerability</color> Time",
   "AddictSpeedWhileInvulnerble": "Movement speed while <color=#008000>Invulnerable</color>",
@@ -4266,6 +4269,8 @@
   "DraftSelection": "Role: {0} selected",
   "DraftDeckTemplate": "Deck List:\n\n- {0}",
   "DraftDeck": "Role Deck",
+
+  "AndroidUpdateNotSupported": "ModUpdater is unavailable on StarLight.\nPlease update via StarLight manage page.",
 
   "RoleBucket.Any": "Any",
   "RoleBucket.ImpostorKilling": "Impostor Killing",

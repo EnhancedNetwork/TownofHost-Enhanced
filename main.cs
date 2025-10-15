@@ -148,7 +148,12 @@ public class Main : BasePlugin
     public static readonly Dictionary<byte, Color32> PlayerColors = [];
     public static readonly Dictionary<byte, PlayerState.DeathReason> AfterMeetingDeathPlayers = [];
     public static readonly Dictionary<CustomRoles, string> roleColors = [];
+
+#if ANDROID
+    public static readonly string LANGUAGE_FOLDER_NAME = Path.Combine(UnityEngine.Application.persistentDataPath, "TOHE-DATA", "Language");
+#else
     public const string LANGUAGE_FOLDER_NAME = "TOHE-DATA/Language";
+#endif
 
     public static bool IsFixedCooldown => CustomRoles.Vampire.IsEnable() || CustomRoles.Poisoner.IsEnable();
     public static float RefixCooldownDelay = 0f;
@@ -281,12 +286,12 @@ public class Main : BasePlugin
     {
         var sb = new StringBuilder();
         foreach (var title in roleColors) sb.Append($"{title.Key}:\n");
-        File.WriteAllText(@$"./{LANGUAGE_FOLDER_NAME}/templateRoleColor.dat", sb.ToString());
+        File.WriteAllText(Path.Combine(LANGUAGE_FOLDER_NAME, "templateRoleColor.dat"), sb.ToString());
     }
     public static void LoadCustomRoleColor()
     {
         const string filename = "RoleColor.dat";
-        string path = @$"./{LANGUAGE_FOLDER_NAME}/{filename}";
+        string path = Path.Combine(LANGUAGE_FOLDER_NAME, filename);
         if (File.Exists(path))
         {
             TOHE.Logger.Info($"Load custom Role Color file：{filename}", "LoadCustomRoleColor");
@@ -396,7 +401,7 @@ public class Main : BasePlugin
             }
             if (!Directory.Exists(LANGUAGE_FOLDER_NAME)) Directory.CreateDirectory(LANGUAGE_FOLDER_NAME);
             CreateTemplateRoleColorFile();
-            if (File.Exists(@$"./{LANGUAGE_FOLDER_NAME}/RoleColor.dat"))
+            if (File.Exists(Path.Combine(LANGUAGE_FOLDER_NAME, "RoleColor.dat")))
             {
                 UpdateCustomTranslation();
                 LoadCustomRoleColor();
@@ -468,7 +473,7 @@ public class Main : BasePlugin
     }
     static void UpdateCustomTranslation()
     {
-        string path = @$"./{LANGUAGE_FOLDER_NAME}/RoleColor.dat";
+        string path = Path.Combine(LANGUAGE_FOLDER_NAME, "RoleColor.dat");
         if (File.Exists(path))
         {
             TOHE.Logger.Info("Updating Custom Role Colors", "UpdateRoleColors");
@@ -516,7 +521,7 @@ public class Main : BasePlugin
         {
             sb.Append($"{kvp.Key.ToString()}:{kvp.Value}\n");
         }
-        File.WriteAllText(@$"./{LANGUAGE_FOLDER_NAME}/export_RoleColor.dat", sb.ToString());
+        File.WriteAllText(Path.Combine(LANGUAGE_FOLDER_NAME, "export_RoleColor.dat"), sb.ToString());
     }
 
     private void InitializeFileHash()
@@ -668,7 +673,9 @@ public class Main : BasePlugin
         Harmony.PatchAll();
 
         // ConsoleManager.DetachConsole();
+#if !ANDROID
         if (DebugModeManager.AmDebugger) ConsoleManager.CreateConsole();
+#endif
 
         // InitializeFileHash();
         FileHash = "drafting_2025_09_09";

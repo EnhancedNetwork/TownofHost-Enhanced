@@ -103,10 +103,18 @@ public static class MainMenuManagerPatch
     [HarmonyPatch(nameof(MainMenuManager.Start)), HarmonyPostfix, HarmonyPriority(Priority.Normal)]
     public static void Start_Postfix(MainMenuManager __instance)
     {
-        if (template == null) template = __instance.quitButton;
+        if (template == null)
+        {
+            template = __instance.creditsButton;
+        }
 
+#if !ANDROID
         // FPS
         Application.targetFrameRate = Main.UnlockFPS.Value ? 165 : 60;
+        // In Starlight there is a official patch for this.
+#else
+        Main.UnlockFPS.Value = false;
+#endif
 
         __instance.screenTint.gameObject.transform.localPosition += new Vector3(1000f, 0f);
         __instance.screenTint.enabled = false;

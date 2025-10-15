@@ -11,7 +11,6 @@ namespace TOHE;
 public static class Translator
 {
     public static Dictionary<string, Dictionary<int, string>> translateMaps;
-    public const string LANGUAGE_FOLDER_NAME = Main.LANGUAGE_FOLDER_NAME;
     private static readonly Dictionary<SupportedLangs, Dictionary<CustomRoles, string>> ActualRoleNames = [];
     public static readonly Dictionary<CustomRoles, HashSet<string>> CrossLangRoleNames = [];
     public static void Init()
@@ -77,7 +76,10 @@ public static class Translator
             Logger.Error($"Error: {ex}", "Translator");
         }
         //カスタム翻訳ファイルの読み込み
-        if (!Directory.Exists(LANGUAGE_FOLDER_NAME)) Directory.CreateDirectory(LANGUAGE_FOLDER_NAME);
+
+        string languageFolderPath = Main.LANGUAGE_FOLDER_NAME;
+
+        if (!Directory.Exists(languageFolderPath)) Directory.CreateDirectory(languageFolderPath);
 
         // 翻訳テンプレートの作成
         CreateTemplateFile();
@@ -87,7 +89,12 @@ public static class Translator
 
         foreach (var lang in EnumHelper.GetAllValues<SupportedLangs>())
         {
-            if (File.Exists(@$"./{LANGUAGE_FOLDER_NAME}/{lang}.dat"))
+#if ANDROID
+            string langFile = Path.Combine(Main.LANGUAGE_FOLDER_NAME, $"{lang}.dat");
+#else
+        string langFile = @$"./{Main.LANGUAGE_FOLDER_NAME}/{lang}.dat";
+#endif
+            if (File.Exists(langFile))
             {
                 Logger.Info($"Loading custom translation file from: {lang}.dat", "Translator");
                 if (!ActualRoleNames.ContainsKey(lang))
@@ -325,7 +332,11 @@ public static class Translator
     }
     static void UpdateCustomTranslation(string filename/*, SupportedLangs lang*/)
     {
-        string path = @$"./{LANGUAGE_FOLDER_NAME}/{filename}";
+#if ANDROID
+        string path = Path.Combine(Main.LANGUAGE_FOLDER_NAME, filename);
+#else
+    string path = @$"./{Main.LANGUAGE_FOLDER_NAME}/{filename}";
+#endif
         if (File.Exists(path))
         {
             Logger.Info("Updating Custom Translations", "UpdateCustomTranslation");
@@ -369,7 +380,11 @@ public static class Translator
     }
     public static void LoadCustomTranslation(string filename, SupportedLangs lang)
     {
-        string path = @$"./{LANGUAGE_FOLDER_NAME}/{filename}";
+#if ANDROID
+        string path = Path.Combine(Main.LANGUAGE_FOLDER_NAME, filename);
+#else
+    string path = @$"./{Main.LANGUAGE_FOLDER_NAME}/{filename}";
+#endif
         if (File.Exists(path))
         {
             Logger.Info($"加载自定义翻译文件：{filename}", "LoadCustomTranslation");
@@ -402,7 +417,12 @@ public static class Translator
     {
         var sb = new StringBuilder();
         foreach (var title in translateMaps) sb.Append($"{title.Key}:\n");
-        File.WriteAllText(@$"./{LANGUAGE_FOLDER_NAME}/template.dat", sb.ToString());
+#if ANDROID
+        string templatePath = Path.Combine(Main.LANGUAGE_FOLDER_NAME, "template.dat");
+#else
+    string templatePath = @$"./{Main.LANGUAGE_FOLDER_NAME}/template.dat";
+#endif
+        File.WriteAllText(templatePath, sb.ToString());
     }
     public static void ExportCustomTranslation()
     {
@@ -414,7 +434,12 @@ public static class Translator
             if (!title.Value.TryGetValue((int)lang, out var text)) text = "";
             sb.Append($"{title.Key}:{text.Replace("\n", "\\n").Replace("\r", "\\r")}\n");
         }
-        File.WriteAllText(@$"./{LANGUAGE_FOLDER_NAME}/export_{lang}.dat", sb.ToString());
+#if ANDROID
+        string exportPath = Path.Combine(Main.LANGUAGE_FOLDER_NAME, $"export_{lang}.dat");
+#else
+    string exportPath = @$"./{Main.LANGUAGE_FOLDER_NAME}/export_{lang}.dat";
+#endif
+        File.WriteAllText(exportPath, sb.ToString());
     }
 
     private static void BuildInitialCrossLangRoleNames()

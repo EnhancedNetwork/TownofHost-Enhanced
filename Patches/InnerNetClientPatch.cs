@@ -176,6 +176,8 @@ internal class StartGameHostPatch
     }
 }
 
+#if !ANDROID
+
 [HarmonyPatch]
 internal class AuthTimeoutPatch
 {
@@ -211,6 +213,7 @@ internal class AuthTimeoutPatch
         }
     }
 }
+#endif
 
 [HarmonyPatch(typeof(NetworkedPlayerInfo), nameof(NetworkedPlayerInfo.UpdateName))]
 public class NetworkedPlayerInfoPatch
