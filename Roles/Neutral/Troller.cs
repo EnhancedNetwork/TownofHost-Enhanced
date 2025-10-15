@@ -273,6 +273,7 @@ internal class Troller : RoleBase
                     changePositionPlayers.Add(pc.PlayerId);
 
                     pc.RPCPlayCustomSound("Teleport");
+                    target.RPCPlayCustomSound("Teleport");
 
                     var originPs = target.GetCustomPosition();
                     target.RpcTeleport(pc.GetCustomPosition());

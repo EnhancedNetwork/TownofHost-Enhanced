@@ -21,7 +21,7 @@ internal class Twister : RoleBase
     private static OptionItem ShapeshiftDuration;
     private static OptionItem HideTwistedPlayerNames;
 
-    private static HashSet<byte> changePositionPlayers = [];
+    private static readonly HashSet<byte> changePositionPlayers = [];
 
     public override void SetupCustomOption()
     {
@@ -47,7 +47,9 @@ internal class Twister : RoleBase
         // When is force revert shapeshift
         if (shapeshifter.PlayerId == targetSS.PlayerId && !IsAnimate) return;
 
-        changePositionPlayers = [shapeshifter.PlayerId];
+        changePositionPlayers.Clear();
+
+        changePositionPlayers.Add(shapeshifter.PlayerId);
 
         var rd = IRandom.Instance;
         foreach (var pc in Main.AllAlivePlayerControls)
@@ -67,6 +69,7 @@ internal class Twister : RoleBase
             changePositionPlayers.Add(pc.PlayerId);
 
             pc.RPCPlayCustomSound("Teleport");
+            target.RPCPlayCustomSound("Teleport");
 
             var originPs = target.GetCustomPosition();
             target.RpcTeleport(pc.GetCustomPosition());
