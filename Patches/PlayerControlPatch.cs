@@ -495,13 +495,18 @@ class MurderPlayerPatch
             }
         }
 
-        if (Main.AllKillers.ContainsKey(killer.PlayerId))
-            Main.AllKillers.Remove(killer.PlayerId);
+        if (Witness.AllMurderTresspass.ContainsKey(killer.PlayerId))
+            Witness.AllMurderTresspass[killer.PlayerId].SetMurder(null);
 
         killer.SetKillTimer();
 
         if (!killer.Is(CustomRoles.Trickster))
-            Main.AllKillers.Add(killer.PlayerId, Utils.GetTimeStamp());
+        {
+            if (!Witness.AllMurderTresspass.ContainsKey(killer.PlayerId))
+                Witness.AllMurderTresspass.Add(killer.PlayerId, new(murder: Utils.GetTimeStamp()));
+            else
+                Witness.AllMurderTresspass[killer.PlayerId].SetMurder(Utils.GetTimeStamp());
+        }
 
         Main.PlayerStates[target.PlayerId].SetDead();
         target.SetRealKiller(killer, true);
@@ -880,7 +885,7 @@ class ReportDeadBodyPatch
         {
             Main.MeetingIsStarted = true;
             Main.LastVotedPlayerInfo = null;
-            Main.AllKillers.Clear();
+            Witness.AllMurderTresspass.Clear();
             GuessManager.GuesserGuessed.Clear();
             Main.MurderedThisRound.Clear();
 

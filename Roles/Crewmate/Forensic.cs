@@ -12,7 +12,7 @@ internal class Forensic : RoleBase
    //===========================SETUP================================\\
    public override CustomRoles Role => CustomRoles.Forensic;
    private const int Id = 7900;
-   public override CustomRoles ThisRoleBase => CustomRoles.Crewmate;
+   public override CustomRoles ThisRoleBase => CustomRoles.Detective;
    public override Custom_RoleType ThisRoleType => Custom_RoleType.CrewmateSupport;
    //==================================================================\\
 

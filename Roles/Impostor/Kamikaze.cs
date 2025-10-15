@@ -13,6 +13,7 @@ internal class Kamikaze : RoleBase
     //===========================SETUP================================\\
     public override CustomRoles Role => CustomRoles.Kamikaze;
     private const int Id = 26900;
+    public static readonly HashSet<byte> Playerids = [];
     public static bool HasEnabled => CustomRoleManager.HasEnabled(CustomRoles.Kamikaze);
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.ImpostorSupport;
@@ -22,7 +23,7 @@ internal class Kamikaze : RoleBase
     private static OptionItem OptMaxMarked;
     private static OptionItem CanKillTNA;
 
-    private readonly HashSet<byte> KamikazedList = [];
+    private readonly Dictionary<byte, HashSet<byte>> KamikazedList = [];
 
     public override void SetupCustomOption()
     {
@@ -34,19 +35,90 @@ internal class Kamikaze : RoleBase
         CanKillTNA = BooleanOptionItem.Create(Id + 12, "CanKillTNA", false, TabGroup.ImpostorRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Kamikaze]);
 
     }
+
+    public override void Init()
+    {
+        Playerids.Clear();
+    }
+
     public override void Add(byte playerId)
     {
         playerId.SetAbilityUseLimit(OptMaxMarked.GetInt());
 
+        if (!Playerids.Contains(playerId))
+            Playerids.Add(playerId);
+
         // Double Trigger
         var pc = Utils.GetPlayerById(playerId);
         pc.AddDoubleTrigger();
+
+        if (AmongUsClient.Instance.AmHost)
+        {
+            CustomRoleManager.CheckDeadBodyOthers.Add(AfterPlayerDeathTasks);
+        }
+    }
+
+    public override void Remove(byte playerId)
+    {
+        Playerids.Remove(playerId);
+
+        if (!Playerids.Any())
+            CustomRoleManager.CheckDeadBodyOthers.Remove(AfterPlayerDeathTasks);
+    }
+
+    private void AfterPlayerDeathTasks(PlayerControl killer, PlayerControl target, bool inMeeting)
+    {
+        if (target == null || !target.Is(CustomRoles.Kamikaze) || target.IsAlive() || target.IsDisconnected()) return;
+
+        var kId = target.PlayerId;
+        var kList = KamikazedList[kId];
+
+        if (!inMeeting)
+        {
+            foreach (var BABUSHKA in kList)
+            {
+                var pc = Utils.GetPlayerById(BABUSHKA);
+                if (!pc.IsAlive()) continue;
+                if (pc.IsTransformedNeutralApocalypse() && !CanKillTNA.GetBool()) continue;
+
+                pc.SetDeathReason(PlayerState.DeathReason.Targeted);
+                if (!inMeeting)
+                {
+                    pc.RpcMurderPlayer(pc);
+                }
+                else
+                {
+                    pc.RpcExileV2();
+                    Main.PlayerStates[pc.PlayerId].SetDead();
+                    pc.Data.IsDead = true;
+                }
+                pc.SetRealKiller(_Player);
+            }
+        }
+        else
+        {
+            var deathList = new List<byte>();;
+            foreach (var pc in Main.AllAlivePlayerControls)
+            {
+                if (kList.Contains(pc.PlayerId))
+                {
+                    if (!Main.AfterMeetingDeathPlayers.ContainsKey(pc.PlayerId))
+                    {
+                        pc.SetRealKiller(target);
+                        deathList.Add(pc.PlayerId);
+                    }
+                }
+            }
+            CheckForEndVotingPatch.TryAddAfterMeetingDeathPlayers(PlayerState.DeathReason.Targeted, [.. deathList]);
+        }
+        kList.Clear();
+        SendRPC();
     }
 
     public override void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = KillCooldown.GetFloat();
 
     public override string GetMark(PlayerControl seer, PlayerControl seen, bool isForMeeting = false)
-        => KamikazedList.Contains(seen.PlayerId) ? Utils.ColorString(Utils.GetRoleColor(CustomRoles.Kamikaze), "∇") : string.Empty;
+        => (KamikazedList.TryGetValue(seer.PlayerId, out var kList) && kList.Contains(seen.PlayerId)) ? Utils.ColorString(Utils.GetRoleColor(CustomRoles.Kamikaze), "∇") : string.Empty;
 
     public override bool OnCheckMurderAsKiller(PlayerControl killer, PlayerControl target)
     {
@@ -58,9 +130,9 @@ internal class Kamikaze : RoleBase
 
         return killer.CheckDoubleTrigger(target, () =>
         {
-            if (killer.GetAbilityUseLimit() >= 1 && !KamikazedList.Contains(target.PlayerId))
+            if (killer.GetAbilityUseLimit() >= 1 && !KamikazedList[killer.PlayerId].Contains(target.PlayerId))
             {
-                KamikazedList.Add(target.PlayerId);
+                KamikazedList[killer.PlayerId].Add(target.PlayerId);
                 killer.RpcGuardAndKill(killer);
                 killer.SetKillCooldown(KillCooldown.GetFloat());
                 Utils.NotifyRoles(SpecifySeer: killer);
@@ -74,61 +146,20 @@ internal class Kamikaze : RoleBase
 
     }
 
-    public override void OnMurderPlayerAsTarget(PlayerControl killer, PlayerControl target, bool inMeeting, bool isSuicide)
-    {
-        if (_Player == null || _Player.IsDisconnected()) return;
-
-        foreach (var BABUSHKA in KamikazedList)
-        {
-            var pc = Utils.GetPlayerById(BABUSHKA);
-            if (!pc.IsAlive()) continue;
-            if (pc.IsTransformedNeutralApocalypse() && !CanKillTNA.GetBool()) continue;
-
-            pc.SetDeathReason(PlayerState.DeathReason.Targeted);
-            if (!inMeeting)
-            {
-                pc.RpcMurderPlayer(pc);
-            }
-            else
-            {
-                pc.RpcExileV2();
-                Main.PlayerStates[pc.PlayerId].SetDead();
-                pc.Data.IsDead = true;
-            }
-            pc.SetRealKiller(_Player);
-        }
-        KamikazedList.Clear();
-        SendRPC();
-    }
-
-    public override void OnCheckForEndVoting(PlayerState.DeathReason deathReason, params byte[] exileIds)
-    {
-        if (_Player == null || !exileIds.Contains(_Player.PlayerId)) return;
-        var deathList = new List<byte>();
-        var death = _Player;
-        foreach (var pc in Main.AllAlivePlayerControls)
-        {
-            if (KamikazedList.Contains(pc.PlayerId))
-            {
-                if (!Main.AfterMeetingDeathPlayers.ContainsKey(pc.PlayerId))
-                {
-                    pc.SetRealKiller(death);
-                    deathList.Add(pc.PlayerId);
-                }
-            }
-        }
-        KamikazedList.Clear();
-        SendRPC();
-        CheckForEndVotingPatch.TryAddAfterMeetingDeathPlayers(PlayerState.DeathReason.Targeted, [.. deathList]);
-    }
-
     private void SendRPC()
     {
         var writer = MessageWriter.Get(SendOption.Reliable);
         writer.WritePacked(KamikazedList.Count);
-        foreach (var playerId in KamikazedList)
+        foreach (var kList in KamikazedList)
         {
-            writer.Write(playerId);
+            writer.Write(kList.Key);
+
+            writer.WritePacked(kList.Value.Count);
+
+            foreach (var target in kList.Value)
+            {
+                writer.Write(target);
+            }
         }
         RpcUtils.LateBroadcastReliableMessage(new RpcSyncRoleSkill(PlayerControl.LocalPlayer.NetId, _Player.NetId, writer));
     }
@@ -137,12 +168,18 @@ internal class Kamikaze : RoleBase
     {
         var count = reader.ReadPackedInt32();
         KamikazedList.Clear();
-        if (count > 0)
+        for (int i = 0; i < count; i++)
         {
-            for (int i = 0; i < count; i++)
+            var kId = reader.ReadByte();
+            HashSet<byte> targets = [];
+            var tCount = reader.ReadPackedInt32();
+
+            for (int j = 0; j < tCount; j++)
             {
-                KamikazedList.Add(reader.ReadByte());
+                targets.Add(reader.ReadByte());
             }
+
+            KamikazedList.Add(kId, targets);
         }
     }
 }

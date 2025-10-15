@@ -1245,7 +1245,7 @@ static class ExtendedPlayerControl
                         break;
 
                     case CustomRoles.Overclocked:
-                        Main.AllPlayerKillCooldown[player.PlayerId] -= Main.AllPlayerKillCooldown[player.PlayerId] * ((1 - Overclocked.OverclockedReduction.GetFloat()) / 100);
+                        Main.AllPlayerKillCooldown[player.PlayerId] -= Main.AllPlayerKillCooldown[player.PlayerId] * (Overclocked.OverclockedReduction.GetFloat() / 100);
                         break;
 
                     case CustomRoles.Diseased:
@@ -1362,6 +1362,7 @@ static class ExtendedPlayerControl
     public static bool IsNeutralBenign(this PlayerControl player) => player.GetCustomRole().IsNB();
     public static bool IsNeutralEvil(this PlayerControl player) => player.GetCustomRole().IsNE();
     public static bool IsNeutralChaos(this PlayerControl player) => player.GetCustomRole().IsNC();
+    public static bool IsNeutralParaih(this PlayerControl player) => player.GetCustomRole().IsNP();
     public static bool IsNeutralApocalypse(this PlayerControl player) => player.GetCustomRole().IsNA();
     public static bool IsTransformedNeutralApocalypse(this PlayerControl player) => player.GetCustomRole().IsTNA();
     public static bool IsNonNeutralKiller(this PlayerControl player) => player.GetCustomRole().IsNonNK();

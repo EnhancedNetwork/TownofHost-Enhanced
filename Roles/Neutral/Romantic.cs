@@ -232,14 +232,14 @@ internal class Romantic : RoleBase
             player = Utils.GetPlayerById(exiledId);
             if (player == null) return;
 
-            ChangeRole(player);
+            ChangeRole(player, true);
         }
     }
     private void OthersAfterPlayerDeathTask(PlayerControl killer, PlayerControl player, bool inMeeting)
     {
-        ChangeRole(player);
+        ChangeRole(player, inMeeting);
     }
-    private static void ChangeRole(PlayerControl player)
+    private static void ChangeRole(PlayerControl player, bool inMeeting)
     {
         var playerId = player.PlayerId;
         if (!BetPlayer.ContainsValue(playerId) || player == null) return;
@@ -256,7 +256,16 @@ internal class Romantic : RoleBase
         if (player.GetRealKiller() == pc)
         {
             pc.SetDeathReason(PlayerState.DeathReason.FollowingSuicide);
-            pc.RpcMurderPlayer(pc);
+            if (!inMeeting)
+                pc.RpcMurderPlayer(pc);
+            else
+            {
+                if (!DisableKillAnimationOnGuess.GetBool()) CustomSoundsManager.RPCPlayCustomSoundAll("Gunfire");
+                pc.SetRealKiller(pc);
+                GuessManager.RpcGuesserMurderPlayer(pc);
+                Main.PlayersDiedInMeeting.Add(pc.PlayerId);
+                MurderPlayerPatch.AfterPlayerDeathTasks(pc, pc, true);
+            }
             return;
         }
         if (player.GetCustomRole().IsImpostorTeamV3())

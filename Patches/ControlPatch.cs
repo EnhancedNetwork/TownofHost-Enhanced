@@ -164,6 +164,20 @@ internal class ControllerManagerUpdatePatch
                 Main.ExportCustomRoleColors();
                 Logger.SendInGame("Exported Custom Translation and Role File");
             }
+            // Fix Black Screen
+            if (GetKeysDown(KeyCode.F5, KeyCode.F))
+            {
+                if (AmongUsClient.Instance.AmHost)
+                {
+                    Logger.Info("Attempted to fix Black Screen", "KeyCommand");
+                    AntiBlackout.SetIsDead();
+                    Logger.SendInGame("Attempted to fix Black Screen");
+                }
+                else
+                {
+                    // TODO: Add Rpc for moderators
+                }
+            }
             // Send logs
             if (GetKeysDown(KeyCode.F1, KeyCode.LeftControl))
             {

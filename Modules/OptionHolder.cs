@@ -73,14 +73,7 @@ public static class Options
     public static OptionItem DraftableCount;
     // public static OptionItem BucketCount;
     public static bool devEnableDraft = false;
-    public static readonly string[] roleBuckets =
-    [
-        .. EnumHelper.GetAllValues<RoleBucket>().Where(x => x != RoleBucket.None).Select(x => x.ToColoredString()),
-        .. CustomRolesHelper.AllRoles.Where(role => role.IsBucketableRole()).Select(x => x.ToColoredString()),
-    ];
-    public static MultipleStringOptionItem DraftBuckets;
-    public static OptionItem[] draftBuckets = new OptionItem[15];
-    public static string ConvertRoleBucketToString(RoleBucket bucket) => $"RoleBucket.{bucket}";
+    public static OptionItem DraftDeck;
 
     // 役職数・確率
     public static Dictionary<CustomRoles, int> roleCounts;
@@ -602,6 +595,12 @@ public static class Options
     public static OptionItem TransformedNeutralApocalypseCanBeGuessed;
     public static OptionItem ApocCanSeeEachOthersAddOns;
 
+    // Neutral Pariah
+    public static OptionItem PariahWinWhenDead;
+    public static OptionItem PariahHasImpVis;
+    public static OptionItem PariahImpVisMode;
+    public static OptionItem PariahCanVent;
+    public static OptionItem PariahVentMode;
 
     // Coven
     public static OptionItem CovenRolesMinPlayer;
@@ -733,7 +732,7 @@ public static class Options
     private static System.Collections.IEnumerator CoLoadOptions()
     {
         //#######################################
-        // 32400 last id for roles/add-ons (Next use 32500)
+        // 32500 last id for roles/add-ons (Next use 32600)
         // Limit id for roles/add-ons --- "59999"
         //#######################################
 
@@ -1067,6 +1066,29 @@ public static class Options
 
         CustomRoleManager.GetNormalOptions(Custom_RoleType.NeutralKilling).ForEach(r => r.SetupCustomOption());
 
+        TextOptionItem.Create(10000116, "RoleType.NeutralPariah", TabGroup.NeutralRoles)
+            .SetGameMode(CustomGameMode.Standard)
+            .SetColor(new Color32(127, 140, 141, byte.MaxValue));
+
+        PariahWinWhenDead = BooleanOptionItem.Create(10000117, "PariahWinWhenDead", false, TabGroup.NeutralRoles, false)
+            .SetGameMode(CustomGameMode.Standard);
+
+        PariahHasImpVis = BooleanOptionItem.Create(10000118, "PariahHasImpVis", true, TabGroup.NeutralRoles, false)
+            .SetGameMode(CustomGameMode.Standard)
+            .SetHeader(true);
+        PariahImpVisMode = StringOptionItem.Create(10000119, "PariahImpVisMode", EnumHelper.GetAllNames<PariahManager.VisOptionList>(), 0, TabGroup.NeutralRoles, false)
+            .SetGameMode(CustomGameMode.Standard)
+            .SetParent(PariahHasImpVis);
+        PariahManager.RunSetUpImpVisOptions(170032);
+        PariahCanVent = BooleanOptionItem.Create(10000120, "PariahCanVent", true, TabGroup.NeutralRoles, false)
+            .SetGameMode(CustomGameMode.Standard);
+        PariahVentMode = StringOptionItem.Create(10000121, "PariahVentMode", EnumHelper.GetAllNames<PariahManager.VentOptionList>(), 0, TabGroup.NeutralRoles, false)
+            .SetGameMode(CustomGameMode.Standard)
+            .SetParent(PariahCanVent);
+        PariahManager.RunSetUpVentOptions(270032);
+
+        CustomRoleManager.GetNormalOptions(Custom_RoleType.NeutralPariah).ForEach(r => r.SetupCustomOption());
+
         TextOptionItem.Create(10000115, "RoleType.NeutralApocalypse", TabGroup.NeutralRoles)
             .SetGameMode(CustomGameMode.Standard)
             .SetColor(new Color32(127, 140, 141, byte.MaxValue));
@@ -1393,14 +1415,10 @@ public static class Options
             .SetGameMode(CustomGameMode.Standard)
             .SetParent(DraftMode);
 
-        // BucketCount = IntegerOptionItem.Create(61002, "BucketCount", new(5, 225, 1), 15, TabGroup.ModSettings, false)
-        //     .SetGameMode(CustomGameMode.Standard)
-        //     .SetParent(DraftMode)
-        //     .RegisterUpdateValueEvent((obj, args) => BucketCountChanged(args));
-
-        DraftBuckets = MultipleStringOptionItem.Create(61003, 225, 15, "RoleBucket", roleBuckets, 0, TabGroup.ModSettings, false, useGetString: false)
-            .SetParent(DraftableCount)
-            .SetGameMode(CustomGameMode.Standard);
+        DraftAssign.LoadRoleDecks();
+        DraftDeck = StringOptionItem.Create(61002, "DraftDeck", DraftAssign.RoleDecks.Keys.ToArray(), 0, TabGroup.ModSettings, false, useGetString: false)
+            .SetGameMode(CustomGameMode.Standard)
+            .SetParent(DraftMode);
 
         Logger.Info("Draft Bucket Options set up", "OptionsHolder.CoLoadOptions");
 
@@ -2309,11 +2327,6 @@ public static class Options
 
         CustomRoleSpawnChances.Add(role, spawnOption);
         CustomRoleCounts.Add(role, countOption);
-    }
-    static void BucketCountChanged(OptionItem.UpdateValueEventArgs args)
-    {
-        DraftBuckets.Count = args.CurrentValue + 5;
-        DraftBuckets.Refresh();
     }
     public class OverrideTasksData
     {

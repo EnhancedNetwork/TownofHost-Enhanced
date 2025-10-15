@@ -5,6 +5,7 @@ using TOHE.Roles.AddOns.Common;
 using TOHE.Roles.AddOns.Crewmate;
 using TOHE.Roles.AddOns.Impostor;
 using TOHE.Roles.Core;
+using TOHE.Roles.Core.DraftAssign;
 using TOHE.Roles.Coven;
 using TOHE.Roles.Crewmate;
 using TOHE.Roles.Double;
@@ -95,6 +96,7 @@ public static class CustomRolesHelper
                     or CustomRoles.Cyber
                     or CustomRoles.Sloth
                     or CustomRoles.Apocalypse
+                    or CustomRoles.Pariah
                     or CustomRoles.Coven)
             && !role.IsTNA() && !role.IsAdditionRole();
 
@@ -282,7 +284,7 @@ public static class CustomRolesHelper
     }
     public static bool IsNonNK(this CustomRoles role) // ROLE ASSIGNING, NOT NEUTRAL TYPE
     {
-        return role.IsNB() || role.IsNE() || role.IsNC();
+        return role.IsNB() || role.IsNE() || role.IsNC() || role.IsNP();
     }
     public static bool IsNA(this CustomRoles role)
     {
@@ -310,6 +312,11 @@ public static class CustomRolesHelper
     {
         return role.GetStaticRoleClass().ThisRoleType
             is Custom_RoleType.NeutralChaos;
+    }
+    public static bool IsNP(this CustomRoles role)
+    {
+        return role.GetStaticRoleClass().ThisRoleType
+            is Custom_RoleType.NeutralPariah;
     }
     public static bool IsImpostor(this CustomRoles role) // IsImp
     {
@@ -1432,7 +1439,7 @@ public static class CustomRolesHelper
     /// <summary>
     /// Role is not impostor nor rascal nor madmate nor converting nor neutral or role is trickster.
     /// </summary>
-    public static bool IsCrewmateTeamV2(this CustomRoles role) => !(role.IsImpostorTeamV2() || role.IsNeutralTeamV2()) || role == CustomRoles.Trickster;
+    public static bool IsCrewmateTeamV2(this CustomRoles role) => !(role.IsImpostorTeamV2() || role.IsNeutralTeamV2() || role.IsCovenTeam()) || role == CustomRoles.Trickster;
     /// <summary>
     /// Role is Enchanted Or Coven
     /// </summary>
@@ -1566,6 +1573,7 @@ public static class CustomRolesHelper
            CustomRoles.RuthlessRomantic => CountTypes.RuthlessRomantic,
            CustomRoles.Shocker => CountTypes.Shocker,
            CustomRoles.SchrodingersCat => CountTypes.None,
+           var p when p.IsNP() => CountTypes.None,
            CustomRoles.Solsticer => CountTypes.None,
            CustomRoles.Revenant => CountTypes.None,
            _ => role.IsImpostorTeam() ? CountTypes.Impostor : CountTypes.Crew,
@@ -1665,6 +1673,17 @@ public static class CustomRolesHelper
         };
     public static bool HasSubRole(this PlayerControl pc) => Main.PlayerStates[pc.PlayerId].SubRoles.Any();
 
+    public static bool IsInRoleSlot(this CustomRoles role, RoleSlot slot)
+    {
+        if (slot.Roles.Contains(role)) return true;
+
+        foreach (var bucket in slot.Buckets)
+        {
+            if (role.IsInRoleBucket(bucket)) return true;
+        }
+        return false;
+    }
+
     /// <summary>
     /// Whether the role is in the given role bucket
     /// </summary>
@@ -1693,7 +1712,8 @@ public static class CustomRolesHelper
             RoleBucket.NeutralChaos => roleType is Custom_RoleType.NeutralChaos,
             RoleBucket.NeutralKilling => roleType is Custom_RoleType.NeutralKilling,
             RoleBucket.NeutralApocalypse => roleType is Custom_RoleType.NeutralApocalypse,
-            RoleBucket.NeutralRandom => roleType is Custom_RoleType.NeutralBenign or Custom_RoleType.NeutralEvil or Custom_RoleType.NeutralChaos or Custom_RoleType.NeutralKilling or Custom_RoleType.NeutralApocalypse,
+            RoleBucket.NeutralPariah => roleType is Custom_RoleType.NeutralPariah,
+            RoleBucket.NeutralRandom => roleType is Custom_RoleType.NeutralBenign or Custom_RoleType.NeutralEvil or Custom_RoleType.NeutralChaos or Custom_RoleType.NeutralKilling or Custom_RoleType.NeutralApocalypse or Custom_RoleType.NeutralPariah,
 
             RoleBucket.CovenPower => roleType is Custom_RoleType.CovenPower,
             RoleBucket.CovenKilling => roleType is Custom_RoleType.CovenKilling,
@@ -1743,6 +1763,7 @@ public enum Custom_RoleType
     NeutralChaos,
     NeutralKilling,
     NeutralApocalypse,
+    NeutralPariah,
 
     // Coven
     CovenPower,
@@ -1818,6 +1839,7 @@ public enum RoleBucket
     NeutralChaos,
     NeutralKilling,
     NeutralApocalypse,
+    NeutralPariah,
     NeutralRandom,
 
     // Coven

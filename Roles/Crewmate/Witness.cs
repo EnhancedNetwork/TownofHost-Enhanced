@@ -17,6 +17,8 @@ internal class Witness : RoleBase
     public override Custom_RoleType ThisRoleType => Custom_RoleType.CrewmateSupport;
     //==================================================================\\
 
+    public static readonly Dictionary<byte, MurderTresspass> AllMurderTresspass = [];
+
     private static OptionItem WitnessCD;
     private static OptionItem WitnessTime;
 
@@ -48,15 +50,44 @@ internal class Witness : RoleBase
     public override bool ForcedCheckMurderAsKiller(PlayerControl killer, PlayerControl target)
     {
         killer.SetKillCooldown();
-        if (Illusionist.IsNonCovIllusioned(target.PlayerId) || (Main.AllKillers.ContainsKey(target.PlayerId) && !Illusionist.IsCovIllusioned(target.PlayerId)))
-            killer.Notify(GetString("WitnessFoundKiller"));
-        else
+        if (Illusionist.IsCovIllusioned(target.PlayerId) || !AllMurderTresspass.TryGetValue(target.PlayerId, out MurderTresspass murTres))
             killer.Notify(GetString("WitnessFoundInnocent"));
+        else if (murTres.HasTresspass && !murTres.HasMurder)
+            killer.Notify(GetString("WitnessFoundTresspass"));
+        else if (!murTres.HasTresspass && murTres.HasMurder)
+            killer.Notify(GetString("WitnessFoundKiller"));
+        else if (murTres.HasTresspass && murTres.HasMurder)
+            killer.Notify(GetString("WitnessFoundKillerTresspass"));
+
         return false;
     }
     public static void OnFixedUpdateLowLoadOthers(PlayerControl player, bool lowLoad, long nowTime)
     {
-        if (!lowLoad && Main.AllKillers.TryGetValue(player.PlayerId, out var ktime) && ktime + WitnessTime.GetInt() < nowTime)
-            Main.AllKillers.Remove(player.PlayerId);
+        if (!lowLoad && AllMurderTresspass.TryGetValue(player.PlayerId, out var muTr))
+            muTr.Update(WitnessTime.GetInt(), nowTime);
+    }
+}
+
+internal class MurderTresspass(long? murder = null, long? tresspass = null)
+{
+    private long? Murder = murder;
+    private long? Tresspass = tresspass;
+
+    public bool HasMurder => Murder != null;
+    public bool HasTresspass => Tresspass != null;
+
+    public void Update(int duration, long nowTime)
+    {
+        if (Murder != null && Murder + duration < nowTime) Murder = null;
+        if (Tresspass != null && Tresspass + duration < nowTime) Tresspass = null;
+    }
+
+    public void SetMurder(long? murder)
+    {
+        Murder = murder;
+    }
+    public void SetTresspass(long? tresspass)
+    {
+        Tresspass = tresspass;
     }
 }

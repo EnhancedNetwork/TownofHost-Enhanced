@@ -189,6 +189,8 @@ public static class CustomRoleManager
     {
         if (killer == target) return true;
 
+        Utils.CheckTresspassing(killer, target);
+
         if (target != null && target.Is(CustomRoles.Fragile))
         {
             if (Fragile.KillFragile(killer, target))

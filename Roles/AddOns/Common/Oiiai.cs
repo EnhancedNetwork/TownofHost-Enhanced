@@ -94,7 +94,7 @@ public class Oiiai : IAddon
         var killerRole = killer.GetCustomRole();
         if (killer.HasGhostRole() || CopyCat.playerIdList.Contains(killer.PlayerId) || killer.Is(CustomRoles.Stubborn))
         {
-            Logger.Info($"Oiiai {killer.GetNameWithRole().RemoveHtmlTags()} cannot eraser crew imp-based role", "Oiiai");
+            Logger.Info($"Oiiai {killer.GetNameWithRole().RemoveHtmlTags()} cannot eraser ghost/copycat/stubborn role", "Oiiai");
             return;
         }
         else if (killerRole.IsCoven() && !CovenManager.HasNecronomicon(killer))
