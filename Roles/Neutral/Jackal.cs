@@ -130,7 +130,10 @@ internal class Jackal : RoleBase
 
     public override void Remove(byte playerId)
     {
-        CustomRoleManager.CheckDeadBodyOthers.Remove(OnPlayersDead);
+        Playerids.Remove(playerId);
+
+        if (!Playerids.Any())
+            CustomRoleManager.CheckDeadBodyOthers.Remove(OnPlayersDead);
     }
 
     public override void ApplyGameOptions(IGameOptions opt, byte babuyaga) => opt.SetVision(HasImpostorVision.GetBool());

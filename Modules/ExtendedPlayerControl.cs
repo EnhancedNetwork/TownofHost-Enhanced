@@ -1245,7 +1245,7 @@ static class ExtendedPlayerControl
                         break;
 
                     case CustomRoles.Overclocked:
-                        Main.AllPlayerKillCooldown[player.PlayerId] -= Main.AllPlayerKillCooldown[player.PlayerId] * ((1 - Overclocked.OverclockedReduction.GetFloat()) / 100);
+                        Main.AllPlayerKillCooldown[player.PlayerId] -= Main.AllPlayerKillCooldown[player.PlayerId] * (Overclocked.OverclockedReduction.GetFloat() / 100);
                         break;
 
                     case CustomRoles.Diseased:

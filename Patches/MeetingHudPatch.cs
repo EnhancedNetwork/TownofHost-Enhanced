@@ -1395,7 +1395,7 @@ class MeetingHudUpdatePatch
     {
         if (__instance == null || !GameStates.IsInGame) return;
 
-        //Meeting Skip with vote counting on keystroke (m + delete)
+        //Meeting Skip with vote counting on keystroke (F6)
         if (AmongUsClient.Instance.AmHost && Input.GetKeyDown(KeyCode.F6))
         {
             __instance.CheckForEndVoting();
