@@ -16,7 +16,7 @@ Thank you for using TOHE!
 - Fixed bug that the Crew cannot become Workhorse when 'Assign Only To ' was enabled
 - Fixed bug that could cause the meeting not to end when the Jester was voted out
 - Fixed bug that 'Show Role Descriptions to Unmodded Clients at First Meeting' doesn't work
-- Fixed bug that the skill would not prompt or cause the meeting to crash when the Detective reported a suicide corpse
+- Fixed bug that the skill would not prompt or cause the meeting to crash when the Analyst reported a suicide corpse
 - Fixed bug that an abnormal exit from the game or disconnection without a pop-up window will cause an error
 - Fixed bug that the target of the Innocent quits the game, which may cause the meeting to crash and the Executioner, Jester and other roles cannot win
 - Fixed bug that the prompts of other roles skills may be invalid when the player who killed by Mimic quits the game

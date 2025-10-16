@@ -13,7 +13,7 @@ Thank you for using TOHE!
 ## Fix
 - Fixed bug that Vampire target's abnormal state may cause the meeting to crash
 - Fixed bug that the message received by the Medium and the target opposite
-- Fixed bug that Detective dosen't work
+- Fixed bug that Analyst dosen't work
 - Fix formatting errors on some text displays
 - Fixed bug that exiting the game after the death of a Celebrity may result in skill dosen't work or even meeting crash
 - Fixed bug that ineffective command from the Medium's target

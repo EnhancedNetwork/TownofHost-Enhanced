@@ -48,7 +48,7 @@ internal class Overseer : RoleBase
         CustomRoles.Bastion,
         CustomRoles.Dictator,
         CustomRoles.Doctor,
-        CustomRoles.Detective,
+        CustomRoles.Analyst,
         CustomRoles.Lookout,
         CustomRoles.Technician,
         CustomRoles.Telecommunication,
@@ -226,7 +226,7 @@ internal class Overseer : RoleBase
             else
             {
 
-                float range = NormalGameOptionsV09.KillDistances[Mathf.Clamp(player.Is(Reach.IsReach) ? 2 : Main.NormalOptions.KillDistance, 0, 2)] + 0.5f;
+                float range = NormalGameOptionsV10.KillDistances[Mathf.Clamp(player.Is(Reach.IsReach) ? 2 : Main.NormalOptions.KillDistance, 0, 2)] + 0.5f;
                 float dis = GetDistance(player.GetCustomPosition(), farTarget.GetCustomPosition());
                 if (dis <= range)
                 {

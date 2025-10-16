@@ -635,18 +635,18 @@ class BeginCrewmatePatch
                         break;
                     case CustomRoles.Jinx:
                     case CustomRoles.Romantic:
-                        PlayerControl.LocalPlayer.Data.Role.IntroSound = RoleManager.Instance.AllRoles.FirstOrDefault((role) => role.Role == RoleTypes.GuardianAngel)?.UseSound;
+                        PlayerControl.LocalPlayer.Data.Role.IntroSound = RoleManager.Instance.AllRoles.Find((Il2CppSystem.Predicate<RoleBehaviour>)((role) => role.Role == RoleTypes.GuardianAngel))?.UseSound;
                         break;
                     case CustomRoles.Illusionist:
                     case CustomRoles.MoonDancer:
-                        PlayerControl.LocalPlayer.Data.Role.IntroSound = RoleManager.Instance.AllRoles.FirstOrDefault((role) => role.Role == RoleTypes.Phantom)?.UseSound;
+                        PlayerControl.LocalPlayer.Data.Role.IntroSound = RoleManager.Instance.AllRoles.Find((Il2CppSystem.Predicate<RoleBehaviour>)((role) => role.Role == RoleTypes.Phantom))?.UseSound;
                         break;
                     case CustomRoles.Telecommunication:
-                        PlayerControl.LocalPlayer.Data.Role.IntroSound = RoleManager.Instance.AllRoles.FirstOrDefault((role) => role.Role == RoleTypes.Tracker)?.UseSound;
+                        PlayerControl.LocalPlayer.Data.Role.IntroSound = RoleManager.Instance.AllRoles.Find((Il2CppSystem.Predicate<RoleBehaviour>)((role) => role.Role == RoleTypes.Tracker))?.UseSound;
                         break;
                     case CustomRoles.Morphling:
                     case CustomRoles.Twister:
-                        PlayerControl.LocalPlayer.Data.Role.IntroSound = RoleManager.Instance.AllRoles.FirstOrDefault((role) => role.Role == RoleTypes.Shapeshifter)?.UseSound;
+                        PlayerControl.LocalPlayer.Data.Role.IntroSound = RoleManager.Instance.AllRoles.Find((Il2CppSystem.Predicate<RoleBehaviour>)((role) => role.Role == RoleTypes.Shapeshifter))?.UseSound;
                         break;
                 }
 
@@ -654,7 +654,7 @@ class BeginCrewmatePatch
                 {
                     __instance.TeamTitle.text = GetString("TeamLovers");
                     __instance.TeamTitle.color = __instance.BackgroundBar.material.color = new Color32(255, 154, 206, byte.MaxValue);
-                    PlayerControl.LocalPlayer.Data.Role.IntroSound = RoleManager.Instance.AllRoles.FirstOrDefault((role) => role.Role == RoleTypes.GuardianAngel)?.UseSound;
+                    PlayerControl.LocalPlayer.Data.Role.IntroSound = RoleManager.Instance.AllRoles.Find((Il2CppSystem.Predicate<RoleBehaviour>)((role) => role.Role == RoleTypes.GuardianAngel))?.UseSound;
                     __instance.ImpostorText.gameObject.SetActive(true);
                     __instance.ImpostorText.text = GetString("SubText.Lovers");
                 }
@@ -698,7 +698,7 @@ class BeginCrewmatePatch
     }
     public static AudioClip GetIntroSound(RoleTypes roleType)
     {
-        return RoleManager.Instance.AllRoles.FirstOrDefault((role) => role.Role == roleType)?.IntroSound;
+        return RoleManager.Instance.AllRoles.Find((Il2CppSystem.Predicate<RoleBehaviour>)((role) => role.Role == roleType))?.IntroSound;
     }
     private static async void StartFadeIntro(IntroCutscene __instance, Color start, Color end, int changeInterval = 20)
     {

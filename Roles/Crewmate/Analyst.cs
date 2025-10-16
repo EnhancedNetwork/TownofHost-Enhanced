@@ -6,30 +6,30 @@ using static TOHE.Translator;
 
 namespace TOHE.Roles.Crewmate;
 
-internal class Detective : RoleBase
+internal class Analyst : RoleBase
 {
     //===========================SETUP================================\\
-    public override CustomRoles Role => CustomRoles.Detective;
+    public override CustomRoles Role => CustomRoles.Analyst;
     private const int Id = 7900;
     public override CustomRoles ThisRoleBase => CustomRoles.Crewmate;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.CrewmateSupport;
     //==================================================================\\
 
-    private static OptionItem DetectiveCanknowKiller;
+    private static OptionItem AnalystCanknowKiller;
 
-    private static readonly Dictionary<byte, string> DetectiveNotify = [];
+    private static readonly Dictionary<byte, string> AnalystNotify = [];
     private static readonly Dictionary<byte, string> InfoAboutDeadPlayerAndKiller = [];
 
     public override void SetupCustomOption()
     {
-        SetupRoleOptions(Id, TabGroup.CrewmateRoles, CustomRoles.Detective);
-        DetectiveCanknowKiller = BooleanOptionItem.Create(7902, "DetectiveCanknowKiller", true, TabGroup.CrewmateRoles, false)
-            .SetParent(CustomRoleSpawnChances[CustomRoles.Detective]);
+        SetupRoleOptions(Id, TabGroup.CrewmateRoles, CustomRoles.Analyst);
+        AnalystCanknowKiller = BooleanOptionItem.Create(7902, "AnalystCanknowKiller", true, TabGroup.CrewmateRoles, false)
+            .SetParent(CustomRoleSpawnChances[CustomRoles.Analyst]);
     }
 
     public override void Init()
     {
-        DetectiveNotify.Clear();
+        AnalystNotify.Clear();
         InfoAboutDeadPlayerAndKiller.Clear();
     }
 
@@ -52,36 +52,36 @@ internal class Detective : RoleBase
     {
         if (deadBody == null) return;
 
-        if (player != null && player.Is(CustomRoles.Detective) && player.PlayerId != deadBody.PlayerId)
+        if (player != null && player.Is(CustomRoles.Analyst) && player.PlayerId != deadBody.PlayerId)
         {
             var msg = new StringBuilder();
             _ = InfoAboutDeadPlayerAndKiller.TryGetValue(deadBody.PlayerId, out var RoleDeadBodyInfo);
-            msg.Append(string.Format(GetString("DetectiveNoticeVictim"), deadBody.PlayerName, RoleDeadBodyInfo));
+            msg.Append(string.Format(GetString("AnalystNoticeVictim"), deadBody.PlayerName, RoleDeadBodyInfo));
 
-            if (DetectiveCanknowKiller.GetBool())
+            if (AnalystCanknowKiller.GetBool())
             {
                 var realKiller = deadBody.PlayerId.GetRealKillerById();
-                if (realKiller == null) msg.Append($"；\n{GetString("DetectiveNoticeKillerNotFound")}");
+                if (realKiller == null) msg.Append($"；\n{GetString("AnalystNoticeKillerNotFound")}");
                 else
                 {
                     _ = InfoAboutDeadPlayerAndKiller.TryGetValue(realKiller.Data.PlayerId, out var RoleKillerInfo);
-                    msg.Append($"；\n{string.Format(GetString("DetectiveNoticeKiller"), RoleKillerInfo)}");
+                    msg.Append($"；\n{string.Format(GetString("AnalystNoticeKiller"), RoleKillerInfo)}");
                 }
             }
-            DetectiveNotify.Remove(player.PlayerId);
-            DetectiveNotify.Add(player.PlayerId, msg.ToString());
+            AnalystNotify.Remove(player.PlayerId);
+            AnalystNotify.Add(player.PlayerId, msg.ToString());
         }
         InfoAboutDeadPlayerAndKiller.Clear();
     }
 
     public override void OnMeetingHudStart(PlayerControl pc)
     {
-        if (DetectiveNotify.TryGetValue(pc.PlayerId, out var notify))
-            AddMsg(notify, pc.PlayerId, Utils.ColorString(Utils.GetRoleColor(CustomRoles.Detective), GetString("DetectiveNoticeTitle")));
+        if (AnalystNotify.TryGetValue(pc.PlayerId, out var notify))
+            AddMsg(notify, pc.PlayerId, Utils.ColorString(Utils.GetRoleColor(CustomRoles.Analyst), GetString("AnalystNoticeTitle")));
     }
     public override void MeetingHudClear()
     {
-        DetectiveNotify.Clear();
+        AnalystNotify.Clear();
         InfoAboutDeadPlayerAndKiller.Clear();
     }
 }
