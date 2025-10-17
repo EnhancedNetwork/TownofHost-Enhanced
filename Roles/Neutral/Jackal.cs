@@ -130,6 +130,10 @@ internal class Jackal : RoleBase
 
     public override void Remove(byte playerId)
     {
+        var player = playerId.GetPlayer();
+        if (player != null && GameStates.IsInGame && player.IsAlive())
+            OnPlayersDead(player, player, Main.MeetingIsStarted);
+
         Playerids.Remove(playerId);
 
         if (!Playerids.Any())

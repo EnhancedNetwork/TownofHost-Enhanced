@@ -703,7 +703,11 @@ class ShapeshiftPatch
         if (GameStates.IsHideNSeek) return;
         if (!shapeshifting) Camouflage.RpcSetSkin(__instance);
 
-        shapeshifter.GetRoleClass()?.OnShapeshift(shapeshifter, target, animate, shapeshifting);
+        // var isSSneeded = true;
+
+        if (!Pelican.IsEaten(shapeshifter.PlayerId) && !GameStates.IsVoting)
+            shapeshifter.GetRoleClass()?.OnShapeshift(shapeshifter, target, animate, shapeshifting);
+            // isSSneeded = shapeshifter.GetRoleClass()?.OnShapeshift(shapeshifter, target, animate, shapeshifting) ?? true;
 
         if (!shapeshifter.Is(CustomRoles.Glitch) && !Main.MeetingIsStarted)
         {
@@ -1203,7 +1207,7 @@ class FixedUpdateInNormalGamePatch
                     FallFromLadder.FixedUpdate(player);
 
                 if (CustomNetObject.AllObjects.Count > 0)
-                    CustomNetObject.FixedUpdate(lowLoad, timerLowLoad);
+                    CustomNetObject.FixedUpdate();
 
                 if (!lowLoad)
                 {
