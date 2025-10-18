@@ -430,7 +430,6 @@ namespace TOHE.Modules
             // this.OwnerId = OwnerId;
         }
     }
-
 }
 
 [HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.RawSetName))]

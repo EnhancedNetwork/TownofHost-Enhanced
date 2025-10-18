@@ -2333,7 +2333,7 @@ public static class Utils
             PlayerState.DeathReason.LossOfHead => (CustomRoles.Hangman.IsEnable()),
             PlayerState.DeathReason.Trialed => (CustomRoles.Judge.IsEnable() || CustomRoles.Councillor.IsEnable()),
             PlayerState.DeathReason.Infected => (CustomRoles.Infectious.IsEnable()),
-            PlayerState.DeathReason.Hack => (CustomRoles.Glitch.IsEnable()),
+            PlayerState.DeathReason.Hack => false,
             PlayerState.DeathReason.Pirate => (CustomRoles.Pirate.IsEnable()),
             PlayerState.DeathReason.Shrouded => (CustomRoles.Shroud.IsEnable()),
             PlayerState.DeathReason.Mauled => (CustomRoles.Werewolf.IsEnable()),
@@ -2346,7 +2346,7 @@ public static class Utils
             PlayerState.DeathReason.Fall => Options.LadderDeath.GetBool(),
             PlayerState.DeathReason.Sacrifice => (CustomRoles.Bodyguard.IsEnable() || CustomRoles.Revolutionist.IsEnable()
                                 || CustomRoles.Hater.IsEnable()),
-            PlayerState.DeathReason.Drained => CustomRoles.Puppeteer.IsEnable(),
+            PlayerState.DeathReason.Drained => CustomRoles.Puppeteer.IsEnable() || CustomRoles.Sorceress.IsEnable(),
             PlayerState.DeathReason.Trap => CustomRoles.Trapster.IsEnable(),
             PlayerState.DeathReason.Targeted => CustomRoles.Kamikaze.IsEnable(),
             PlayerState.DeathReason.Retribution => CustomRoles.Instigator.IsEnable(),
@@ -2427,7 +2427,7 @@ public static class Utils
 
         RPC.SyncDeadPassedMeetingList();
         DoorsReset.ResetDoors();
-        CustomNetObject.AfterMeetingTasks();
+        // CustomNetObject.AfterMeetingTasks();
 
         // Empty Deden bug support Empty vent after meeting
         var ventilationSystem = ShipStatus.Instance.Systems.TryGetValue(SystemTypes.Ventilation, out var systemType) ? systemType.CastFast<VentilationSystem>() : null;

@@ -76,11 +76,12 @@ internal class Devourer : RoleBase
         DoEatSkin(shapeshifter, target);
         return false;
     }
-    public override void OnShapeshift(PlayerControl shapeshifter, PlayerControl target, bool IsAnimate, bool shapeshifting)
+    public override bool OnShapeshift(PlayerControl shapeshifter, PlayerControl target, bool IsAnimate, bool shapeshifting)
     {
-        if (!shapeshifting) return;
+        if (!shapeshifting) return false;
 
         DoEatSkin(shapeshifter, target);
+        return false;
     }
     private static void DoEatSkin(PlayerControl shapeshifter, PlayerControl target)
     {

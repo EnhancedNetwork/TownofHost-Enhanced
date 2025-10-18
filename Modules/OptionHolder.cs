@@ -732,7 +732,7 @@ public static class Options
     private static System.Collections.IEnumerator CoLoadOptions()
     {
         //#######################################
-        // 32500 last id for roles/add-ons (Next use 32600)
+        // 32600 last id for roles/add-ons (Next use 32700)
         // Limit id for roles/add-ons --- "59999"
         //#######################################
 

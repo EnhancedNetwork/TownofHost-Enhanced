@@ -65,9 +65,9 @@ internal class Anonymous : RoleBase
         if (target != null && !DeadBodyList.Contains(target.PlayerId))
             DeadBodyList.Add(target.PlayerId);
     }
-    public override void OnShapeshift(PlayerControl shapeshifter, PlayerControl ssTarget, bool IsAnimate, bool shapeshifting)
+    public override bool OnShapeshift(PlayerControl shapeshifter, PlayerControl ssTarget, bool IsAnimate, bool shapeshifting)
     {
-        if (!shapeshifting || shapeshifter.GetAbilityUseLimit() <= 0 || ssTarget == null || ssTarget.Is(CustomRoles.LazyGuy) || ssTarget.Is(CustomRoles.Lazy) || ssTarget.Is(CustomRoles.NiceMini) && Mini.Age < 18) return;
+        if (!shapeshifting || shapeshifter.GetAbilityUseLimit() <= 0 || ssTarget == null || ssTarget.Is(CustomRoles.LazyGuy) || ssTarget.Is(CustomRoles.Lazy) || ssTarget.Is(CustomRoles.NiceMini) && Mini.Age < 18) return false;
 
         shapeshifter.RpcRemoveAbilityUse();
 
@@ -90,5 +90,7 @@ internal class Anonymous : RoleBase
             _ = new LateTask(() => ssTarget?.NoCheckStartMeeting(ssTarget?.Data), 0.15f, "Anonymous Hacking Report Self");
         else
             _ = new LateTask(() => ssTarget?.NoCheckStartMeeting(Utils.GetPlayerById(targetId)?.Data), 0.15f, "Anonymous Hacking Report");
+
+        return false;
     }
 }

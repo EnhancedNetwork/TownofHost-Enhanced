@@ -42,10 +42,10 @@ internal class Twister : RoleBase
         AURoleOptions.ShapeshifterCooldown = ShapeshiftCooldown.GetFloat();
         AURoleOptions.ShapeshifterDuration = ShapeshiftDuration.GetFloat();
     }
-    public override void OnShapeshift(PlayerControl shapeshifter, PlayerControl targetSS, bool IsAnimate, bool shapeshifting)
+    public override bool OnShapeshift(PlayerControl shapeshifter, PlayerControl targetSS, bool IsAnimate, bool shapeshifting)
     {
         // When is force revert shapeshift
-        if (shapeshifter.PlayerId == targetSS.PlayerId && !IsAnimate) return;
+        if (shapeshifter.PlayerId == targetSS.PlayerId && !IsAnimate) return false;
 
         changePositionPlayers.Clear();
 
@@ -62,7 +62,7 @@ internal class Twister : RoleBase
             var filtered = Main.AllAlivePlayerControls.Where(a =>
                 a.CanBeTeleported() && a.PlayerId != pc.PlayerId && !changePositionPlayers.Contains(a.PlayerId)).ToList();
 
-            if (filtered.Count == 0) return;
+            if (filtered.Count == 0) return false;
 
             var target = filtered.RandomElement();
             changePositionPlayers.Add(target.PlayerId);
@@ -81,6 +81,7 @@ internal class Twister : RoleBase
                 pc.Notify(ColorString(GetRoleColor(CustomRoles.Twister), string.Format(GetString("TeleportedByTransporter"), target.GetRealName())));
             }
         }
+        return false;
     }
 
     public override void SetAbilityButtonText(HudManager hud, byte playerId)

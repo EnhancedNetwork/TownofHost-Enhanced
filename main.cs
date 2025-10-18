@@ -973,6 +973,7 @@ public enum CustomRoles
     PotionMaster,
     Ritualist,
     Sacrifist,
+    Sorceress,
     VoodooMaster,
 
     //two-way camp
