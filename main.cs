@@ -47,7 +47,7 @@ public class Main : BasePlugin
     public const string PluginGuid = "com.Limeau.townofhostoptimized";
     public const string PluginVersion = "2025.0728.200.02"; // YEAR.MMDD.VERSION.CANARYDEV
     public const string PluginDisplayVersion = "2.0.0";
-    public const string PluginDisplaySuffix = "Pre-Release";
+    public const string PluginDisplaySuffix = " Pre-Release";
     public const string SupportedVersionAU = "2025.9.9"; // Changed becasue Dark theme works at this version.
 
     /******************* Change one of the three variables to true before making a release. *******************/
