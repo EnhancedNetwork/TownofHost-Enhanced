@@ -138,7 +138,7 @@ internal class Sorceress : CovenManager
 
         if (!Mirages.TryGetValue(id, out var mirages)) return;
 
-        if (TimeStamp - mirages.PlaceTimeStamp > MirageDuration.GetInt())
+        if (TimeStamp - mirages.PlaceTimeStamp > MirageDuration.GetInt() && !HasNecronomicon(id))
         {
             RemoveMirages();
             return;
