@@ -1029,14 +1029,6 @@ internal static class RPC
 }
 
 [HarmonyPatch(typeof(InnerNetClient), nameof(InnerNetClient.StartRpcImmediately))]
-internal class StartRpcPatch
-{
-    public static void Prefix(/*InnerNet.InnerNetClient __instance,*/ [HarmonyArgument(0)] uint targetNetId, [HarmonyArgument(1)] byte callId, [HarmonyArgument(2)] SendOption option = SendOption.Reliable)
-    {
-        RPC.SendRpcLogger(targetNetId, callId, option);
-    }
-}
-
 public class StartRpcImmediatelyPatch
 {
     public static bool Prefix(InnerNetClient __instance, [HarmonyArgument(0)] uint targetNetId, [HarmonyArgument(1)] byte callId, [HarmonyArgument(2)] SendOption option, [HarmonyArgument(3)] int targetClientId, ref MessageWriter __result)
