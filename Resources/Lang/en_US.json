@@ -4727,5 +4727,11 @@
   "CorruptedInfo": "Transform yourself into an Impostor",
   "CorruptedAInfo": "You are a Crewmate team",
   "CorruptedInfoLong": "As the Corrupted, once you complete your tasks, you will become a random Impostor role. You will still win with Crewmates.",
-  "CorruptedAInfoLong": "You win with Crewmates, you were formerly a Corrupted role"
+  "CorruptedAInfoLong": "You win with Crewmates, you were formerly a Corrupted role",
+
+  "Exorcist": "Exorcist",
+  "ExorcistInfo": "Eliminate evils and purify the lobby!",
+  "ExorcistInfoLong": "As the Exorcist, every time you do a task, nearby Impostors and Neutrals will be vaporized (dying instantly without a body).",
+  "VaporizeRadius363": "Excorcist Vaporize Radius",
+  "ExorcisedTargets": "At least one target has been vaporized."
 }

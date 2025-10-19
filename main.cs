@@ -804,6 +804,7 @@ public enum CustomRoles
     Doctor,
     Druid,
     Enigma,
+    Exorcist,
     ForensicScientist,
     FortuneTeller,
     Grenadier,
