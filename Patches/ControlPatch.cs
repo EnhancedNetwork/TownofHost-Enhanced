@@ -1,6 +1,7 @@
 using System;
 using System.Text;
 using TOHE.Modules;
+using TOHE.Modules.Rpc;
 using TOHE.Patches;
 using UnityEngine;
 using static TOHE.Translator;
@@ -175,7 +176,11 @@ internal class ControllerManagerUpdatePatch
                 }
                 else
                 {
-                    // TODO: Add Rpc for moderators
+                    if (Utils.IsPlayerModerator(PlayerControl.LocalPlayer.FriendCode))
+                    {
+                        var msg = new RpcFixBlackscreen(PlayerControl.LocalPlayer.NetId);
+                        RpcUtils.LateBroadcastReliableMessage(msg);
+                    }
                 }
             }
             // Send logs

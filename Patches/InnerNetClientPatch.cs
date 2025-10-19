@@ -223,6 +223,9 @@ public class NetworkedPlayerInfoPatch
     {
         __instance.PlayerName = playerName;
         client.UpdatePlayerName(playerName);
+        // Except in meeting
+        if (GameStates.IsMeeting)
+            __instance.MarkDirty();
         return false;
     }
 }
