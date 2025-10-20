@@ -35,6 +35,7 @@ internal class Medium : RoleBase
         MediumAbilityUseGainWithEachTaskCompleted = FloatOptionItem.Create(Id + 12, "AbilityUseGainWithEachTaskCompleted", new(0f, 5f, 0.1f), 1f, TabGroup.CrewmateRoles, false)
             .SetParent(CustomRoleSpawnChances[CustomRoles.Medium])
             .SetValueFormat(OptionFormat.Times);
+        OverrideTasksData.Create(Id + 13, TabGroup.CrewmateRoles, CustomRoles.Medium);
     }
     public override void Init()
     {

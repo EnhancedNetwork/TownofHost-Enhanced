@@ -29,8 +29,9 @@ internal class Pacifist : RoleBase
             .SetValueFormat(OptionFormat.Seconds);
         PacifistMaxOfUseage = IntegerOptionItem.Create(Id + 11, GeneralOption.SkillLimitTimes, new(0, 20, 1), 3, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Pacifist])
             .SetValueFormat(OptionFormat.Times);
-        PacifistAbilityUseGainWithEachTaskCompleted = FloatOptionItem.Create(9204, "AbilityUseGainWithEachTaskCompleted", new(0f, 5f, 0.1f), 1f, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Pacifist])
+        PacifistAbilityUseGainWithEachTaskCompleted = FloatOptionItem.Create(12, "AbilityUseGainWithEachTaskCompleted", new(0f, 5f, 0.1f), 1f, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Pacifist])
             .SetValueFormat(OptionFormat.Times);
+        OverrideTasksData.Create(Id + 13, TabGroup.CrewmateRoles, CustomRoles.Pacifist);
     }
     public override void Add(byte playerId)
     {

@@ -40,6 +40,7 @@ internal class Ventguard : RoleBase
         VentguardAbilityUseGainWithEachTaskCompleted = FloatOptionItem.Create(Id + 14, "AbilityUseGainWithEachTaskCompleted", new(0f, 5f, 0.05f), 1f, TabGroup.CrewmateRoles, false)
             .SetParent(CustomRoleSpawnChances[CustomRoles.Ventguard])
             .SetValueFormat(OptionFormat.Times);
+        OverrideTasksData.Create(Id + 15, TabGroup.CrewmateRoles, CustomRoles.Ventguard);
     }
 
     public override void Init()

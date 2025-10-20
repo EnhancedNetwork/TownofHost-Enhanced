@@ -43,6 +43,8 @@ internal class Grenadier : RoleBase
             .SetValueFormat(OptionFormat.Times);
         GrenadierAbilityUseGainWithEachTaskCompleted = FloatOptionItem.Create(Id + 15, "AbilityUseGainWithEachTaskCompleted", new(0f, 5f, 0.1f), 1f, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Grenadier])
             .SetValueFormat(OptionFormat.Times);
+        OverrideTasksData.Create(Id + 17, TabGroup.CrewmateRoles, CustomRoles.Grenadier);
+
     }
 
     public override void Init()

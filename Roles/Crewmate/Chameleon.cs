@@ -40,6 +40,7 @@ internal class Chameleon : RoleBase
         ChameleonAbilityUseGainWithEachTaskCompleted = FloatOptionItem.Create(Id + 6, "AbilityUseGainWithEachTaskCompleted", new(0f, 5f, 0.1f), 1f, TabGroup.CrewmateRoles, false)
             .SetParent(CustomRoleSpawnChances[CustomRoles.Chameleon])
             .SetValueFormat(OptionFormat.Times);
+        OverrideTasksData.Create(Id + 7, TabGroup.CrewmateRoles, CustomRoles.Chameleon);
     }
     public override void Init()
     {

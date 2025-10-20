@@ -41,6 +41,8 @@ internal class Lighter : RoleBase
             .SetValueFormat(OptionFormat.Times);
         LighterAbilityUseGainWithEachTaskCompleted = FloatOptionItem.Create(Id + 15, "AbilityUseGainWithEachTaskCompleted", new(0f, 5f, 0.1f), 1f, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Lighter])
             .SetValueFormat(OptionFormat.Times);
+        OverrideTasksData.Create(Id + 16, TabGroup.CrewmateRoles, CustomRoles.Lighter);
+
     }
     public override void Init()
     {

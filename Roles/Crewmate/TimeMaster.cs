@@ -39,6 +39,7 @@ internal class TimeMaster : RoleBase
             .SetValueFormat(OptionFormat.Times);
         TimeMasterAbilityUseGainWithEachTaskCompleted = FloatOptionItem.Create(Id + 13, "AbilityUseGainWithEachTaskCompleted", new(0f, 5f, 0.1f), 1f, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.TimeMaster])
             .SetValueFormat(OptionFormat.Times);
+        OverrideTasksData.Create(Id + 14, TabGroup.CrewmateRoles, CustomRoles.TimeMaster);
     }
     public override void Init()
     {

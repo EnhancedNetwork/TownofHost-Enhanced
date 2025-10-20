@@ -37,7 +37,7 @@ internal class Oracle : RoleBase
             .SetValueFormat(OptionFormat.Times);
         ChangeRecruitTeam = BooleanOptionItem.Create(Id + 15, "OracleCheckAddons", false, TabGroup.CrewmateRoles, false)
             .SetParent(CustomRoleSpawnChances[CustomRoles.Oracle]);
-
+        OverrideTasksData.Create(Id + 16, TabGroup.CrewmateRoles, CustomRoles.Oracle);
     }
     public override void Add(byte playerId)
     {

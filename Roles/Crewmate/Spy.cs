@@ -33,6 +33,7 @@ internal class Spy : RoleBase
             .SetParent(CustomRoleSpawnChances[CustomRoles.Spy])
             .SetValueFormat(OptionFormat.Times);
         SpyInteractionBlocked = BooleanOptionItem.Create(Id + 13, "SpyInteractionBlocked", true, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Spy]).SetHidden(true);
+        OverrideTasksData.Create(Id + 14, TabGroup.CrewmateRoles, CustomRoles.Spy);
     }
     public override void Init()
     {

@@ -37,6 +37,7 @@ internal class Coroner : RoleBase
             .SetParent(CustomRoleSpawnChances[CustomRoles.Coroner])
             .SetValueFormat(OptionFormat.Times);
         InformKillerBeingTracked = BooleanOptionItem.Create(Id + 14, "CoronerInformKillerBeingTracked", false, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Coroner]);
+        OverrideTasksData.Create(Id + 15, TabGroup.CrewmateRoles, CustomRoles.Coroner);
     }
     public override void Init()
     {

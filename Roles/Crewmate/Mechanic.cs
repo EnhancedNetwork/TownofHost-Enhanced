@@ -46,6 +46,7 @@ internal class Mechanic : RoleBase
         UsesUsedWhenFixingLightsOrComms = FloatOptionItem.Create(Id + 18, "SMUsesUsedWhenFixingLightsOrComms", new(0f, 5f, 0.1f), 1f, TabGroup.CrewmateRoles, false)
             .SetParent(CustomRoleSpawnChances[CustomRoles.Mechanic])
             .SetValueFormat(OptionFormat.Times);
+        OverrideTasksData.Create(Id + 19, TabGroup.CrewmateRoles, CustomRoles.Mechanic);
     }
     public override void Add(byte playerId)
     {
