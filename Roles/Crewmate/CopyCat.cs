@@ -223,4 +223,6 @@ internal class CopyCat : RoleBase
         hud.ReportButton.OverrideText(GetString("ReportButtonText"));
         hud.KillButton.OverrideText(GetString("CopyButtonText"));
     }
+
+    public static bool HasAddon(byte id, CustomRoles addon) => OldAddons[id].Contains(addon);
 }

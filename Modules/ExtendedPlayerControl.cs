@@ -1625,7 +1625,7 @@ static class ExtendedPlayerControl
     }
 
     public static bool Is(this PlayerControl target, CustomRoles role) =>
-        role > CustomRoles.NotAssigned ? target.GetCustomSubRoles().Contains(role) : target.GetCustomRole() == role;
+        role > CustomRoles.NotAssigned ? (target.GetCustomSubRoles().Contains(role) || (CopyCat.playerIdList.Contains(target.PlayerId) && CopyCat.HasAddon(target.PlayerId, role))) : target.GetCustomRole() == role;
     public static bool Is(this PlayerControl target, Custom_Team type) { return target.GetCustomRole().GetCustomRoleTeam() == type; }
     public static bool Is(this PlayerControl target, RoleTypes type) { return target.GetCustomRole().GetRoleTypes() == type; }
     public static bool Is(this PlayerControl target, CountTypes type) { return target.GetCountTypes() == type; }
