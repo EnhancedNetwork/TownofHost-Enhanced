@@ -145,6 +145,12 @@ public static class DraftAssign
             Logger.Warn($"Pre-Set Role Assigned: {pc.name} => {item.Value}", "RoleAssign");
         }
 
+        int maxImpostors = Options.ImpRolesMaxPlayer.GetInt(), minImpostors = Options.ImpRolesMinPlayer.GetInt();
+        int maxNKNeutrals = Options.NonNeutralKillingRolesMaxPlayer.GetInt(), minNKNeutrals = Options.NonNeutralKillingRolesMinPlayer.GetInt();
+        int maxKNeutrals = Options.NeutralKillingRolesMaxPlayer.GetInt(), minKNeutrals = Options.NeutralKillingRolesMinPlayer.GetInt();
+        int maxNApoc = Options.NeutralApocalypseRolesMaxPlayer.GetInt(), minNApoc = Options.NeutralApocalypseRolesMinPlayer.GetInt();
+        int maxCoven = Options.CovenRolesMaxPlayer.GetInt(), minCoven = Options.CovenRolesMinPlayer.GetInt();
+
         playerCount = AllPlayers.Count;
 
         AssignRoleSlots(AllPlayers, rd);
@@ -196,7 +202,15 @@ public static class DraftAssign
             .. Enumerable.Range(draftPoolsMaxKey + 1, UnassignedDraftPools.Count)
         ];
 
+        List<RoleSlot> AllSlots =
+        [
+            .. AssignedSlots.Values,
+            .. UnassignedSlots
+        ];
+
         PoolIds = [.. PoolIds.Shuffle(rd)];
+
+        SetMinAssignTypes();
 
         Logger.Info("Always Roles Assign Started", "StartDraft");
 
@@ -338,6 +352,146 @@ public static class DraftAssign
             var rolesFound = roles.Where(x => x.IsInRoleSlot(slot)).ToList();
             // Logger.Info($"Found {string.Join(",", rolesFound)} for slot {slot}", "StartDraft");
             return rolesFound.FirstOrDefault(defaultValue: CustomRoles.NotAssigned);
+        }
+
+        void SetMinAssignTypes()
+        {
+            var AssignSlots = AllSlots.Clone();
+
+            // Set initial types where types contain all buckets and role for that slot
+            foreach (int id in PoolIds)
+            {
+                var slot = GetSlot(id);
+
+                slot.SetupTypes();
+            }
+
+            // Assign RoleTypes until mins met
+            while (minImpostors > 0)
+            {
+                var slot = AssignSlots.Where(x => x.Types.Contains(RoleAssign.RoleAssignType.Impostor)).RandomElement();
+
+                if (slot == null)
+                {
+                    Logger.SendInGame("Not enough Impostor Buckets to reach min Impostors");
+                    break;
+                }
+
+                slot.Types = [RoleAssign.RoleAssignType.Impostor];
+
+                AssignSlots.Remove(slot);
+                minImpostors--;
+                maxImpostors--;
+            }
+            while (minCoven > 0)
+            {
+                var slot = AssignSlots.Where(x => x.Types.Contains(RoleAssign.RoleAssignType.Coven)).RandomElement();
+
+                if (slot == null)
+                {
+                    Logger.SendInGame("Not enough Coven Buckets to reach min Coven");
+                    break;
+                }
+
+                slot.Types = [RoleAssign.RoleAssignType.Coven];
+
+                AssignSlots.Remove(slot);
+                minCoven--;
+                maxCoven--;
+            }
+            while (minKNeutrals > 0)
+            {
+                var slot = AssignSlots.Where(x => x.Types.Contains(RoleAssign.RoleAssignType.NeutralKilling)).RandomElement();
+
+                if (slot == null)
+                {
+                    Logger.SendInGame("Not enough Neutral Killing Buckets to reach min Neutral Killing");
+                    break;
+                }
+
+                slot.Types = [RoleAssign.RoleAssignType.NeutralKilling];
+
+                AssignSlots.Remove(slot);
+                minKNeutrals--;
+                maxKNeutrals--;
+            }
+            while (minNApoc > 0)
+            {
+                var slot = AssignSlots.Where(x => x.Types.Contains(RoleAssign.RoleAssignType.NeutralApocalypse)).RandomElement();
+
+                if (slot == null)
+                {
+                    Logger.SendInGame("Not enough Neutral Apocalypse Buckets to reach min Neutral Apocalypse");
+                    break;
+                }
+
+                slot.Types = [RoleAssign.RoleAssignType.NeutralApocalypse];
+
+                AssignSlots.Remove(slot);
+                minNApoc--;
+                maxNApoc--;
+            }
+            while (minNKNeutrals > 0)
+            {
+                var slot = AssignSlots.Where(x => x.Types.Contains(RoleAssign.RoleAssignType.NonKillingNeutral)).RandomElement();
+
+                if (slot == null)
+                {
+                    Logger.SendInGame("Not enough NonKilling Neutral Buckets to reach min NonKilling Neutral");
+                    break;
+                }
+
+                slot.Types = [RoleAssign.RoleAssignType.NonKillingNeutral];
+
+                AssignSlots.Remove(slot);
+                minNKNeutrals--;
+                maxNKNeutrals--;
+            }
+
+            // Remove assign role types until maxs are met
+            while (AssignSlots.Count(x => x.Types.Contains(RoleAssign.RoleAssignType.Impostor)) > maxImpostors)
+            {
+                var slot = AssignSlots.Where(x => x.Types.Contains(RoleAssign.RoleAssignType.Impostor)).RandomElement();
+
+                if (slot == null) break;
+
+                slot.Types.Remove(RoleAssign.RoleAssignType.Impostor);
+            }
+            while (AssignSlots.Count(x => x.Types.Contains(RoleAssign.RoleAssignType.Coven)) > maxCoven)
+            {
+                var slot = AssignSlots.Where(x => x.Types.Contains(RoleAssign.RoleAssignType.Coven)).RandomElement();
+
+                if (slot == null)
+                {
+                    break;
+                }
+
+                slot.Types.Remove(RoleAssign.RoleAssignType.Coven);
+            }
+            while (AssignSlots.Count(x => x.Types.Contains(RoleAssign.RoleAssignType.NeutralKilling)) > maxKNeutrals)
+            {
+                var slot = AssignSlots.Where(x => x.Types.Contains(RoleAssign.RoleAssignType.NeutralKilling)).RandomElement();
+
+                if (slot == null) break;
+
+                slot.Types.Remove(RoleAssign.RoleAssignType.NeutralKilling);
+            }
+            while (AssignSlots.Count(x => x.Types.Contains(RoleAssign.RoleAssignType.NeutralApocalypse)) > maxNApoc)
+            {
+                var slot = AssignSlots.Where(x => x.Types.Contains(RoleAssign.RoleAssignType.NeutralApocalypse)).RandomElement();
+
+                if (slot == null) break;
+
+                slot.Types.Remove(RoleAssign.RoleAssignType.NeutralApocalypse);
+            }
+            while (AssignSlots.Count(x => x.Types.Contains(RoleAssign.RoleAssignType.NonKillingNeutral)) > maxNKNeutrals)
+            {
+                var slot = AssignSlots.Where(x => x.Types.Contains(RoleAssign.RoleAssignType.NonKillingNeutral)).RandomElement();
+
+                if (slot == null) break;
+
+                slot.Types.Remove(RoleAssign.RoleAssignType.NonKillingNeutral);
+            }
         }
     }
 
@@ -740,6 +894,10 @@ public class RoleSlot(HashSet<RoleBucket> buckets, HashSet<CustomRoles> roles)
 {
     public HashSet<RoleBucket> Buckets = buckets;
     public HashSet<CustomRoles> Roles = roles;
+    public List<RoleAssign.RoleAssignType> Types = [];
+    public bool IsForcedType = false;
+
+    public bool ShouldForace => Types.Count == 1;
 
     public List<string> GetStrings()
     {
@@ -762,5 +920,27 @@ public class RoleSlot(HashSet<RoleBucket> buckets, HashSet<CustomRoles> roles)
     public string ToColoredString()
     {
         return string.Join("|", GetColoredStrings());
+    }
+
+    public bool TryAddType(RoleAssign.RoleAssignType type, bool forced = false)
+    {
+        if (IsForcedType) return false;
+
+        if (Buckets.Any(x => x.RoleAssignTypes().Contains(type)) || Roles.Any(x => x.IsRoleAssignType(type)))
+        {
+            Types.Add(type);
+            if (forced) IsForcedType = true;
+
+            return true;
+        }
+        return false;
+    }
+
+    public void SetupTypes()
+    {
+        foreach (var type in EnumHelper.GetAllValues<RoleAssign.RoleAssignType>())
+        {
+            TryAddType(type);
+        }
     }
 }

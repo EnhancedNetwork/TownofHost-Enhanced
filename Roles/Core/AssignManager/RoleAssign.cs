@@ -13,7 +13,7 @@ public class RoleAssign
     public static CustomRoles[] AllRoles => [.. RoleResult.Values];
 
     [Obfuscation(Exclude = true)]
-    enum RoleAssignType
+    public enum RoleAssignType
     {
         Impostor,
         NeutralKilling,

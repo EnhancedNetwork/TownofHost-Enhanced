@@ -5,6 +5,7 @@ using TOHE.Roles.AddOns.Common;
 using TOHE.Roles.AddOns.Crewmate;
 using TOHE.Roles.AddOns.Impostor;
 using TOHE.Roles.Core;
+using TOHE.Roles.Core.AssignManager;
 using TOHE.Roles.Core.DraftAssign;
 using TOHE.Roles.Coven;
 using TOHE.Roles.Crewmate;
@@ -1675,6 +1676,8 @@ public static class CustomRolesHelper
 
     public static bool IsInRoleSlot(this CustomRoles role, RoleSlot slot)
     {
+        if (!slot.Types.Any(x => role.IsRoleAssignType(x))) return false;
+
         if (slot.Roles.Contains(role)) return true;
 
         foreach (var bucket in slot.Buckets)
@@ -1723,6 +1726,59 @@ public static class CustomRolesHelper
             RoleBucket.CovenRandom => roleType is Custom_RoleType.CovenPower or Custom_RoleType.CovenKilling or Custom_RoleType.CovenTrickery or Custom_RoleType.CovenUtility,
 
             RoleBucket.Any => true,
+            _ => false
+        };
+    }
+
+    public static List<RoleAssign.RoleAssignType> RoleAssignTypes(this RoleBucket bucket)
+    {
+        return bucket switch
+        {
+            RoleBucket.ImpostorKilling or
+            RoleBucket.ImpostorSupport or
+            RoleBucket.ImpostorConcealing or
+            RoleBucket.ImpostorHindering or
+            RoleBucket.ImpostorCommon or
+            RoleBucket.ImpostorRandom => [RoleAssign.RoleAssignType.Impostor],
+
+            RoleBucket.CrewmateBasic or
+            RoleBucket.CrewmateSupport or
+            RoleBucket.CrewmateKilling or
+            RoleBucket.CrewmatePower or
+            RoleBucket.CrewmateCommon or
+            RoleBucket.CrewmateRandom => [RoleAssign.RoleAssignType.Crewmate],
+
+            RoleBucket.NeutralPariah or
+            RoleBucket.NeutralBenign or
+            RoleBucket.NeutralChaos or
+            RoleBucket.NeutralEvil => [RoleAssign.RoleAssignType.NonKillingNeutral],
+            RoleBucket.NeutralKilling => [RoleAssign.RoleAssignType.NeutralKilling],
+            RoleBucket.NeutralApocalypse => [RoleAssign.RoleAssignType.NeutralApocalypse],
+            RoleBucket.NeutralRandom => [RoleAssign.RoleAssignType.NonKillingNeutral, RoleAssign.RoleAssignType.NeutralKilling, RoleAssign.RoleAssignType.NeutralApocalypse],
+
+            RoleBucket.CovenPower or
+            RoleBucket.CovenKilling or
+            RoleBucket.CovenTrickery or
+            RoleBucket.CovenUtility or
+            RoleBucket.CovenCommon or
+            RoleBucket.CovenRandom => [RoleAssign.RoleAssignType.Coven],
+
+            RoleBucket.Any => [RoleAssign.RoleAssignType.Impostor, RoleAssign.RoleAssignType.Crewmate, RoleAssign.RoleAssignType.NonKillingNeutral,
+                RoleAssign.RoleAssignType.NeutralKilling, RoleAssign.RoleAssignType.NeutralApocalypse, RoleAssign.RoleAssignType.Coven],
+            _ => []
+        };
+    }
+
+    public static bool IsRoleAssignType(this CustomRoles role, RoleAssign.RoleAssignType type)
+    {
+        return type switch
+        {
+            RoleAssign.RoleAssignType.Impostor => role.IsImpostor(),
+            RoleAssign.RoleAssignType.Crewmate => role.IsCrewmate(),
+            RoleAssign.RoleAssignType.Coven => role.IsCoven(),
+            RoleAssign.RoleAssignType.NeutralApocalypse => role.IsNA(),
+            RoleAssign.RoleAssignType.NeutralKilling => role.IsNK(),
+            RoleAssign.RoleAssignType.NonKillingNeutral => role.IsNonNK(),
             _ => false
         };
     }
