@@ -24,6 +24,7 @@ public static class DraftAssign
     public static Dictionary<byte, List<CustomRoles>> DraftPools = [];
     public static List<KeyValuePair<RoleSlot, List<CustomRoles>>> UnassignedDraftPools = [];
     public static Dictionary<byte, CustomRoles> DraftedRoles = [];
+    public static List<CustomRoles>[] PoolLookup = [];
 
     public static bool DraftActive => AssignedSlots.Any();
     public static bool CanStartDraft => UnassignedSlots.Any();
@@ -86,7 +87,7 @@ public static class DraftAssign
             roleInfo = Roles.FirstOrDefault(x => x.Role == CustomRoles.Arrogance);
             while (Bard.CheckSpawn() && Roles.Remove(roleInfo)) Roles.Add(new(CustomRoles.Bard, roleInfo.SpawnChance, roleInfo.MaxCount));
             roleInfo = Roles.FirstOrDefault(x => x.Role == CustomRoles.Knight);
-            if (Requiter.CheckSpawn() && Roles.Remove(roleInfo)) Roles.Add(new(CustomRoles.Requiter, roleInfo.SpawnChance, roleInfo.MaxCount));
+            while (Requiter.CheckSpawn() && Roles.Remove(roleInfo)) Roles.Add(new(CustomRoles.Requiter, roleInfo.SpawnChance, roleInfo.MaxCount));
         }
 
         if (Romantic.HasEnabled)
@@ -194,19 +195,21 @@ public static class DraftAssign
 
         int maxDraftRoles = Options.DraftableCount.GetInt();
 
-        int draftPoolsMaxKey = DraftPools.Keys.Any() ? DraftPools.Keys.Max() : -1;
 
-        List<int> PoolIds =
-        [
-            .. DraftPools.Keys,
-            .. Enumerable.Range(draftPoolsMaxKey + 1, UnassignedDraftPools.Count)
-        ];
+        PoolLookup = new List<CustomRoles>[poolCount];
+        DraftPools.Do(x => PoolLookup[x.Key] = x.Value);
+        int pL = 0;
+        PoolLookup = [.. PoolLookup.Select(x => (x != null && x.Any()) ? x : (pL < UnassignedDraftPools.Count ? UnassignedDraftPools[pL++].Value : []))];
 
-        List<RoleSlot> AllSlots =
-        [
-            .. AssignedSlots.Values,
-            .. UnassignedSlots
-        ];
+        RoleSlot[] SlotLookup = new RoleSlot[poolCount];
+        AssignedSlots.Do(x => SlotLookup[x.Key] = x.Value);
+        int sL = 0;
+        SlotLookup = [.. SlotLookup.Select(x => x ?? (sL < UnassignedSlots.Count ? UnassignedSlots[sL++] : null))];
+
+        // All Non-null indexes
+        List<int> PoolIds = [.. SlotLookup.Select((value, index) => new { Value = value, Index = index })
+                .Where(item => item.Value != null)
+                .Select(item => item.Index)];
 
         PoolIds = [.. PoolIds.Shuffle(rd)];
 
@@ -218,44 +221,54 @@ public static class DraftAssign
 
         int slotId = 0;
         bool assignedAny = false;
-        while (AlwaysRoles.Any())
+
+        if (!AssignAlwaysRoles()) goto AfterPoolsAssigned;
+
+        bool AssignAlwaysRoles()
         {
-            var id = PoolIds[slotId];
-            var slot = GetSlot(id);
-
-            var slotRole = GetRoleFromSlot(AlwaysRoles, slot);
-
-            var info = Roles.FirstOrDefault(x => x.Role == slotRole);
-
-            if (slotRole != CustomRoles.NotAssigned)
+            while (AlwaysRoles.Any())
             {
-                assignedAny = true;
-                GetPool(id).Add(slotRole);
+                var id = PoolIds[slotId];
+                var slot = GetSlot(id);
+                if (slot == null) continue;
 
-                AlwaysRoles.Remove(slotRole);
+                var slotRole = GetRoleFromSlot(AlwaysRoles, slot);
 
-                info.AssignedCount++;
-                if (info.AssignedCount >= info.MaxCount) while (AlwaysRoles.Contains(slotRole)) AlwaysRoles.Remove(slotRole);
-            }
-
-            Logger.Info($"Assigned {slotRole} to pool {id}", "StartDraft");
-
-            slotId++;
-            if (slotId >= poolCount)
-            {
-                slotId = 0;
-                if (DraftPools.Any(x => x.Value.Count >= maxDraftRoles) || !assignedAny)
+                if (slotRole != CustomRoles.NotAssigned)
                 {
-                    if (!twiceOver && assignedAny) twiceOver = true;
-                    else if (!assignedAny) break;
-                    else goto AfterPoolsAssigned;
+                    var info = Roles.FirstOrDefault(x => x.Role == slotRole);
+                    // Logger.Info($"{info.Role}::{info.SpawnChance}::{info.MaxCount}::{info.MaxCount}", "RoleInfo");
+                    assignedAny = true;
+                    GetPool(id).Add(slotRole);
+
+                    AlwaysRoles.Remove(slotRole);
+
+                    info.AssignedCount++;
+                    if (info.AssignedCount >= info.MaxCount) while (AlwaysRoles.Contains(slotRole)) AlwaysRoles.Remove(slotRole);
                 }
+
+                Logger.Info($"Assigned {slotRole} to pool {id}", "StartDraft");
+
+                slotId++;
+                if (slotId >= poolCount)
+                {
+                    slotId = 0;
+                    if (DraftPools.Any(x => x.Value.Count >= maxDraftRoles) || !assignedAny)
+                    {
+                        if (!twiceOver && assignedAny) twiceOver = true;
+                        else if (!assignedAny) break;
+                        else return true;
+                    }
+                    assignedAny = false;
+                }
+
+                if (DraftPools.All(x => x.Value.Count >= maxDraftRoles)) return false;
             }
 
-            if (DraftPools.All(x => x.Value.Count >= maxDraftRoles)) goto AfterPoolsAssigned;
+            Logger.Info("Always Roles Assign Finished", "StartDraft");
+            return true;
         }
-
-        Logger.Info("Always Roles Assign Finished", "StartDraft");
+        
         twiceOver = false;
 
         Dictionary<int, bool> hasRolesFound = PoolIds.ToDictionary(x => x, x => true);
@@ -263,6 +276,7 @@ public static class DraftAssign
         {
             var id = PoolIds[slotId];
             var slot = GetSlot(id);
+            if (slot == null) continue;
 
             var slotRole = GetRoleFromSlot(ChanceRoles, slot);
 
@@ -308,13 +322,9 @@ public static class DraftAssign
     AfterPoolsAssigned:
 
         Logger.Info("================================================", "PoolsAssigned");
-        foreach (var pool in DraftPools)
+        foreach (var id in PoolIds)
         {
-            Logger.Info($"Pool [{string.Join(", ", pool.Value)}] assigned to {pool.Key.GetPlayer().GetRealName}", "PoolAssigned");
-        }
-        foreach (var pool in UnassignedDraftPools)
-        {
-            Logger.Info($"Pool [{string.Join(", ", pool.Value)}] not assigned yet", "PoolAssigned");
+            Logger.Info($"Pool {id} [{string.Join(", ", PoolLookup[id])}] assigned to {((byte)id).GetPlayer()?.GetRealName() ?? "None"}", "PoolAssigned");
         }
         Logger.Info("================================================", "PoolsAssigned");
 
@@ -322,29 +332,12 @@ public static class DraftAssign
 
         List<CustomRoles> GetPool(int index)
         {
-            int draftPoolsMaxKey = DraftPools.Keys.Any() ? DraftPools.Keys.Max() : -1;
-            if (DraftPools.ContainsKey((byte)index))
-            {
-                return DraftPools[(byte)index];
-            }
-            else if (index >= draftPoolsMaxKey && index - draftPoolsMaxKey < UnassignedDraftPools.Count)
-            {
-                return UnassignedDraftPools[index - draftPoolsMaxKey].Value;
-            }
-            return null;
+            return PoolLookup[index];
         }
 
         RoleSlot GetSlot(int index)
         {
-            if (AssignedSlots.ContainsKey((byte)index))
-            {
-                return AssignedSlots[(byte)index];
-            }
-            else if (index >= AssignedSlots.Keys.Max() && index - AssignedSlots.Keys.Max() < UnassignedSlots.Count)
-            {
-                return UnassignedSlots[index - AssignedSlots.Keys.Max()];
-            }
-            throw new IndexOutOfRangeException($"Slot Index {index} out of range of slot count {AssignedSlots.Count + UnassignedSlots.Count}");
+            return SlotLookup[index];
         }
 
         CustomRoles GetRoleFromSlot(List<CustomRoles> roles, RoleSlot slot)
@@ -356,7 +349,7 @@ public static class DraftAssign
 
         void SetMinAssignTypes()
         {
-            var AssignSlots = AllSlots.Clone();
+            var AssignSlots = SlotLookup.ToList();
 
             // Set initial types where types contain all buckets and role for that slot
             foreach (int id in PoolIds)
@@ -563,7 +556,7 @@ public static class DraftAssign
         {
             if (!slot.Buckets.Any() && !slot.Roles.Any())
             {
-                Logger.SendInGame($"One or more lines of deck {deck} are empty.");
+                Logger.SendInGame($"One or more lines of deck {deck} are empty or have a typo.");
                 return;
             }
         }
@@ -770,7 +763,7 @@ public static class DraftAssign
         DraftedRoles = [];
     }
 
-    public static List<CustomRoles> GetDraftPool(this PlayerControl player) => DraftPools[player.PlayerId];
+    public static List<CustomRoles> GetDraftPool(this PlayerControl player) => PoolLookup[player.PlayerId];
 
     public static string GetFormattedDraftPool(this PlayerControl player)
     {
@@ -796,9 +789,10 @@ public static class DraftAssign
     }
     public static (DraftCmdResult, CustomRoles) DraftRole(this PlayerControl player, int index)
     {
-        if (DraftPools.TryGetValue(player.PlayerId, out var pool))
+        try
         {
-            if (pool.Count > index - 1)
+            var pool = PoolLookup[player.PlayerId];
+            if (pool.Count > index - 1 && index > 0)
             {
                 DraftedRoles[player.PlayerId] = pool[index - 1];
                 return (DraftCmdResult.Success, pool[index - 1]);
@@ -809,7 +803,7 @@ public static class DraftAssign
                 return (DraftCmdResult.DraftRemoved, CustomRoles.NotAssigned);
             }
         }
-        else
+        catch
         {
             return (DraftCmdResult.NoCurrentDraft, CustomRoles.NotAssigned);
         }
@@ -895,9 +889,6 @@ public class RoleSlot(HashSet<RoleBucket> buckets, HashSet<CustomRoles> roles)
     public HashSet<RoleBucket> Buckets = buckets;
     public HashSet<CustomRoles> Roles = roles;
     public List<RoleAssign.RoleAssignType> Types = [];
-    public bool IsForcedType = false;
-
-    public bool ShouldForace => Types.Count == 1;
 
     public List<string> GetStrings()
     {
@@ -922,14 +913,11 @@ public class RoleSlot(HashSet<RoleBucket> buckets, HashSet<CustomRoles> roles)
         return string.Join("|", GetColoredStrings());
     }
 
-    public bool TryAddType(RoleAssign.RoleAssignType type, bool forced = false)
+    public bool TryAddType(RoleAssign.RoleAssignType type)
     {
-        if (IsForcedType) return false;
-
         if (Buckets.Any(x => x.RoleAssignTypes().Contains(type)) || Roles.Any(x => x.IsRoleAssignType(type)))
         {
             Types.Add(type);
-            if (forced) IsForcedType = true;
 
             return true;
         }
