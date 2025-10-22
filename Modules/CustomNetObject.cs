@@ -344,13 +344,13 @@ namespace TOHE.Modules
             catch (Exception e) { Utils.ThrowException(e); }
         }
 
-        public static void OnMeeting()
+        public static void OnMeetingTasks()
         {
             if (AbyssBringer.ShouldDespawnCNOOnMeeting) TempDespawnedObjects.RemoveAll(x => x is AbyssBringer.BlackHole);
             Reset();
         }
 
-        public static void AfterMeeting()
+        public static void AfterMeetingTasks()
         {
             // AllObjects.OfType<ShapeshiftMenuElement>().ToArray().Do(x => x.Despawn());
             TempDespawnedObjects.ForEach(x => x.CreateNetObject(x.Sprite, x.Position));

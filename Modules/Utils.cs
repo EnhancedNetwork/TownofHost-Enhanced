@@ -2420,6 +2420,7 @@ public static class Utils
         catch (Exception error)
         {
             Logger.Error($"Error after meeting: {error}", "AfterMeetingTasks");
+            Logger.SendInGame($"Error after meeting: {error}");
         }
 
         if (Options.AirshipVariableElectrical.GetBool())
@@ -2427,7 +2428,7 @@ public static class Utils
 
         RPC.SyncDeadPassedMeetingList();
         DoorsReset.ResetDoors();
-        // CustomNetObject.AfterMeetingTasks();
+        CustomNetObject.AfterMeetingTasks();
 
         // Empty Deden bug support Empty vent after meeting
         var ventilationSystem = ShipStatus.Instance.Systems.TryGetValue(SystemTypes.Ventilation, out var systemType) ? systemType.CastFast<VentilationSystem>() : null;

@@ -32,7 +32,7 @@ internal class CursedWolf : RoleBase
     }
     public override bool OnCheckMurderAsTarget(PlayerControl killer, PlayerControl target)
     {
-        if (killer == target || killer.GetAbilityUseLimit() <= 0) return true;
+        if (killer == target || target.GetAbilityUseLimit() <= 0) return true;
         if (killer.IsTransformedNeutralApocalypse()) return true;
 
         killer.RpcGuardAndKill(target);
