@@ -1616,6 +1616,8 @@
   "NarcHasCrewVision": "Narc Has <color=#8cffff>Crewmate</color> Vision",
   "MadmateCanBeNarc": "<color=#ff1919>Madmate</color> Roles Can Be Narc",
   "ImpsCanKillEachOther": "<color=#ff1919>Impostors</color> Can Kill Each Other",
+  "NarcSharesGuessAccessWithCrew": "Shares Guess Access with <color=#8cffff>Crewmates</color>",
+  "NarcEGCanGuessCrew": "<color=#1e90ff>Narc</color> Evil Guesser Can Guess <color=#8cffff>Crewmate</color> Roles",
 
   "RebirthUses": "Amount of Rebirths",
   "RebirthCountVotes": "Only rebirth to players who voted for them",

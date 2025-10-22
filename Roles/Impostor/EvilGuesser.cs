@@ -14,7 +14,7 @@ internal class EvilGuesser : RoleBase
     private static OptionItem EGCanGuessTime;
     private static OptionItem EGCanGuessImp;
     private static OptionItem EGCanGuessAdt;
-    //private static OptionItem EGCanGuessTaskDoneSnitch; Not used
+    private static OptionItem NarcEGCanGuessCrew;
     private static OptionItem EGTryHideMsg;
 
     public override void SetupCustomOption()
@@ -27,8 +27,8 @@ internal class EvilGuesser : RoleBase
             .SetParent(Options.CustomRoleSpawnChances[CustomRoles.EvilGuesser]);
         EGCanGuessAdt = BooleanOptionItem.Create(Id + 4, "GCanGuessAdt", false, TabGroup.ImpostorRoles, false)
             .SetParent(Options.CustomRoleSpawnChances[CustomRoles.EvilGuesser]);
-        //EGCanGuessTaskDoneSnitch = BooleanOptionItem.Create(Id + 5, "EGCanGuessTaskDoneSnitch", true, TabGroup.ImpostorRoles, false)
-        //    .SetParent(Options.CustomRoleSpawnChances[CustomRoles.EvilGuesser]);
+        NarcEGCanGuessCrew = BooleanOptionItem.Create(Id + 5, "NarcEGCanGuessCrew", true, TabGroup.ImpostorRoles, false)
+            .SetParent(Options.CustomRoleSpawnChances[CustomRoles.EvilGuesser]);
         EGTryHideMsg = BooleanOptionItem.Create(Id + 6, "GuesserTryHideMsg", true, TabGroup.ImpostorRoles, false)
             .SetParent(Options.CustomRoleSpawnChances[CustomRoles.EvilGuesser])
             .SetColor(Color.green);
@@ -36,9 +36,10 @@ internal class EvilGuesser : RoleBase
 
     public static bool NeedHideMsg(PlayerControl pc) => pc.Is(CustomRoles.EvilGuesser) && EGTryHideMsg.GetBool();
 
-    public static bool HideTabInGuesserUI(int TabId)
+    public static bool HideTabInGuesserUI(PlayerControl pc, int TabId)
     {
-        if (!EGCanGuessImp.GetBool() && TabId == 1) return true;
+        if (!EGCanGuessImp.GetBool() && TabId == 1 && !pc.Is(CustomRoles.Narc)) return true;
+        if (!NarcEGCanGuessCrew.GetBool() && TabId == 0 && pc.Is(CustomRoles.Narc)) return true;
         if (!EGCanGuessAdt.GetBool() && TabId == 3) return true;
 
         return false;
@@ -61,9 +62,16 @@ internal class EvilGuesser : RoleBase
         }
 
         // Evil Guesser Can't Guess Impostors
-        if ((role.IsImpostor() || role.IsMadmate()) && !EGCanGuessImp.GetBool())
+        if ((role.IsImpostor() || role.IsMadmate()) && !EGCanGuessImp.GetBool() && !guesser.Is(CustomRoles.Narc))
         {
             guesser.ShowInfoMessage(isUI, Translator.GetString("GuessImpRole"));
+            return true;
+        }
+
+        // Narc Evil Guesser can guess Impostors but cannot guess Crewmates
+        if (role.IsCrewmate() && !NarcEGCanGuessCrew.GetBool() && guesser.Is(CustomRoles.Narc))
+        {
+            guesser.ShowInfoMessage(isUI, Translator.GetString("GuessCrewRole"));
             return true;
         }
 
