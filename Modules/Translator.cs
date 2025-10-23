@@ -222,6 +222,9 @@ public static class Translator
             }
             else
             {
+#if DEBUG
+                Logger.Warn($"<INVALID:{nameToFind}> (vanillaStr)", "Missing Translation");
+#endif
                 return showInvalid ? $"<INVALID:{nameToFind}> (vanillaStr)" : nameToFind;
             }
         }
@@ -301,6 +304,10 @@ public static class Translator
             Logger.Fatal($"Error oucured at [{str}] in String.csv", "Translator");
             Logger.Error("Here was the error:\n" + Ex.ToString(), "Translator");
         }
+#if DEBUG
+        if (res ==  $"<INVALID:{str}>")
+            Logger.Warn(res, "Missing Translation");
+#endif
         return res;
     }
     public static string GetString(StringNames stringName)

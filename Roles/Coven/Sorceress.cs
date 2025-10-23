@@ -23,7 +23,7 @@ internal class Sorceress : CovenManager
     private static OptionItem MirageRadius;
     private static OptionItem MirageSpeed;
 
-    private readonly Dictionary<byte, DeathMirageData> Mirages = [];
+    private static readonly Dictionary<byte, DeathMirageData> Mirages = [];
 
     public override void SetupCustomOption()
     {
@@ -66,6 +66,17 @@ internal class Sorceress : CovenManager
         CreateMirages(target);
 
         return false;
+    }
+
+    public static void SetBlinded(PlayerControl player, IGameOptions opt)
+    {
+        if (Mirages.Any(a => a.Value.TargetId == player.PlayerId && 
+            Main.AllAlivePlayerControls.Any(b => b.PlayerId == a.Key)))
+        {
+            opt.SetVision(false);
+            opt.SetFloat(FloatOptionNames.CrewLightMod, MirageVision.GetFloat());
+            opt.SetFloat(FloatOptionNames.ImpostorLightMod, MirageVision.GetFloat());
+        }
     }
 
     private void CreateMirages(PlayerControl target)
