@@ -1004,7 +1004,14 @@ static class ExtendedPlayerControl
             Logger.Warn($"{callerClassName}.{callerMethodName} tried to get CustomSubRole, but the target was null", "GetCustomRole");
             return [CustomRoles.NotAssigned];
         }
-        return Main.PlayerStates.TryGetValue(player.PlayerId, out var State) ? State.SubRoles : [CustomRoles.NotAssigned];
+        if (Main.PlayerStates.TryGetValue(player.PlayerId, out var State))
+        {
+            if (CopyCat.playerIdList.Contains(player.PlayerId)) return [.. State.SubRoles, .. CopyCat.OldAddons[player.PlayerId]];
+
+            return State.SubRoles;
+        }
+
+        return  [CustomRoles.NotAssigned];
     }
     public static CountTypes GetCountTypes(this PlayerControl player)
     {
@@ -1625,7 +1632,7 @@ static class ExtendedPlayerControl
     }
 
     public static bool Is(this PlayerControl target, CustomRoles role) =>
-        role > CustomRoles.NotAssigned ? (target.GetCustomSubRoles().Contains(role) || (CopyCat.playerIdList.Contains(target.PlayerId) && CopyCat.HasAddon(target.PlayerId, role))) : target.GetCustomRole() == role;
+        role > CustomRoles.NotAssigned ? target.GetCustomSubRoles().Contains(role) : target.GetCustomRole() == role;
     public static bool Is(this PlayerControl target, Custom_Team type) { return target.GetCustomRole().GetCustomRoleTeam() == type; }
     public static bool Is(this PlayerControl target, RoleTypes type) { return target.GetCustomRole().GetRoleTypes() == type; }
     public static bool Is(this PlayerControl target, CountTypes type) { return target.GetCountTypes() == type; }

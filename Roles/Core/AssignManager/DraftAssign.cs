@@ -605,6 +605,7 @@ public static class DraftAssign
         }
 
         AllPlayers = [.. AllPlayers.Shuffle(rnd).Shuffle(rnd)];
+        UnassignedSlots = [.. UnassignedSlots.Shuffle(rnd).Shuffle(rnd)];
 
         foreach (var player in AllPlayers)
         {

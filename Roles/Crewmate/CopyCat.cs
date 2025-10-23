@@ -24,7 +24,7 @@ internal class CopyCat : RoleBase
     private static OptionItem CopyOnlyEnabledRoles;
 
     private static float CurrentKillCooldown = new();
-    private static readonly Dictionary<byte, List<CustomRoles>> OldAddons = [];
+    public static readonly Dictionary<byte, List<CustomRoles>> OldAddons = [];
 
     public override void SetupCustomOption()
     {
