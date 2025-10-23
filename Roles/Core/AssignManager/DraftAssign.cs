@@ -499,6 +499,16 @@ public static class DraftAssign
         if (!Directory.Exists(ROLEDECK_FOLDER_NAME)) Directory.CreateDirectory(ROLEDECK_FOLDER_NAME);
         DirectoryInfo deckDir = new(ROLEDECK_FOLDER_NAME);
 
+        foreach (var deck in PremadeDecks)
+        {
+            string fileName = string.Concat(deck.Key.Split(Path.GetInvalidFileNameChars()), ".roledeck");
+            string filePath = Path.Combine(ROLEDECK_FOLDER_NAME, fileName);
+            if (!File.Exists(filePath))
+            {
+                File.WriteAllText(filePath, deck.Value ?? string.Empty);
+            }
+        }
+
         var buckets = EnumHelper.GetAllValues<RoleBucket>().Select(x => x.ToString().ToLower());
         Logger.Info($"Buckets: {string.Join(",", buckets)}", "LoadRoleDecks");
 
