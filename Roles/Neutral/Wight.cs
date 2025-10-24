@@ -72,6 +72,7 @@ internal class Wight : RoleBase
             else if (RealKillerW[player].IsAlive() && player.IsAlive())
             {
                 Main.AllPlayerSpeed[id] -= (float)Math.Clamp(ReducedSpeedRound.GetFloat(), 0, (double)Main.AllPlayerSpeed[id] - 0.5);
+                player.SetKillCooldown(KillCooldownSK.GetFloat());
             }
 
             else if (!RealKillerW[player].IsAlive() && player.IsAlive())
