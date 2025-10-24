@@ -67,12 +67,12 @@ internal class Wight : RoleBase
                 }
             }
 
-            if (player.GetRealKiller().IsAlive() && player.IsAlive())
+            else if (player.GetRealKiller().IsAlive() && player.IsAlive())
             {
                 Main.AllPlayerSpeed[id] -= (float)Math.Clamp(ReducedSpeedRound.GetFloat(), 0, (double)Main.AllPlayerSpeed[id] - 0.5);
             }
 
-            if (!player.GetRealKiller().IsAlive() && player.IsAlive())
+            else if (!player.GetRealKiller().IsAlive() && player.IsAlive())
             {
                 player.RpcExileV2();
                 Main.PlayerStates[player.PlayerId].SetDead();
