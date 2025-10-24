@@ -24,6 +24,7 @@ internal class Wight : RoleBase
     public static OptionItem ReducedSpeedRound;
 
     public static HashSet<byte> UndeadIds = [];
+    public static Dictionary<PlayerControl, PlayerControl> RealKillerW = [];
     public override void SetupCustomOption()
     {
         SetupSingleRoleOptions(Id, TabGroup.NeutralRoles, CustomRoles.Wight, 1, zeroOne: false);
@@ -47,6 +48,7 @@ internal class Wight : RoleBase
     public override bool OnCheckMurderAsKiller(PlayerControl killer, PlayerControl target)
     {
         UndeadIds.Add(target.PlayerId);
+        RealKillerW[target] = killer;
         return true;
     }
 
@@ -55,7 +57,7 @@ internal class Wight : RoleBase
         foreach (var id in UndeadIds)
         {
             var player = Utils.GetPlayerById(id);
-            if (player.GetRealKiller().IsAlive() && !player.IsAlive())
+            if (RealKillerW[player].IsAlive() && !player.IsAlive())
             {
                 player.RpcRevive();
                 player.RpcChangeRoleBasis(CustomRoles.Undead);
@@ -67,12 +69,12 @@ internal class Wight : RoleBase
                 }
             }
 
-            else if (player.GetRealKiller().IsAlive() && player.IsAlive())
+            else if (RealKillerW[player].IsAlive() && player.IsAlive())
             {
                 Main.AllPlayerSpeed[id] -= (float)Math.Clamp(ReducedSpeedRound.GetFloat(), 0, (double)Main.AllPlayerSpeed[id] - 0.5);
             }
 
-            else if (!player.GetRealKiller().IsAlive() && player.IsAlive())
+            else if (!RealKillerW[player].IsAlive() && player.IsAlive())
             {
                 player.RpcExileV2();
                 Main.PlayerStates[player.PlayerId].SetDead();
