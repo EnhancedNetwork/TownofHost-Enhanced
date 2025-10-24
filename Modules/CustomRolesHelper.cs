@@ -188,6 +188,7 @@ public static class CustomRolesHelper
     {
         return role is
             CustomRoles.Sidekick or
+            CustomRoles.Undead or
             CustomRoles.Infectious or
             CustomRoles.Pyromaniac or
             CustomRoles.Wraith or
@@ -216,6 +217,7 @@ public static class CustomRolesHelper
             CustomRoles.Volatile or
             CustomRoles.Mutant or
             CustomRoles.Cultist or
+            CustomRoles.Wight or
             CustomRoles.Godzilla;
     }
     public static bool IsTasklessCrewmate(this CustomRoles role)
@@ -348,6 +350,7 @@ public static class CustomRolesHelper
             CustomRoles.Soulless or
             CustomRoles.Madmate or
             CustomRoles.Darkened or
+            CustomRoles.Undead or
             CustomRoles.Enchanted;
 
     public static bool IsNotKnightable(this CustomRoles role)
@@ -381,6 +384,7 @@ public static class CustomRolesHelper
             || (role is CustomRoles.Doctor && Doctor.VisibleToEveryone(target))
             || (role is CustomRoles.Bait && Bait.BaitNotification.GetBool() && Inspector.CheckBaitCountType)
             || (role is CustomRoles.President && President.CheckReveal(target.PlayerId))
+            || (role is CustomRoles.Undead)
             || (role is CustomRoles.Captain && Captain.CrewCanFindCaptain());
     }
     public static bool IsBetrayalAddon(this CustomRoles role)
@@ -1444,6 +1448,8 @@ public static class CustomRolesHelper
            CustomRoles.Massacre => CountTypes.Massacre,
            CustomRoles.Volatile => CountTypes.Volatile,
            CustomRoles.Godzilla => CountTypes.Godzilla,
+           CustomRoles.Wight => CountTypes.Wight,
+           CustomRoles.Undead => CountTypes.Wight,
            _ => role.IsImpostorTeam() ? CountTypes.Impostor : CountTypes.Crew,
 
        };
@@ -1515,6 +1521,7 @@ public static class CustomRolesHelper
             CustomRoles.Volatile => CustomWinner.Volatile,
             CustomRoles.Gunslinger => CustomWinner.Gunslinger,
             CustomRoles.Godzilla => CustomWinner.Godzilla,
+            CustomRoles.Wight => CustomWinner.Wight,
             _ => throw new NotImplementedException()
 
         };
@@ -1560,6 +1567,7 @@ public static class CustomRolesHelper
             CountTypes.Rulebook => CustomRoles.Rulebook,
             CountTypes.Volatile => CustomRoles.Volatile,
             CountTypes.Godzilla => CustomRoles.Godzilla,
+            CountTypes.Wight => CustomRoles.Wight,
             _ => throw new NotImplementedException()
         };
     public static bool HasSubRole(this PlayerControl pc) => Main.PlayerStates[pc.PlayerId].SubRoles.Any();
@@ -1660,5 +1668,6 @@ public enum CountTypes
     Rulebook,
     Volatile,
     Mutant,
-    Godzilla
+    Godzilla,
+    Wight
 }

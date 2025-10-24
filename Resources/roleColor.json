@@ -297,5 +297,7 @@
   "Skeleton": "#fcf5dc",
   "Corrupted": "#27dbd8",
   "CorruptedA": "#27dbd8",
-  "Exorcist": "#baf211"
+  "Exorcist": "#baf211",
+  "Wight": "#dad1ff",
+  "Undead": "#dad1ff"
 }

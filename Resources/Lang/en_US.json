@@ -4733,5 +4733,15 @@
   "ExorcistInfo": "Eliminate evils and purify the lobby!",
   "ExorcistInfoLong": "As the Exorcist, every time you do a task, nearby Impostors and Neutrals will be vaporized (dying instantly without a body).",
   "VaporizeRadius363": "Excorcist Vaporize Radius",
-  "ExorcisedTargets": "At least one target has been vaporized."
+  "ExorcisedTargets": "At least one target has been vaporized.",
+  
+  "Wight": "Wight",
+  "WightInfo": "Create Undead by killing",
+  "WightInfoLong": "(Neutrals):\nThe Wight can use their kill button to kill a player, then will be revived after a meeting to kill for them as Undead. Undead players will get slower every meeting. Undead players will die after the meeting where the Wight is dead.\nUndead players win with the Wight.",
+  "Undead": "Undead",
+  "UndeadInfo": "Kill players to win with the Wight",
+  "UndeadInfoLong": "As an Undead, you win and die with the Wight. Everyone knows who you are, you cannot be guessed. You get slower every round.",
+  "UndeadKillCD364": "Undead kill cooldown",
+  "UndeadVent364": "Undead can vent",
+  "ReducedSpeedRound364": "Reduced Undead speed per round"
 }

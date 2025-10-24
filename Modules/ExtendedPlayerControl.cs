@@ -1514,6 +1514,7 @@ static class ExtendedPlayerControl
         else if (Mimic.CanSeeDeadRoles(seer, target)) return true;
         else if (Workaholic.OthersKnowWorka(target)) return true;
         else if (Jackal.JackalKnowRole(seer, target)) return true;
+        else if (Wight.WightKnowRole(seer, target)) return true;
         else if (Cultist.KnowRole(seer, target)) return true;
         else if (Infectious.KnowRole(seer, target)) return true;
         else if (Virus.KnowRole(seer, target)) return true;

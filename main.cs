@@ -949,6 +949,7 @@ public enum CustomRoles
     Traitor,
     Troller,
     Bankrupt,
+    Undead,
     Vaporizer,
     Vector,
     VengefulRomantic,
@@ -957,6 +958,7 @@ public enum CustomRoles
     Vulture,
     War,
     Werewolf,
+    Wight,
     Workaholic,
     Wraith,
 
@@ -1179,6 +1181,8 @@ public enum CustomWinner
     Mutant = CustomRoles.Mutant,
     Godzilla = CustomRoles.Godzilla,
     Skeleton = CustomRoles.Skeleton,
+    Wight = CustomRoles.Wight,
+    Undead = CustomRoles.Undead,
     Red = CustomRoles.Red,
     Blue = CustomRoles.Blue
 }
