@@ -958,6 +958,7 @@ public enum CustomRoles
     Vulture,
     War,
     Werewolf,
+    Widow,
     Wight,
     Workaholic,
     Wraith,

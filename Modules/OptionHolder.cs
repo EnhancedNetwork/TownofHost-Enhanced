@@ -623,6 +623,7 @@ public static class Options
     public static OptionItem CrewCanBeInLove;
     public static OptionItem NeutralCanBeInLove;
     public static OptionItem CovenCanBeInLove;
+    public static OptionItem WidowChance;
 
     // Experimental Roles
 
@@ -2220,6 +2221,10 @@ public static class Options
         .SetParent(spawnOption)
             .SetGameMode(customGameMode);
 
+        WidowChance = IntegerOptionItem.Create(id + 9, "LoverWidowChance", new(0, 100, 5), 20, TabGroup.Addons, false)
+            .SetParent(spawnOption)
+            .SetValueFormat((OptionFormat.Percent))
+            .SetGameMode(customGameMode);
 
         var countOption = IntegerOptionItem.Create(id + 1, "NumberOfLovers", new(2, 2, 1), 2, TabGroup.Addons, false)
             .SetParent(spawnOption)

@@ -1505,6 +1505,19 @@ class FixedUpdateInNormalGamePatch
     }
     public static void LoversSuicide(byte deathId = 0x7f, bool isExiled = false)
     {
+        var rand = IRandom.Instance;
+        int num = rand.Next(1, 100);
+        if (num <= Options.WidowChance.GetInt())
+        {
+            foreach (var lover in Main.LoversPlayers.ToArray())
+            {
+                if (lover.IsAlive())
+                {
+                    lover.RpcChangeRoleBasis(CustomRoles.Widow);
+                    lover.RpcSetCustomRole(CustomRoles.Widow);
+                }
+            }
+        }
         if (Options.LoverSuicide.GetBool() && Main.isLoversDead == false)
         {
             foreach (var loversPlayer in Main.LoversPlayers.ToArray())
