@@ -999,7 +999,7 @@ class FixedUpdateInNormalGamePatch
 
     public static void Postfix(PlayerControl __instance)
     {
-        if (__instance == null || __instance.PlayerId == 255) return;
+        if (__instance == null || __instance.PlayerId == 255 || __instance.notRealPlayer) return;
 
         CheckMurderPatch.Update(__instance.PlayerId);
 
@@ -1600,7 +1600,7 @@ class PlayerStartPatch
         if (__result) return;
         var instance = __instance.__4__this;
 
-        if (GameStates.IsHideNSeek) return;
+        if (GameStates.IsHideNSeek || instance.notRealPlayer) return;
 
         var roleText = UnityEngine.Object.Instantiate(instance.cosmetics.nameText);
         roleText.transform.SetParent(instance.cosmetics.nameText.transform);

@@ -30,7 +30,7 @@ internal class Starspawn : PariahManager
         SetupRoleOptions(Id, TabGroup.NeutralRoles, CustomRoles.Starspawn);
         IsolateCooldown = FloatOptionItem.Create(Id + 10, "Starspawn.IsolateCooldown", new(0f, 180f, 2.5f), 30f, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Starspawn])
             .SetValueFormat(OptionFormat.Seconds);
-        TryHideMsg = BooleanOptionItem.Create(Id + 11, "StarspawnTryHideMsg", true, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Starspawn]);
+        TryHideMsg = BooleanOptionItem.Create(Id + 11, "Starspawn.TryHideMsg", true, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Starspawn]);
     }
 
     public bool DaybreakMessage(PlayerControl pc, string msg)
@@ -218,6 +218,8 @@ internal class Starspawn : PariahManager
         {
             visiters.Add(visiter.GetColoredTextByRole(visiter.GetActualRoleName()));
         }
+
+        VisiterList[_Player.PlayerId].Clear();
 
         string separator = TranslationController.Instance.currentLanguage.languageID is SupportedLangs.English or SupportedLangs.Russian ? "], [" : "】, 【";
 

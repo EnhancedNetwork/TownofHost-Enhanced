@@ -4254,7 +4254,9 @@
   "Cupid.Charm": "Charm",
 
   "Starspawn.IsolateCooldown": "Isolate Cooldown",
+  "Starspawn.Isolate": "Isolate",
   "Starspawn.TryHideMsg": "Try to Hide Daybreak Command",
+  "Starspawn.VisitersMsg": "Isolate blocked the following roles:\n",
 
   "PariahWinsWhenDead": "Pariahs Can Win When Dead",
   "PariahHasImpVis": "Pariahs Have <color=#ff1919>Impostor</color> Vision",
@@ -4269,6 +4271,7 @@
   "Sorceress.MirageCount": "Mirage Count",
   "Sorceress.MirageRadius": "Mirage Starting Distance",
   "Sorceress.MirageSpeed": "Mirage Speed",
+  "Sorceress.MirageButtonText": "Death Mirage",
 
   "PresetSaved": "Preset Saved to:\n\n{0}",
   "PresetLoaded": "Preset Loaded from:\n\n{0}",

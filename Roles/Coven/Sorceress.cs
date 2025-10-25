@@ -177,7 +177,7 @@ internal class Sorceress : CovenManager
             if (Vector2.Distance(targetPos, mirage.Position) <= KillRange)
             {
                 RPC.PlaySoundRPC(Sounds.KillSound, id);
-                target.RpcExileV2();
+                target.RpcMurderPlayer(target);
                 target.SetRealKiller(_Player);
                 target.SetDeathReason(PlayerState.DeathReason.Drained);
                 Main.PlayerStates[target.PlayerId].SetDead();
@@ -211,7 +211,7 @@ internal class Sorceress : CovenManager
         internal DeathMirage(Vector2 position, List<byte> visibleList)
         {
             if (!AmongUsClient.Instance.AmHost) return;
-            CreateNetObject("", position);
+            CreateNetObject("UwU", position);
             Main.AllAlivePlayerControls.ExceptBy(visibleList, x => x.PlayerId).Do(Hide);
         }
     }
