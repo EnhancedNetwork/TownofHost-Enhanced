@@ -59,10 +59,10 @@ public class Main : BasePlugin
 
     public static readonly bool ShowUpdateButton = false;
 
-    public static readonly bool ShowGitHubButton = true;
+    public static readonly bool ShowGitHubButton = false;
     public static readonly string GitHubInviteUrl = "https://github.com/TOHOptimized/TownofHost-Optimized";
 
-    public static readonly bool ShowDiscordButton = true;
+    public static readonly bool ShowDiscordButton = false;
     public static readonly string DiscordInviteUrl = "https://discord.gg/BWh9Vj5UJ2";
 
     public static readonly bool ShowWebsiteButton = false;

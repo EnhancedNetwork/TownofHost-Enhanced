@@ -258,7 +258,7 @@ public static class MainMenuManagerPatch
         {
             gitHubButton = CreateButton(
                 "GitHubButton",
-                new(-1.8f, -1.5f, 1f),
+                new(-1.7f, -2f, 1f),
                 new(153, 153, 153, byte.MaxValue),
                 new(209, 209, 209, byte.MaxValue),
                 (UnityEngine.Events.UnityAction)(() => Application.OpenURL(Main.GitHubInviteUrl)),
@@ -271,7 +271,7 @@ public static class MainMenuManagerPatch
         {
             discordButton = CreateButton(
                 "DiscordButton",
-                new(-1.8f, -1.9f, 1f),
+                new(-0.5f, -2f, 1f),
                 new(88, 101, 242, byte.MaxValue),
                 new(148, 161, byte.MaxValue, byte.MaxValue),
                 (UnityEngine.Events.UnityAction)(() => Application.OpenURL(Main.DiscordInviteUrl)),
