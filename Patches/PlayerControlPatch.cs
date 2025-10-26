@@ -1511,8 +1511,14 @@ class FixedUpdateInNormalGamePatch
             int num = rand.Next(1, 100);
             if (num <= Options.WidowChance.GetInt())
             {
+                var count = 0;
                 foreach (var lover in Main.LoversPlayers.ToArray())
                 {
+                    if (lover.IsAlive()) count++;
+                }
+                foreach (var lover in Main.LoversPlayers.ToArray())
+                {
+                    if (count >= 2) return;
                     if (lover.IsAlive())
                     {
                         lover.RpcChangeRoleBasis(CustomRoles.Widow);
