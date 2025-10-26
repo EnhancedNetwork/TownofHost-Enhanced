@@ -1519,6 +1519,7 @@ class FixedUpdateInNormalGamePatch
                 foreach (var lover in Main.LoversPlayers.ToArray())
                 {
                     if (count >= 2) return;
+                    if (lover.GetCustomRole() is CustomRoles.Widow) return;
                     if (lover.IsAlive())
                     {
                         lover.RpcChangeRoleBasis(CustomRoles.Widow);
