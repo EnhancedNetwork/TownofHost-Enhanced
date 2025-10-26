@@ -4743,5 +4743,10 @@
   "UndeadInfoLong": "As an Undead, you win and die with the Wight. Everyone knows who you are, you cannot be guessed. You get slower every round.",
   "UndeadKillCD364": "Undead kill cooldown",
   "UndeadVent364": "Undead can vent",
-  "ReducedSpeedRound364": "Reduced Undead speed per round"
+  "ReducedSpeedRound364": "Reduced Undead speed per round",
+
+  "LoverWidowChance": "Widow chance",
+  "Widow": "Widow",
+  "WidowInfo": "Win to avenge your lover",
+  "WidowInfoLong": "As the Widow you were once a Lover. Now you are a Neutral killer. Kill everyone to win with your Lover."
 }
