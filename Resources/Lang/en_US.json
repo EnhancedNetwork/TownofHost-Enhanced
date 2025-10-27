@@ -4250,6 +4250,7 @@
   "Cupid.AlreadyHasPair": "Lovers already Charmed",
   "Cupid.CantCharm": "Target is immune to being Charmed",
   "Cupid.PlayerAdded": "Target charmed",
+  "Cupid.PlayerAlreadyAdded": "Target was Already Chosen",
   "Cupid.Protect": "Protect",
   "Cupid.Charm": "Charm",
 

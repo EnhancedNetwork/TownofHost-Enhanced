@@ -610,7 +610,7 @@ class CountQuestion : QuizQuestionBase
         Answer = QuizmasterQuestionType switch
         {
             QuizmasterQuestionType.MeetingCountQuestion => Quizmaster.meetingNum.ToString(),
-            QuizmasterQuestionType.ButtonPressedBeforeThisQuestion => (Quizmaster.buttonMeeting - 1).ToString(),
+            QuizmasterQuestionType.ButtonPressedBeforeThisQuestion => (Quizmaster.buttonMeeting > 0 ? Quizmaster.buttonMeeting - 1 : 0).ToString(),
             QuizmasterQuestionType.DiedFirstRoundCountQuestion => Quizmaster.diedThisRound.ToString(),
             _ => "None"
         };
