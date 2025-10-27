@@ -9,15 +9,6 @@ using static TOHE.Translator;
 
 namespace TOHE;
 
-[HarmonyPatch(typeof(HudManager), nameof(HudManager.Start))]
-class HudManagerStartPatch
-{
-    public static void Postfix(HudManager __instance)
-    {
-        __instance.gameObject.AddComponent<OptionShower>().hudManager = __instance;
-    }
-}
-
 [HarmonyPatch(typeof(HudManager), nameof(HudManager.Update))]
 class HudManagerUpdatePatch
 {

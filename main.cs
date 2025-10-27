@@ -630,7 +630,6 @@ public class Main : BasePlugin
         handler.Info($"{nameof(ThisAssembly.Git.Tag)}: {ThisAssembly.Git.Tag}");
 
         ClassInjector.RegisterTypeInIl2Cpp<ErrorText>();
-        ClassInjector.RegisterTypeInIl2Cpp<OptionShower>();
         ClassInjector.RegisterTypeInIl2Cpp<MeetingHudPagingBehaviour>();
         ClassInjector.RegisterTypeInIl2Cpp<ShapeShifterPagingBehaviour>();
         ClassInjector.RegisterTypeInIl2Cpp<VitalsPagingBehaviour>();
