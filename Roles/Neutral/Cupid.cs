@@ -167,7 +167,7 @@ internal class Cupid : RoleBase
             cupid.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Cultist), GetString("Cupid.CantCharm")));
             return;
         }
-        if (!(firstArrow.TryGetValue(cupid.PlayerId, out byte? first) && first != null))
+        if (!firstArrow.TryGetValue(cupid.PlayerId, out byte? first) || first == null || first.Value.GetPlayer() == null || !first.Value.GetPlayer().IsAlive())
         {
             firstArrow[cupid.PlayerId] = target.PlayerId;
             Logger.Info($"{target.GetRealName()} is Lover1", "Cupid");
@@ -178,10 +178,12 @@ internal class Cupid : RoleBase
                 Lovers.loverless = byte.MaxValue;
                 AddTarget(cupid, newTarget.GetPlayer());
             }
+
+            cupid.Notify(string.Format(GetString("Cupid.PlayerAdded"), target.GetRealName()));
         }
-        else
+        else if (first.Value != target.PlayerId)
         {
-            cupidArrows[cupid.PlayerId] = (first ?? byte.MaxValue, target.PlayerId);
+            cupidArrows[cupid.PlayerId] = (first.Value, target.PlayerId);
 
             SendRPC();
 
@@ -190,12 +192,17 @@ internal class Cupid : RoleBase
             p.RpcSetCustomRole(CustomRoles.Lovers, false, true);
             target.RpcSetCustomRole(CustomRoles.Lovers, false, true);
 
-            Utils.NotifyRoles(SpecifySeer: cupid, SpecifyTarget: target);
-            Utils.NotifyRoles(SpecifySeer: target, SpecifyTarget: cupid);
-            Logger.Info($"{target.GetRealName()} is Lover2", "Cupid");
+            Utils.NotifyRoles();
+
+            Logger.Info($"{p.GetNameWithRole()} is Lover1", "Cupid");
+            Logger.Info($"{target.GetNameWithRole()} is Lover2", "Cupid");
+
+            cupid.Notify(string.Format(GetString("Cupid.PlayerAdded"), target.GetRealName()));
         }
-        
-        cupid.Notify(string.Format(GetString("Cupid.PlayerAdded"), target.GetRealName()));
+        else
+        {
+            cupid.Notify(string.Format(GetString("Cupid.PlayerAlreadyAdded"), target.GetRealName()));
+        }
     }
 
     public static bool IsCupidLover(PlayerControl cupid, PlayerControl lover) => IsCupidLover(cupid.PlayerId, lover.PlayerId);

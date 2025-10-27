@@ -55,8 +55,15 @@ internal class Bloodmoon : RoleBase
         AURoleOptions.GuardianAngelCooldown = KillCooldown.GetFloat();
         AURoleOptions.ProtectionDurationSeconds = 0f;
     }
+    private bool SendRPC(byte targetId)
+    {
+        if (!AmongUsClient.Instance.AmHost) return true;
+        SendRPC(targetId, true);
+        return true;
+    }
     private void SendRPC(byte targetId, bool add)
     {
+        
         var writer = MessageWriter.Get(SendOption.Reliable);
         writer.Write(add);
         writer.Write(targetId);
@@ -68,7 +75,7 @@ internal class Bloodmoon : RoleBase
         byte targetId = reader.ReadByte();
 
         if (add)
-            PlayerDie.Add(targetId, TimeTilDeath.GetInt());
+            PlayerDie[targetId] = TimeTilDeath.GetInt();
         else
             PlayerDie.Remove(targetId);
     }
@@ -110,6 +117,7 @@ internal class Bloodmoon : RoleBase
         {
             LastTime[playerid] = nowTime;
             PlayerDie[playerid]--;
+            SendRPC(playerid);
             if (PlayerDie[playerid] <= 0)
             {
                 PlayerDie.Remove(playerid);

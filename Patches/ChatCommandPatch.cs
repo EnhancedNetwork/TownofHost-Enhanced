@@ -275,7 +275,7 @@ internal class ChatCommands
                 case "/命名为":
                     canceled = true;
                     if (args.Length < 1) break;
-                    if (args.Skip(1).Join(delimiter: " ").Length is > 10 or < 1)
+                    if (args.Skip(1).Join(delimiter: " ").Length is > 10 or < 1 || args.Skip(1).Join(delimiter: " ")[0] == '<') // <#ffffff>E is a valid name without this
                     {
                         Utils.SendMessage(GetString("Message.AllowNameLength"), PlayerControl.LocalPlayer.PlayerId);
                         break;
@@ -2567,7 +2567,7 @@ internal class ChatCommands
                         break;
                     }
                     if (args.Length < 1) break;
-                    if (args.Skip(1).Join(delimiter: " ").Length is > 10 or < 1)
+                    if (args.Skip(1).Join(delimiter: " ").Length is > 10 or < 1 || args.Skip(1).Join(delimiter: " ")[0] == '<') // <#ffffff>E is a valid name without this
                     {
                         Utils.SendMessage(GetString("Message.AllowNameLength"), player.PlayerId);
                         break;

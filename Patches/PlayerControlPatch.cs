@@ -1293,6 +1293,8 @@ class FixedUpdateInNormalGamePatch
     
     static void RefreshNameText(bool inLobby, PlayerControl player, int playerClientId, NetworkedPlayerInfo playerData, bool inGame, PlayerControl localPlayer, byte localPlayerId, byte playerId, TMPro.TextMeshPro roleText, bool playerAmOwner, AmongUsClient amongUsClient, bool isInTask)
     {
+        if (player.notRealPlayer || localPlayer.notRealPlayer) return;
+
         if (inLobby)
         {
             var playerName = player.name;
@@ -1456,7 +1458,7 @@ class FixedUpdateInNormalGamePatch
                         if (player.Is(CustomRoles.Snitch) && player.Is(CustomRoles.Madmate))
                             Mark.Append(CustomRoles.Impostor.GetColoredTextByRole("★"));
                     }
-                    if (((localPlayer.IsPlayerCovenTeam() && player.IsPlayerCovenTeam()) || !localPlayer.IsAlive()) && CovenManager.HasNecronomicon(player))
+                    if ((localPlayer.IsPlayerCovenTeam() || !localPlayer.IsAlive()) && player.IsPlayerCovenTeam() && CovenManager.HasNecronomicon(player))
                     {
                         Mark.Append(CustomRoles.Coven.GetColoredTextByRole("♣"));
                     }

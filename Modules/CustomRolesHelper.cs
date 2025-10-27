@@ -87,7 +87,6 @@ public static class CustomRolesHelper
                     or CustomRoles.NotAssigned
                     or CustomRoles.SuperStar
                     or CustomRoles.Oblivious
-                    or CustomRoles.Solsticer
                     or CustomRoles.Killer
                     or CustomRoles.Mini
                     or CustomRoles.Onbound
