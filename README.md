@@ -75,7 +75,7 @@
 > 
 ### :star: [RHR](https://github.com/sansaaaaai/Revolutionary-host-roles) :
 > 
-> - Reference: Modify settings menu (Last used [1.6.0](https://github.com/0xDrMoe/TownofHost-Enhanced/releases/tag/v1.6.0))
+> - Reference: Modify settings menu (Last used [1.6.0](https://github.com/0xDrLime/TownofHost-Enhanced/releases/tag/v1.6.0))
 > 
 ### :star: [TOH+](https://github.com/ItzLoonie/TownOfHostPlus)
 >
@@ -122,5 +122,5 @@
 >
 > - We included CrowdedMod in our Mod
 ---
-This project is licensed under the GNU General Public License version 3.0. For more details, please refer to the [LICENSE](https://github.com/0xDrMoe/TownofHost-Enhanced/blob/main/LICENSE) file.
+This project is licensed under the GNU General Public License version 3.0. For more details, please refer to the [LICENSE](https://github.com/0xDrLime/TownofHost-Enhanced/blob/main/LICENSE) file.
 ---

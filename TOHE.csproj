@@ -5,7 +5,7 @@
 		<GenerateAssemblyInformationalVersionAttribute>false</GenerateAssemblyInformationalVersionAttribute>
 		<GenerateAssemblyVersionAttribute>false</GenerateAssemblyVersionAttribute>
 		<Description>Town Of Host Enhanced</Description>
-		<Authors>Moe</Authors>
+		<Authors>Lime</Authors>
 		<LangVersion>12.0</LangVersion>
 		<!--<AmongUs>C:\Program Files\Epic Games\AmongUs</AmongUs>-->
 		<Configurations>Debug;Release;Canary</Configurations>

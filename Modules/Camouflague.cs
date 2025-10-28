@@ -107,7 +107,7 @@ public static class Camouflage
                     .Set("", 13, "hat_rabbitEars", "skin_Bananaskin", "visor_BubbleBumVisor", "pet_Pusheen", "");
                 break;
 
-            case 6: // Moe
+            case 6: // Lime
                 CamouflageOutfit = new NetworkedPlayerInfo.PlayerOutfit()
                     .Set("", 0, "hat_mira_headset_yellow", "skin_SuitB", "visor_lollipopCrew", "pet_EmptyPet", "");
                 break;
