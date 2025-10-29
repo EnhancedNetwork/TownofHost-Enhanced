@@ -30,7 +30,7 @@ namespace TOHE.Modules
         public PlayerControl playerControl;
         public Vector2 Position;
         protected string Sprite;
-        protected byte ColorId = 255;
+        protected NetworkedPlayerInfo.PlayerOutfit Outfit;
 
         public void RpcChangeSprite(string sprite)
         {
@@ -50,12 +50,12 @@ namespace TOHE.Modules
                 var sender = CustomRpcSender.Create("CustomNetObject.RpcChangeSprite", SendOption.Reliable);
                 MessageWriter writer = sender.stream;
                 sender.StartMessage();
-                PlayerControl.LocalPlayer.Data.Outfits[PlayerOutfitType.Default].PlayerName = "<size=14><br></size>" + sprite;
-                PlayerControl.LocalPlayer.Data.Outfits[PlayerOutfitType.Default].ColorId = ColorId;
-                PlayerControl.LocalPlayer.Data.Outfits[PlayerOutfitType.Default].HatId = "";
-                PlayerControl.LocalPlayer.Data.Outfits[PlayerOutfitType.Default].SkinId = "";
-                PlayerControl.LocalPlayer.Data.Outfits[PlayerOutfitType.Default].PetId = "";
-                PlayerControl.LocalPlayer.Data.Outfits[PlayerOutfitType.Default].VisorId = "";
+                PlayerControl.LocalPlayer.Data.Outfits[PlayerOutfitType.Default].PlayerName = Outfit?.PlayerName ?? "<size=14><br></size>" + sprite;
+                PlayerControl.LocalPlayer.Data.Outfits[PlayerOutfitType.Default].ColorId = Outfit?.ColorId ?? 18;
+                PlayerControl.LocalPlayer.Data.Outfits[PlayerOutfitType.Default].HatId = Outfit?.HatId ?? "";
+                PlayerControl.LocalPlayer.Data.Outfits[PlayerOutfitType.Default].SkinId = Outfit?.SkinId ?? "";
+                PlayerControl.LocalPlayer.Data.Outfits[PlayerOutfitType.Default].PetId = Outfit?.PetId ?? "";
+                PlayerControl.LocalPlayer.Data.Outfits[PlayerOutfitType.Default].VisorId = Outfit?.VisorId ?? "";
                 writer.StartMessage(1);
                 {
                     writer.WritePacked(PlayerControl.LocalPlayer.Data.NetId);
@@ -164,7 +164,7 @@ namespace TOHE.Modules
 
         protected virtual void OnFixedUpdate() { }
 
-        protected void CreateNetObject(string sprite, Vector2 position, byte colId = 18, bool visible = false)
+        protected void CreateNetObject(string sprite = "", Vector2 position = default, bool visible = false, NetworkedPlayerInfo.PlayerOutfit pOutfit = null)
         {
             if (GameStates.IsEnded || !AmongUsClient.Instance.AmHost) return;
 
@@ -244,12 +244,12 @@ namespace TOHE.Modules
                 var sender = CustomRpcSender.Create("CustomNetObject.CreateNetObject", SendOption.Reliable);
                 MessageWriter writer = sender.stream;
                 sender.StartMessage();
-                PlayerControl.LocalPlayer.Data.Outfits[PlayerOutfitType.Default].PlayerName = "<size=14><br></size>" + sprite;
-                PlayerControl.LocalPlayer.Data.Outfits[PlayerOutfitType.Default].ColorId = colId;
-                PlayerControl.LocalPlayer.Data.Outfits[PlayerOutfitType.Default].HatId = "";
-                PlayerControl.LocalPlayer.Data.Outfits[PlayerOutfitType.Default].SkinId = "";
-                PlayerControl.LocalPlayer.Data.Outfits[PlayerOutfitType.Default].PetId = "";
-                PlayerControl.LocalPlayer.Data.Outfits[PlayerOutfitType.Default].VisorId = "";
+                PlayerControl.LocalPlayer.Data.Outfits[PlayerOutfitType.Default].PlayerName = Outfit?.PlayerName ?? "<size=14><br></size>" + sprite;
+                PlayerControl.LocalPlayer.Data.Outfits[PlayerOutfitType.Default].ColorId = Outfit?.ColorId ?? 18;
+                PlayerControl.LocalPlayer.Data.Outfits[PlayerOutfitType.Default].HatId = Outfit?.HatId ?? "";
+                PlayerControl.LocalPlayer.Data.Outfits[PlayerOutfitType.Default].SkinId = Outfit?.SkinId ?? "";
+                PlayerControl.LocalPlayer.Data.Outfits[PlayerOutfitType.Default].PetId = Outfit?.PetId ?? "";
+                PlayerControl.LocalPlayer.Data.Outfits[PlayerOutfitType.Default].VisorId = Outfit?.VisorId ?? "";
                 writer.StartMessage(1);
                 {
                     writer.WritePacked(PlayerControl.LocalPlayer.Data.NetId);
@@ -281,7 +281,7 @@ namespace TOHE.Modules
 
             Position = position;
             Sprite = sprite;
-            ColorId = colId;
+            Outfit = pOutfit;
             ++MaxId;
             Id = MaxId;
             if (MaxId == int.MaxValue) MaxId = int.MinValue;

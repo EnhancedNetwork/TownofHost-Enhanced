@@ -32,11 +32,11 @@ internal class Sorceress : CovenManager
             .SetValueFormat(OptionFormat.Seconds);
         MirageVision = FloatOptionItem.Create(Id + 11, "Sorceress.MirageVision", new(0f, 5f, 0.25f), 0.5f, TabGroup.CovenRoles, false).SetParent(CustomRoleSpawnChances[Role])
             .SetValueFormat(OptionFormat.Multiplier);
-        MirageDuration = FloatOptionItem.Create(Id + 12, "Sorceress.MirageDuration", new(0f, 180f, 2.5f), 30f, TabGroup.CovenRoles, false).SetParent(CustomRoleSpawnChances[Role])
+        MirageDuration = FloatOptionItem.Create(Id + 12, "Sorceress.MirageDuration", new(2.5f, 180f, 2.5f), 30f, TabGroup.CovenRoles, false).SetParent(CustomRoleSpawnChances[Role])
             .SetValueFormat(OptionFormat.Seconds);
         MirageCount = IntegerOptionItem.Create(Id + 13, "Sorceress.MirageCount", new(1, 10, 1), 3, TabGroup.CovenRoles, false).SetParent(CustomRoleSpawnChances[Role]);
-        MirageRadius = FloatOptionItem.Create(Id + 14, "Sorceress.MirageRadius", new(0f, 10f, 0.1f), 1f, TabGroup.CovenRoles, false).SetParent(CustomRoleSpawnChances[Role]);
-        MirageSpeed = FloatOptionItem.Create(Id + 15, "Sorceress.MirageSpeed", new(0.25f, 10f, 0.25f), 1f, TabGroup.CovenRoles, false)
+        MirageRadius = FloatOptionItem.Create(Id + 14, "Sorceress.MirageRadius", new(0.5f, 10f, 0.1f), 1f, TabGroup.CovenRoles, false).SetParent(CustomRoleSpawnChances[Role]);
+        MirageSpeed = FloatOptionItem.Create(Id + 15, "Sorceress.MirageSpeed", new(0.05f, 10f, 0.05f), 0.2f, TabGroup.CovenRoles, false)
             .SetParent(CustomRoleSpawnChances[Role]);
     }
     public override void Init()
@@ -211,7 +211,7 @@ internal class Sorceress : CovenManager
         internal DeathMirage(Vector2 position, List<byte> visibleList)
         {
             if (!AmongUsClient.Instance.AmHost) return;
-            CreateNetObject("", position, colId: (byte)IRandom.Instance.Next(0, 17));
+            CreateNetObject(position: position, visible: true, pOutfit: Main.AllAlivePlayerControls.RandomElement()?.Data.Outfits[PlayerOutfitType.Default]);
             Main.AllAlivePlayerControls.ExceptBy(visibleList, x => x.PlayerId).Do(Hide);
         }
     }
