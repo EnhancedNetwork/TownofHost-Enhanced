@@ -30,6 +30,7 @@ namespace TOHE.Modules
         public PlayerControl playerControl;
         public Vector2 Position;
         protected string Sprite;
+        protected byte ColorId = 255;
 
         public void RpcChangeSprite(string sprite)
         {
@@ -50,7 +51,7 @@ namespace TOHE.Modules
                 MessageWriter writer = sender.stream;
                 sender.StartMessage();
                 PlayerControl.LocalPlayer.Data.Outfits[PlayerOutfitType.Default].PlayerName = "<size=14><br></size>" + sprite;
-                PlayerControl.LocalPlayer.Data.Outfits[PlayerOutfitType.Default].ColorId = 255;
+                PlayerControl.LocalPlayer.Data.Outfits[PlayerOutfitType.Default].ColorId = ColorId;
                 PlayerControl.LocalPlayer.Data.Outfits[PlayerOutfitType.Default].HatId = "";
                 PlayerControl.LocalPlayer.Data.Outfits[PlayerOutfitType.Default].SkinId = "";
                 PlayerControl.LocalPlayer.Data.Outfits[PlayerOutfitType.Default].PetId = "";
@@ -163,7 +164,7 @@ namespace TOHE.Modules
 
         protected virtual void OnFixedUpdate() { }
 
-        protected void CreateNetObject(string sprite, Vector2 position)
+        protected void CreateNetObject(string sprite, Vector2 position, byte colId = 18, bool visible = false)
         {
             if (GameStates.IsEnded || !AmongUsClient.Instance.AmHost) return;
 
@@ -187,7 +188,7 @@ namespace TOHE.Modules
             
             Logger.Info($" Create Custom Net Object {GetType().Name} (ID {MaxId + 1}) at {position}", "CNO.CreateNetObject");
             playerControl = UnityEngine.Object.Instantiate(AmongUsClient.Instance.PlayerPrefab, Vector2.zero, Quaternion.identity);
-            playerControl.PlayerId = 254;
+            playerControl.PlayerId = (byte)(visible ? 253 : 254);
             playerControl.isNew = false;
             playerControl.notRealPlayer = true;
             AmongUsClient.Instance.NetIdCnt += 1U;
@@ -244,7 +245,7 @@ namespace TOHE.Modules
                 MessageWriter writer = sender.stream;
                 sender.StartMessage();
                 PlayerControl.LocalPlayer.Data.Outfits[PlayerOutfitType.Default].PlayerName = "<size=14><br></size>" + sprite;
-                PlayerControl.LocalPlayer.Data.Outfits[PlayerOutfitType.Default].ColorId = 255;
+                PlayerControl.LocalPlayer.Data.Outfits[PlayerOutfitType.Default].ColorId = colId;
                 PlayerControl.LocalPlayer.Data.Outfits[PlayerOutfitType.Default].HatId = "";
                 PlayerControl.LocalPlayer.Data.Outfits[PlayerOutfitType.Default].SkinId = "";
                 PlayerControl.LocalPlayer.Data.Outfits[PlayerOutfitType.Default].PetId = "";
@@ -280,6 +281,7 @@ namespace TOHE.Modules
 
             Position = position;
             Sprite = sprite;
+            ColorId = colId;
             ++MaxId;
             Id = MaxId;
             if (MaxId == int.MaxValue) MaxId = int.MinValue;
@@ -302,6 +304,7 @@ namespace TOHE.Modules
                     }
                     writer.EndMessage();
 
+                    // Without this Rpc, sprite doesn't get set for vanilla (gets set to ??? instead)
                     sender.StartRpc(playerControl.NetId, (byte)RpcCalls.MurderPlayer)
                         .WriteNetObject(playerControl)
                         .Write((int)MurderResultFlags.FailedError)

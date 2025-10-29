@@ -1,8 +1,11 @@
+using AmongUs.Data;
 using AmongUs.GameOptions;
 using AmongUs.InnerNet.GameDataMessages;
+using BepInEx.Unity.IL2CPP.Utils.Collections;
 using Hazel;
 using InnerNet;
 using System;
+using System.Collections;
 using System.Text;
 using System.Text.RegularExpressions;
 using TOHE.Modules;
@@ -683,6 +686,7 @@ class ShapeshiftPatch
 {
     public static void Prefix(PlayerControl __instance, [HarmonyArgument(0)] PlayerControl target, [HarmonyArgument(1)] bool animate)
     {
+        if (__instance.notRealPlayer) return;
         Logger.Info($"{__instance?.GetNameWithRole().RemoveHtmlTags()} => {target?.GetNameWithRole().RemoveHtmlTags()}", "ShapeshiftPatch");
 
         var shapeshifter = __instance;
@@ -1050,6 +1054,8 @@ class FixedUpdateInNormalGamePatch
         byte playerId = player.PlayerId;
 
         var playerData = player.Data;
+        if (playerData == null) return;
+
         var playerClientId = player?.GetClientId() ?? byte.MaxValue;
 
         bool playerAmOwner = player?.AmOwner ?? false;
@@ -1290,7 +1296,7 @@ class FixedUpdateInNormalGamePatch
             }
         }
     }
-    
+
     static void RefreshNameText(bool inLobby, PlayerControl player, int playerClientId, NetworkedPlayerInfo playerData, bool inGame, PlayerControl localPlayer, byte localPlayerId, byte playerId, TMPro.TextMeshPro roleText, bool playerAmOwner, AmongUsClient amongUsClient, bool isInTask)
     {
         if (player.notRealPlayer || localPlayer.notRealPlayer) return;
@@ -1544,58 +1550,51 @@ class FixedUpdateInNormalGamePatch
             player?.cosmetics?.colorBlindText?.transform?.SetLocalY(-0.32f);
         }
     }
-    // public static void LoversSuicide(byte deathId = 0x7f, bool isExiled = false)
-    // {
-    //     if (Options.LoverSuicide.GetBool() && Main.isLoversDead == false)
-    //     {
-    //         foreach (var loversPlayer in Main.LoversPlayers.ToArray())
-    //         {
-    //             if (!loversPlayer.Is(CustomRoles.Lovers)) continue;
-    //             if (loversPlayer.IsAlive() && loversPlayer.PlayerId != deathId) continue;
-
-    //             Main.isLoversDead = true;
-    //             foreach (var partnerPlayer in Main.LoversPlayers.ToArray())
-    //             {
-    //                 if (loversPlayer.PlayerId == partnerPlayer.PlayerId) continue;
-
-    //                 if (partnerPlayer.PlayerId != deathId && partnerPlayer.IsAlive())
-    //                 {
-    //                     if (partnerPlayer.Is(CustomRoles.Lovers))
-    //                     {
-    //                         partnerPlayer.SetDeathReason(PlayerState.DeathReason.FollowingSuicide);
-
-    //                         if (isExiled)
-    //                         {
-    //                             if (Main.PlayersDiedInMeeting.Contains(deathId))
-    //                             {
-    //                                 partnerPlayer.Data.IsDead = true;
-    //                                 partnerPlayer.RpcExileV2();
-    //                                 Main.PlayerStates[partnerPlayer.PlayerId].SetDead();
-    //                                 if (MeetingHud.Instance?.state is MeetingHud.VoteStates.Discussion or MeetingHud.VoteStates.NotVoted or MeetingHud.VoteStates.Voted)
-    //                                 {
-    //                                     MeetingHud.Instance?.CheckForEndVoting();
-    //                                 }
-    //                                 MurderPlayerPatch.AfterPlayerDeathTasks(partnerPlayer, partnerPlayer, true);
-    //                                 _ = new LateTask(() => HudManager.Instance?.SetHudActive(false), 0.3f, "SetHudActive in LoversSuicide", shoudLog: false);
-    //                             }
-    //                             else
-    //                             {
-    //                                 CheckForEndVotingPatch.TryAddAfterMeetingDeathPlayers(PlayerState.DeathReason.FollowingSuicide, partnerPlayer.PlayerId);
-    //                             }
-    //                         }
-    //                         else
-    //                         {
-    //                             partnerPlayer.RpcMurderPlayer(partnerPlayer);
-    //                         }
-    //                     }
-    //                 }
-    //             }
-    //         }
-    //     }
-    // }
 }
+
+[HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.ClientInitialize))]
+class PlayerClientInitializePatch
+{
+    class ClientInitializeEnumerator : IEnumerable
+    {
+        public Il2CppSystem.Collections.IEnumerator enumerator;
+        public PlayerControl instance;
+        public IEnumerator GetEnumerator()
+        {
+            instance.Visible = false;
+            if (instance.Data != null)
+            {
+                NetworkedPlayerInfo.PlayerOutfit defaultOutfit = instance.Data.DefaultOutfit;
+                instance.SetName(defaultOutfit.PlayerName);
+                instance.SetColor(defaultOutfit.ColorId);
+                instance.SetHat(defaultOutfit.HatId, defaultOutfit.ColorId);
+                instance.SetSkin(defaultOutfit.SkinId, defaultOutfit.ColorId);
+                instance.SetPet(defaultOutfit.PetId);
+                instance.SetVisor(defaultOutfit.VisorId, defaultOutfit.ColorId);
+                instance.SetNamePlate(defaultOutfit.NamePlateId);
+                instance.SetLevel(instance.Data.PlayerLevel);
+            }
+
+            if (!instance.notRealPlayer || instance.PlayerId != 254)
+                instance.Visible = true;
+            yield return null;
+            yield break;
+        }
+    }
+    
+    public static void Postfix(PlayerControl __instance, ref Il2CppSystem.Collections.IEnumerator __result)
+    {
+        var myEnumerator = new ClientInitializeEnumerator()
+		{
+			enumerator = __result,
+			instance = __instance
+		};
+		__result = myEnumerator.GetEnumerator().WrapToIl2Cpp();
+    }
+}
+
 [HarmonyPatch(typeof(PlayerControl._Start_d__82), nameof(PlayerControl._Start_d__82.MoveNext))]
-class PlayerStartPatch
+class PlayerStart_MoveNextPatch
 {
     public static void Postfix(PlayerControl._Start_d__82 __instance, ref bool __result)
     {
@@ -1912,7 +1911,7 @@ class PlayerControlCheckNamePatch
             name = name.RemoveHtmlTags().Replace(@"\", string.Empty).Replace("/", string.Empty).Replace("\n", string.Empty).Replace("\r", string.Empty).Replace("<", string.Empty).Replace(">", string.Empty);
             if (name.Length > 10) name = name[..10];
             if (Options.DisableEmojiName.GetBool()) name = Regex.Replace(name, @"\p{Cs}", string.Empty);
-            if (Regex.Replace(Regex.Replace(name, @"\s", string.Empty), @"[\x01-\x1F,\x7F]", string.Empty).Length < 1) name = Main.Get_TName_Snacks;
+            if (name.IsNullOrWhiteSpace() || Regex.Replace(Regex.Replace(name, @"\s", string.Empty), @"[\x01-\x1F,\x7F]", string.Empty).Length < 1) name = Main.Get_TName_Snacks;
         }
         Main.AllPlayerNames.Remove(__instance.PlayerId);
         Main.AllPlayerNames.TryAdd(__instance.PlayerId, name);

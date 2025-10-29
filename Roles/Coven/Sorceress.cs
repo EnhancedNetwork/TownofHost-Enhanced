@@ -169,7 +169,7 @@ internal class Sorceress : CovenManager
             {
                 var direction = (targetPos - mirage.Position).normalized;
                 var newPosition = mirage.Position + direction * MirageSpeed.GetFloat() * Time.fixedDeltaTime;
-                mirage.Position = newPosition;
+                mirage.TP(newPosition);
             }
 
             var KillRange = ExtendedPlayerControl.GetKillDistances();
@@ -211,7 +211,7 @@ internal class Sorceress : CovenManager
         internal DeathMirage(Vector2 position, List<byte> visibleList)
         {
             if (!AmongUsClient.Instance.AmHost) return;
-            CreateNetObject("UwU", position);
+            CreateNetObject("", position, colId: (byte)IRandom.Instance.Next(0, 17));
             Main.AllAlivePlayerControls.ExceptBy(visibleList, x => x.PlayerId).Do(Hide);
         }
     }

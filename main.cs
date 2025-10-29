@@ -255,7 +255,7 @@ public class Main : BasePlugin
             int i = 0;
             foreach (var pc in PlayerControl.AllPlayerControls)
             {
-                if (pc == null || pc.PlayerId == 255 || pc.notRealPlayer || !pc.IsAlive() || pc.Data.Disconnected || Pelican.IsEaten(pc.PlayerId)) continue;
+                if (pc == null || pc.PlayerId == 255 || pc.notRealPlayer || !pc.IsAlive() || pc.Data == null || pc.Data.Disconnected || Pelican.IsEaten(pc.PlayerId)) continue;
                 result[i++] = pc;
             }
 
@@ -581,7 +581,7 @@ public class Main : BasePlugin
         //TOHE.Logger.Disable("NotifyRoles");
         TOHE.Logger.Disable("SwitchSystem");
         TOHE.Logger.Disable("ModNews");
-        // TOHE.Logger.Disable("RpcSetNamePrivate");
+        TOHE.Logger.Disable("RpcSetNamePrivate");
         TOHE.Logger.Disable("KnowRoleTarget");
         if (!DebugModeManager.AmDebugger)
         {

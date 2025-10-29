@@ -4259,7 +4259,7 @@
   "Starspawn.TryHideMsg": "Try to Hide Daybreak Command",
   "Starspawn.VisitersMsg": "Isolate blocked the following roles:\n",
 
-  "PariahWinsWhenDead": "Pariahs Can Win When Dead",
+  "PariahWinWhenDead": "Pariahs Can Win When Dead",
   "PariahHasImpVis": "Pariahs Have <color=#ff1919>Impostor</color> Vision",
   "PariahImpVisMode": "Pariah <color=#ff1919>Impostor</color> Vision mode",
   "PariahPerRole": "Per Role",
