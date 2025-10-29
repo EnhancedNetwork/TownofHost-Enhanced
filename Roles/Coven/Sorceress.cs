@@ -182,8 +182,9 @@ internal class Sorceress : CovenManager
                 target.SetDeathReason(PlayerState.DeathReason.Drained);
                 Main.PlayerStates[target.PlayerId].SetDead();
                 MurderPlayerPatch.AfterPlayerDeathTasks(_Player, target, inMeeting: false, fromRole: true);
-
-                RemoveMirages();
+                mirage.TP(target.GetCustomPosition());
+                
+                _ = new LateTask(RemoveMirages, 0.5f, "Remove Death Mirages");
             }
         }
     }
