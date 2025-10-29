@@ -24,7 +24,7 @@ internal static class TrickorTreat
             .SetGameMode(CustomGameMode.TrickorTreat);
         TrickChance = IntegerOptionItem.Create(67_226_03, "TrickChance", new(5, 100, 5), 20, TabGroup.ModSettings, false)
             .SetGameMode(CustomGameMode.TrickorTreat)
-            .SetValueFormat(OptionFormat.Multiplier);
+            .SetValueFormat(OptionFormat.Percent);
         TrickFreezeTime = FloatOptionItem.Create(67_226_04, "TrickFreezeTime", new(5f, 45f, 2.5f), 15f, TabGroup.ModSettings, false)
             .SetGameMode (CustomGameMode.TrickorTreat) 
             .SetValueFormat(OptionFormat.Seconds);
