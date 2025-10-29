@@ -15,6 +15,7 @@ public enum CustomGameMode
     FFA = 0x02,
     CandR = 0x03,
     UltimateTeam = 0x04,
+    TrickorTreat = 0x05,
     HidenSeekTOHO = 0x08, // HidenSeekTOHO must be after other Gamemodes
     All = int.MaxValue
 }
@@ -52,7 +53,8 @@ public static class Options
             1 => CustomGameMode.FFA,
             2 => CustomGameMode.CandR,
             3 => CustomGameMode.UltimateTeam,
-            4 => CustomGameMode.HidenSeekTOHO, // HidenSeekTOHO must be after other Gamemodes
+            4 => CustomGameMode.TrickorTreat,
+            5 => CustomGameMode.HidenSeekTOHO, // HidenSeekTOHO must be after other Gamemodes
             _ => CustomGameMode.Standard
         };
     public static int GetGameModeInt(CustomGameMode mode)
@@ -70,6 +72,7 @@ public static class Options
         "FFA",
         "C&R",
         "UltimateTeam",
+        "TrickorTreat",
 
         "Hide&SeekTOHO", // HidenSeekTOHO must be after other Gamemodes
     ];
@@ -1358,6 +1361,8 @@ public static class Options
 
         //Ultimate Team
         UltimateTeam.SetupCustomOption();
+        
+        TrickorTreat.SetupCustomOption();
 
         // Hide & Seek
         TextOptionItem.Create(10000055, "MenuTitle.Hide&Seek", TabGroup.ModSettings)

@@ -89,7 +89,7 @@ class UpdateSystemPatch
         if (!AmongUsClient.Instance.AmHost) return true;
 
         // ###### Can Be Sabotage Started? ######
-        if ((Options.CurrentGameMode == CustomGameMode.FFA || Options.CurrentGameMode == CustomGameMode.UltimateTeam) && systemType == SystemTypes.Sabotage) return false;
+        if ((Options.CurrentGameMode == CustomGameMode.FFA || Options.CurrentGameMode == CustomGameMode.UltimateTeam || Options.CurrentGameMode == CustomGameMode.TrickorTreat) && systemType == SystemTypes.Sabotage) return false;
 
         if (Options.DisableSabotage.GetBool() && systemType == SystemTypes.Sabotage) return false;
 

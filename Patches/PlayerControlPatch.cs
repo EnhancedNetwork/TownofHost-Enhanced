@@ -753,7 +753,7 @@ class ReportDeadBodyPatch
             return false;
         }
         if (Options.DisableMeeting.GetBool()) return false;
-             if (Options.CurrentGameMode is CustomGameMode.FFA or CustomGameMode.CandR or CustomGameMode.UltimateTeam) return false;
+             if (Options.CurrentGameMode is CustomGameMode.FFA or CustomGameMode.TrickorTreat or CustomGameMode.CandR or CustomGameMode.UltimateTeam) return false;
 
         if (!CanReport[__instance.PlayerId])
         {
@@ -1607,6 +1607,10 @@ class CoEnterVentPatch
         {
             return false;
         }
+        if (Options.CurrentGameMode == CustomGameMode.TrickorTreat)
+        {
+            return false;
+        }
 
         if (KillTimerManager.AllKillTimers.TryGetValue(__instance.myPlayer.PlayerId, out var timer))
         {
@@ -1737,6 +1741,7 @@ class PlayerControlCompleteTaskPatch
             // Check task complete for Role
             if (roleClass != null)
             {
+                if (Options.CurrentGameMode == CustomGameMode.TrickorTreat) TrickorTreat.OnTaskComplete(player);
                 ret = roleClass.OnTaskComplete(player, taskState.CompletedTasksCount, taskState.AllTasksCount);
             }
 

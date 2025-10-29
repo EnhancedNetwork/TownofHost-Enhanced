@@ -80,6 +80,7 @@ class CoBeginPatch
         FFAManager.SetData();
         CopsAndRobbersManager.SetData();
         UltimateTeam.SetData();
+        TrickorTreat.SetData();
     }
 }
 [HarmonyPatch(typeof(IntroCutscene._ShowRole_d__41), nameof(IntroCutscene._ShowRole_d__41.MoveNext))]
@@ -471,6 +472,13 @@ class BeginCrewmatePatch
                 PlayerControl.LocalPlayer.Data.Role.IntroSound = GetIntroSound(RoleTypes.Shapeshifter);
                 __instance.ImpostorText.gameObject.SetActive(true);
                 __instance.ImpostorText.text = GetString("UltimateInfo");
+                break;
+            case CustomGameMode.TrickorTreat:
+                __instance.TeamTitle.text = GetString("TrickorTreat");
+                __instance.TeamTitle.color = __instance.BackgroundBar.material.color = Utils.GetRoleColor(role);
+                PlayerControl.LocalPlayer.Data.Role.IntroSound = GetIntroSound(RoleTypes.Phantom);
+                __instance.ImpostorText.gameObject.SetActive(true);
+                __instance.ImpostorText.text = GetString("TrickorTreatInfo");
                 break;
 
             default:
@@ -904,7 +912,7 @@ class IntroCutsceneDestroyPatch
                 {
                     pc.RpcResetAbilityCooldown();
 
-                    if (Options.FixFirstKillCooldown.GetBool() && Options.CurrentGameMode != CustomGameMode.FFA && Options.CurrentGameMode != CustomGameMode.UltimateTeam)
+                    if (Options.FixFirstKillCooldown.GetBool() && Options.CurrentGameMode != CustomGameMode.FFA && Options.CurrentGameMode != CustomGameMode.UltimateTeam && Options.CurrentGameMode != CustomGameMode.TrickorTreat)
                     {
                         _ = new LateTask(() =>
                         {
@@ -955,6 +963,7 @@ class IntroCutsceneDestroyPatch
                 CustomGameMode.FFA => FFAManager.ShowChatInGame.GetBool(),
                 CustomGameMode.CandR => CopsAndRobbersManager.ShowChatInGame.GetBool(),
                 CustomGameMode.UltimateTeam => UltimateTeam.ShowChatInGame.GetBool(),
+                CustomGameMode.TrickorTreat => TrickorTreat.ShowChatInGame.GetBool(),
                 _ => false
             };
             bool shouldAntiBlackOut = Options.CurrentGameMode switch
@@ -962,6 +971,7 @@ class IntroCutsceneDestroyPatch
                 CustomGameMode.FFA => FFAManager.ShowChatInGame.GetBool(),
                 CustomGameMode.CandR => CopsAndRobbersManager.ShowChatInGame.GetBool(),
                 CustomGameMode.UltimateTeam => UltimateTeam.ShowChatInGame.GetBool(),
+                CustomGameMode.TrickorTreat => TrickorTreat.ShowChatInGame.GetBool(),
                 _ => false
             };
             try

@@ -107,6 +107,24 @@ class HudManagerUpdatePatch
                     LowerInfoText.fontSize = 2f;
                 }
                 LowerInfoText.text = UltimateTeam.GetHudText();
+            }else if (Options.CurrentGameMode == CustomGameMode.TrickorTreat)
+            {
+                if (LowerInfoText == null)
+                {
+                    TempLowerInfoText = new GameObject("CountdownText");
+                    TempLowerInfoText.transform.position = new Vector3(0f, -2f, 1f);
+                    LowerInfoText = TempLowerInfoText.AddComponent<TextMeshPro>();
+                    LowerInfoText.alignment = TextAlignmentOptions.Center;
+                    LowerInfoText.transform.parent = __instance.transform;
+                    LowerInfoText.transform.localPosition = new Vector3(0, -2f, 0);
+                    LowerInfoText.overflowMode = TextOverflowModes.Overflow;
+                    LowerInfoText.enableWordWrapping = false;
+                    LowerInfoText.color = Color.white;
+                    LowerInfoText.outlineColor = Color.black;
+                    LowerInfoText.outlineWidth = 20000000f;
+                    LowerInfoText.fontSize = 2f;
+                }
+                LowerInfoText.text = TrickorTreat.GetHudText();
             }
 
             if (player.IsAlive())
@@ -424,6 +442,26 @@ class TaskPanelBehaviourPatch
                     {
                         var text = sb3.ToString().TrimEnd('\n').TrimEnd('\r');
                         if (!Utils.HasTasks(player.Data, false) && sb3.ToString().Any(s => s == '\n'))
+                            text = $"{Utils.ColorString(Utils.GetRoleColor(player.GetCustomRole()).ShadeColor(0.2f), GetString("FakeTask"))}\r\n{text}";
+                        sb.Append($"\r\n\r\n<size=85%>{text}</size>");
+                    }
+                    sbFinal.Clear();
+                    sbFinal.Append(sb);
+                    break;
+                case CustomGameMode.TrickorTreat:
+                    var lines3 = taskText.Split("\r\n</color>\n")[0].Split("\r\n\n")[0].Split("\r\n");
+                    StringBuilder sb4 = new();
+                    foreach (var eachLine in lines3)
+                    {
+                        var line = eachLine.Trim();
+                        if ((line.StartsWith("<color=#ff1919ff>") || line.StartsWith("<color=#ff0000ff>")) && sb4.Length < 1 && !line.Contains('(')) continue;
+                        sb4.Append(line + "\r\n");
+                    }
+
+                    if (sb4.Length > 1)
+                    {
+                        var text = sb4.ToString().TrimEnd('\n').TrimEnd('\r');
+                        if (!Utils.HasTasks(player.Data, false) && sb4.ToString().Any(s => s == '\n'))
                             text = $"{Utils.ColorString(Utils.GetRoleColor(player.GetCustomRole()).ShadeColor(0.2f), GetString("FakeTask"))}\r\n{text}";
                         sb.Append($"\r\n\r\n<size=85%>{text}</size>");
                     }

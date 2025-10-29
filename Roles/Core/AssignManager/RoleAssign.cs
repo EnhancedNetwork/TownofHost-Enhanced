@@ -106,6 +106,24 @@ public class RoleAssign
                     RoleResult = UltimateTeam.SetRoles();
                 }
                 return;
+            case CustomGameMode.TrickorTreat:
+                foreach (PlayerControl pc in Main.AllPlayerControls)
+                {
+                    if (Main.EnableGM.Value && pc.IsHost())
+                    {
+                        RoleResult[pc.PlayerId] = CustomRoles.GM;
+                        continue;
+                    }
+                    else if (TagManager.AssignGameMaster(pc.FriendCode))
+                    {
+                        RoleResult[pc.PlayerId] = CustomRoles.GM;
+                        Logger.Info($"Assign Game Master due to tag for [{pc.PlayerId}]{pc.GetRealName()}", "TagManager");
+                        continue;
+                    }
+                    RoleResult = [];
+                    RoleResult = TrickorTreat.SetRoles();
+                }
+                return;
             case CustomGameMode.CandR:
                 foreach (PlayerControl pc in Main.AllPlayerControls)
                 {

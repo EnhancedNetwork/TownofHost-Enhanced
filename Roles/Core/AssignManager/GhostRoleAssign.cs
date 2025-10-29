@@ -25,6 +25,7 @@ public static class GhostRoleAssign
             || Options.CurrentGameMode == CustomGameMode.FFA
             || Options.CurrentGameMode == CustomGameMode.CandR
             || Options.CurrentGameMode == CustomGameMode.UltimateTeam
+            || Options.CurrentGameMode == CustomGameMode.TrickorTreat
             || player == null
             || player.Data == null
             || player.Data.Disconnected

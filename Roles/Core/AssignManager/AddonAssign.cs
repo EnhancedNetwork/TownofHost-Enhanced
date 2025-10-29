@@ -36,6 +36,7 @@ public static class AddonAssign
             case CustomGameMode.FFA:
             case CustomGameMode.CandR:
             case CustomGameMode.UltimateTeam:
+            case CustomGameMode.TrickorTreat:
                 return;
         }
         AddonRolesList.Clear();
@@ -51,7 +52,7 @@ public static class AddonAssign
     }
     public static void StartSortAndAssign()
     {
-           if (Options.CurrentGameMode == CustomGameMode.FFA || Options.CurrentGameMode == CustomGameMode.CandR || Options.CurrentGameMode == CustomGameMode.UltimateTeam) return;
+           if (Options.CurrentGameMode == CustomGameMode.FFA || Options.CurrentGameMode == CustomGameMode.CandR || Options.CurrentGameMode == CustomGameMode.UltimateTeam || Options.CurrentGameMode == CustomGameMode.TrickorTreat) return;
 
         var rd = IRandom.Instance;
         List<CustomRoles> addonsList = [];

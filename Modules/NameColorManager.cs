@@ -108,6 +108,7 @@ public static class NameColorManager
             || (Main.GodMode.Value && seer.IsHost())
             || (Options.CurrentGameMode == CustomGameMode.FFA) 
             || (Options.CurrentGameMode == CustomGameMode.UltimateTeam)
+            || (Options.CurrentGameMode == CustomGameMode.TrickorTreat)
             || seer.Is(CustomRoles.GM) || target.Is(CustomRoles.GM)
             || target.GetRoleClass().OthersKnowTargetRoleColor(seer, target)
             || Mimic.CanSeeDeadRoles(seer, target)

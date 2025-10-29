@@ -97,6 +97,7 @@ public class PlayerGameOptionsSender(PlayerControl player) : GameOptionsSender
                     opt.SetFloat(FloatOptionNames.CrewLightMod, 1.25f);
                     opt.SetFloat(FloatOptionNames.ImpostorLightMod, 1.25f);
                 }
+
                 break;
             case CustomGameMode.CandR:
                 CopsAndRobbersManager.ApplyGameOptions(ref opt, player);
@@ -105,6 +106,20 @@ public class PlayerGameOptionsSender(PlayerControl player) : GameOptionsSender
                 opt.SetVision(true);
                 opt.SetFloat(FloatOptionNames.CrewLightMod, 1.25f);
                 opt.SetFloat(FloatOptionNames.ImpostorLightMod, 1.25f);
+                break;
+            case CustomGameMode.TrickorTreat:
+                if (TrickorTreat.FrozenIds.Contains(player.PlayerId))
+                {
+                    opt.SetVision(false);
+                    opt.SetFloat(FloatOptionNames.CrewLightMod, 0f * 0);
+                    opt.SetFloat(FloatOptionNames.ImpostorLightMod, 0f * 0);
+                }
+                else
+                {
+                    opt.SetVision(true);
+                    opt.SetFloat(FloatOptionNames.CrewLightMod, 1.25f);
+                    opt.SetFloat(FloatOptionNames.ImpostorLightMod, 1.25f);
+                }
                 break;
         }
 
