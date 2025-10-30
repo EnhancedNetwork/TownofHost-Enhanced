@@ -88,8 +88,8 @@ internal class Cultist : RoleBase
                 Admirer.SendRPC(killer.PlayerId, target.PlayerId);
             }
 
-            killer.ResetKillCooldown();
             killer.SetKillCooldown();
+            killer.ResetKillCooldown();
             if (!DisableShieldAnimations.GetBool()) killer.RpcGuardAndKill(target);
             target.RpcGuardAndKill(killer);
             target.RpcGuardAndKill(target);

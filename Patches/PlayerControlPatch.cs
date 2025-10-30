@@ -858,6 +858,10 @@ class ReportDeadBodyPatch
                     Logger.Info("The maximum number of meeting buttons has been reached", "ReportDeadBody");
                 }
             }
+            else
+            {
+                Logger.Info($"player called meeting with {__instance.RemainingEmergencies} buttons left", "ReportDeadBody");
+            }
         }
         catch (Exception e)
         {
@@ -1886,16 +1890,24 @@ class PlayerControlCompleteTaskPatch
 [HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.CheckName))]
 class PlayerControlCheckNamePatch
 {
-    public static void Postfix(PlayerControl __instance, ref string playerName)
+    public static bool Prefix(PlayerControl __instance, ref string playerName)
     {
-        if (!AmongUsClient.Instance.AmHost || !GameStates.IsLobby) return;
+        if (!__instance.Data)
+        {
+            Debug.LogWarning("CheckName was called while NetworkedPlayerInfo was null");
+            return false;
+        }
+
+        __instance.Data.PlayerName = playerName;
+
+        if (!AmongUsClient.Instance.AmHost || !GameStates.IsLobby) return false;
 
         // Set name after check vanilla code
         // The original "playerName" sometimes have randomized nickname
         // So CheckName sets the original nickname but only saved it on "Data.PlayerName"
-        playerName = __instance.Data.PlayerName ?? playerName;
+        // playerName = __instance.Data?.PlayerName ?? playerName;
 
-        if (BanManager.CheckDenyNamePlayer(__instance, playerName)) return;
+        if (BanManager.CheckDenyNamePlayer(__instance, playerName)) return false;
 
         if (!Main.AllClientRealNames.ContainsKey(__instance.OwnerId))
         {
@@ -1957,7 +1969,14 @@ class PlayerControlCheckNamePatch
             sender.SendMessage();
 
         }, 0.6f, "Retry Version Check", false);
+
+        return false;
     }
+
+    // public static void Postfix(PlayerControl __instance, ref string playerName)
+    // {
+        
+    // }
 }
 [HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.SetColor))]
 class RpcSetColorPatch
