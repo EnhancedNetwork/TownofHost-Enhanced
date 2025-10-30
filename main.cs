@@ -1188,7 +1188,7 @@ public enum CustomWinner
     Undead = CustomRoles.Undead,
     Red = CustomRoles.Red,
     Blue = CustomRoles.Blue,
-    TrickorTreat = CustomRoles.TrickorTreater,
+    TrickorTreat = CustomRoles.TrickorTreater
 }
 [Obfuscation(Exclude = true)]
 public enum AdditionalWinners
