@@ -101,12 +101,17 @@ internal static class TrickorTreat
         var rand = IRandom.Instance;
         if (rand.Next(1, 100) <= TrickChance.GetInt())
         {
-            FrozenIds.Add(player.PlayerId);
-            new LateTask(() =>
-            {
-                FrozenIds.Remove(player.PlayerId);
-            }, TrickFreezeTime.GetFloat(), "Freeze Time Trick or Treat");
+            var tmpSpeed = Main.AllPlayerSpeed[player.PlayerId];
+            Main.AllPlayerSpeed[player.PlayerId] = 0;
 
+            // Vision
+            player.MarkDirtySettings();
+
+            _ = new LateTask(() =>
+            {
+                Main.AllPlayerSpeed[player.PlayerId] = Main.AllPlayerSpeed[player.PlayerId] + tmpSpeed;
+                player.MarkDirtySettings();
+            }, TrickFreezeTime.GetFloat());
         }
         else
         {
