@@ -271,7 +271,15 @@ public abstract class OptionItem
     }
     public virtual void SetValue(object afterValue, bool doSync = true)
     {
-        if (afterValue is int iVal)
+        if (this is BooleanOptionItem b && afterValue is bool bVal)
+            b.SetValue(bVal, doSync);
+        else if (this is FloatOptionItem f && afterValue is float fVal)
+            f.SetValue(fVal, doSync);
+        else if (this is IntegerOptionItem i && afterValue is int iVal1)
+            i.SetValue(iVal1, doSync);
+        else if (this is StringOptionItem s && afterValue is string sVal)
+            s.SetValue(sVal, doSync);
+        else if (afterValue is int iVal)
             SetValue(iVal, doSync);
         else
         {

@@ -172,6 +172,8 @@ internal class Sorceress : CovenManager
                 mirage.TP(newPosition);
             }
 
+            if (!target.IsAlive()) continue;
+
             var KillRange = ExtendedPlayerControl.GetKillDistances();
 
             if (Vector2.Distance(targetPos, mirage.Position) <= KillRange)

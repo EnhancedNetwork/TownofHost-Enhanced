@@ -1677,7 +1677,7 @@ static class ExtendedPlayerControl
     ///<summary>Is the player currently protected</summary>
     public static bool IsProtected(this PlayerControl self) => self.protectedByGuardianId > -1;
 
-    public static bool IsDisquised(this PlayerControl player) => Illusionist.IsCovIllusioned(player.PlayerId) || player.Is(CustomRoles.Trickster);
+    public static bool IsDisguised(this PlayerControl player) => Illusionist.IsCovIllusioned(player.PlayerId) || player.Is(CustomRoles.Trickster);
 
     public const MurderResultFlags ResultFlags = MurderResultFlags.Succeeded; //No need for DecisonByHost
     public static SendOption RpcSendOption => Main.CurrentServerIsVanilla && Options.BypassRateLimitAC.GetBool() ? SendOption.None : SendOption.Reliable;
