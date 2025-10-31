@@ -2230,7 +2230,7 @@ public static class Utils
                         }
 
                         // Fix Vanilla Red Name
-                        TargetName = $"<color=#ffffff>{TargetName}</color>";
+                        // TargetName = $"<color=#ffffff>{TargetName}</color>";
 
                         realTarget.RpcSetNamePrivate(TargetName, seer, force: NoCache);
                     }

@@ -81,6 +81,7 @@ internal class Sorceress : CovenManager
 
     private void CreateMirages(PlayerControl target)
     {
+        target.MarkDirtySettings();
         Vector2 targetPos = target.GetCustomPosition();
         var positions = GetMiragePositions(targetPos);
 
@@ -124,6 +125,7 @@ internal class Sorceress : CovenManager
         var id = _Player.PlayerId;
         if (Mirages.TryGetValue(id, out var mirages))
         {
+            mirages.TargetId.GetPlayer().MarkDirtySettings();
             foreach (var mirage in mirages.NetObjects)
             {
                 mirage.Despawn();

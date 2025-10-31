@@ -501,7 +501,7 @@ public static class DraftAssign
 
         foreach (var deck in PremadeDecks)
         {
-            string fileName = string.Concat(deck.Key.Split(Path.GetInvalidFileNameChars()), ".roledeck");
+            string fileName = string.Concat(string.Join("_",deck.Key.Split(Path.GetInvalidFileNameChars())), ".roledeck");
             string filePath = Path.Combine(ROLEDECK_FOLDER_NAME, fileName);
             if (!File.Exists(filePath))
             {

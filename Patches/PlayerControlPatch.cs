@@ -1898,6 +1898,8 @@ class PlayerControlCheckNamePatch
             return false;
         }
 
+        Logger.Info($"CheckName PlayerName {__instance.Data.PlayerName} => {playerName}", "PlayerControl.CheckName");
+
         __instance.Data.PlayerName = playerName;
 
         if (!AmongUsClient.Instance.AmHost || !GameStates.IsLobby) return false;
