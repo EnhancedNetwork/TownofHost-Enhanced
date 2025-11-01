@@ -1,4 +1,5 @@
 using System;
+using System.Text.Json;
 
 namespace TOHE;
 
@@ -57,5 +58,9 @@ public class StringOptionItem(int id, string name, int defaultValue, TabGroup ta
         }
         else
             base.SetValue(afterValue, doSync);
+    }
+    public override object ParseJson(JsonElement json)
+    {
+        return json.GetString();
     }
 }

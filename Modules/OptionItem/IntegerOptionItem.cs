@@ -1,4 +1,5 @@
 using System;
+using System.Text.Json;
 
 namespace TOHE;
 
@@ -37,5 +38,9 @@ public class IntegerOptionItem(int id, string name, int defaultValue, TabGroup t
             base.SetValue(Rule.GetNearestIndex(iVal), doSync);
         else
             base.SetValue(afterValue, doSync);
+    }
+    public override object ParseJson(JsonElement json)
+    {
+        return json.GetInt32();
     }
 }

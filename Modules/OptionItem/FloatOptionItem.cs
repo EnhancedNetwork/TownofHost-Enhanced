@@ -1,4 +1,5 @@
 using System;
+using System.Text.Json;
 
 namespace TOHE;
 
@@ -42,5 +43,9 @@ public class FloatOptionItem(int id, string name, float defaultValue, TabGroup t
             base.SetValue(Rule.GetNearestIndex(value.Value), doSync);
         else
             base.SetValue(afterValue, doSync);
+    }
+    public override object ParseJson(JsonElement json)
+    {
+        return json.GetDouble();
     }
 }

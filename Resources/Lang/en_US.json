@@ -4276,6 +4276,7 @@
 
   "PresetSaved": "Preset Saved to:\n\n{0}",
   "PresetLoaded": "Preset Loaded from:\n\n{0}",
+  "PresetLoading": "Loading Preset from file.",
 
   "MenuTitle.Draft": "Draft Mode",
   "UseDraftMode": "Enable Draft Mode",

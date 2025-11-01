@@ -1,4 +1,5 @@
 using System;
+using System.Text.Json;
 using TOHE.Modules;
 using TOHE.Modules.Rpc;
 using UnityEngine;
@@ -272,7 +273,9 @@ public abstract class OptionItem
     public virtual void SetValue(object afterValue, bool doSync = true)
     {
         if (this is BooleanOptionItem b && afterValue is bool bVal)
+        {
             b.SetValue(bVal, doSync);
+        }
         else if (this is FloatOptionItem f && afterValue is float fVal)
             f.SetValue(fVal, doSync);
         else if (this is IntegerOptionItem i && afterValue is int iVal1)
@@ -283,8 +286,13 @@ public abstract class OptionItem
             SetValue(iVal, doSync);
         else
         {
-            Logger.Error($"Invalid value type: {afterValue}", "OptionItem.SetValue");
+            Logger.Error($"Invalid value type: {afterValue}({afterValue.GetType()}) for option {Name}({GetType()})", "OptionItem.SetValue");
         }
+    }
+
+    public virtual object ParseJson(JsonElement json)
+    {
+        return json.ToString();
     }
 
     public static OptionItem operator ++(OptionItem item)

@@ -1,3 +1,5 @@
+using System.Text.Json;
+
 namespace TOHE;
 
 public class TextOptionItem : OptionItem
@@ -27,5 +29,14 @@ public class TextOptionItem : OptionItem
     public override string GetString()
     {
         return Translator.GetString(Name);
+    }
+
+    public override void SetValue(object afterValue, bool doSync = true)
+    {
+    }
+    
+    public override object ParseJson(JsonElement json)
+    {
+        return null;
     }
 }

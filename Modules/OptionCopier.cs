@@ -1,6 +1,9 @@
+using System.Collections;
 using System.Diagnostics;
 using System.IO;
 using System.Text.Json;
+using BepInEx.Unity.IL2CPP.Utils.Collections;
+using UnityEngine;
 
 namespace TOHE.Modules;
 
@@ -49,6 +52,32 @@ public static class OptionCopier
             Save(presetNum, fileName);
             return;
         }
+
+        Loader = CoLoadOptionsData(serializableOptionsData);
+        _ = new LateTask(DoCoLoadOptionsData, LOAD_SPEED, shoudLog: false);
+    }
+
+    private const int LOAD_AMOUNT = 10;
+    private const float LOAD_SPEED = 0.01f;
+    public static void DoCoLoadOptionsData()
+    {
+        lock (Loader)
+        {
+            Logger.Info($"Loading... {Loader.Current}", "DoCoLoadOptionsData");
+            for (int i = 0; i < LOAD_AMOUNT; i++)
+            {
+                if (!Loader.MoveNext())
+                {
+                    Loader = null;
+                    return;
+                }
+            }
+            _ = new LateTask(DoCoLoadOptionsData, LOAD_SPEED, shoudLog: false);
+        }
+    }
+    private static IEnumerator<bool> Loader;
+    private static IEnumerator<bool> CoLoadOptionsData(SerializablePresetData serializableOptionsData)
+    {
         Dictionary<int, Dictionary<string, object>> presetOptions = serializableOptionsData.PresetOptions;
 
         foreach (var presetOption in presetOptions)
@@ -59,9 +88,15 @@ public static class OptionCopier
             var value = dict["value"];
             if (OptionItem.FastOptions.TryGetValue(id, out var optionItem))
             {
+                if (value is JsonElement j)
+                    value = optionItem.ParseJson(j);
                 optionItem.SetValue(value);
+                yield return true;
             }
+            else
+                yield return false;
         }
+        yield break;
     }
     /// <summary>Save current options to json file</summary>
     /// <returns>file path saved to</returns>
