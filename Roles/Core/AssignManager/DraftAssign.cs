@@ -27,7 +27,7 @@ public static class DraftAssign
     public static List<CustomRoles>[] PoolLookup = [];
 
     public static bool DraftActive => AssignedSlots.Any();
-    public static bool CanStartDraft => UnassignedSlots.Any();
+    public static bool CanStartWithDraft => Main.AllAlivePlayerControls.All(x => PoolLookup[x.PlayerId] != null && PoolLookup[x.PlayerId].Any());
 
     private static Dictionary<byte, CustomRoles> RoleResult => RoleAssign.RoleResult;
 
@@ -253,7 +253,7 @@ public static class DraftAssign
                 if (slotId >= poolCount)
                 {
                     slotId = 0;
-                    if (DraftPools.Any(x => x.Value.Count >= maxDraftRoles) || !assignedAny)
+                    if (PoolLookup.Any(x => x.Count >= maxDraftRoles) || !assignedAny)
                     {
                         if (!twiceOver && assignedAny) twiceOver = true;
                         else if (!assignedAny) break;
@@ -262,7 +262,7 @@ public static class DraftAssign
                     assignedAny = false;
                 }
 
-                if (DraftPools.All(x => x.Value.Count >= maxDraftRoles)) return false;
+                if (PoolLookup.All(x => x.Count >= maxDraftRoles)) return false;
             }
 
             Logger.Info("Always Roles Assign Finished", "StartDraft");
@@ -301,14 +301,14 @@ public static class DraftAssign
             if (slotId >= poolCount)
             {
                 slotId = 0;
-                if (DraftPools.Any(x => x.Value.Count >= maxDraftRoles))
+                if (PoolLookup.Any(x => x.Count >= maxDraftRoles))
                 {
                     if (!twiceOver) twiceOver = true;
                     else goto AfterPoolsAssigned;
                 }
             }
 
-            if (DraftPools.All(x => x.Value.Count >= maxDraftRoles)) goto AfterPoolsAssigned;
+            if (PoolLookup.All(x => x.Count >= maxDraftRoles)) goto AfterPoolsAssigned;
             if (hasRolesFound.Any(x => !x.Value)) break;
         }
 
@@ -681,7 +681,7 @@ public static class DraftAssign
                 return;
         }
 
-        if (!CanStartDraft)
+        if (!CanStartWithDraft)
         {
             RoleAssign.StartSelect();
             return;
@@ -715,19 +715,19 @@ public static class DraftAssign
                 RoleResult[playerId] = drafted;
             }
             // Assign role if not drafted
-            else if (DraftPools.TryGetValue(playerId, out var pool))
+            else if (PoolLookup[playerId] != null && PoolLookup[playerId].Any())
             {
-                pool = [.. pool.Shuffle(rd)];
+                List<CustomRoles> pool = [.. PoolLookup[playerId].Shuffle(rd)];
 
-                RoleResult[playerId] = pool.First();
+                RoleResult[playerId] = pool.FirstOrDefault(CustomRoles.CrewmateTOHE);
             }
             // Assign role if draft bucket not assigned
-            else if (UnassignedDraftPools.Any())
-            {
-                var role = UnassignedDraftPools.Shuffle(rd).First().Value.Shuffle(rd).First();
+            // else if (UnassignedDraftPools.Any())
+            // {
+            //     var role = UnassignedDraftPools.Shuffle(rd).First().Value.Shuffle(rd).FirstOrDefault(CustomRoles.CrewmateTOHE);
 
-                RoleResult[playerId] = role;
-            }
+            //     RoleResult[playerId] = role;
+            // }
             // Assign crewmate if no unassigned roles left
             else
             {
@@ -772,6 +772,7 @@ public static class DraftAssign
         DraftPools = [];
         UnassignedDraftPools = [];
         DraftedRoles = [];
+        PoolLookup = [];
     }
 
     public static List<CustomRoles> GetDraftPool(this PlayerControl player) => PoolLookup[player.PlayerId];
@@ -820,36 +821,14 @@ public static class DraftAssign
         }
     }
 
-    public static (DraftCmdResult, CustomRoles) DraftRole(this PlayerControl player, CustomRoles role)
-    {
-        if (DraftPools.TryGetValue(player.PlayerId, out var pool))
-        {
-            if (pool.Contains(role))
-            {
-                DraftedRoles[player.PlayerId] = role;
-                return (DraftCmdResult.Success, role);
-            }
-            else
-            {
-                DraftedRoles.Remove(player.PlayerId);
-                return (DraftCmdResult.DraftRemoved, CustomRoles.NotAssigned);
-            }
-        }
-        else
-        {
-            return (DraftCmdResult.NoCurrentDraft, CustomRoles.NotAssigned);
-        }
-    }
-
     public static void SendDraftDescription(this PlayerControl player, int index)
     {
+        index--;
         byte playerId = player.PlayerId;
         var result = CustomRoles.NotAssigned;
-        if (DraftPools.TryGetValue(player.PlayerId, out List<CustomRoles> pool))
-        {
-            if (index < pool.Count)
-                result = pool[index];
-        }
+        var pool = PoolLookup[player.PlayerId];
+        if (index < pool.Count)
+            result = pool[index];
 
         if (result == CustomRoles.NotAssigned)
             return;
@@ -891,7 +870,7 @@ public static class DraftAssign
     private static readonly Dictionary<string, string> PremadeDecks = new()
     {
         ["AllAny"] = "Any\nAny\nAny\nAny\nAny\nAny\nAny\nAny\nAny\nAny\nAny\nAny\nAny\nAny\nAny",
-        ["Double Gang"] = "Crewmate Power\nCrewmate Power\nCrewmate Basic\nCrewmate Basic\nCrewmate Killing\nCrewmate Support\nCrewmate Support\nCrewmate Common\nCrewmate Common\nCrewmate Common\nGangster\nGangster\nDoomsayer | Inquisitor\nDoppleganger\nNeutral Pariah"
+        // ["Double Gang"] = "Crewmate Power\nCrewmate Power\nCrewmate Basic\nCrewmate Basic\nCrewmate Killing\nCrewmate Support\nCrewmate Support\nCrewmate Common\nCrewmate Common\nCrewmate Common\nGangster\nGangster\nDoomsayer | Inquisitor\nDoppleganger\nNeutral Pariah" 
     };
 }
 
