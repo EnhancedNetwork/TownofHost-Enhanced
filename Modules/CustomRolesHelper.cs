@@ -403,7 +403,8 @@ public static class CustomRolesHelper
             CustomRoles.Statue or
             CustomRoles.Alchemist or
             CustomRoles.Tired or
-            CustomRoles.Sloth;
+            CustomRoles.Sloth or
+            CustomRoles.Zombie;
     }
     public static bool IsRevealingRole(this CustomRoles role, PlayerControl target)
     {

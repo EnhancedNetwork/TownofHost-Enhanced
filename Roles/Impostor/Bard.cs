@@ -48,6 +48,7 @@ internal class Bard : RoleBase
         }
     }
 
+#pragma warning disable CS0649
     [Serializable]
     public class Joke
     {
@@ -56,4 +57,5 @@ internal class Bard : RoleBase
         public string punchline;
         public int id;
     }
+#pragma warning restore CS0649
 }

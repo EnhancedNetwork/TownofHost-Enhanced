@@ -83,7 +83,7 @@ namespace TOHE.Modules
 
                 sender.EndMessage();
                 sender.SendMessage();
-            }, 0f);
+            }, 0f, "CustomNetObject RpcChangeSprite");
         }
 
         public void TP(Vector2 position)
@@ -133,7 +133,7 @@ namespace TOHE.Modules
 
             if (player.AmOwner)
             {
-                _ = new LateTask(() => playerControl.transform.FindChild("Names").FindChild("NameText_TMP").gameObject.SetActive(false), 0.1f);
+                _ = new LateTask(() => playerControl.transform.FindChild("Names").FindChild("NameText_TMP").gameObject.SetActive(false), 0.1f, "CustomNetObject Hide Owner");
                 playerControl.Visible = false;
                 return;
             }
@@ -148,7 +148,7 @@ namespace TOHE.Modules
                     .EndRpc();
 
                 sender.SendMessage();
-            }, 0.4f);
+            }, 0.4f, "CustomNetObject Hide");
 
             MessageWriter writer = MessageWriter.Get(SendOption.Reliable);
             writer.StartMessage(6);
@@ -277,7 +277,7 @@ namespace TOHE.Modules
 
                 sender.EndMessage();
                 sender.SendMessage();
-            }, 0.6f);
+            }, 0.6f, "CustomNetObject CreateNetObject 1");
 
             Position = position;
             Sprite = sprite;
@@ -319,11 +319,11 @@ namespace TOHE.Modules
 
                     sender.EndMessage();
                     sender.SendMessage();
-                }, 0.1f);
+                }, 0.1f, "CustomNetObject CreateNetObject 2");
             }
 
-            _ = new LateTask(() => playerControl.transform.FindChild("Names").FindChild("NameText_TMP").gameObject.SetActive(true), 0.7f); // Fix for Host
-            _ = new LateTask(() => Utils.SendRPC(CustomRPC.FixModdedClientCNO, playerControl, true), 0.95f); // Fix for Non-Host Modded
+            _ = new LateTask(() => playerControl.transform.FindChild("Names").FindChild("NameText_TMP").gameObject.SetActive(true), 0.7f, "CustomNetObject CreateNetObject 3"); // Fix for Host
+            _ = new LateTask(() => Utils.SendRPC(CustomRPC.FixModdedClientCNO, playerControl, true), 0.95f, "CustomNetObject CreateNetObject 4"); // Fix for Non-Host Modded
         }
 
         public static void FixedUpdate()
@@ -466,7 +466,7 @@ internal static class RawSetNamePatch
                     // Complete error, don't log this, or it will spam the console
                     break;
             }
-        }, 0.5f);
+        }, 0.5f, "RawSetNamePatch");
 
         return false;
     }

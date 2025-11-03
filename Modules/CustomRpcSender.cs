@@ -259,4 +259,31 @@ public static class CustomRpcSenderExtensions
             .WritePacked((int)role)
             .EndRpc();
     }
+
+    public static void RpcSetName(this CustomRpcSender sender, PlayerControl player, string name, PlayerControl seer = null)
+    {
+        bool seerIsNull = seer == null;
+        int targetClientId = seerIsNull ? -1 : seer.OwnerId;
+
+        name = name.Replace("color=", string.Empty);
+
+        switch (seerIsNull)
+        {
+            case true when Main.LastNotifyNames.Where(x => x.Key.Item1 == player.PlayerId).All(x => x.Value == name):
+            case false when Main.LastNotifyNames[(player.PlayerId, seer.PlayerId)] == name:
+                return;
+            case true:
+                Main.AllPlayerControls.Do(x => Main.LastNotifyNames[(player.PlayerId, x.PlayerId)] = name);
+                break;
+            default:
+                Main.LastNotifyNames[(player.PlayerId, seer.PlayerId)] = name;
+                break;
+        }
+
+        sender.AutoStartRpc(player.NetId, (byte)RpcCalls.SetName, targetClientId)
+            .Write(player.Data.NetId)
+            .Write(name)
+            .Write(false)
+            .EndRpc();
+    }
 }

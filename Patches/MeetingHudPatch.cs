@@ -1358,8 +1358,6 @@ class MeetingHudStartPatch
 
         // __instance.SortButtons();
 
-        // Update Notify Roles for Meeting
-        DoNotifyRoles(isForMeeting: true, CamouflageIsForMeeting: true);
     }
 }
 [HarmonyPatch(typeof(MeetingHud), nameof(MeetingHud.Update))]
