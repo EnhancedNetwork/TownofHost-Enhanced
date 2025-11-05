@@ -87,7 +87,7 @@ internal class Monarch : RoleBase
     private static bool CanBeKnighted(PlayerControl pc)
     {
         return pc != null && !pc.GetCustomRole().IsNotKnightable() &&
-            !pc.IsAnySubRole(x => x is CustomRoles.Knighted or CustomRoles.Stubborn or CustomRoles.Stealer);
+            !pc.IsAnySubRole(x => x is CustomRoles.Knighted or CustomRoles.Stubborn or CustomRoles.Stealer or CustomRoles.Cleansed);
     }
     public override string PlayerKnowTargetColor(PlayerControl seer, PlayerControl target) => seer.Is(CustomRoles.Monarch) && target.Is(CustomRoles.Knighted) ? Main.roleColors[CustomRoles.Knighted] : "";
 
