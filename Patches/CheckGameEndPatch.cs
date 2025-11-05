@@ -102,6 +102,29 @@ class GameEndCheckerForNormal
                 WinnerRoles.Add(CustomRoles.Jackal);
             }
 
+            if (CustomRoles.God.RoleExist())
+            {
+                var godArray = Main.AllAlivePlayerControls.Where(x => x.Is(CustomRoles.God));
+
+                if (godArray.Any())
+                {
+                    bool isGodWinConverted = false;
+                    foreach (var god in godArray.ToArray())
+                    {
+                        if (CheckForConvertedWinner(god.PlayerId))
+                        {
+                            isGodWinConverted = true;
+                            break;
+                        }
+                    }
+                    if (!isGodWinConverted)
+                    {
+                        ResetAndSetWinner(CustomWinner.God);
+                        godArray.Do(p => WinnerIds.Add(p.PlayerId));
+                    }
+                }
+            }
+
             foreach (var pc in Main.AllPlayerControls)
             {
                 if (WinnerIds.Contains(pc.PlayerId)) continue;
@@ -281,43 +304,9 @@ class GameEndCheckerForNormal
                     }
                 }
 
-                if (CustomRoles.God.RoleExist())
-                {
-                    var godArray = Main.AllAlivePlayerControls.Where(x => x.Is(CustomRoles.God));
-
-                    if (godArray.Any())
-                    {
-                        bool isGodWinConverted = false;
-                        foreach (var god in godArray.ToArray())
-                        {
-                            if (CheckForConvertedWinner(god.PlayerId))
-                            {
-                                isGodWinConverted = true;
-                                break;
-                            }
-                        }
-                        if (!isGodWinConverted)
-                        {
-                            ResetAndSetWinner(CustomWinner.God);
-                            godArray.Do(p => WinnerIds.Add(p.PlayerId));
-                        }
-                    }
-                }
-
                 if (CustomRoles.Lovers.RoleExist() && !reason.Equals(GameOverReason.CrewmatesByTask))
                 {
                     Lovers.CheckWin();
-                    // // if not (not all lovers alive and lovers suicide)
-                    // if (!(!Main.LoversPlayers.ToArray().All(p => p.IsAlive()) && Options.LoverSuicide.GetBool()))
-                    // {
-                    //     if (WinnerTeam is CustomWinner.Crewmate or CustomWinner.Impostor or CustomWinner.Jackal or CustomWinner.Pelican or CustomWinner.Coven)
-                    //     {
-                    //         ResetAndSetWinner(CustomWinner.Lovers);
-                    //         Main.AllPlayerControls
-                    //             .Where(p => p.Is(CustomRoles.Lovers))
-                    //             .Do(p => WinnerIds.Add(p.PlayerId));
-                    //     }
-                    // }
                 }
 
 
