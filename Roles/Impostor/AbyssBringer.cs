@@ -315,7 +315,7 @@ internal class AbyssBringer : RoleBase
     }
     public override string GetLowerText(PlayerControl seer, PlayerControl target = null, bool isMeeting = false, bool isForHud = false)
     {
-        if (seer.PlayerId != target.PlayerId || seer.PlayerId != _state.PlayerId || (seer.IsModded() && !isForHud) || isMeeting || BlackHoles.Count == 0) return string.Empty;
+        if (seer?.PlayerId != target?.PlayerId || seer?.PlayerId != _state?.PlayerId || (seer?.IsModded() == true && !isForHud) || isMeeting || BlackHoles.Count == 0) return string.Empty;
         return string.Format(Translator.GetString("Abyssbringer.Suffix"), BlackHoles.Count, string.Join('\n', BlackHoles.Select(x => GetBlackHoleFormatText(x.Value.RoomName, x.Value.PlayersConsumed))));
 
         static string GetBlackHoleFormatText(string roomName, int playersConsumed)

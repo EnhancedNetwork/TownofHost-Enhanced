@@ -106,7 +106,7 @@ public static class AddonAssign
         // Assign add-ons
         foreach (var addOn in addonsList.ToArray())
         {
-            if (rd.Next(1, 101) <= (Options.CustomAdtRoleSpawnRate.TryGetValue(addOn, out var sc) ? sc.GetFloat() : 0))
+            if (rd.Next(100) < (Options.CustomAdtRoleSpawnRate.TryGetValue(addOn, out var sc) ? sc.GetFloat() : 0))
             {
                 AssignSubRoles(addOn);
             }

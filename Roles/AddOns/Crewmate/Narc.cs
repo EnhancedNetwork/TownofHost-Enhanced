@@ -59,9 +59,9 @@ public static class NarcManager
     {
         RoleForNarcToSpawnAs = CustomRoles.NotAssigned;
 
-        int value = IRandom.Instance.Next(1, 100);
+        int value = IRandom.Instance.Next(100);
 
-        if (value <= NarcSpawnChance.GetInt() && CustomRoles.Narc.IsEnable())
+        if (value < NarcSpawnChance.GetInt() && CustomRoles.Narc.IsEnable())
         {
             List<CustomRoles> RolesEnabled = CustomRolesHelper.AllRoles
                                         .Where(r => r.IsEnable() && (r.IsImpostor() /*|| r.IsMadmate()*/) && !r.IsVanilla() && !r.IsGhostRole())

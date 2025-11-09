@@ -322,7 +322,7 @@ namespace TOHE.Modules
                 }, 0.1f, "CustomNetObject CreateNetObject 2");
             }
 
-            _ = new LateTask(() => playerControl.transform.FindChild("Names").FindChild("NameText_TMP").gameObject.SetActive(true), 0.7f, "CustomNetObject CreateNetObject 3"); // Fix for Host
+            _ = new LateTask(() => playerControl?.transform?.FindChild("Names")?.FindChild("NameText_TMP")?.gameObject?.SetActive(true), 0.7f, "CustomNetObject CreateNetObject 3"); // Fix for Host
             _ = new LateTask(() => Utils.SendRPC(CustomRPC.FixModdedClientCNO, playerControl, true), 0.95f, "CustomNetObject CreateNetObject 4"); // Fix for Non-Host Modded
         }
 

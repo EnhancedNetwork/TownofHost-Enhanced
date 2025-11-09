@@ -104,7 +104,7 @@ internal class Butcher : RoleBase
             {
                 var rd = IRandom.Instance;
 
-                Vector2 location = new(ops.x + ((float)(rd.Next(1, 200) - 100) / 100), ops.y + ((float)(rd.Next(1, 200) - 100) / 100));
+                Vector2 location = new(ops.x + ((float)rd.Next(-100, 101) / 100), ops.y + ((float)rd.Next(-100, 101) / 100));
                 target.RpcTeleport(location);
                 target.RpcMurderPlayer(target);
                 target.SetRealKiller(_Player, true);

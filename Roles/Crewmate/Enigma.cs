@@ -292,8 +292,8 @@ internal class Enigma : RoleBase
         private string GetStage1Clue(PlayerControl killer, string letter)
         {
             string randomLetter = GetRandomLetter(killer, letter);
-            int random = rd.Next(1, 2);
-            if (random == 1)
+            int random = rd.Next(2);
+            if (random == 0)
                 return string.Format(GetString("EnigmaClueName1"), letter, randomLetter);
             else
                 return string.Format(GetString("EnigmaClueName1"), randomLetter, letter);

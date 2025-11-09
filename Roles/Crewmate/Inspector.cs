@@ -380,7 +380,7 @@ internal class Inspector : RoleBase
         for (int i = 0; i < 20; i++)
         {
             msg = "/";
-            if (rd.Next(1, 100) < 20)
+            if (rd.Next(100) < 20)
             {
                 msg += "id";
             }
@@ -388,9 +388,9 @@ internal class Inspector : RoleBase
             {
                 msg += command[rd.Next(0, command.Length - 1)];
                 msg += " ";
-                msg += rd.Next(0, 15).ToString();
+                msg += rd.Next(16).ToString();
                 msg += " ";
-                msg += rd.Next(0, 15).ToString();
+                msg += rd.Next(16).ToString();
 
             }
             var player = Main.AllAlivePlayerControls.RandomElement();

@@ -171,7 +171,7 @@ public class GameStartManagerPatch
                             return;
                         }
 
-                        if (joinedTime + Options.StartWhenTimePassed.GetInt() < Utils.GetTimeStamp())
+                        if (joinedTime + Options.StartWhenTimePassed.GetInt() < Utils.GetTimeStamp() && !GameStates.IsVanillaServer)
                         {
                             BeginGameAutoStart(Options.AutoStartTimer.GetInt());
                             return;
@@ -387,25 +387,39 @@ public class GameStartManagerBeginGamePatch
             The Fungle   = 5
         */
 
+        int skeld = Options.SkeldChance.GetInt();
+        int mira = Options.MiraChance.GetInt();
+        int polus = Options.PolusChance.GetInt();
+        int dleks = Options.DleksChance.GetInt();
+        int airship = Options.AirshipChance.GetInt();
+        int fungle = Options.FungleChance.GetInt();
+
         if (Options.UseMoreRandomMapSelection.GetBool())
         {
-            if (rand.Next(1, 100) <= Options.SkeldChance.GetInt()) randomMaps.Add(0);
-            if (rand.Next(1, 100) <= Options.MiraChance.GetInt()) randomMaps.Add(1);
-            if (rand.Next(1, 100) <= Options.PolusChance.GetInt()) randomMaps.Add(2);
-            if (rand.Next(1, 100) <= Options.DleksChance.GetInt()) randomMaps.Add(3);
-            if (rand.Next(1, 100) <= Options.AirshipChance.GetInt()) randomMaps.Add(4);
-            if (rand.Next(1, 100) <= Options.FungleChance.GetInt()) randomMaps.Add(5);
+            if (rand.Next(100) <= Options.SkeldChance.GetInt()) randomMaps.Add(0);
+            if (rand.Next(100) <= Options.MiraChance.GetInt()) randomMaps.Add(1);
+            if (rand.Next(100) <= Options.PolusChance.GetInt()) randomMaps.Add(2);
+            if (rand.Next(100) <= Options.DleksChance.GetInt()) randomMaps.Add(3);
+            if (rand.Next(100) <= Options.AirshipChance.GetInt()) randomMaps.Add(4);
+            if (rand.Next(100) <= Options.FungleChance.GetInt()) randomMaps.Add(5);
         }
         else
         {
-            var tempRand = rand.Next(1, 100);
+            // var tempRand = rand.Next(100);
 
-            if (tempRand <= Options.SkeldChance.GetInt()) randomMaps.Add(0);
-            if (tempRand <= Options.MiraChance.GetInt()) randomMaps.Add(1);
-            if (tempRand <= Options.PolusChance.GetInt()) randomMaps.Add(2);
-            if (tempRand <= Options.DleksChance.GetInt()) randomMaps.Add(3);
-            if (tempRand <= Options.AirshipChance.GetInt()) randomMaps.Add(4);
-            if (tempRand <= Options.FungleChance.GetInt()) randomMaps.Add(5);
+            // if (tempRand <= Options.SkeldChance.GetInt()) randomMaps.Add(0);
+            // if (tempRand <= Options.MiraChance.GetInt()) randomMaps.Add(1);
+            // if (tempRand <= Options.PolusChance.GetInt()) randomMaps.Add(2);
+            // if (tempRand <= Options.DleksChance.GetInt()) randomMaps.Add(3);
+            // if (tempRand <= Options.AirshipChance.GetInt()) randomMaps.Add(4);
+            // if (tempRand <= Options.FungleChance.GetInt()) randomMaps.Add(5);
+
+            randomMaps.AddRange(Enumerable.Repeat((byte)0, skeld));
+            randomMaps.AddRange(Enumerable.Repeat((byte)1, mira));
+            randomMaps.AddRange(Enumerable.Repeat((byte)2, polus));
+            randomMaps.AddRange(Enumerable.Repeat((byte)3, dleks));
+            randomMaps.AddRange(Enumerable.Repeat((byte)4, airship));
+            randomMaps.AddRange(Enumerable.Repeat((byte)5, fungle));
         }
 
         if (randomMaps.Any())

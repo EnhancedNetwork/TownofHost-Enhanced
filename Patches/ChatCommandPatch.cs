@@ -1470,8 +1470,8 @@ internal class ChatCommands
                     else
                     {
                         var rand = IRandom.Instance;
-                        int botChoice = rand.Next(1, 101);
-                        var coinSide = (botChoice < 51) ? GetString("Heads") : GetString("Tails");
+                        int botChoice = rand.Next(100);
+                        var coinSide = (botChoice < 50) ? GetString("Heads") : GetString("Tails");
                         Utils.SendMessage(string.Format(GetString("CoinFlipResult"), coinSide), PlayerControl.LocalPlayer.PlayerId);
                         break;
                     }
@@ -1716,9 +1716,9 @@ internal class ChatCommands
                     }
                     else if (args[1] == "add")
                     {
-                        var addResult = DraftAssign.AddPlayersToDraft();
+                        var addResult = DraftAssign.DraftActive;
 
-                        if (addResult == DraftAssign.DraftCmdResult.NoCurrentDraft)
+                        if (!addResult)
                         {
                             Utils.SendMessage(GetString("NoCurrentDraft"), PlayerControl.LocalPlayer.PlayerId);
                         }
@@ -3463,8 +3463,8 @@ internal class ChatCommands
                 else
                 {
                     var rand = IRandom.Instance;
-                    int botChoice = rand.Next(1, 101);
-                    var coinSide = (botChoice < 51) ? GetString("Heads") : GetString("Tails");
+                    int botChoice = rand.Next(100);
+                    var coinSide = (botChoice < 50) ? GetString("Heads") : GetString("Tails");
                     Utils.SendMessage(string.Format(GetString("CoinFlipResult"), coinSide), player.PlayerId);
                     break;
                 }
@@ -3790,9 +3790,9 @@ internal class ChatCommands
                         Utils.SendMessage(GetString("StartDraftNoAccess"), player.PlayerId);
                         break;
                     }
-                    var addResult = DraftAssign.AddPlayersToDraft();
+                    var addResult = DraftAssign.DraftActive;
 
-                    if (addResult == DraftAssign.DraftCmdResult.NoCurrentDraft)
+                    if (!addResult)
                     {
                         Utils.SendMessage(GetString("NoCurrentDraft"), player.PlayerId);
                     }

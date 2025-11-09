@@ -662,8 +662,11 @@ static class ExtendedPlayerControl
 
         _ = new LateTask(() =>
         {
-            unshifter?.SetNewOutfit(currentOutfit);
-            unshifter.Data.MarkDirty();
+            if (currentOutfit != null)
+            {
+                unshifter?.SetNewOutfit(currentOutfit);
+                unshifter?.Data?.MarkDirty();
+            }
 
             if (updateName)
             {
