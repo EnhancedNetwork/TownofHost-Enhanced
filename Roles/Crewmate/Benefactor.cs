@@ -105,6 +105,7 @@ internal class Benefactor : RoleBase
         foreach (var playerId in taskIndex.Keys.ToArray())
         {
             playerId.SetAbilityUseLimit(0);
+            if (playerId == 0xff) continue; // I have no idea how it gets set to 255, but it throws an error when it does
             taskIndex[playerId].Clear();
             SendRPC(type: 0, benefactorId: playerId); //clear taskindex
         }
