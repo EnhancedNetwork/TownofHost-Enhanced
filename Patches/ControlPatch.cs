@@ -262,7 +262,7 @@ internal class ControllerManagerUpdatePatch
                     PlayerControl.LocalPlayer.NoCheckStartMeeting(null, force: true);
                 }
             }
-            // Forse start game       
+            // Force start game       
             if (Input.GetKeyDown(KeyCode.LeftShift) && GameStates.IsCountDown && !HudManager.Instance.Chat.IsOpenOrOpening)
             {
                 var invalidColor = Main.AllPlayerControls.Where(p => p.Data.DefaultOutfit.ColorId < 0 || Palette.PlayerColors.Length <= p.Data.DefaultOutfit.ColorId).ToArray();

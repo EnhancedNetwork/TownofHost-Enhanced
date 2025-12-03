@@ -90,12 +90,13 @@ public static class OptionCopier
             {
                 if (value is JsonElement j)
                     value = optionItem.ParseJson(j);
-                optionItem.SetValue(value);
+                optionItem.SetValue(value, doSync: false);
                 yield return true;
             }
             else
                 yield return false;
         }
+        OptionItem.SyncAllOptions();
         yield break;
     }
     /// <summary>Save current options to json file</summary>

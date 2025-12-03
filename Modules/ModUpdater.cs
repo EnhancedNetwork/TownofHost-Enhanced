@@ -239,7 +239,7 @@ public class ModUpdater
             betaNum = betaNum == 0 ? 999 : betaNum;
 
             var pluginNum = int.Parse(Main.PluginVersion.Substring(10, 1)) * 10000000 + int.Parse(Main.PluginVersion.Substring(11, 1)) * 1000000 + int.Parse(Main.PluginVersion.Substring(12, 1)) * 100000 + betaNum * 100;
-            var versionNum = int.Parse(tag[0]) * 10000000 + int.Parse(tag[1]) * 1000000 + int.Parse($"{tag[2][0]}") * 100000 + (tag[2].Length > 1 && tag[2][1] == 'b' ? int.Parse(tag[2][2..]) : 999) * 100;
+            var versionNum = int.Parse(tag[0]) * 10000000 + int.Parse(tag[1]) * 1000000 + int.Parse($"{tag[2][0]}") * 100000 + (tag[2].Length > 2 && tag[2][1] == 'b' ? int.Parse(tag[2][2..]) : 999) * 100;
 
             Logger.Info($"Found local version: {pluginNum}; github version: {versionNum}", "CheckRelease");
 
