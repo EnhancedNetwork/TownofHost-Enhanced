@@ -884,7 +884,7 @@ class ReportDeadBodyPatch
                 DestroyableSingleton<HudManager>.Instance.OpenMeetingRoom(__instance);
                 __instance.RpcStartMeeting(target);
             }
-        }, 0.15f, "StartMeeting");
+        }, 0.30f, "StartMeeting");
         return false;
     }
     public static void AfterReportTasks(PlayerControl player, NetworkedPlayerInfo target, bool force = false)
