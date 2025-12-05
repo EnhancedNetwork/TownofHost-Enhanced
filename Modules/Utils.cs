@@ -2256,8 +2256,6 @@ public static class Utils
                 return false;
 
             sender ??= CustomRpcSender.Create("NotifyRoles", sendOption);
-            int num = 0;
-            int maxMessagePackingLimit = Main.CurrentServerIsVanilla ? Main.AllPlayerControls.Length * 2 + 10 : 1000;
 
             // Size of player roles
             string fontSize = isForMeeting ? "1.6" : "1.8";
@@ -2271,7 +2269,6 @@ public static class Utils
             if (!CamouflageIsForMeeting && MushroomMixupIsActive && seer.IsAlive() && (!seer.Is(Custom_Team.Impostor) || Main.PlayerStates[seer.PlayerId].IsNecromancer) && seer.HasDesyncRole())
             {
                 sender.RpcSetName(seer, "<size=0%>", seer);
-                num++;
                 hasValue = true;
             }
             else
@@ -2401,7 +2398,6 @@ public static class Utils
                 if (SelfName.EndsWith("</color>")) SelfName = SelfName.Remove(SelfName.Length - 8);
 
                 sender.RpcSetName(seer, SelfName, seer);
-                num++;
                 hasValue = true;
             }
 
@@ -2430,14 +2426,12 @@ public static class Utils
                         if (!CamouflageIsForMeeting && MushroomMixupIsActive && target.IsAlive() && (!seer.Is(Custom_Team.Impostor) || Main.PlayerStates[seer.PlayerId].IsNecromancer) && seer.HasDesyncRole())
                         {
                             sender.RpcSetName(target, "<size=0%>", seer);
-                            num++;
                             hasValue = true;
                             senderWasCleared = false;
 
-                            if (sender.stream.Length > 500 || num > maxMessagePackingLimit)
+                            if (sender.stream.Length > 500)
                             {
                                 sender.SendMessage();
-                                num = 0;
                                 sender = CustomRpcSender.Create(sender.name, sender.sendOption);
                                 hasValue = false;
                                 senderWasCleared = true;
@@ -2600,14 +2594,12 @@ public static class Utils
                             if (TargetName.EndsWith("</color>")) TargetName = TargetName.Remove(TargetName.Length - 8);
 
                             sender.RpcSetName(target, TargetName, seer);
-                            num++;
                             hasValue = true;
                             senderWasCleared = false;
 
-                            if (sender.stream.Length > 500 || num > maxMessagePackingLimit)
+                            if (sender.stream.Length > 500)
                             {
                                 sender.SendMessage();
-                                num = 0;
                                 sender = CustomRpcSender.Create(sender.name, sender.sendOption);
                                 hasValue = false;
                                 senderWasCleared = true;

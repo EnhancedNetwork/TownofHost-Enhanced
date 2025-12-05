@@ -3,6 +3,7 @@ using Hazel;
 using Il2CppInterop.Runtime.InteropTypes.Arrays;
 using InnerNet;
 using System;
+using System.Text;
 
 namespace TOHE;
 
@@ -14,6 +15,8 @@ public class CustomRpcSender
     public bool isUnsafe;
     public delegate void onSendDelegateType();
     public onSendDelegateType onSendDelegate;
+
+    private readonly List<MessageWriter> doneStreams = [];
 
     public State CurrentState
     {
@@ -54,30 +57,34 @@ public class CustomRpcSender
     }
 
     #region Start/End Message
+
     public CustomRpcSender StartMessage(int targetClientId = -1)
     {
         if (currentState != State.Ready)
         {
-            string errorMsg = $"Messageを開始しようとしましたが、StateがReadyではありません (in: \"{name}\")";
+            var errorMsg = $"Tried to start Message but State is not Ready (in: \"{name}\")";
+
             if (isUnsafe)
-            {
                 Logger.Warn(errorMsg, "CustomRpcSender.Warn");
-            }
             else
-            {
                 throw new InvalidOperationException(errorMsg);
-            }
+        }
+
+        if (stream.Length > 500)
+        {
+            doneStreams.Add(stream);
+            stream = MessageWriter.Get(sendOption);
         }
 
         if (targetClientId < 0)
         {
-            // 全員に対するRPC
+            // RPC for everyone
             stream.StartMessage(5);
             stream.Write(AmongUsClient.Instance.GameId);
         }
         else
         {
-            // 特定のクライアントに対するRPC (Desync)
+            // RPC (Desync) to a specific client
             stream.StartMessage(6);
             stream.Write(AmongUsClient.Instance.GameId);
             stream.WritePacked(targetClientId);
@@ -85,30 +92,34 @@ public class CustomRpcSender
 
         currentRpcTarget = targetClientId;
         currentState = State.InRootMessage;
-        rootMessageCount++;
-
-        if (rootMessageCount > 1)
-        {
-            Logger.Info($"\"{name}\" has {rootMessageCount} root messages.", "CustomRpcSender");
-        }
         return this;
     }
-    public CustomRpcSender EndMessage()
+
+    public CustomRpcSender EndMessage(bool startNew = false)
     {
         if (currentState != State.InRootMessage)
         {
-            string errorMsg = $"Messageを終了しようとしましたが、StateがInRootMessageではありません (in: \"{name}\")";
+            var errorMsg = $"Tried to exit Message but State is not InRootMessage (in: \"{name}\")";
+
             if (isUnsafe)
                 Logger.Warn(errorMsg, "CustomRpcSender.Warn");
             else
                 throw new InvalidOperationException(errorMsg);
         }
+
         stream.EndMessage();
+
+        if (startNew)
+        {
+            doneStreams.Add(stream);
+            stream = MessageWriter.Get(sendOption);
+        }
 
         currentRpcTarget = -2;
         currentState = State.Ready;
         return this;
     }
+
     #endregion
     #region Start/End Rpc
     public CustomRpcSender StartRpc(uint targetNetId, RpcCalls rpcCall)
@@ -175,23 +186,46 @@ public class CustomRpcSender
     }
     public void SendMessage(bool dispose = false)
     {
-        if (currentState == State.InRootMessage) this.EndMessage();
-        if (currentState != State.Ready)
+        if (currentState == State.InRootMessage) EndMessage();
+
+        if (currentState != State.Ready && !dispose)
         {
-            string errorMsg = $"Attempted to send RPC, but State is not Ready  (in: \"{name}\")";
+            var errorMsg = $"Tried to send RPC but State is not Ready (in: \"{name}\", state: {currentState})";
+
             if (isUnsafe)
                 Logger.Warn(errorMsg, "CustomRpcSender.Warn");
             else
                 throw new InvalidOperationException(errorMsg);
         }
 
+        if (stream.Length >= 1500 && sendOption == SendOption.Reliable && !dispose) Logger.Warn($"Large reliable packet \"{name}\" is sending ({stream.Length} bytes)", "CustomRpcSender");
+        else if (stream.Length > 3) Logger.Info($"\"{name}\" is finished (Length: {stream.Length}, dispose: {dispose}, sendOption: {sendOption})", "CustomRpcSender");
+
         if (!dispose)
         {
+            if (doneStreams.Count > 0)
+            {
+                var sb = new StringBuilder(" + Lengths: ");
+
+                doneStreams.ForEach(x =>
+                {
+                    if (x.Length >= 1500 && sendOption == SendOption.Reliable) Logger.Warn($"Large reliable packet \"{name}\" is sending ({x.Length} bytes)", "CustomRpcSender");
+                    else if (x.Length > 3) sb.Append($" | {x.Length}");
+
+                    AmongUsClient.Instance.SendOrDisconnect(x);
+                    x.Recycle();
+                });
+
+                Logger.Info(sb.ToString(), "CustomRpcSender");
+
+                doneStreams.Clear();
+            }
+
             AmongUsClient.Instance.SendOrDisconnect(stream);
             onSendDelegate();
         }
+
         currentState = State.Finished;
-        Logger.Info($"\"{name}\" is " + (dispose ? "disposed" : "finished"), "CustomRpcSender");
         stream.Recycle();
     }
 
