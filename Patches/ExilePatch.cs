@@ -189,7 +189,7 @@ class ExileControllerWrapUpPatch
                     player?.RpcExileV2();
 
                     // Just to be sure
-                    _ = new LateTask(() => player?.RpcExileV2(), 0.5f, "Extra Exile to be Sure");
+                    _ = new LateTask(() => player?.RpcExile(), 0.5f, "Extra Exile to be Sure");
 
                     MurderPlayerPatch.AfterPlayerDeathTasks(player, player, true);
                 });
@@ -215,7 +215,7 @@ class ExileControllerWrapUpPatch
                     {
                         if (player.GetRoleClass() is not DefaultSetup)
                         {
-                            if (player.GetRoleClass().ThisRoleBase.GetRoleTypesDirect() is RoleTypes.Impostor or RoleTypes.Phantom or RoleTypes.Shapeshifter)
+                            if (player.GetRoleClass().ThisRoleBase.GetRoleTypesDirect() is RoleTypes.Impostor or RoleTypes.Phantom or RoleTypes.Shapeshifter or RoleTypes.Viper)
                             {
                                 player.ResetKillCooldown();
                                 if (Main.AllPlayerKillCooldown.TryGetValue(player.PlayerId, out var killTimer) && (killTimer - 2f) > 0f)

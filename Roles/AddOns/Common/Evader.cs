@@ -51,7 +51,7 @@ public class Evader : IAddon
     }
     public static void RememberRandom()
     {
-        RememberRandomForExile = IRandom.Instance.Next(1, 100);
+        RememberRandomForExile = IRandom.Instance.Next(100);
     }
     public static void CheckExile(byte evaderId, ref int VoteNum)
     {

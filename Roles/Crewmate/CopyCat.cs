@@ -24,7 +24,7 @@ internal class CopyCat : RoleBase
     private static OptionItem CopyOnlyEnabledRoles;
 
     private static float CurrentKillCooldown = new();
-    private static readonly Dictionary<byte, List<CustomRoles>> OldAddons = [];
+    public static readonly Dictionary<byte, List<CustomRoles>> OldAddons = [];
 
     public override void SetupCustomOption()
     {
@@ -128,10 +128,10 @@ internal class CopyCat : RoleBase
                 CustomRoles.Godfather => CustomRoles.ChiefOfPolice,
                 CustomRoles.Twister => CustomRoles.TimeMaster,
                 CustomRoles.Disperser => CustomRoles.Transporter,
-                CustomRoles.Eraser => CustomRoles.Cleanser,
+                CustomRoles.Eraser or CustomRoles.Bandit => CustomRoles.Cleanser,
                 CustomRoles.Visionary => CustomRoles.Oracle,
                 CustomRoles.Workaholic => CustomRoles.Snitch,
-                CustomRoles.Sunnyboy => CustomRoles.Doctor,
+                CustomRoles.Sunnyboy => new[] { CustomRoles.Doctor, CustomRoles.ScientistTOHE }.RandomElement(),
                 CustomRoles.Councillor => CustomRoles.Judge,
                 CustomRoles.Taskinator => CustomRoles.Benefactor,
                 CustomRoles.EvilTracker => CustomRoles.TrackerTOHE,
@@ -154,8 +154,10 @@ internal class CopyCat : RoleBase
                 CustomRoles.Trickster or CustomRoles.Illusionist => CustomRolesHelper.AllRoles.Where(role => role.IsEnable() && !role.IsAdditionRole() && role.IsCrewmate() && !BlackList(role)).ToList().RandomElement(),
                 CustomRoles.Instigator => CustomRoles.Requiter,
                 CustomRoles.Jackal => CustomRoles.ChiefOfPolice,
-                CustomRoles.Sidekick => CustomRoles.Sheriff,
-                CustomRoles.Starspawn => CustomRoles.Socialite,
+                CustomRoles.Sidekick or CustomRoles.SerialKiller => CustomRoles.Sheriff,
+                CustomRoles.Starspawn or CustomRoles.PlagueBearer => CustomRoles.Socialite,
+                CustomRoles.Demon => CustomRoles.Spy,
+                CustomRoles.Maverick => CustomRoles.Vigilante,
                 _ => role
             };
         }
@@ -223,4 +225,6 @@ internal class CopyCat : RoleBase
         hud.ReportButton.OverrideText(GetString("ReportButtonText"));
         hud.KillButton.OverrideText(GetString("CopyButtonText"));
     }
+
+    public static bool HasAddon(byte id, CustomRoles addon) => OldAddons[id].Contains(addon);
 }

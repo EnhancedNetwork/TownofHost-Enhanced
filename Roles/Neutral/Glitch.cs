@@ -79,7 +79,7 @@ internal class Glitch : RoleBase
     {
         opt.SetVision(HasImpostorVision.GetBool());
         AURoleOptions.ShapeshifterCooldown = MimicCooldown.GetFloat();
-        AURoleOptions.ShapeshifterCooldown = MimicDuration.GetFloat();
+        AURoleOptions.ShapeshifterDuration = MimicDuration.GetFloat();
     }
     public override bool OnCheckShapeshift(PlayerControl shapeshifter, PlayerControl target, ref bool resetCooldown, ref bool shouldAnimate)
     {

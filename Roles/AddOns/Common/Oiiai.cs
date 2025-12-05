@@ -72,6 +72,7 @@ public class Oiiai : IAddon
         if ((killer.Is(CustomRoles.Ghoul) || killer.Is(CustomRoles.Burst)) && !killer.IsAlive()) return;
         if (!target.Is(CustomRoles.Oiiai)) return;
         if (!CanGetOiiaied(killer)) return;
+        if (!killer.IsAlive()) return;
 
         if (CanPassOn.GetBool() && !playerIdList.Contains(killer.PlayerId))
         {

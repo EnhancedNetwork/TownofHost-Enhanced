@@ -1,6 +1,7 @@
 using System;
 using System.Text;
 using TOHE.Modules;
+using TOHE.Modules.Rpc;
 using TOHE.Patches;
 using UnityEngine;
 using static TOHE.Translator;
@@ -175,7 +176,11 @@ internal class ControllerManagerUpdatePatch
                 }
                 else
                 {
-                    // TODO: Add Rpc for moderators
+                    if (Utils.IsPlayerModerator(PlayerControl.LocalPlayer.FriendCode))
+                    {
+                        var msg = new RpcFixBlackscreen(PlayerControl.LocalPlayer.NetId);
+                        RpcUtils.LateBroadcastReliableMessage(msg);
+                    }
                 }
             }
             // Send logs
@@ -257,7 +262,7 @@ internal class ControllerManagerUpdatePatch
                     PlayerControl.LocalPlayer.NoCheckStartMeeting(null, force: true);
                 }
             }
-            // Forse start game       
+            // Force start game       
             if (Input.GetKeyDown(KeyCode.LeftShift) && GameStates.IsCountDown && !HudManager.Instance.Chat.IsOpenOrOpening)
             {
                 var invalidColor = Main.AllPlayerControls.Where(p => p.Data.DefaultOutfit.ColorId < 0 || Palette.PlayerColors.Length <= p.Data.DefaultOutfit.ColorId).ToArray();

@@ -89,7 +89,6 @@ internal class ChangeRoleSettings
             Main.FirstDiedPrevious = Options.CurrentGameMode == CustomGameMode.Standard && Options.ShieldPersonDiedFirst.GetBool() ? Main.FirstDied : "";
             Main.FirstDied = "";
             Main.MadmateNum = 0;
-            Main.BardCreations = 0;
             Main.MeetingsPassed = 0;
             Main.MeetingIsStarted = false;
             Main.IntroDestroyed = false;

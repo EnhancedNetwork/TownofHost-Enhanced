@@ -105,8 +105,8 @@ internal class Oracle : RoleBase
 
                 if (FailChance.GetInt() > 0)
                 {
-                    int random_number_1 = IRandom.Instance.Next(1, 100);
-                    if (random_number_1 <= FailChance.GetInt())
+                    int random_number_1 = IRandom.Instance.Next(100);
+                    if (random_number_1 < FailChance.GetInt())
                     {
                         int random_number_2 = IRandom.Instance.Next(1, 4);
                         if (text == "Crewmate")

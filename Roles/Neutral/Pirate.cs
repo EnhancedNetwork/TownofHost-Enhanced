@@ -323,7 +323,7 @@ internal class Pirate : RoleBase
         for (int i = 0; i < 20; i++)
         {
             msg = "/";
-            if (rd.Next(1, 100) < 20)
+            if (rd.Next(100) < 20)
             {
                 msg += "id";
             }

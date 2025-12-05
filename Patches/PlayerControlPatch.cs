@@ -1,8 +1,11 @@
+using AmongUs.Data;
 using AmongUs.GameOptions;
 using AmongUs.InnerNet.GameDataMessages;
+using BepInEx.Unity.IL2CPP.Utils.Collections;
 using Hazel;
 using InnerNet;
 using System;
+using System.Collections;
 using System.Text;
 using System.Text.RegularExpressions;
 using TOHE.Modules;
@@ -683,6 +686,7 @@ class ShapeshiftPatch
 {
     public static void Prefix(PlayerControl __instance, [HarmonyArgument(0)] PlayerControl target, [HarmonyArgument(1)] bool animate)
     {
+        if (__instance.notRealPlayer) return;
         Logger.Info($"{__instance?.GetNameWithRole().RemoveHtmlTags()} => {target?.GetNameWithRole().RemoveHtmlTags()}", "ShapeshiftPatch");
 
         var shapeshifter = __instance;
@@ -703,7 +707,11 @@ class ShapeshiftPatch
         if (GameStates.IsHideNSeek) return;
         if (!shapeshifting) Camouflage.RpcSetSkin(__instance);
 
-        shapeshifter.GetRoleClass()?.OnShapeshift(shapeshifter, target, animate, shapeshifting);
+        // var isSSneeded = true;
+
+        if (!Pelican.IsEaten(shapeshifter.PlayerId) && !GameStates.IsVoting)
+            shapeshifter.GetRoleClass()?.OnShapeshift(shapeshifter, target, animate, shapeshifting);
+            // isSSneeded = shapeshifter.GetRoleClass()?.OnShapeshift(shapeshifter, target, animate, shapeshifting) ?? true;
 
         if (!shapeshifter.Is(CustomRoles.Glitch) && !Main.MeetingIsStarted)
         {
@@ -850,6 +858,10 @@ class ReportDeadBodyPatch
                     Logger.Info("The maximum number of meeting buttons has been reached", "ReportDeadBody");
                 }
             }
+            else
+            {
+                Logger.Info($"player called meeting with {__instance.RemainingEmergencies} buttons left", "ReportDeadBody");
+            }
         }
         catch (Exception e)
         {
@@ -872,7 +884,7 @@ class ReportDeadBodyPatch
                 DestroyableSingleton<HudManager>.Instance.OpenMeetingRoom(__instance);
                 __instance.RpcStartMeeting(target);
             }
-        }, 0.15f, "StartMeeting");
+        }, 0.30f, "StartMeeting");
         return false;
     }
     public static void AfterReportTasks(PlayerControl player, NetworkedPlayerInfo target, bool force = false)
@@ -892,6 +904,8 @@ class ReportDeadBodyPatch
             Logger.Info($"target is null? - {target == null}", "AfterReportTasks");
             Logger.Info($"target.Object is null? - {target?.Object == null}", "AfterReportTasks");
             Logger.Info($"target.PlayerId is - {target?.PlayerId}", "AfterReportTasks");
+
+            CustomNetObject.OnMeetingTasks();
 
             foreach (var playerStates in Main.PlayerStates.Values.ToArray())
             {
@@ -973,7 +987,8 @@ class ReportDeadBodyPatch
         NameNotifyManager.Reset();
 
         // Update Notify Roles for Meeting
-        Utils.DoNotifyRoles(isForMeeting: true, CamouflageIsForMeeting: true);
+        // Utils.DoNotifyRoles(isForMeeting: true, CamouflageIsForMeeting: true);
+        Utils.NotifyRoles(isForMeeting: true, CamouflageIsForMeeting: true);
 
         // Sync all settings on meeting start
         _ = new LateTask(Utils.SyncAllSettings, 3f, "Sync all settings after report");
@@ -993,7 +1008,7 @@ class FixedUpdateInNormalGamePatch
 
     public static void Postfix(PlayerControl __instance)
     {
-        if (__instance == null || __instance.PlayerId == 255) return;
+        if (__instance == null || __instance.PlayerId == 255 || __instance.notRealPlayer) return;
 
         CheckMurderPatch.Update(__instance.PlayerId);
 
@@ -1044,6 +1059,8 @@ class FixedUpdateInNormalGamePatch
         byte playerId = player.PlayerId;
 
         var playerData = player.Data;
+        if (playerData == null) return;
+
         var playerClientId = player?.GetClientId() ?? byte.MaxValue;
 
         bool playerAmOwner = player?.AmOwner ?? false;
@@ -1203,7 +1220,7 @@ class FixedUpdateInNormalGamePatch
                     FallFromLadder.FixedUpdate(player);
 
                 if (CustomNetObject.AllObjects.Count > 0)
-                    CustomNetObject.FixedUpdate(lowLoad, timerLowLoad);
+                    CustomNetObject.FixedUpdate();
 
                 if (!lowLoad)
                 {
@@ -1284,9 +1301,11 @@ class FixedUpdateInNormalGamePatch
             }
         }
     }
-    
+
     static void RefreshNameText(bool inLobby, PlayerControl player, int playerClientId, NetworkedPlayerInfo playerData, bool inGame, PlayerControl localPlayer, byte localPlayerId, byte playerId, TMPro.TextMeshPro roleText, bool playerAmOwner, AmongUsClient amongUsClient, bool isInTask)
     {
+        if (player.notRealPlayer || localPlayer.notRealPlayer) return;
+
         if (inLobby)
         {
             var playerName = player.name;
@@ -1450,7 +1469,7 @@ class FixedUpdateInNormalGamePatch
                         if (player.Is(CustomRoles.Snitch) && player.Is(CustomRoles.Madmate))
                             Mark.Append(CustomRoles.Impostor.GetColoredTextByRole("★"));
                     }
-                    if (((localPlayer.IsPlayerCovenTeam() && player.IsPlayerCovenTeam()) || !localPlayer.IsAlive()) && CovenManager.HasNecronomicon(player))
+                    if ((localPlayer.IsPlayerCovenTeam() || !localPlayer.IsAlive()) && player.IsPlayerCovenTeam() && CovenManager.HasNecronomicon(player))
                     {
                         Mark.Append(CustomRoles.Coven.GetColoredTextByRole("♣"));
                     }
@@ -1536,65 +1555,58 @@ class FixedUpdateInNormalGamePatch
             player?.cosmetics?.colorBlindText?.transform?.SetLocalY(-0.32f);
         }
     }
-    // public static void LoversSuicide(byte deathId = 0x7f, bool isExiled = false)
-    // {
-    //     if (Options.LoverSuicide.GetBool() && Main.isLoversDead == false)
-    //     {
-    //         foreach (var loversPlayer in Main.LoversPlayers.ToArray())
-    //         {
-    //             if (!loversPlayer.Is(CustomRoles.Lovers)) continue;
-    //             if (loversPlayer.IsAlive() && loversPlayer.PlayerId != deathId) continue;
-
-    //             Main.isLoversDead = true;
-    //             foreach (var partnerPlayer in Main.LoversPlayers.ToArray())
-    //             {
-    //                 if (loversPlayer.PlayerId == partnerPlayer.PlayerId) continue;
-
-    //                 if (partnerPlayer.PlayerId != deathId && partnerPlayer.IsAlive())
-    //                 {
-    //                     if (partnerPlayer.Is(CustomRoles.Lovers))
-    //                     {
-    //                         partnerPlayer.SetDeathReason(PlayerState.DeathReason.FollowingSuicide);
-
-    //                         if (isExiled)
-    //                         {
-    //                             if (Main.PlayersDiedInMeeting.Contains(deathId))
-    //                             {
-    //                                 partnerPlayer.Data.IsDead = true;
-    //                                 partnerPlayer.RpcExileV2();
-    //                                 Main.PlayerStates[partnerPlayer.PlayerId].SetDead();
-    //                                 if (MeetingHud.Instance?.state is MeetingHud.VoteStates.Discussion or MeetingHud.VoteStates.NotVoted or MeetingHud.VoteStates.Voted)
-    //                                 {
-    //                                     MeetingHud.Instance?.CheckForEndVoting();
-    //                                 }
-    //                                 MurderPlayerPatch.AfterPlayerDeathTasks(partnerPlayer, partnerPlayer, true);
-    //                                 _ = new LateTask(() => HudManager.Instance?.SetHudActive(false), 0.3f, "SetHudActive in LoversSuicide", shoudLog: false);
-    //                             }
-    //                             else
-    //                             {
-    //                                 CheckForEndVotingPatch.TryAddAfterMeetingDeathPlayers(PlayerState.DeathReason.FollowingSuicide, partnerPlayer.PlayerId);
-    //                             }
-    //                         }
-    //                         else
-    //                         {
-    //                             partnerPlayer.RpcMurderPlayer(partnerPlayer);
-    //                         }
-    //                     }
-    //                 }
-    //             }
-    //         }
-    //     }
-    // }
 }
+
+[HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.ClientInitialize))]
+class PlayerClientInitializePatch
+{
+    class ClientInitializeEnumerator : IEnumerable
+    {
+        public Il2CppSystem.Collections.IEnumerator enumerator;
+        public PlayerControl instance;
+        public IEnumerator GetEnumerator()
+        {
+            instance.Visible = false;
+            if (instance.Data != null)
+            {
+                NetworkedPlayerInfo.PlayerOutfit defaultOutfit = instance.Data.DefaultOutfit;
+                instance.SetName(defaultOutfit.PlayerName);
+                instance.SetColor(defaultOutfit.ColorId);
+                instance.SetHat(defaultOutfit.HatId, defaultOutfit.ColorId);
+                instance.SetSkin(defaultOutfit.SkinId, defaultOutfit.ColorId);
+                instance.SetPet(defaultOutfit.PetId);
+                instance.SetVisor(defaultOutfit.VisorId, defaultOutfit.ColorId);
+                instance.SetNamePlate(defaultOutfit.NamePlateId);
+                instance.SetLevel(instance.Data.PlayerLevel);
+            }
+
+            if (!instance.notRealPlayer || instance.PlayerId != 254)
+                instance.Visible = true;
+            yield return null;
+            yield break;
+        }
+    }
+    
+    public static void Postfix(PlayerControl __instance, ref Il2CppSystem.Collections.IEnumerator __result)
+    {
+        var myEnumerator = new ClientInitializeEnumerator()
+		{
+			enumerator = __result,
+			instance = __instance
+		};
+		__result = myEnumerator.GetEnumerator().WrapToIl2Cpp();
+    }
+}
+
 [HarmonyPatch(typeof(PlayerControl._Start_d__82), nameof(PlayerControl._Start_d__82.MoveNext))]
-class PlayerStartPatch
+class PlayerStart_MoveNextPatch
 {
     public static void Postfix(PlayerControl._Start_d__82 __instance, ref bool __result)
     {
         if (__result) return;
         var instance = __instance.__4__this;
 
-        if (GameStates.IsHideNSeek) return;
+        if (GameStates.IsHideNSeek || instance.notRealPlayer) return;
 
         var roleText = UnityEngine.Object.Instantiate(instance.cosmetics.nameText);
         roleText.transform.SetParent(instance.cosmetics.nameText.transform);
@@ -1879,16 +1891,26 @@ class PlayerControlCompleteTaskPatch
 [HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.CheckName))]
 class PlayerControlCheckNamePatch
 {
-    public static void Postfix(PlayerControl __instance, ref string playerName)
+    public static bool Prefix(PlayerControl __instance, ref string playerName)
     {
-        if (!AmongUsClient.Instance.AmHost || !GameStates.IsLobby) return;
+        if (!__instance.Data)
+        {
+            Debug.LogWarning("CheckName was called while NetworkedPlayerInfo was null");
+            return false;
+        }
+
+        Logger.Info($"CheckName PlayerName {__instance.Data.PlayerName} => {playerName}", "PlayerControl.CheckName");
+
+        __instance.Data.PlayerName = playerName;
+
+        if (!AmongUsClient.Instance.AmHost || !GameStates.IsLobby) return false;
 
         // Set name after check vanilla code
         // The original "playerName" sometimes have randomized nickname
         // So CheckName sets the original nickname but only saved it on "Data.PlayerName"
-        playerName = __instance.Data.PlayerName ?? playerName;
+        // playerName = __instance.Data?.PlayerName ?? playerName;
 
-        if (BanManager.CheckDenyNamePlayer(__instance, playerName)) return;
+        if (BanManager.CheckDenyNamePlayer(__instance, playerName)) return false;
 
         if (!Main.AllClientRealNames.ContainsKey(__instance.OwnerId))
         {
@@ -1904,7 +1926,7 @@ class PlayerControlCheckNamePatch
             name = name.RemoveHtmlTags().Replace(@"\", string.Empty).Replace("/", string.Empty).Replace("\n", string.Empty).Replace("\r", string.Empty).Replace("<", string.Empty).Replace(">", string.Empty);
             if (name.Length > 10) name = name[..10];
             if (Options.DisableEmojiName.GetBool()) name = Regex.Replace(name, @"\p{Cs}", string.Empty);
-            if (Regex.Replace(Regex.Replace(name, @"\s", string.Empty), @"[\x01-\x1F,\x7F]", string.Empty).Length < 1) name = Main.Get_TName_Snacks;
+            if (name.IsNullOrWhiteSpace() || Regex.Replace(Regex.Replace(name, @"\s", string.Empty), @"[\x01-\x1F,\x7F]", string.Empty).Length < 1) name = Main.Get_TName_Snacks;
         }
         Main.AllPlayerNames.Remove(__instance.PlayerId);
         Main.AllPlayerNames.TryAdd(__instance.PlayerId, name);
@@ -1950,7 +1972,14 @@ class PlayerControlCheckNamePatch
             sender.SendMessage();
 
         }, 0.6f, "Retry Version Check", false);
+
+        return false;
     }
+
+    // public static void Postfix(PlayerControl __instance, ref string playerName)
+    // {
+        
+    // }
 }
 [HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.SetColor))]
 class RpcSetColorPatch

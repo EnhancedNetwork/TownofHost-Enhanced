@@ -47,7 +47,7 @@ public static class AbilityUseManager
         }
 
         Utils.NotifyRoles(SpecifySeer: player, ForceLoop: false);
-        if (log) Logger.Info($" {player.GetNameWithRole()} => {Math.Round(limit, 1)}", "SetAbilityUseLimit");
+        if (log) Logger.Info($" {player.GetNameWithRole()} => {limit}", "SetAbilityUseLimit");
     }
 
     public static bool CanAbilityLimitBeManip(this PlayerControl pc)

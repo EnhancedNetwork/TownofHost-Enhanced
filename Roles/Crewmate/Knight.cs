@@ -77,7 +77,7 @@ internal class Requiter : RoleBase
     public static bool CheckSpawn()
     {
         var Rand = IRandom.Instance;
-        return Rand.Next(1, 100) <= Knight.RequiterChance.GetInt();
+        return Rand.Next(100) < Knight.RequiterChance.GetInt();
     }
 
     public override void ApplyGameOptions(IGameOptions opt, byte playerId) => opt.SetVision(false);

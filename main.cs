@@ -53,17 +53,17 @@ public class Main : BasePlugin
     public static ConfigEntry<string> DebugKeyInput { get; private set; }
 
     public const string PluginGuid = "com.0xdrmoe.townofhostenhanced";
-    public const string PluginVersion = "2025.1014.241.00000"; // YEAR.MMDD.VERSION.CANARYDEV
-    public const string PluginDisplayVersion = "2.4.0";
+    public const string PluginVersion = "2025.1203.241.00000"; // YEAR.MMDD.VERSION.CANARYDEV
+    public const string PluginDisplayVersion = "2.4.1 hotfix 1";
     public static readonly List<(int year, int month, int day, int revision)> SupportedVersionAU =
     [
-        (2025, 10, 14, 0) // 2025.10.14 & 17.0.1
+        (2025, 11, 18, 0) // 2025.11.18 & 17.1s
     ];
 
     /******************* Change one of the three variables to true before making a release. *******************/
-    public static readonly bool devRelease = false; // Latest: V2.3.0 Alpha 9
-    public static readonly bool canaryRelease = true; // Latest: V2.4.1 Beta 1
-    public static readonly bool fullRelease = false; // Latest: V2.4.0
+    public static readonly bool devRelease = false; // Discontinued, use Beta instead
+    public static readonly bool canaryRelease = false; // Latest: V2.4.0 Beta 6
+    public static readonly bool fullRelease = true; // Latest: V2.4.1
 
     public static bool hasAccess = true;
 
@@ -220,7 +220,6 @@ public class Main : BasePlugin
     public static string FirstDied = ""; //Store with hash puid so things can pass through different round
     public static string FirstDiedPrevious = "";
     public static int MadmateNum = 0;
-    public static int BardCreations = 0;
     public static int MeetingsPassed = 0;
     public static long LastMeetingEnded = Utils.GetTimeStamp();
     public static bool Daybreak;
@@ -235,7 +234,7 @@ public class Main : BasePlugin
             int i = 0;
             foreach (var pc in PlayerControl.AllPlayerControls)
             {
-                if (pc == null || pc.PlayerId == 255) continue;
+                if (pc == null || pc.PlayerId == 255 || pc.notRealPlayer) continue;
                 result[i++] = pc;
             }
 
@@ -255,7 +254,7 @@ public class Main : BasePlugin
             int i = 0;
             foreach (var pc in PlayerControl.AllPlayerControls)
             {
-                if (pc == null || pc.PlayerId == 255 || !pc.IsAlive() || pc.Data.Disconnected || Pelican.IsEaten(pc.PlayerId)) continue;
+                if (pc == null || pc.PlayerId == 255 || pc.notRealPlayer || !pc.IsAlive() || pc.Data == null || pc.Data.Disconnected || Pelican.IsEaten(pc.PlayerId)) continue;
                 result[i++] = pc;
             }
 
@@ -581,7 +580,7 @@ public class Main : BasePlugin
         //TOHE.Logger.Disable("NotifyRoles");
         TOHE.Logger.Disable("SwitchSystem");
         TOHE.Logger.Disable("ModNews");
-        // TOHE.Logger.Disable("RpcSetNamePrivate");
+        TOHE.Logger.Disable("RpcSetNamePrivate");
         TOHE.Logger.Disable("KnowRoleTarget");
         if (!DebugModeManager.AmDebugger)
         {
@@ -973,6 +972,7 @@ public enum CustomRoles
     PotionMaster,
     Ritualist,
     Sacrifist,
+    Sorceress,
     VoodooMaster,
 
     //two-way camp

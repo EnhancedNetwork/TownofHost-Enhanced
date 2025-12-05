@@ -157,25 +157,25 @@ internal class Ritualist : CovenManager
             return;
         }
 
-        List<CustomRoles> roles = CustomRolesHelper.AllRoles.Where(x => x is not CustomRoles.NotAssigned).ToList();
+        List<CustomRoles> roles = [.. CustomRolesHelper.AllRoles.Where(x => x is not CustomRoles.NotAssigned)];
         var rd = IRandom.Instance;
         string msg;
         string[] command = ["rt", "rit", "ritual", "bloodritual"];
         for (int i = 0; i < 20; i++)
         {
             msg = "/";
-            if (rd.Next(1, 100) < 20)
+            if (rd.Next(100) < 20)
             {
                 msg += "id";
             }
             else
             {
                 msg += command[rd.Next(0, command.Length - 1)];
-                msg += rd.Next(1, 100) < 50 ? string.Empty : " ";
-                msg += rd.Next(0, 15).ToString();
-                msg += rd.Next(1, 100) < 50 ? string.Empty : " ";
+                msg += rd.Next(100) < 50 ? string.Empty : " ";
+                msg += rd.Next(16).ToString();
+                msg += rd.Next(100) < 50 ? string.Empty : " ";
                 CustomRoles role = roles.RandomElement();
-                msg += rd.Next(1, 100) < 50 ? string.Empty : " ";
+                msg += rd.Next(100) < 50 ? string.Empty : " ";
                 msg += Utils.GetRoleName(role);
 
             }
@@ -280,6 +280,6 @@ internal class Ritualist : CovenManager
     }
     public static bool CanBeConverted(PlayerControl pc)
     {
-        return pc != null && !(pc.GetCustomRole().IsCovenTeam() || pc.GetBetrayalAddon().IsCovenTeam()) && !pc.IsTransformedNeutralApocalypse();
+        return pc != null && !(pc.GetCustomRole().IsCovenTeam() || pc.GetBetrayalAddon().IsCovenTeam()) && !pc.IsTransformedNeutralApocalypse() && !pc.Is(CustomRoles.Solsticer);
     }
 }

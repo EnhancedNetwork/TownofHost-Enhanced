@@ -133,6 +133,7 @@ public static class CustomRoleManager
         if (Spiritcaller.HasEnabled) Spiritcaller.ReduceVision(opt, player);
         if (CustomRoles.Pitfall.RoleExist()) Pitfall.SetPitfallTrapVision(opt, player);
         if (CustomRoles.Medusa.RoleExist()) Medusa.SetStoned(player, opt);
+        if (CustomRoles.Sorceress.RoleExist()) Sorceress.SetBlinded(player, opt);
         if (CustomRoles.Sacrifist.RoleExist()) Sacrifist.SetVision(player, opt);
 
 

@@ -18,8 +18,8 @@ public class FallFromLadder
         //降りているのかを検知
         if (sourcePos.y > targetPos.y)
         {
-            int chance = IRandom.Instance.Next(1, 101);
-            if (chance <= Chance)
+            int chance = IRandom.Instance.Next(100);
+            if (chance < Chance)
             {
                 TargetLadderData[player.myPlayer.PlayerId] = targetPos;
             }

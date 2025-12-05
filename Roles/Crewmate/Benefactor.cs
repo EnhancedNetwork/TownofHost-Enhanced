@@ -49,7 +49,8 @@ internal class Benefactor : RoleBase
 
     private static void SendRPC(int type, byte benefactorId = 0xff, byte targetId = 0xff, int taskIndex = -1)
     {
-        var msg = new RpcBenefactor(PlayerControl.LocalPlayer.NetId, type, benefactorId, taskIndex, targetId, shieldedPlayers[targetId].ToString());
+        var stimeStamp = shieldedPlayers.TryGetValue(targetId, out long timeStamp) ? timeStamp.ToString() : "";
+        var msg = new RpcBenefactor(PlayerControl.LocalPlayer.NetId, type, benefactorId, taskIndex, targetId, stimeStamp);
         RpcUtils.LateBroadcastReliableMessage(msg);
     }
 
@@ -104,6 +105,7 @@ internal class Benefactor : RoleBase
         foreach (var playerId in taskIndex.Keys.ToArray())
         {
             playerId.SetAbilityUseLimit(0);
+            if (playerId == 0xff) continue; // I have no idea how it gets set to 255, but it throws an error when it does
             taskIndex[playerId].Clear();
             SendRPC(type: 0, benefactorId: playerId); //clear taskindex
         }
@@ -177,7 +179,7 @@ internal class Benefactor : RoleBase
     public override void OnFixedUpdate(PlayerControl player, bool lowLoad, long nowTime, int timerLowLoad)
     {
         if (lowLoad) return;
-        foreach (var shieldedData in shieldedPlayers.Where(x => x.Value + ShieldDuration.GetInt() < nowTime).ToArray())
+        foreach (var shieldedData in shieldedPlayers.Where(x => x.Value + ShieldDuration.GetInt() < nowTime))
         {
             var targetId = shieldedData.Key;
             var target = targetId.GetPlayer();

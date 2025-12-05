@@ -171,12 +171,12 @@ internal class Sniper : RoleBase
         return targets;
 
     }
-    public override void OnShapeshift(PlayerControl shapeshifter, PlayerControl target, bool animate, bool shapeshifting)
+    public override bool OnShapeshift(PlayerControl shapeshifter, PlayerControl target, bool animate, bool shapeshifting)
     {
         var sniper = shapeshifter;
         var sniperId = sniper.PlayerId;
 
-        if (sniperId.GetAbilityUseLimit() <= 0) return;
+        if (sniperId.GetAbilityUseLimit() <= 0) return false;
 
         // first shapeshift
         if (shapeshifting)
@@ -189,7 +189,7 @@ internal class Sniper : RoleBase
             IsAim[sniperId] = true;
             AimTime[sniperId] = 0f;
 
-            return;
+            return false;
         }
 
         IsAim[sniperId] = false;
@@ -198,12 +198,12 @@ internal class Sniper : RoleBase
         if (meetingReset)
         {
             meetingReset = false;
-            return;
+            return false;
         }
 
         sniper.RpcRemoveAbilityUse();
 
-        if (!AmongUsClient.Instance.AmHost) return;
+        if (!AmongUsClient.Instance.AmHost) return false;
 
         sniper.RPCPlayCustomSound("AWP");
 
@@ -243,6 +243,7 @@ internal class Sniper : RoleBase
                 SendRPC(sniperId);
             }, 0.5f, "Sniper shot Notify");
         }
+        return false;
     }
     public static void OnFixedUpdateGlobal(PlayerControl pc)
     {

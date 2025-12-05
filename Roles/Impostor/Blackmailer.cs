@@ -85,11 +85,12 @@ internal class Blackmailer : RoleBase
         blackmailer.Notify(GetString("RejectShapeshift.AbilityWasUsed"), time: 2f);
         return false;
     }
-    public override void OnShapeshift(PlayerControl shapeshifter, PlayerControl target, bool IsAnimate, bool shapeshifting)
+    public override bool OnShapeshift(PlayerControl shapeshifter, PlayerControl target, bool IsAnimate, bool shapeshifting)
     {
-        if (!shapeshifting) return;
+        if (!shapeshifting) return false;
 
         DoBlackmaile(shapeshifter, target);
+        return false;
     }
     private void DoBlackmaile(PlayerControl blackmailer, PlayerControl target)
     {

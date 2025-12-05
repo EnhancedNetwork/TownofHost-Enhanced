@@ -19,7 +19,7 @@ namespace TOHE;
 
 
 [Obfuscation(Exclude = true)]
-public enum CustomRPC : byte // 175/255 USED
+public enum CustomRPC : byte // 178/255 USED
 {
     // RpcCalls can increase with each AU version
     // On version 2024.6.18 the last id in RpcCalls: 65
@@ -68,6 +68,7 @@ public enum CustomRPC : byte // 175/255 USED
     SyncDeadPassedMeetingList,
     SyncAbilityUseLimit,
     PlayGuardAndKill,
+    FixBlackscreen,
 
     //Roles 
     SyncRoleSkill,
@@ -164,7 +165,8 @@ internal class RPCHandlerPatch
         or CustomRPC.DumpLog
         or CustomRPC.SetFriendCode
         or CustomRPC.BetterCheck
-        or CustomRPC.DictatorRPC;
+        or CustomRPC.DictatorRPC
+        or CustomRPC.FixBlackscreen;
     public static bool Prefix(PlayerControl __instance, [HarmonyArgument(0)] byte callId, [HarmonyArgument(1)] MessageReader reader)
     {
         var rpcType = (RpcCalls)callId;
@@ -619,6 +621,11 @@ internal class RPCHandlerPatch
                 break;
             case CustomRPC.Guess:
                 GuessManager.ReceiveRPC(reader, __instance);
+                break;
+            case CustomRPC.FixBlackscreen:
+                Logger.Info("Attempted to fix Black Screen", "KeyCommand");
+                AntiBlackout.SetIsDead();
+                Logger.SendInGame("Attempted to fix Black Screen");
                 break;
             case CustomRPC.NemesisRevenge:
                 Nemesis.ReceiveRPC_Custom(reader, __instance);

@@ -262,8 +262,7 @@ public abstract class RoleBase
     /// <summary>
     /// Called after check Shapeshift
     /// </summary>
-    public virtual void OnShapeshift(PlayerControl shapeshifter, PlayerControl target, bool IsAnimate, bool shapeshifting)
-    { }
+    public virtual bool OnShapeshift(PlayerControl shapeshifter, PlayerControl target, bool IsAnimate, bool shapeshifting) => true;
 
 
     // NOTE: when using UnShapeshift button, it will not be possible to revert to normal state because of complications

@@ -459,10 +459,7 @@ class CheckForEndVotingPatch
 
         if (CustomRoles.Bard.RoleExist())
         {
-            Main.BardCreations++;
-            try { name = ModUpdater.Get("https://v1.hitokoto.cn/?encode=text"); }
-            catch { name = GetString("ByBardGetFailed"); }
-            name += "\n\t\t——" + GetString("ByBard");
+            Bard.OnMeetingHudDestroy(ref name);
             goto EndOfSession;
         }
 
@@ -1360,6 +1357,7 @@ class MeetingHudStartPatch
         }
 
         // __instance.SortButtons();
+
     }
 }
 [HarmonyPatch(typeof(MeetingHud), nameof(MeetingHud.Update))]
@@ -1489,7 +1487,7 @@ class MeetingHudOnDestroyPatch
         Logger.Info("------------End Meeting------------", "Phase");
         if (AmongUsClient.Instance.AmHost)
         {
-            AntiBlackout.SetIsDead();
+            _ = new LateTask(() => { AntiBlackout.SetIsDead(); }, 0.1f, "AntiBlackout");
 
             Main.LastVotedPlayerInfo = null;
             EAC.ReportTimes = [];

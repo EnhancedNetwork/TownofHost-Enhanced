@@ -45,7 +45,7 @@ public class Necroview : IAddon
             return Main.roleColors[CustomRoles.Impostor];
         }
 
-        if (customRole.IsCrewmate())
+        if (customRole.IsCrewmate() || target.Is(CustomRoles.Trickster))
         {
             return Main.roleColors[CustomRoles.Crewmate];
         }

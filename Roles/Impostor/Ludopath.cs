@@ -24,7 +24,7 @@ internal class Ludopath : RoleBase
     public override bool OnCheckMurderAsKiller(PlayerControl killer, PlayerControl target)
     {
         var ran = IRandom.Instance;
-        int KillCD = ran.Next(1, LudopathRandomKillCD.GetInt());
+        int KillCD = ran.Next(1, LudopathRandomKillCD.GetInt() + 1);
         {
             Main.AllPlayerKillCooldown[killer.PlayerId] = KillCD;
         }
