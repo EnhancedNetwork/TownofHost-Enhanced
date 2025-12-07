@@ -117,7 +117,7 @@ internal class Admirer : RoleBase
         return false;
     }
 
-    public override bool KnowRoleTarget(PlayerControl seer, PlayerControl target) => CheckKnowRoleTarget(seer, target) && !Main.PlayerStates[seer.PlayerId].IsNecromancer;
+    public override bool KnowRoleTarget(PlayerControl seer, PlayerControl target) => CheckKnowRoleTarget(seer, target) && !Main.PlayerStates[seer.PlayerId].IsFalseRole;
 
     public static bool CheckKnowRoleTarget(PlayerControl seer, PlayerControl target)
     {

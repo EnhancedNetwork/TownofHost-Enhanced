@@ -271,7 +271,7 @@ public class Lovers : IAddon
             {
                 CustomWinnerHolder.WinnerIds.Add(pair.Item1);
                 CustomWinnerHolder.WinnerIds.Add(pair.Item2);
-                
+                Logger.Info($"{pair.Item1.GetPlayer()?.GetRealName()} & {pair.Item2.GetPlayer()?.GetRealName()} stole the win as lovers", "Lovers Steal Win");
             }
         }
     }

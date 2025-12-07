@@ -92,7 +92,7 @@ internal class Berserker : RoleBase
     public override bool CanUseKillButton(PlayerControl pc) => true;
     public override bool OnCheckMurderAsKiller(PlayerControl killer, PlayerControl target)
     {
-        if (target.IsNeutralApocalypse() && !BerserkerCanKillTeamate.GetBool() && !Main.PlayerStates[target.PlayerId].IsNecromancer) return false;
+        if (target.IsNeutralApocalypse() && !BerserkerCanKillTeamate.GetBool() && !Main.PlayerStates[target.PlayerId].IsFalseRole) return false;
 
         bool noScav = true;
         var abilityUse = killer.GetAbilityUseLimit();
@@ -151,13 +151,13 @@ internal class Berserker : RoleBase
 
                 if (Utils.GetDistance(killer.transform.position, player.transform.position) <= Bomber.BomberRadius.GetFloat())
                 {
-                    if (!target.IsNeutralApocalypse() || Main.PlayerStates[target.PlayerId].IsNecromancer)
+                    if (!target.IsNeutralApocalypse() || Main.PlayerStates[target.PlayerId].IsFalseRole)
                     {
                         Main.PlayerStates[player.PlayerId].deathReason = PlayerState.DeathReason.Bombed;
                         player.RpcMurderPlayer(player);
                         player.SetRealKiller(killer);
                     }
-                    if (target.IsNeutralApocalypse() && BerserkerCanKillTeamate.GetBool() && !Main.PlayerStates[target.PlayerId].IsNecromancer)
+                    if (target.IsNeutralApocalypse() && BerserkerCanKillTeamate.GetBool() && !Main.PlayerStates[target.PlayerId].IsFalseRole)
                     {
                         Main.PlayerStates[player.PlayerId].deathReason = PlayerState.DeathReason.Bombed;
                         player.RpcMurderPlayer(player);

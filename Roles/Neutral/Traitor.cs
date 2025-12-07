@@ -61,7 +61,7 @@ internal class Traitor : RoleBase
     public override string PlayerKnowTargetColor(PlayerControl seer, PlayerControl target)
     {
         if (!seer.Is(CustomRoles.Traitor)) return string.Empty;
-        if (Main.PlayerStates[seer.PlayerId].IsNecromancer || Main.PlayerStates[target.PlayerId].IsNecromancer) return string.Empty;
+        if (Main.PlayerStates[seer.PlayerId].IsFalseRole || Main.PlayerStates[target.PlayerId].IsFalseRole) return string.Empty;
         if (target.Is(Custom_Team.Impostor))
         {
             return Main.roleColors[CustomRoles.Impostor];

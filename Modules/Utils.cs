@@ -1902,7 +1902,7 @@ public static class Utils
             var seerRoleClass = seer.GetRoleClass();
 
             // Hide player names in during Mushroom Mixup if seer is alive and desync impostor
-            if (!CamouflageIsForMeeting && MushroomMixupIsActive && seer.IsAlive() && (!seer.Is(Custom_Team.Impostor) || Main.PlayerStates[seer.PlayerId].IsNecromancer) && seer.HasDesyncRole())
+            if (!CamouflageIsForMeeting && MushroomMixupIsActive && seer.IsAlive() && (!seer.Is(Custom_Team.Impostor) || Main.PlayerStates[seer.PlayerId].IsFalseRole) && seer.HasDesyncRole())
             {
                 seer.RpcSetNamePrivate("<size=0%>", force: NoCache);
             }
@@ -1933,6 +1933,9 @@ public static class Utils
                 SelfSuffix.Append(CustomRoleManager.GetSuffixOthers(seer, seer, isForMeeting: isForMeeting));
 
                 SelfSuffix.Append(Radar.GetPlayerArrow(seer, seer, isForMeeting: isForMeeting));
+                SelfSuffix.Append(Necromancer.NecromancerReminder(seer, seer, isForMeeting: isForMeeting));
+                SelfSuffix.Append(CopyCat.CopycatReminder(seer, seer, isForMeeting: isForMeeting));
+                SelfSuffix.Append(Randomizer.RandomizerReminder(seer, seer, isForMeeting: isForMeeting));
                 SelfSuffix.Append(Spurt.GetSuffix(seer, isformeeting: isForMeeting));
 
 
@@ -2052,7 +2055,7 @@ public static class Utils
                     // Logger.Info(target.GetNameWithRole() + ":START", "NotifyRoles-Loop2");
 
                     // Hide player names in during Mushroom Mixup if seer is alive and desync impostor
-                    if (!CamouflageIsForMeeting && MushroomMixupIsActive && target.IsAlive() && (!seer.Is(Custom_Team.Impostor) || Main.PlayerStates[seer.PlayerId].IsNecromancer) && seer.HasDesyncRole())
+                    if (!CamouflageIsForMeeting && MushroomMixupIsActive && target.IsAlive() && (!seer.Is(Custom_Team.Impostor) || Main.PlayerStates[seer.PlayerId].IsFalseRole) && seer.HasDesyncRole())
                     {
                         realTarget.RpcSetNamePrivate("<size=0%>", seer, force: NoCache);
                     }
@@ -2070,11 +2073,11 @@ public static class Utils
 
                         if ((seer.IsPlayerCovenTeam() || !seer.IsAlive()) && target.IsPlayerCovenTeam() && CovenManager.HasNecronomicon(target))
                         {
-                            TargetMark.Append(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Coven), "♣"));
+                            TargetMark.Append(CustomRoles.Coven.GetColoredTextByRole("♣"));
                         }
 
                         if (target.Is(CustomRoles.Cyber) && Cyber.CyberKnown.GetBool())
-                            TargetMark.Append(ColorString(GetRoleColor(CustomRoles.Cyber), "★"));
+                            TargetMark.Append(CustomRoles.Cyber.GetColoredTextByRole("★"));
 
 
                         TargetMark.Append(Lovers.GetMarkOthers(seer, target));
@@ -2086,6 +2089,13 @@ public static class Utils
                         // {
                         //     TargetMark.Append($"<color={GetRoleColorCode(CustomRoles.Lovers)}>♥</color>");
                         // }
+                        TargetSuffix.Append(CustomRoleManager.GetLowerTextOthers(seer, target, isForMeeting: isForMeeting));
+
+                        TargetSuffix.Append(seerRoleClass?.GetSuffix(seer, target, isForMeeting: isForMeeting));
+                        TargetSuffix.Append(CustomRoleManager.GetSuffixOthers(seer, target, isForMeeting: isForMeeting));
+                        TargetSuffix.Append(Necromancer.NecromancerReminder(seer, target, isForMeeting: isForMeeting));
+                        TargetSuffix.Append(CopyCat.CopycatReminder(seer, target, isForMeeting: isForMeeting));
+                        TargetSuffix.Append(Randomizer.RandomizerReminder(seer, target, isForMeeting: isForMeeting));
 
                         // ====== Seer know target role ======
 
@@ -2703,6 +2713,7 @@ public static class Utils
         {
             PlayerState.DeathReason.Equilibrium => (CustomRoles.YinYanger.IsEnable()),
             PlayerState.DeathReason.Eaten => (CustomRoles.Pelican.IsEnable()),
+            PlayerState.DeathReason.Expired => (CustomRoles.Summoner.IsEnable()),
             PlayerState.DeathReason.Spell => (CustomRoles.Witch.IsEnable()),
             PlayerState.DeathReason.Hex => (CustomRoles.HexMaster.IsEnable()),
             PlayerState.DeathReason.Curse => (CustomRoles.CursedWolf.IsEnable()),
@@ -2809,8 +2820,9 @@ public static class Utils
             if (Statue.IsEnable) Statue.AfterMeetingTasks();
             if (Burst.IsEnable) Burst.AfterMeetingTasks();
 
-            if (CustomRoles.CopyCat.HasEnabled()) CopyCat.UnAfterMeetingTasks(); // All crew hast to be before this
+            if (CustomRoles.CopyCat.HasEnabled()) CopyCat.UnAfterMeetingTasks(); // All crew have to be before this
             if (CustomRoles.Necromancer.HasEnabled()) Necromancer.UnAfterMeetingTasks();
+            if (CustomRoles.Randomizer.HasEnabled()) Randomizer.UnAfterMeetingTasks();
         }
         catch (Exception error)
         {

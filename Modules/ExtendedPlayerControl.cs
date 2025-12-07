@@ -1412,10 +1412,10 @@ static class ExtendedPlayerControl
         else if (Madmate.MadmateKnowWhosImp.GetBool() && seer.Is(CustomRoles.Madmate) && target.CheckImpCanSeeAllies(CheckAsTarget: true)) return true;
         else if (Madmate.ImpKnowWhosMadmate.GetBool() && target.Is(CustomRoles.Madmate) && seer.CheckImpCanSeeAllies(CheckAsSeer: true)) return true;
         else if (seer.CheckImpCanSeeAllies(CheckAsSeer: true) && target.GetCustomRole().IsGhostRole() && target.GetCustomRole().IsImpostor() && !Main.PlayerStates[target.PlayerId].IsNecromancer) return true;
-        else if (seer.IsNeutralApocalypse() && target.IsNeutralApocalypse() && !Main.PlayerStates[seer.PlayerId].IsNecromancer && !Main.PlayerStates[target.PlayerId].IsNecromancer) return true;
-        else if (Ritualist.EnchantedKnowsCoven.GetBool() && seer.Is(CustomRoles.Enchanted) && target.Is(Custom_Team.Coven)) return true;
-        else if (target.Is(CustomRoles.Enchanted) && seer.Is(Custom_Team.Coven)) return true;
-        else if (target.Is(Custom_Team.Coven) && seer.Is(Custom_Team.Coven)) return true;
+        else if (seer.IsNeutralApocalypse() && target.IsNeutralApocalypse() && !Main.PlayerStates[seer.PlayerId].IsFalseRole && !Main.PlayerStates[target.PlayerId].IsFalseRole) return true;
+        else if (Ritualist.EnchantedKnowsCoven.GetBool() && seer.Is(CustomRoles.Enchanted) && ( target.Is(Custom_Team.Coven) || (Summoner.KnowSummonedRoles.GetBool() && target.Is(CustomRoles.Summoned))) && !Main.PlayerStates[target.PlayerId].IsRandomizer) return true;
+        else if (target.Is(CustomRoles.Enchanted) && (seer.Is(Custom_Team.Coven) || (Summoner.KnowSummonedRoles.GetBool() && seer.Is(CustomRoles.Summoned))) && !Main.PlayerStates[seer.PlayerId].IsRandomizer) return true;
+        else if ((target.Is(Custom_Team.Coven) || (Summoner.KnowSummonedRoles.GetBool() && target.Is(CustomRoles.Summoned))) && (seer.Is(Custom_Team.Coven) || (Summoner.KnowSummonedRoles.GetBool() && seer.Is(CustomRoles.Summoned))) && !Main.PlayerStates[seer.PlayerId].IsRandomizer && !Main.PlayerStates[target.PlayerId].IsRandomizer) return true;
         else if (target.GetRoleClass().KnowRoleTarget(seer, target)) return true;
         else if (seer.GetRoleClass().KnowRoleTarget(seer, target)) return true;
         else if (PotionMaster.CovenKnowRoleTarget(seer, target)) return true;
@@ -1506,11 +1506,12 @@ static class ExtendedPlayerControl
         {
             if (target.Is(CustomRoles.Enchanted) && Ritualist.EnchantedKnowsCoven.GetBool()) return true;
         }
-        else if (Admirer.HasEnabled && Admirer.CheckKnowRoleTarget(seer, target)) return true;
-        else if (Cultist.HasEnabled && Cultist.KnowRole(seer, target)) return true;
-        else if (Infectious.HasEnabled && Infectious.KnowRole(seer, target)) return true;
-        else if (Virus.HasEnabled && Virus.KnowRole(seer, target)) return true;
-        else if (Jackal.HasEnabled)
+        if (Main.PlayerStates[seer.PlayerId].IsRandomizer) return false;
+        if (Admirer.HasEnabled && Admirer.CheckKnowRoleTarget(seer, target)) return true;
+        if (Cultist.HasEnabled && Cultist.KnowRole(seer, target)) return true;
+        if (Infectious.HasEnabled && Infectious.KnowRole(seer, target)) return true;
+        if (Virus.HasEnabled && Virus.KnowRole(seer, target)) return true;
+        if (Jackal.HasEnabled)
         {
             if (seer.Is(CustomRoles.Jackal) || seer.Is(CustomRoles.Recruit))
                 return target.Is(CustomRoles.Sidekick) || target.Is(CustomRoles.Recruit);
