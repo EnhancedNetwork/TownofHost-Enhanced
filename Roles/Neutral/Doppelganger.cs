@@ -85,6 +85,8 @@ internal class Doppelganger : RoleBase
         Main.OvverideOutfit[killer.PlayerId] = (targetSkin, Main.PlayerStates[target.PlayerId].NormalOutfit.PlayerName);
         Logger.Info("Changed killer skin", "Doppelganger");
 
+        Main.PlayerStates[killer.PlayerId].StolenId = target.PlayerId;
+
         RPC.SyncAllPlayerNames();
         Utils.NotifyRoles(SpecifyTarget: killer, NoCache: true);
 

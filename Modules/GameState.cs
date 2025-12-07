@@ -36,6 +36,7 @@ public class PlayerState(byte playerId)
             _canUseMovingPlatform = value;
         }
     }
+    public byte? StolenId = null;
     /// <summary>
     /// IsNecromancer or IsRandomizer
     /// </summary>

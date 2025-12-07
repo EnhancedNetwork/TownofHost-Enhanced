@@ -1674,11 +1674,14 @@ public static class Utils
     }
     public static bool CheckCamoflague(this PlayerControl PC) => Camouflage.IsCamouflage || Camouflager.AbilityActivated || Utils.IsActive(SystemTypes.MushroomMixupSabotage)
         || (Main.CheckShapeshift.TryGetValue(PC.PlayerId, out bool isShapeshifitng) && isShapeshifitng);
-    public static PlayerControl GetPlayerById(int PlayerId)
+    public static PlayerControl GetPlayerById(int PlayerId, bool obfuscated = false)
     {
+        if (obfuscated)
+            PlayerId = Main.PlayerStates.FirstOrDefault(ps => ps.Value.StolenId == PlayerId).Value?.PlayerId ?? PlayerId;
         return Main.AllPlayerControls.FirstOrDefault(pc => pc.PlayerId == PlayerId) ?? null;
     }
     public static PlayerControl GetPlayer(this byte id) => GetPlayerById(id);
+    public static string GetPlayerName(this byte id) => GetPlayer(id).GetRealName();
     public static List<PlayerControl> GetPlayerListByIds(this IEnumerable<byte> PlayerIdList)
     {
         var PlayerList = PlayerIdList?.ToList().Select(x => GetPlayerById(x)).ToList();

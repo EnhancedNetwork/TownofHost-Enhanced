@@ -299,7 +299,7 @@ internal class Randomizer : RoleBase
     private static Custom_Team ResolveOverlap(IEnumerable<Custom_Team> overlappingTeams)
     {
         var teams = overlappingTeams.ToList();
-        int roll = UnityEngine.Random.Range(0, teams.Count);
+        int roll = IRandom.Instance.Next(0, teams.Count);
 
         Logger.Info($"Resolved overlap. Selected team: {teams[roll]}", "ResolveOverlap");
         return teams[roll];
@@ -331,7 +331,7 @@ internal class Randomizer : RoleBase
         }
 
         // Select a random ghost role
-        CustomRoles selectedRole = GhostRolesList[Random.Range(0, GhostRolesList.Count)];
+        CustomRoles selectedRole = GhostRolesList[IRandom.Instance.Next(0, GhostRolesList.Count)];
         Logger.Info($"Assigned ghost role {selectedRole} to player ID {playerId}.", "Randomizer");
         return selectedRole;
     }
@@ -348,11 +348,11 @@ internal class Randomizer : RoleBase
 
         List<CustomRoles> availableRoles = team switch
         {
-            Custom_Team.Crewmate => CustomRolesHelper.AllRoles.Where(role => role.IsCrewmate() && !role.IsAdditionRole() && (OnlyEnabledRoles.GetBool() ? role.IsEnable() : true)).ToList(),
-            Custom_Team.Impostor => CustomRolesHelper.AllRoles.Where(role => role.IsImpostor() && !role.IsAdditionRole() && (OnlyEnabledRoles.GetBool() ? role.IsEnable() : true)).ToList(),
-            Custom_Team.Neutral => CustomRolesHelper.AllRoles.Where(role => role.IsNeutral() && !role.IsAdditionRole() && (OnlyEnabledRoles.GetBool() ? role.IsEnable() : true) && role is not CustomRoles.Randomizer or CustomRoles.Lawyer).ToList(),
-            Custom_Team.Coven => CustomRolesHelper.AllRoles.Where(role => role.IsCoven() && !role.IsAdditionRole() && (OnlyEnabledRoles.GetBool() ? role.IsEnable() : true)).ToList(),
-            _ => new List<CustomRoles>() // Default empty list
+            Custom_Team.Crewmate => CustomRolesHelper.AllRoles.Where(role => role.IsCrewmate() && !role.IsAdditionRole() && !role.IsGhostRole() && (OnlyEnabledRoles.GetBool() ? role.IsEnable() : true)).ToList(),
+            Custom_Team.Impostor => CustomRolesHelper.AllRoles.Where(role => role.IsImpostor() && !role.IsAdditionRole() && !role.IsGhostRole() && (OnlyEnabledRoles.GetBool() ? role.IsEnable() : true)).ToList(),
+            Custom_Team.Neutral => CustomRolesHelper.AllRoles.Where(role => role.IsNeutral() && !role.IsAdditionRole() && !role.IsGhostRole() && (OnlyEnabledRoles.GetBool() ? role.IsEnable() : true) && role is not CustomRoles.Randomizer or CustomRoles.Lawyer).ToList(),
+            Custom_Team.Coven => CustomRolesHelper.AllRoles.Where(role => role.IsCoven() && !role.IsAdditionRole() && !role.IsGhostRole() && (OnlyEnabledRoles.GetBool() ? role.IsEnable() : true)).ToList(),
+            _ => [] // Default empty list
         };
         if (availableRoles.Contains(CustomRoles.Randomizer))
         {
@@ -366,7 +366,7 @@ internal class Randomizer : RoleBase
         }
 
         // Select a random role from the available roles
-        var selectedRole = availableRoles[UnityEngine.Random.Range(0, availableRoles.Count)];
+        var selectedRole = availableRoles[IRandom.Instance.Next(0, availableRoles.Count)];
 
         // Lock the team if not already locked
         if (!playerState.TeamLockApplied)
@@ -566,7 +566,7 @@ internal class Randomizer : RoleBase
                 }
 
                 // Randomly determine the number of add-ons to assign
-                int addOnCount = Random.Range(minAddOns, maxAddOns + 1);
+                int addOnCount = IRandom.Instance.Next(minAddOns, maxAddOns + 1);
                 List<CustomRoles> selectedAddOns = [.. CustomRolesHelper.AllRoles.Where(role => role.IsAdditionRole() && !role.IsBetrayalAddon() && !AddonBlackList(role) && (!OnlyEnabledRoles.GetBool() || role.IsEnable())).ToList()
                     .OrderBy(_ => Random.value)
                     .Take(addOnCount)];

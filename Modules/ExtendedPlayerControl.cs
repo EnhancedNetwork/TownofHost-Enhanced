@@ -1162,6 +1162,19 @@ static class ExtendedPlayerControl
 
         }, FlashDuration + delay, "Fix Desync Reactor");
     }
+    /// <summary>
+    /// Gets the obfuscated playerId, taking Doppleganger/Rebirth into account
+    /// </summary>
+    /// <param name="player"></param>
+    /// <returns></returns>
+    public static byte GetVisiblePlayerId(this PlayerControl player)
+    {
+        if (Main.PlayerStates[player.PlayerId].StolenId != null)
+        {
+            return Main.PlayerStates[player.PlayerId].StolenId.Value;
+        }
+        return player.PlayerId;
+    }
 
     public static string GetRealName(this PlayerControl player, bool isMeeting = false, bool clientData = false)
     {

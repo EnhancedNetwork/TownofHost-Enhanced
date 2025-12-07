@@ -50,6 +50,31 @@ public class Rebirth : IAddon
             KvP.Value.Clear();
         }
     }
+
+    public static bool IsViableSwapTarget(PlayerControl x)
+    {
+        return !x.IsHost() 
+            && AntiBlackout.ExilePlayerId != x.PlayerId
+            && !x.Is(CustomRoles.Rebirth)
+            && !x.IsAnySubRole(x => x.IsConverted())
+            && !x.Is(CustomRoles.Admired)
+            && !x.Is(CustomRoles.Knighted)
+            && !x.Is(CustomRoles.Cultist)
+            && !x.Is(CustomRoles.Infectious)
+            && !x.Is(CustomRoles.Virus)
+            && !x.Is(CustomRoles.Jackal)
+            && !x.Is(CustomRoles.Sidekick)
+            && !x.Is(CustomRoles.Admirer)
+            && !x.GetCustomRole().IsCoven()
+            && !x.GetCustomRole().IsImpostor()
+            && !x.Is(CustomRoles.Lovers) 
+            && !x.Is(CustomRoles.Romantic) 
+            && !x.Is(CustomRoles.Doppelganger) 
+            && !x.GetCustomRole().IsImpostor() 
+            && !x.Is(CustomRoles.Solsticer) 
+            && !x.Is(CustomRoles.NiceMini);
+    }
+
     public static bool SwapSkins(PlayerControl pc, out NetworkedPlayerInfo NewExiledPlayer)
     {
         NewExiledPlayer = default;
@@ -61,9 +86,7 @@ public class Rebirth : IAddon
         }
 
         var ViablePlayer = list.Where(x => x != null && x.PlayerId != pc.PlayerId).Shuffle()
-            .FirstOrDefault(x => !x.IsHost() && AntiBlackout.ExilePlayerId != x.PlayerId && !x.Is(CustomRoles.Rebirth) && !x.IsAnySubRole(x => x.IsConverted()) && !x.Is(CustomRoles.Admired) && !x.Is(CustomRoles.Knighted) &&
-/*All converters */ !x.Is(CustomRoles.Cultist) && !x.Is(CustomRoles.Infectious) && !x.Is(CustomRoles.Virus) && !x.Is(CustomRoles.Jackal) && !x.Is(CustomRoles.Admirer) && !x.Is(CustomRoles.Ritualist) &&
-                !x.Is(CustomRoles.Lovers) && !x.Is(CustomRoles.Romantic) && !x.Is(CustomRoles.Doppelganger) && !x.GetCustomRole().IsImpostor() && !x.Is(CustomRoles.Solsticer) && !x.Is(CustomRoles.NiceMini));
+            .FirstOrDefault(IsViableSwapTarget);
 
         if (ViablePlayer == null)
         {
@@ -77,6 +100,8 @@ public class Rebirth : IAddon
 
         ViablePlayer.SetNewOutfit(Main.PlayerStates[pc.PlayerId].NormalOutfit, true, true, pc.Data.PlayerLevel);
         Main.OvverideOutfit[ViablePlayer.PlayerId] = (Main.PlayerStates[pc.PlayerId].NormalOutfit, Main.PlayerStates[pc.PlayerId].NormalOutfit.PlayerName);
+
+        Main.PlayerStates[pc.PlayerId].StolenId = ViablePlayer.PlayerId;
 
         NewExiledPlayer = ViablePlayer.Data;
         if (Rebirths[pc.PlayerId] <= 0)
