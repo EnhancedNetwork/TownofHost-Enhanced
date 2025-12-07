@@ -1171,7 +1171,8 @@ public enum AdditionalWinners
     Specter = CustomRoles.Specter,
     Maverick = CustomRoles.Maverick,
     Shaman = CustomRoles.Shaman,
-    Taskinator = CustomRoles.Taskinator,
+    // Changed to Pariah
+    // Taskinator = CustomRoles.Taskinator,
     Pixie = CustomRoles.Pixie,
     Quizmaster = CustomRoles.Quizmaster,
     SchrodingersCat = CustomRoles.SchrodingersCat,

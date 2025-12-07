@@ -62,11 +62,11 @@ internal class Summoner : CovenManager
         .SetValueFormat(OptionFormat.Seconds);
 
         // Kill Cooldown
-        KillCooldownOption = FloatOptionItem.Create(Id + 12, "SummonerSettings.SummonedKillCooldown", new(5f, 60f, 1f), 15f, TabGroup.CovenRoles, false)
+        KillCooldownOption = FloatOptionItem.Create(Id + 12, "SummonerSettings.SummonedKillCooldown", new(0f, 60f, 1f), 15f, TabGroup.CovenRoles, false)
         .SetParent(CustomRoleSpawnChances[CustomRoles.Summoner])
         .SetValueFormat(OptionFormat.Seconds);
 
-        NecroKillCooldownOption = FloatOptionItem.Create(Id + 19, "SummonerSettings.SummonerKillCooldown", new(5f, 60f, 1f), 15f, TabGroup.CovenRoles, false)
+        NecroKillCooldownOption = FloatOptionItem.Create(Id + 19, "SummonerSettings.SummonerKillCooldown", new(0f, 180f, 2.5f), 30f, TabGroup.CovenRoles, false)
         .SetParent(CustomRoleSpawnChances[CustomRoles.Summoner])
         .SetValueFormat(OptionFormat.Seconds);
 
