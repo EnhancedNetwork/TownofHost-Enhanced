@@ -10,16 +10,14 @@ internal class Randomizer : RoleBase
 {
     //===========================SETUP================================\\
     private const int Id = 82000; // Unique ID for Randomizer
-    public static readonly HashSet<byte> playerIdList = new();
+    public static readonly HashSet<byte> playerIdList = [];
+    private static readonly Dictionary<byte, List<CustomRoles>> KeptAddons = [];
     public override bool IsDesyncRole => true;
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor; // Base role remains Neutral
     public override Custom_RoleType ThisRoleType => Custom_RoleType.NeutralChaos;
     public override CustomRoles Role => CustomRoles.Randomizer;
     //================================================================\\
-
-    private static readonly Dictionary<CustomRoles, OptionItem> RoleAvailabilityOptions = new();
-
-
+    
     private static OptionItem ChanceCrew;
     private static OptionItem ChanceImpostor;
     private static OptionItem ChanceNeutral;
@@ -60,6 +58,7 @@ internal class Randomizer : RoleBase
     public override void Init()
     {
         playerIdList.Clear();
+        KeptAddons.Clear();
 
         int crewChance = ChanceCrew.GetInt();
         int impostorChance = ChanceImpostor.GetInt();
@@ -86,6 +85,7 @@ internal class Randomizer : RoleBase
         if (playerIdList.Contains(playerId)) return; // Avoid duplicates
 
         playerIdList.Add(playerId);
+        KeptAddons.Add(playerId, []);
         var pc = GetPlayerById(playerId);
         if (pc == null) return;
 
@@ -377,7 +377,6 @@ internal class Randomizer : RoleBase
             playerState.IsRandNeutralTeam = team == Custom_Team.Neutral;
             playerState.IsRandCovenTeam = team == Custom_Team.Coven;
 
-
             Logger.Info($"Randomizer locked to {team} team.", "Randomizer");
         }
 
@@ -481,15 +480,15 @@ internal class Randomizer : RoleBase
             Logger.Info($"Randomizer {pc.name} Randomizer AfterMeetingTasks is running", "Randomizer");
             if (pc == null) continue;
 
-            List<CustomRoles> keptAddons = new List<CustomRoles>();
-            foreach (var addOn in pc.GetCustomSubRoles().Where(x => (x.IsBetrayalAddonV2() || x == CustomRoles.Lovers)))
+            
+            foreach (var addOn in pc.GetCustomSubRoles().Where(x => (x.IsBetrayalAddonV2() || x == CustomRoles.Lovers) && !KeptAddons[playerId].Contains(x)))
             {
                 Logger.Info($"Randomizer {pc.name} keeps addon {addOn}", "Randomizer");
-                keptAddons.Add(addOn);
+                KeptAddons[playerId].Add(addOn);
             }
             // Reset subroles
             // Main.PlayerStates[playerId].ResetSubRoles();
-            foreach (var addon in pc.GetCustomSubRoles().ToArray().Except(keptAddons))
+            foreach (var addon in pc.GetCustomSubRoles().ToArray().Except(KeptAddons[playerId]))
             {
                 Main.PlayerStates[playerId].RemoveSubRole(addon);
             }
@@ -570,7 +569,7 @@ internal class Randomizer : RoleBase
                 List<CustomRoles> selectedAddOns = [.. CustomRolesHelper.AllRoles.Where(role => role.IsAdditionRole() && !role.IsBetrayalAddon() && !AddonBlackList(role) && (!OnlyEnabledRoles.GetBool() || role.IsEnable())).ToList()
                     .OrderBy(_ => Random.value)
                     .Take(addOnCount)];
-                foreach (var addOn in keptAddons)
+                foreach (var addOn in KeptAddons[playerId])
                 {
                     selectedAddOns.Add(addOn);
                 }

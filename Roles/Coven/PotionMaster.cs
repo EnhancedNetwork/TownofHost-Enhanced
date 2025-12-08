@@ -241,7 +241,7 @@ internal class PotionMaster : CovenManager
     }
     public override void AfterMeetingTasks()
     {
-        BarrierList[_Player.PlayerId].Clear();
+        if (BarrierList.TryGetValue(_Player.PlayerId, out var list)) list?.Clear();
     }
     public override void SetAbilityButtonText(HudManager hud, byte playerId)
     {

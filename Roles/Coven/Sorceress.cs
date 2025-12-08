@@ -125,7 +125,7 @@ internal class Sorceress : CovenManager
         var id = _Player.PlayerId;
         if (Mirages.TryGetValue(id, out var mirages))
         {
-            mirages.TargetId.GetPlayer().MarkDirtySettings();
+            mirages.TargetId.GetPlayer()?.MarkDirtySettings();
             foreach (var mirage in mirages.NetObjects)
             {
                 mirage.Despawn();
