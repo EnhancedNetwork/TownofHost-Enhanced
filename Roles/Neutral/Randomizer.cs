@@ -269,14 +269,14 @@ internal class Randomizer : RoleBase
         if (totalChance == 0)
         {
             Logger.Warn("All team chances are set to 0. Running default overlap with equal chances.", "DetermineTeam");
-            return ResolveOverlap(new[] { Custom_Team.Crewmate, Custom_Team.Impostor, Custom_Team.Neutral, Custom_Team.Coven });
+            return ResolveOverlap([Custom_Team.Crewmate, Custom_Team.Impostor, Custom_Team.Neutral, Custom_Team.Coven]);
         }
 
         var rand = IRandom.Instance;
         int roll = rand.Next(0, totalChance);
 
         // Check for overlapping chances
-        List<Custom_Team> overlappingTeams = new();
+        List<Custom_Team> overlappingTeams = [];
 
         if (roll < crewChance) overlappingTeams.Add(Custom_Team.Crewmate);
         if (roll < crewChance + impostorChance && roll >= crewChance) overlappingTeams.Add(Custom_Team.Impostor);
@@ -512,11 +512,8 @@ internal class Randomizer : RoleBase
                     // Explicitly set dead state
                     Main.PlayerStates[pc.PlayerId].IsDead = true; // Mark as dead
 
-
                     Logger.Info($"Randomizer {pc.name} has been marked as dead and assigned the ghost role: {newRole}.", "Randomizer");
                 }
-
-
                 else
                 {
                     // Ghost roles are disabled, do nothing to avoid reviving

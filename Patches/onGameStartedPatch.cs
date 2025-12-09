@@ -54,6 +54,8 @@ internal class ChangeRoleSettings
             }
 
             Main.PlayerStates = [];
+            RoleAssign.PrevRoleResult = RoleAssign.RoleResult;
+            RoleAssign.PrevRolePreventAttempts = [];
             RoleAssign.RoleResult = [];
             KillTimerManager.Initializate();
             AbilityUseManager.Initializate();

@@ -105,7 +105,7 @@ public class ModUpdater
 
         foreach (var region in regions)
         {
-            if (region.Name.Contains("Niko233(NA_US)", StringComparison.OrdinalIgnoreCase) || region.Name.Contains("NikoCat233", StringComparison.OrdinalIgnoreCase) || !region.Name.Contains("Niko233(EU)", StringComparison.OrdinalIgnoreCase))
+            if (region.Name.Contains("Niko233(NA_US)", StringComparison.OrdinalIgnoreCase) || region.Name.Contains("NikoCat233", StringComparison.OrdinalIgnoreCase))
             {
                 forceUpdate = true;
                 break;

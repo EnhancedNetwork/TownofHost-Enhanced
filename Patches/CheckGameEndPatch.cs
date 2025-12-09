@@ -132,13 +132,9 @@ class GameEndCheckerForNormal
                 if (playerState.IsRandomizer)
                 {
                     Logger.Info($"Skipping Randomizer {pc.name} from game-ending criteria.", "CheckEndCriteria");
-
-
-                    {
-                        pc.RpcSetCustomRole(CustomRoles.Randomizer);
-                        pc.RpcChangeRoleBasis(CustomRoles.Crewmate);
-                        Logger.Info($"Reverted {pc.name} to Randomizer before game-end checks.", "CheckEndCriteria");
-                    }
+                    pc.RpcSetCustomRole(CustomRoles.Randomizer);
+                    pc.RpcChangeRoleBasis(CustomRoles.Crewmate);
+                    Logger.Info($"Reverted {pc.name} to Randomizer before game-end checks.", "CheckEndCriteria");
 
                     continue;
                 }

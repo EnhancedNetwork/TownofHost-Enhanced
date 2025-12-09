@@ -733,7 +733,7 @@ public static class CustomRolesHelper
                     || pc.Is(CustomRoles.Mare)
                     || pc.Is(CustomRoles.Solsticer)
                     || pc.Is(CustomRoles.Rebound)
-                    || pc.Is(CustomRoles.Workaholic) && !Workaholic.WorkaholicVisibleToEveryone.GetBool()
+                    || pc.Is(CustomRoles.Workaholic) && Workaholic.WorkaholicVisibleToEveryone.GetBool()
                     || pc.Is(CustomRoles.PunchingBag))
                     return false; //Based on guess manager
                 break;
@@ -746,7 +746,7 @@ public static class CustomRolesHelper
                     || pc.Is(CustomRoles.Mare)
                     || pc.Is(CustomRoles.Solsticer)
                     || pc.Is(CustomRoles.Onbound)
-                    || pc.Is(CustomRoles.Workaholic) && !Workaholic.WorkaholicVisibleToEveryone.GetBool()
+                    || pc.Is(CustomRoles.Workaholic) && Workaholic.WorkaholicVisibleToEveryone.GetBool()
                     || pc.Is(CustomRoles.PunchingBag))
                 {
                     return false;

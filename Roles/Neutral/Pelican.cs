@@ -67,7 +67,7 @@ internal class Pelican : RoleBase
     {
         var writer = MessageWriter.Get(SendOption.Reliable); // SetPelicanEatenNum
         writer.Write(playerId);
-        if (playerId != byte.MaxValue)
+        if (playerId != byte.MaxValue && eatenList.ContainsKey(playerId))
         {
             writer.Write(eatenList[playerId].Count);
             foreach (var el in eatenList[playerId])

@@ -265,7 +265,15 @@ public static class EnterCodeManagerPatch
     [HarmonyPostfix]
     public static void FindGameResult_Postfix(HttpMatchmakerManager.FindGameByCodeResponse response)
     {
-        if (response != null && ServerManager.InstanceExists)
+        if (response == null)
+        {
+            return;
+        }
+        foreach (var error in response.Errors.ToArray())
+        {
+            Logger.Error($"{error.Reason}", "FindGameResult");
+        }
+        if (ServerManager.InstanceExists)
         {
             IRegionInfo region;
             if (response.Region != StringNames.NoTranslation)
