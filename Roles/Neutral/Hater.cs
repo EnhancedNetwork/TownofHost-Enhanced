@@ -63,7 +63,7 @@ internal class Hater : RoleBase
         if (killer == null || target == null) return false;
         if (killer.PlayerId == target.PlayerId) return true;  // Return true to allow suicides
 
-        if (target.GetCustomSubRoles().Any(addOn => addOn.IsConverted() || addOn is CustomRoles.Madmate or CustomRoles.Admired or CustomRoles.Lovers)
+        if (target.GetCustomSubRoles().Any(addOn => addOn.IsConverted() || addOn is CustomRoles.Admired or CustomRoles.Lovers)
             || IsConvertedMainRole(target.GetCustomRole()))
         {
             if (!ChooseConverted.GetBool())
@@ -78,6 +78,7 @@ internal class Hater : RoleBase
                 || (target.Is(CustomRoles.Lovers) && CanKillLovers.GetBool())
                 || ((target.Is(CustomRoles.Romantic) || target.Is(CustomRoles.RuthlessRomantic) || target.Is(CustomRoles.VengefulRomantic)
                 || Romantic.BetPlayer.ContainsValue(target.PlayerId)) && CanKillLovers.GetBool())
+                || (target.Is(CustomRoles.Cupid) && CanKillLovers.GetBool())
                 || ((target.Is(CustomRoles.Sidekick) || target.Is(CustomRoles.Jackal) || target.Is(CustomRoles.Recruit)) && CanKillSidekicks.GetBool())
                 || (target.Is(CustomRoles.Egoist) && CanKillEgoists.GetBool())
                 || ((target.Is(CustomRoles.Infected) || target.Is(CustomRoles.Infectious)) && CanKillInfected.GetBool())
@@ -128,5 +129,42 @@ internal class Hater : RoleBase
 
             _ => false,
         };
+    }
+
+    public static bool HasWon()
+    {
+        var hatedAlive = Main.AllAlivePlayerControls.Any(x => IsHated(x));
+
+
+        return true;
+    }
+
+    public static bool IsHated(PlayerControl player) 
+    {
+        var subRoles = player.GetCustomSubRoles();
+
+        if (subRoles.Any(addOn => addOn.IsConverted() || addOn is CustomRoles.Admired or CustomRoles.Lovers) || IsConvertedMainRole(player.GetCustomRole()))
+        {
+            if (!ChooseConverted.GetBool()) return true;
+
+            if ((player.Is(CustomRoles.Madmate) || player.Is(CustomRoles.Gangster)) && CanKillMadmate.GetBool()) return true;
+            if ((player.Is(CustomRoles.Charmed) || player.Is(CustomRoles.Cultist)) && CanKillCharmed.GetBool()) return true;
+            if (CanKillLovers.GetBool())
+            {
+                if (player.Is(CustomRoles.Lovers)) return true;
+                if (player.Is(CustomRoles.Romantic) || player.Is(CustomRoles.RuthlessRomantic) || player.Is(CustomRoles.VengefulRomantic)
+                    || Romantic.BetPlayer.ContainsValue(player.PlayerId)) return true;
+                if (player.Is(CustomRoles.Cupid)) return true;
+                if (Romantic.BetPlayer.ContainsValue(player.PlayerId)) return true;
+            }
+            if ((player.Is(CustomRoles.Sidekick) || player.Is(CustomRoles.Jackal) || player.Is(CustomRoles.Recruit)) && CanKillSidekicks.GetBool()) return true;
+            if (player.Is(CustomRoles.Egoist) && CanKillEgoists.GetBool()) return true;
+            if ((player.Is(CustomRoles.Infected) || player.Is(CustomRoles.Infectious)) && CanKillInfected.GetBool()) return true;
+            if ((player.Is(CustomRoles.Contagious) || player.Is(CustomRoles.Virus)) && CanKillContagious.GetBool()) return true;
+            if ((player.Is(CustomRoles.Admired) || player.Is(CustomRoles.Admirer)) && CanKillAdmired.GetBool()) return true;
+            if ((player.Is(CustomRoles.Enchanted) || player.Is(CustomRoles.Ritualist)) && CanKillEnchanted.GetBool()) return true;
+        }
+        
+        return false;
     }
 }

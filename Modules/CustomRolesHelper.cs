@@ -1710,8 +1710,9 @@ public static class CustomRolesHelper
             RoleBucket.CrewmateSupport => roleType is Custom_RoleType.CrewmateSupport,
             RoleBucket.CrewmateKilling => roleType is Custom_RoleType.CrewmateKilling,
             RoleBucket.CrewmatePower => roleType is Custom_RoleType.CrewmatePower,
-            RoleBucket.CrewmateCommon => roleType is Custom_RoleType.CrewmateBasic or Custom_RoleType.CrewmateSupport or Custom_RoleType.CrewmateKilling,
-            RoleBucket.CrewmateRandom => roleType is Custom_RoleType.CrewmatePower or Custom_RoleType.CrewmateBasic or Custom_RoleType.CrewmateSupport or Custom_RoleType.CrewmateKilling,
+            RoleBucket.CrewmateInvestigative => roleType is Custom_RoleType.CrewmateInvestigative,
+            RoleBucket.CrewmateCommon => roleType is Custom_RoleType.CrewmateBasic or Custom_RoleType.CrewmateSupport or Custom_RoleType.CrewmateKilling or Custom_RoleType.CrewmateInvestigative,
+            RoleBucket.CrewmateRandom => roleType is Custom_RoleType.CrewmatePower or Custom_RoleType.CrewmateBasic or Custom_RoleType.CrewmateSupport or Custom_RoleType.CrewmateKilling or Custom_RoleType.CrewmateInvestigative,
 
             RoleBucket.NeutralBenign => roleType is Custom_RoleType.NeutralBenign,
             RoleBucket.NeutralEvil => roleType is Custom_RoleType.NeutralEvil,
@@ -1890,6 +1891,7 @@ public enum RoleBucket
     CrewmateSupport,
     CrewmateKilling,
     CrewmatePower,
+    CrewmateInvestigative,
     CrewmateCommon, // Common = All except Power
     CrewmateRandom,
 

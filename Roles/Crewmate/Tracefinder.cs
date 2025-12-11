@@ -12,7 +12,7 @@ internal class Tracefinder : RoleBase
     public override CustomRoles Role => CustomRoles.Tracefinder;
     private const int Id = 7300;
     public override CustomRoles ThisRoleBase => CustomRoles.Scientist;
-    public override Custom_RoleType ThisRoleType => Custom_RoleType.CrewmateBasic;
+    public override Custom_RoleType ThisRoleType => Custom_RoleType.CrewmateInvestigative;
     //==================================================================\\
 
     private static OptionItem VitalsDuration;

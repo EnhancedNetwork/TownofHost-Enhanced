@@ -436,10 +436,8 @@ class GameEndCheckerForNormal
                                     AdditionalWinnerTeams.Add(AdditionalWinners.Provocateur);
                                 }
                                 break;
-                            case CustomRoles.Hater when Hater.isWon:
+                            case CustomRoles.Hater when Hater.HasWon():
                                 AdditionalWinnerTeams.Add(AdditionalWinners.Hater);
-                                // You have a player id list, no need for another list; also use a for loop instead of LINQ
-                                //Hater.winnerHaterList.Do(x => WinnerIds.Add(x));
 
                                 var HaterArray = Hater.playerIdList.ToArray();
                                 foreach (var Hater in HaterArray)

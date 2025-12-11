@@ -11,7 +11,7 @@ internal class Enigma : RoleBase
     public override CustomRoles Role => CustomRoles.Enigma;
     private const int Id = 8100;
     public override CustomRoles ThisRoleBase => CustomRoles.Crewmate;
-    public override Custom_RoleType ThisRoleType => Custom_RoleType.CrewmateSupport;
+    public override Custom_RoleType ThisRoleType => Custom_RoleType.CrewmateInvestigative;
     //==================================================================\\
 
     private static OptionItem EnigmaClueStage1Tasks;
