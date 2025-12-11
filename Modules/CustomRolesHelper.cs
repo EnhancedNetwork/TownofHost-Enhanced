@@ -1814,6 +1814,7 @@ public enum Custom_RoleType
     CrewmateSupport,
     CrewmateKilling,
     CrewmatePower,
+    CrewmateInvestigative,
     CrewmateGhosts,
 
     // Neutral

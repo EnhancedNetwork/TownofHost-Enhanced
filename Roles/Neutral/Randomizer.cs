@@ -477,9 +477,8 @@ internal class Randomizer : RoleBase
         {
 
             var pc = GetPlayerById(playerId);
-            Logger.Info($"Randomizer {pc.name} Randomizer AfterMeetingTasks is running", "Randomizer");
             if (pc == null) continue;
-
+            Logger.Info($"Randomizer {pc.name} Randomizer AfterMeetingTasks is running", "Randomizer");
             
             foreach (var addOn in pc.GetCustomSubRoles().Where(x => (x.IsBetrayalAddonV2() || x == CustomRoles.Lovers) && !KeptAddons[playerId].Contains(x)))
             {
