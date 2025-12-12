@@ -63,6 +63,8 @@
   "ApocCanGuessApoc": "<color=#7f8c8d>Neutral</color> <color=#ff174f>Apocalypse</color> can Guess <color=#7f8c8d>Neutral</color> <color=#ff174f>Apocalypse</color> Roles",
   "CovenCanGuessCoven": "<color=#ac42f2>Coven</color> Can Guess <color=#ac42f2>Coven</color> Roles",
   "GuessImmune": "Sorry, but that role is immune to being guessed!",
+  "CanGuessCrewInvestigative": "Can Guess <color=#8cffff>Crewmate Investigative</color> Roles",
+  "CantGuessCrewInvestigative": "Guessing Crewmate Investigative roles is disabled",
 
   "GM": "Game Master",
   "Sunnyboy": "Sunnyboy",

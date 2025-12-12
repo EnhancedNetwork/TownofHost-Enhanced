@@ -192,6 +192,14 @@ public static class GuessManager
             Logger.Msg($" {target.PlayerId}", "Guesser - target.PlayerId");
             Logger.Msg($" {role}", "Guesser - role");
 
+            if (role.GetStaticRoleClass().ThisRoleType == Custom_RoleType.CrewmateInvestigative && 
+                !Options.CanGuessCrewInvestigative.GetBool())
+            {
+                Logger.Info($"Guess disabled for Crewmate Investigative roles.", "GuessManager");
+                pc.ShowInfoMessage(isUI, GetString("CantGuessCrewInvestigative"));
+                return true;
+            }
+
             if (target != null)
             {
 
