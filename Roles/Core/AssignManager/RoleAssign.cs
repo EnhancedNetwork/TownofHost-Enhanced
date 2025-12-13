@@ -1113,6 +1113,8 @@ public class RoleAssign
 
             if (PrevRoleResult.ContainsKey(randomPlayer.PlayerId))
             {
+                if (!PrevRolePreventAttempts.ContainsKey(randomPlayer.PlayerId)) PrevRolePreventAttempts.Add(randomPlayer.PlayerId, 0);
+
                 if (++PrevRolePreventAttempts[randomPlayer.PlayerId] >= PREVENT_REPEAT_STR)
                 {
                     PrevRoleResult.Remove(randomPlayer.PlayerId);
@@ -1122,7 +1124,7 @@ public class RoleAssign
 
             // Assign random role for random player
             RoleResult[randomPlayer.PlayerId] = assignedRole;
-            Logger.Info($"Player：{randomPlayer.GetRealName()} => {assignedRole}", "RoleAssign");
+            Logger.Info($"Player: {randomPlayer.GetRealName()} => {assignedRole}", "RoleAssign");
 
             // Remove random role and player from list
             AllPlayers.Remove(randomPlayer);
