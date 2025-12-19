@@ -4367,5 +4367,17 @@
 	"RoleBucket.CovenTrickery": "Coven Trickery",
 	"RoleBucket.CovenUtility": "Coven Utility",
 	"RoleBucket.CovenCommon": "Coven Common",
-	"RoleBucket.CovenRandom": "Coven Random"
+	"RoleBucket.CovenRandom": "Coven Random",
+
+  "MenuTitle.AFKDetection": "AFK Detection (Also used for black screen fix)",
+  "EnableAFKDetector": "Enable AFK Detector",
+  "AFKConsequence": "Consequence for AFK",
+  "AFKConsequence.Nothing": "Nothing",
+  "AFKConsequence.Shield": "Shield",
+  "AFKConsequence.Suicide": "Suicide",
+  "AFKConsequence.Kick": "Kick",
+  "AFKMinPlayersToActivate": "Min players to Activate",
+  "AFKActivateOnStart": "Activate on Start",
+
+  "FixBlackScreenWaitForDead": "Waiting for Dead Players to fix Black Screen"
 }
