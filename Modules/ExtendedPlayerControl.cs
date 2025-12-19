@@ -5,6 +5,7 @@ using Hazel;
 using Il2CppInterop.Runtime.InteropTypes.Arrays;
 using InnerNet;
 using System;
+using System.Collections;
 using System.Text;
 using TOHE.Modules;
 using TOHE.Modules.Rpc;
@@ -23,6 +24,8 @@ namespace TOHE;
 
 static class ExtendedPlayerControl
 {
+    public static readonly HashSet<byte> BlackScreenWaitingPlayers = [];
+    public static readonly HashSet<byte> CancelBlackScreenFix = [];
     // checkAddons disable checks in MainRole Set, checkAAconflict disable checks in SubRole Set
     public static void RpcSetCustomRole(this PlayerControl player, CustomRoles role, bool checkAddons = true, bool checkAAconflict = true)
     {
@@ -947,6 +950,9 @@ static class ExtendedPlayerControl
         NetHelpers.WriteVector2(position, messageWriter);
         messageWriter.Write(newSid);
         AmongUsClient.Instance.FinishRpcImmediately(messageWriter);
+
+        AFKDetector.TempIgnoredPlayers.Add(player.PlayerId);
+        _ = new LateTask(() => AFKDetector.TempIgnoredPlayers.Remove(player.PlayerId), 0.2f + Utils.CalculatePingDelay());
     }
     public static void RpcRandomVentTeleport(this PlayerControl player)
     {
@@ -1700,4 +1706,127 @@ static class ExtendedPlayerControl
 
     public const MurderResultFlags ResultFlags = MurderResultFlags.Succeeded; //No need for DecisonByHost
     public static SendOption RpcSendOption => Main.CurrentServerIsVanilla && Options.BypassRateLimitAC.GetBool() ? SendOption.None : SendOption.Reliable;
+
+    // Credit to EHR
+    public static void FixBlackScreen(this PlayerControl pc)
+    {
+        if (pc == null || !AmongUsClient.Instance.AmHost || pc.IsNonHostModdedClient()) return;
+
+        if (GameStates.IsMeeting || ExileController.Instance || AntiBlackout.SkipTasks || pc.inVent || pc.inMovingPlat || pc.onLadder || !Main.AllPlayerControls.FindFirst(x => !x.IsAlive(), out var dummyGhost))
+        {
+            if (BlackScreenWaitingPlayers.Add(pc.PlayerId))
+                Main.Instance.StartCoroutine(Wait());
+
+            return;
+
+            IEnumerator Wait()
+            {
+                Logger.Warn($"FixBlackScreen was called for {pc.GetNameWithRole()}, but the conditions are not met to execute this code right now, waiting until it becomes possible to do so", "FixBlackScreen");
+
+                while (GameStates.InGame && !GameStates.IsEnded && !CancelBlackScreenFix.Contains(pc.PlayerId) && (GameStates.IsMeeting || ExileController.Instance || AntiBlackout.SkipTasks || Main.AllPlayerControls.All(x => x.IsAlive())))
+                    yield return null;
+
+                if (CancelBlackScreenFix.Remove(pc.PlayerId))
+                {
+                    Logger.Msg($"The black screen fix was canceled for {pc.GetNameWithRole()}", "FixBlackScreen");
+                    BlackScreenWaitingPlayers.Remove(pc.PlayerId);
+                    yield break;
+                }
+
+                if (!GameStates.InGame || GameStates.IsEnded)
+                {
+                    Logger.Msg($"During the waiting, the game ended, so the black screen fix will not be executed for {pc.GetNameWithRole()}", "FixBlackScreen");
+                    BlackScreenWaitingPlayers.Remove(pc.PlayerId);
+                    yield break;
+                }
+
+                yield return new WaitForSeconds(pc.IsAlive() ? 1f : 3f);
+
+                if (!GameStates.InGame || GameStates.IsEnded)
+                {
+                    Logger.Msg($"During the waiting, the game ended, so the black screen fix will not be executed for {pc.GetNameWithRole()}", "FixBlackScreen");
+                    BlackScreenWaitingPlayers.Remove(pc.PlayerId);
+                    yield break;
+                }
+
+                Logger.Msg($"Now that the conditions are met, fixing black screen for {pc.GetNameWithRole()}", "FixBlackScreen");
+                BlackScreenWaitingPlayers.Remove(pc.PlayerId);
+                pc.FixBlackScreen();
+            }
+        }
+
+        SystemTypes systemtype = (MapNames)Utils.GetActiveMapId() switch
+        {
+            MapNames.Polus => SystemTypes.Laboratory,
+            MapNames.Airship => SystemTypes.HeliSabotage,
+            _ => SystemTypes.Reactor
+        };
+
+        var sender = CustomRpcSender.Create($"Fix Black Screen For {pc.GetNameWithRole()}", SendOption.Reliable);
+
+        sender.RpcDesyncRepairSystem(pc, systemtype, 128);
+
+        int targetClientId = pc.OwnerId;
+        var ghostPos = dummyGhost.GetCustomPosition();
+        var pcPos = pc.GetCustomPosition();
+        var timer = Math.Max(Main.AllPlayerKillCooldown[pc.PlayerId], 0.1f);
+
+        if (pc.IsAlive())
+        {
+            // CheckInvalidMovementPatch.ExemptedPlayers.UnionWith([pc.PlayerId, dummyGhost.PlayerId]);
+            AFKDetector.TempIgnoredPlayers.UnionWith([pc.PlayerId, dummyGhost.PlayerId]);
+            _ = new LateTask(() => AFKDetector.TempIgnoredPlayers.ExceptWith([pc.PlayerId, dummyGhost.PlayerId]), 3f);
+
+            var murderPos = Pelican.GetBlackRoomPSForPelican();
+
+            sender.TP(pc, murderPos, noCheckState: true);
+
+            sender.AutoStartRpc(pc.NetId, 12, targetClientId);
+            sender.WriteNetObject(dummyGhost);
+            sender.Write((int)MurderResultFlags.Succeeded);
+            sender.EndRpc();
+
+            dummyGhost.NetTransform.SnapTo(murderPos, (ushort)(dummyGhost.NetTransform.lastSequenceId + 328));
+            dummyGhost.NetTransform.SetDirtyBit(uint.MaxValue);
+
+            sender.AutoStartRpc(dummyGhost.NetTransform.NetId, 21);
+            sender.WriteVector2(murderPos);
+            sender.Write((ushort)(dummyGhost.NetTransform.lastSequenceId + 8));
+            sender.EndRpc();
+        }
+        else
+        {
+            sender.AutoStartRpc(pc.NetId, 12, targetClientId);
+            sender.WriteNetObject(pc);
+            sender.Write((int)MurderResultFlags.Succeeded);
+            sender.EndRpc();
+        }
+
+        sender.SendMessage();
+
+        _ = new LateTask(() =>
+        {
+            sender = CustomRpcSender.Create($"Fix Black Screen For {pc.GetNameWithRole()} (2)", SendOption.Reliable);
+
+            sender.RpcDesyncRepairSystem(pc, systemtype, 16);
+            if (systemtype == SystemTypes.HeliSabotage) sender.RpcDesyncRepairSystem(pc, systemtype, 17);
+
+            if (pc.IsAlive())
+            {
+                sender.TP(pc, pcPos, noCheckState: true);
+                pc.SetKillCooldown(timer);
+                pc.Notify(GetString("BlackScreenFixCompleteNotify"));
+
+                dummyGhost.NetTransform.SnapTo(ghostPos, (ushort)(dummyGhost.NetTransform.lastSequenceId + 328));
+                dummyGhost.NetTransform.SetDirtyBit(uint.MaxValue);
+
+                sender.AutoStartRpc(dummyGhost.NetTransform.NetId, 21);
+                sender.WriteVector2(ghostPos);
+                sender.Write((ushort)(dummyGhost.NetTransform.lastSequenceId + 8));
+                sender.EndRpc();
+            }
+
+            sender.SendMessage();
+        }, 1f + (AmongUsClient.Instance.Ping / 1000f));
+    }
 }

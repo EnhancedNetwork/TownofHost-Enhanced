@@ -31,26 +31,7 @@ public static class GuessManager
         return text;
     }
 
-    public static bool CheckCommond(ref string msg, string command, bool exact = true)
-    {
-        var comList = command.Split('|');
-        foreach (string comm in comList)
-        {
-            if (exact)
-            {
-                if (msg == "/" + comm) return true;
-            }
-            else
-            {
-                if (msg.StartsWith("/" + comm))
-                {
-                    msg = msg.Replace("/" + comm, string.Empty);
-                    return true;
-                }
-            }
-        }
-        return false;
-    }
+    public static bool CheckCommond(ref string msg, string command, bool exact = true) => ChatManager.CheckCommond(ref msg, command, exact);
 
     public static byte GetColorFromMsg(string msg)
     {

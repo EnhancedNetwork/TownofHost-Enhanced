@@ -82,19 +82,10 @@ public static class CustomRolesHelper
     public static bool IsBucketableRole(this CustomRoles role)
         => !role.IsGhostRole() && !role.IsVanilla() && !(role is CustomRoles.GM
                     or CustomRoles.SpeedBooster
-                    or CustomRoles.Oblivious
-                    or CustomRoles.Flash
                     or CustomRoles.NotAssigned
                     or CustomRoles.SuperStar
-                    or CustomRoles.Oblivious
                     or CustomRoles.Killer
                     or CustomRoles.Mini
-                    or CustomRoles.Onbound
-                    or CustomRoles.Rebound
-                    or CustomRoles.LastImpostor
-                    or CustomRoles.Mare
-                    or CustomRoles.Cyber
-                    or CustomRoles.Sloth
                     or CustomRoles.Apocalypse
                     or CustomRoles.Pariah
                     or CustomRoles.Coven)

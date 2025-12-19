@@ -88,6 +88,8 @@ class CheckMurderPatch
 
         var killer = __instance;
 
+        AFKDetector.SetNotAFK(killer.PlayerId);
+
         Logger.Info($"{killer.GetNameWithRole().RemoveHtmlTags()} => {target.GetNameWithRole().RemoveHtmlTags()}", "CheckMurder");
 
         if (CheckForInvalidMurdering(killer, target, true) == false)
@@ -187,8 +189,7 @@ class CheckMurderPatch
             return false;
         }
 
-        var divice = Options.CurrentGameMode == CustomGameMode.FFA ? 3000f : 1500f;
-        float minTime = Mathf.Max(0.04f, AmongUsClient.Instance.Ping / divice * 6f); //Ping value is milliseconds (ms), so ÷ 2000
+        float minTime = Utils.CalculatePingDelay(); // Ping value is in milliseconds (ms); this computes the corresponding minimum delay (in seconds) based on ping
         // No value is stored in TimeSinceLastKill || Stored time is greater than or equal to minTime => Allow kill
 
         //↓ If not permitted
@@ -259,6 +260,12 @@ class CheckMurderPatch
 
         var targetRoleClass = target.GetRoleClass();
         var targetSubRoles = target.GetCustomSubRoles();
+
+        if (AFKDetector.ShieldedPlayers.Contains(target.PlayerId))
+        {
+            killer.Notify(GetString("AFKShielded"));
+            return false;
+        }
 
         Logger.Info($"Start", "FirstDied.CheckMurder");
 
@@ -1151,6 +1158,8 @@ class FixedUpdateInNormalGamePatch
     static void AsHost(bool amHost, bool inLobby, bool lowLoad, PlayerControl player, AmongUsClient amongUsClient, NetworkedPlayerInfo playerData, bool playerAmOwner, int playerClientId, bool inGame, int timerLowLoad, long nowTime, byte playerId, bool isInTask)
     {
         if (!amHost) return;
+
+        AFKDetector.OnFixedUpdate(player);
         if (inLobby)
         {
             if (!lowLoad && !Main.DoBlockNameChange)
@@ -1489,6 +1498,8 @@ class FixedUpdateInNormalGamePatch
                     // }
                     break;
             }
+
+            Suffix.Append(AFKDetector.GetSuffix(localPlayer, player));
 
             // Devourer
             if (Devourer.HasEnabled)

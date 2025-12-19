@@ -2202,6 +2202,8 @@ public static class Options
         Logger.Info("Game settings setup", "Load Options");
         yield return null;
 
+        AFKDetector.SetupCustomOption();
+
         // End Load Settings
         OptionSaver.Load();
         IsLoaded = true;

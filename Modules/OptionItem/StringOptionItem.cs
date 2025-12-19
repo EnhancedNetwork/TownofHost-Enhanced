@@ -9,11 +9,11 @@ public class StringOptionItem(int id, string name, int defaultValue, TabGroup ta
     public string[] Selections = selections;
     public bool UseGetString = useGetString;
 
-    public static StringOptionItem Create(int id, string name, string[] selections, int defaultIndex, TabGroup tab, bool isSingleValue, bool vanillaText = false, bool useGetString = true)
+    public static StringOptionItem Create(int id, string name, string[] selections, int defaultIndex, TabGroup tab, bool isSingleValue = false, bool vanillaText = false, bool useGetString = true)
     {
         return new StringOptionItem(id, name, defaultIndex, tab, isSingleValue, selections, vanillaText, useGetString);
     }
-    public static StringOptionItem Create(int id, Enum name, string[] selections, int defaultIndex, TabGroup tab, bool isSingleValue, bool vanillaText = false, bool useGetString = true)
+    public static StringOptionItem Create(int id, Enum name, string[] selections, int defaultIndex, TabGroup tab, bool isSingleValue = false, bool vanillaText = false, bool useGetString = true)
     {
         return new StringOptionItem(id, name.ToString(), defaultIndex, tab, isSingleValue, selections, vanillaText, useGetString);
     }

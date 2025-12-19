@@ -88,6 +88,8 @@ class EndGamePatch
         CustomRoleManager.RoleClass.Values.Where(x => x.IsEnable).Do(x => x.IsEnable = false);
         CustomNetObject.Reset();
 
+        AFKDetector.ExemptedPlayers.Clear();
+
         var sb = new StringBuilder(GetString("KillLog") + ":");
         if (Options.OldKillLog.GetBool())
             foreach (var kvp in Main.PlayerStates.OrderBy(x => x.Value.RealKiller.Item1.Ticks))

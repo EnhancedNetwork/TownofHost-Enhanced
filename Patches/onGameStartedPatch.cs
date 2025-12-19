@@ -86,6 +86,8 @@ internal class ChangeRoleSettings
             Main.GameIsLoaded = false;
             Main.CurrentServerIsVanilla = GameStates.IsVanillaServer && !GameStates.IsLocalGame;
 
+            AFKDetector.ShieldedPlayers.Clear();
+
             Main.LastNotifyNames.Clear();
 
             Main.FirstDiedPrevious = Options.CurrentGameMode == CustomGameMode.Standard && Options.ShieldPersonDiedFirst.GetBool() ? Main.FirstDied : "";

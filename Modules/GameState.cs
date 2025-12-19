@@ -548,6 +548,7 @@ public class PlayerState(byte playerId)
         Scavenged,
         BlastedOff,
         Expired,
+        AFK,
 
         //Please add all new roles with deathreason & new deathreason in Utils.DeathReasonIsEnable();
         etc = -1,

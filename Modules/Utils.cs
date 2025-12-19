@@ -2219,6 +2219,9 @@ public static class Utils
                         TargetSuffix.Append(seerRoleClass?.GetSuffix(seer, target, isForMeeting: isForMeeting));
                         TargetSuffix.Append(CustomRoleManager.GetSuffixOthers(seer, target, isForMeeting: isForMeeting));
 
+                        if (!isForMeeting)
+                            TargetSuffix.Append(AFKDetector.GetSuffix(seer, target));
+
                         if (TargetSuffix.Length > 0)
                         {
                             TargetSuffix.Insert(0, "\r\n");
@@ -2578,6 +2581,9 @@ public static class Utils
                             TargetSuffix.Append(seerRoleClass?.GetSuffix(seer, target, isForMeeting: isForMeeting));
                             TargetSuffix.Append(CustomRoleManager.GetSuffixOthers(seer, target, isForMeeting: isForMeeting));
 
+                            if (!isForMeeting)
+                                TargetSuffix.Append(AFKDetector.GetSuffix(seer, target));
+
                             if (TargetSuffix.Length > 0)
                             {
                                 TargetSuffix.Insert(0, "\r\n");
@@ -2713,6 +2719,7 @@ public static class Utils
         {
             return rso is PlayerState.DeathReason.Overtired
                 or PlayerState.DeathReason.etc
+                or PlayerState.DeathReason.AFK
                 or PlayerState.DeathReason.Vote
                 or PlayerState.DeathReason.Gambled
                 or PlayerState.DeathReason.Armageddon;
@@ -2801,6 +2808,9 @@ public static class Utils
 
         try
         {
+            AFKDetector.NumAFK = 0;
+            AFKDetector.PlayerData.Clear();
+
             foreach (var playerState in Main.PlayerStates.Values.ToArray())
             {
                 if (playerState.RoleClass == null) continue;
@@ -2824,6 +2834,8 @@ public static class Utils
                 {
                     Prohibited.AfterMeetingTasks(player.PlayerId);
                 }
+
+                AFKDetector.RecordPosition(player);
             }
 
             if (Statue.IsEnable) Statue.AfterMeetingTasks();
@@ -3184,6 +3196,15 @@ public static class Utils
             Witness.AllMurderTresspass[killer.PlayerId].SetTresspass(GetTimeStamp());
 
         return true;
+    }
+
+    public static float CalculatePingDelay()
+    {
+        // The value of AmongUsClient.Instance.Ping is in milliseconds (ms), so ÷1000 to convert to seconds
+        float divice = 1000f;
+
+        float minTime = Mathf.Max(0.2f, AmongUsClient.Instance.Ping / divice * 6f);
+        return minTime;
     }
 
     public static int AllPlayersCount => Main.PlayerStates.Values.Count(state => state.countTypes != CountTypes.OutOfGame);

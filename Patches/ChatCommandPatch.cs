@@ -1800,6 +1800,17 @@ internal class ChatCommands
                     ChatManager.SendQuickChatSpam();
                     ChatManager.SendPreviousMessagesToAll();
                     break;
+
+                case "/fix" 
+                or "/blackscreenfix" 
+                or "/fixblackscreen":
+                    FixCommand(PlayerControl.LocalPlayer, text, args);
+                    break;
+
+                case "afkexempt":
+                    AFKExemptCommand(PlayerControl.LocalPlayer, text, args);
+                    break;
+                
                 default:
                     Main.isChatCommand = false;
                     break;
@@ -3899,11 +3910,52 @@ internal class ChatCommands
                 }
                 break;
 
+            case "/fix" 
+            or "/blackscreenfix" 
+            or "/fixblackscreen":
+                FixCommand(player, text, args);
+                break;
+
+            case "afkexempt":
+                AFKExemptCommand(player, text, args);
+                break;
 
             default:
                 if (SpamManager.CheckSpam(player, text)) return;
                 break;
         }
+    }
+
+    
+    private static void FixCommand(PlayerControl player, string text, string[] args)
+    {
+        if (!AmongUsClient.Instance.AmHost)
+        {
+            if (!Utils.IsPlayerModerator(player.FriendCode) && !player.FriendCode.GetDevUser().IsDev) return;
+        }
+
+        if (args.Length < 2 || !byte.TryParse(args[1], out byte id)) return;
+
+        var pc = id.GetPlayer();
+        if (pc == null) return;
+
+        pc.FixBlackScreen();
+
+        if (Main.AllPlayerControls.All(x => x.IsAlive()))
+            Logger.SendInGame(GetString("FixBlackScreenWaitForDead"));
+    }
+
+    private static void AFKExemptCommand(PlayerControl player, string text, string[] args)
+    {
+        if (!AmongUsClient.Instance.AmHost)
+        {
+            if (!Utils.IsPlayerModerator(player.FriendCode) && !player.FriendCode.GetDevUser().IsDev) return;
+        }
+
+        if (args.Length < 2 || !byte.TryParse(args[1], out byte afkId)) return;
+
+        AFKDetector.ExemptedPlayers.Add(afkId);
+        Utils.SendMessage("\n", player.PlayerId, string.Format(GetString("PlayerExemptedFromAFK"), afkId.GetPlayerName()));
     }
 }
 [HarmonyPatch(typeof(ChatController), nameof(ChatController.Update))]

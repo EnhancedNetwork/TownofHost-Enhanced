@@ -4,6 +4,11 @@ using Il2CppInterop.Runtime.InteropTypes.Arrays;
 using InnerNet;
 using System;
 using System.Text;
+using TOHE.Roles.Core;
+using TOHE.Roles.Crewmate;
+using TOHE.Roles.Neutral;
+using TOHE.Modules;
+using UnityEngine;
 
 namespace TOHE;
 
@@ -162,6 +167,10 @@ public class CustomRpcSender
     #endregion
     public CustomRpcSender AutoStartRpc(
         uint targetNetId,
+        RpcCalls callId,
+        int targetClientId = -1) => AutoStartRpc(targetNetId, (byte) callId, targetClientId);
+    public CustomRpcSender AutoStartRpc(
+        uint targetNetId,
         byte callId,
         int targetClientId = -1)
     {
@@ -250,6 +259,7 @@ public class CustomRpcSender
     public CustomRpcSender WriteNetObject(InnerNetObject obj) => Write(w => w.WriteNetObject(obj));
     public CustomRpcSender WriteMessageType(byte val) => Write(w => w.StartMessage(val));
     public CustomRpcSender WriteEndMessage() => Write(w => w.EndMessage());
+    public CustomRpcSender WriteVector2(Vector2 vector2) => Write(w => NetHelpers.WriteVector2(vector2, w));
     #endregion
 
     private CustomRpcSender Write(Action<MessageWriter> action)
@@ -319,5 +329,58 @@ public static class CustomRpcSenderExtensions
             .Write(name)
             .Write(false)
             .EndRpc();
+    }
+
+    // Credit: EHR
+    public static void RpcDesyncRepairSystem(this CustomRpcSender sender, PlayerControl target, SystemTypes systemType, int amount)
+    {
+        sender.AutoStartRpc(ShipStatus.Instance.NetId, RpcCalls.UpdateSystem, target.OwnerId);
+        sender.Write((byte)systemType);
+        sender.WriteNetObject(target);
+        sender.Write((byte)amount);
+        sender.EndRpc();
+    }
+
+    public static bool TP(this CustomRpcSender sender, PlayerControl pc, Vector2 location, bool noCheckState = false, bool log = true)
+    {
+        if (!AmongUsClient.Instance.AmHost) return false;
+        
+        CustomNetworkTransform nt = pc.NetTransform;
+
+        if (!noCheckState)
+        {
+            // if (pc.Is(CustomRoles.AntiTP)) return false;
+
+            if (pc.inVent || pc.inMovingPlat || pc.onLadder || !pc.IsAlive() || pc.MyPhysics.Animations.IsPlayingAnyLadderAnimation() || pc.MyPhysics.Animations.IsPlayingEnterVentAnimation())
+            {
+                if (log) Logger.Warn($"Target ({pc.GetNameWithRole().RemoveHtmlTags()}) is in an un-teleportable state - Teleporting canceled", "TP");
+                return false;
+            }
+
+            if (Vector2.Distance(pc.GetCustomPosition(), location) < 0.5f)
+            {
+                if (log) Logger.Warn($"Target ({pc.GetNameWithRole().RemoveHtmlTags()}) is too close to the destination - Teleporting canceled", "TP");
+                return false;
+            }
+        }
+
+        
+        nt.SnapTo(location, (ushort)(nt.lastSequenceId + 328));
+        nt.SetDirtyBit(uint.MaxValue);
+
+        var newSid = (ushort)(nt.lastSequenceId + 8);
+
+        sender.AutoStartRpc(nt.NetId, RpcCalls.SnapTo);
+        sender.WriteVector2(location);
+        sender.Write(newSid);
+        sender.EndRpc();
+
+        if (log) Logger.Info($"{pc.GetNameWithRole().RemoveHtmlTags()} => {location}", "TP");
+
+        // CheckInvalidMovementPatch.LastPosition[pc.PlayerId] = location;
+        // CheckInvalidMovementPatch.ExemptedPlayers.Add(pc.PlayerId);
+
+        // if (sender.sendOption == SendOption.Reliable) Utils.NumSnapToCallsThisRound++;
+        return true;
     }
 }
