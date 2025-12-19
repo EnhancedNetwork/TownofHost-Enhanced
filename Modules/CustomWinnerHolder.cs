@@ -80,6 +80,24 @@ public static class CustomWinnerHolder
                     return true;
             }
         }
+        
+        // Randomizer "Converted"
+        var playerState = Main.PlayerStates[playerId];
+        if (playerState.IsRandomizer)
+        {
+            switch (playerState.RandomizerWinCondition)
+            {
+                case Custom_Team.Crewmate:
+                    ResetAndSetWinner(CustomWinner.Crewmate);
+                    return true;
+                case Custom_Team.Impostor:
+                    ResetAndSetWinner(CustomWinner.Impostor);
+                    return true;
+                case Custom_Team.Coven:
+                    ResetAndSetWinner(CustomWinner.Coven);
+                    return true;
+            }
+        }
         return false;
     }
 

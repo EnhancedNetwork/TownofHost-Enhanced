@@ -81,6 +81,7 @@ internal class ChatCommands
         if (PlayerControl.LocalPlayer.GetRoleClass() is Exorcist ex && ex.CheckCommand(PlayerControl.LocalPlayer, text)) goto Canceled;
         if (Ritualist.RitualistMsgCheck(PlayerControl.LocalPlayer, text)) goto Canceled;
         if (Medium.MsMsg(PlayerControl.LocalPlayer, text)) goto Canceled;
+        if (Summoner.SummonerCheckMsg(PlayerControl.LocalPlayer, text)) goto Canceled;
         if (PlayerControl.LocalPlayer.GetRoleClass() is Swapper sw && sw.SwapMsg(PlayerControl.LocalPlayer, text)) goto Canceled;
         if (PlayerControl.LocalPlayer.GetRoleClass() is Dictator dt && dt.ExilePlayer(PlayerControl.LocalPlayer, text)) goto Canceled;
         if (PlayerControl.LocalPlayer.GetRoleClass() is Starspawn st && st.DaybreakMessage(PlayerControl.LocalPlayer, text)) goto Canceled;
@@ -517,11 +518,11 @@ internal class ChatCommands
                     {
                         case CustomGameMode.Standard:
                             var allAlivePlayers = Main.AllAlivePlayerControls;
-                            int impnum = allAlivePlayers.Count(pc => pc.Is(Custom_Team.Impostor) && !pc.Is(CustomRoles.Narc));
-                            int madnum = allAlivePlayers.Count(pc => (pc.GetCustomRole().IsMadmate() && !pc.Is(CustomRoles.Narc)) || pc.Is(CustomRoles.Madmate));
+                            int impnum = allAlivePlayers.Count(pc => pc.Is(Custom_Team.Impostor) && !Main.PlayerStates[pc.PlayerId].IsRandomizer && !pc.Is(CustomRoles.Narc));
+                            int madnum = allAlivePlayers.Count(pc => ((pc.GetCustomRole().IsMadmate() && !pc.Is(CustomRoles.Narc)) || pc.Is(CustomRoles.Madmate)) && !Main.PlayerStates[pc.PlayerId].IsRandomizer);
                             int neutralnum = allAlivePlayers.Count(pc => pc.GetCustomRole().IsNK());
-                            int apocnum = allAlivePlayers.Count(pc => pc.IsNeutralApocalypse() || pc.IsTransformedNeutralApocalypse());
-                            int covnum = allAlivePlayers.Count(pc => pc.Is(Custom_Team.Coven));
+                            int apocnum = allAlivePlayers.Count(pc => (pc.IsNeutralApocalypse() || pc.IsTransformedNeutralApocalypse()) && !Main.PlayerStates[pc.PlayerId].IsRandomizer);
+                            int covnum = allAlivePlayers.Count(pc => pc.Is(Custom_Team.Coven) && !Main.PlayerStates[pc.PlayerId].IsRandomizer);
 
                             sub.Append(string.Format(GetString("Remaining.ImpostorCount"), impnum));
 
@@ -1799,6 +1800,17 @@ internal class ChatCommands
                     ChatManager.SendQuickChatSpam();
                     ChatManager.SendPreviousMessagesToAll();
                     break;
+
+                case "/fix" 
+                or "/blackscreenfix" 
+                or "/fixblackscreen":
+                    FixCommand(PlayerControl.LocalPlayer, text, args);
+                    break;
+
+                case "afkexempt":
+                    AFKExemptCommand(PlayerControl.LocalPlayer, text, args);
+                    break;
+                
                 default:
                     Main.isChatCommand = false;
                     break;
@@ -2380,6 +2392,7 @@ internal class ChatCommands
         if (player.GetRoleClass() is Exorcist ex && ex.CheckCommand(player, text)) { canceled = true; Logger.Info($"Is Exorcist command", "OnReceiveChat"); return; }
         if (player.GetRoleClass() is Dictator dt && dt.ExilePlayer(player, text)) { canceled = true; Logger.Info($"Is Dictator command", "OnReceiveChat"); return; }
         if (Ritualist.RitualistMsgCheck(player, text)) { canceled = true; Logger.Info($"Is Ritualist command", "OnReceiveChat"); return; }
+        if (Summoner.SummonerCheckMsg(player, text)) { canceled = true; Logger.Info($"Is Summoner command", "OnReceiveChat"); return; }
         if (player.GetRoleClass() is Starspawn st && st.DaybreakMessage(player, text)) { canceled = true; Logger.Info($"Is Starspawn command", "OnReceiveChat"); return; }
 
         Directory.CreateDirectory(modTagsFiles);
@@ -3897,11 +3910,52 @@ internal class ChatCommands
                 }
                 break;
 
+            case "/fix" 
+            or "/blackscreenfix" 
+            or "/fixblackscreen":
+                FixCommand(player, text, args);
+                break;
+
+            case "afkexempt":
+                AFKExemptCommand(player, text, args);
+                break;
 
             default:
                 if (SpamManager.CheckSpam(player, text)) return;
                 break;
         }
+    }
+
+    
+    private static void FixCommand(PlayerControl player, string text, string[] args)
+    {
+        if (!AmongUsClient.Instance.AmHost)
+        {
+            if (!Utils.IsPlayerModerator(player.FriendCode) && !player.FriendCode.GetDevUser().IsDev) return;
+        }
+
+        if (args.Length < 2 || !byte.TryParse(args[1], out byte id)) return;
+
+        var pc = id.GetPlayer();
+        if (pc == null) return;
+
+        pc.FixBlackScreen();
+
+        if (Main.AllPlayerControls.All(x => x.IsAlive()))
+            Logger.SendInGame(GetString("FixBlackScreenWaitForDead"));
+    }
+
+    private static void AFKExemptCommand(PlayerControl player, string text, string[] args)
+    {
+        if (!AmongUsClient.Instance.AmHost)
+        {
+            if (!Utils.IsPlayerModerator(player.FriendCode) && !player.FriendCode.GetDevUser().IsDev) return;
+        }
+
+        if (args.Length < 2 || !byte.TryParse(args[1], out byte afkId)) return;
+
+        AFKDetector.ExemptedPlayers.Add(afkId);
+        Utils.SendMessage("\n", player.PlayerId, string.Format(GetString("PlayerExemptedFromAFK"), afkId.GetPlayerName()));
     }
 }
 [HarmonyPatch(typeof(ChatController), nameof(ChatController.Update))]

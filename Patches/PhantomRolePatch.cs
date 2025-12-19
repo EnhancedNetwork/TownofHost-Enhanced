@@ -55,7 +55,7 @@ public static class PhantomRolePatch
 
         foreach (var target in Main.AllPlayerControls)
         {
-            if (!target.IsAlive() || phantom == target || target.AmOwner || !(target.HasDesyncRole() || Main.PlayerStates[target.PlayerId].IsNecromancer || phantom.HasDesyncRole())) continue;
+            if (!target.IsAlive() || phantom == target || target.AmOwner || !(target.HasDesyncRole() || Main.PlayerStates[target.PlayerId].IsFalseRole || phantom.HasDesyncRole())) continue;
 
             // Set Phantom when his start vanish
             phantom.RpcSetRoleDesync(RoleTypes.Phantom, target.GetClientId());
@@ -93,7 +93,7 @@ public static class PhantomRolePatch
 
         foreach (var target in Main.AllPlayerControls)
         {
-            if (!target.IsAlive() || phantom == target || target.AmOwner || !(target.HasDesyncRole() || Main.PlayerStates[target.PlayerId].IsNecromancer || phantom.HasDesyncRole())) continue;
+            if (!target.IsAlive() || phantom == target || target.AmOwner || !(target.HasDesyncRole() || Main.PlayerStates[target.PlayerId].IsFalseRole || phantom.HasDesyncRole())) continue;
 
             var clientId = target.GetClientId();
 
@@ -133,7 +133,7 @@ public static class PhantomRolePatch
     {
         try
         {
-            if (InvisibilityList.Count == 0 || !seer.IsAlive() || seer.Data?.Role.Role is RoleTypes.Phantom || seer.AmOwner || !(seer.HasDesyncRole() || Main.PlayerStates[seer.PlayerId].IsNecromancer)) return;
+            if (InvisibilityList.Count == 0 || !seer.IsAlive() || seer.Data?.Role.Role is RoleTypes.Phantom || seer.AmOwner || !(seer.HasDesyncRole() || Main.PlayerStates[seer.PlayerId].IsFalseRole)) return;
 
             foreach (var phantom in InvisibilityList.GetFastEnumerator())
             {

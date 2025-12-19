@@ -53,17 +53,17 @@ public class Main : BasePlugin
     public static ConfigEntry<string> DebugKeyInput { get; private set; }
 
     public const string PluginGuid = "com.0xdrmoe.townofhostenhanced";
-    public const string PluginVersion = "2025.1203.241.00000"; // YEAR.MMDD.VERSION.CANARYDEV
-    public const string PluginDisplayVersion = "2.4.1 hotfix 1";
+    public const string PluginVersion = "2025.1219.242.00003"; // YEAR.MMDD.VERSION.CANARYDEV
+    public const string PluginDisplayVersion = "2.4.2a3";
     public static readonly List<(int year, int month, int day, int revision)> SupportedVersionAU =
     [
-        (2025, 11, 18, 0) // 2025.11.18 & 17.1s
+        (2025, 11, 18, 0) // 2025.11.18 & 17.1
     ];
 
     /******************* Change one of the three variables to true before making a release. *******************/
     public static readonly bool devRelease = false; // Discontinued, use Beta instead
-    public static readonly bool canaryRelease = false; // Latest: V2.4.0 Beta 6
-    public static readonly bool fullRelease = true; // Latest: V2.4.1
+    public static readonly bool canaryRelease = true; // Latest: V2.4.0 Beta 6
+    public static readonly bool fullRelease = false; // Latest: V2.4.1
 
     public static bool hasAccess = true;
 
@@ -972,6 +972,8 @@ public enum CustomRoles
     PotionMaster,
     Ritualist,
     Sacrifist,
+    Summoner,
+    Summoned,
     Sorceress,
     VoodooMaster,
 
@@ -1152,6 +1154,8 @@ public enum AdditionalWinners
     Lovers = CustomRoles.Lovers,
     Cupid = CustomRoles.Cupid,
     Opportunist = CustomRoles.Opportunist,
+    Summoned = CustomRoles.Summoned,
+    Randomizer = CustomRoles.Randomizer,
     Executioner = CustomRoles.Executioner,
     Lawyer = CustomRoles.Lawyer,
     Hater = CustomRoles.Hater,
@@ -1167,7 +1171,8 @@ public enum AdditionalWinners
     Specter = CustomRoles.Specter,
     Maverick = CustomRoles.Maverick,
     Shaman = CustomRoles.Shaman,
-    Taskinator = CustomRoles.Taskinator,
+    // Changed to Pariah
+    // Taskinator = CustomRoles.Taskinator,
     Pixie = CustomRoles.Pixie,
     Quizmaster = CustomRoles.Quizmaster,
     SchrodingersCat = CustomRoles.SchrodingersCat,

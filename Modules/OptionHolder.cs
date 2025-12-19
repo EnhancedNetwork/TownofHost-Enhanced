@@ -564,6 +564,7 @@ public static class Options
     public static OptionItem HideGuesserCommands;
     public static OptionItem ShowOnlyEnabledRolesInGuesserUI;
     public static OptionItem CanOnlyGuessEnabled;
+    public static OptionItem CanGuessCrewInvestigative;
     public static OptionItem UseQuickChatSpamCheat;
 
 
@@ -732,7 +733,7 @@ public static class Options
     private static System.Collections.IEnumerator CoLoadOptions()
     {
         //#######################################
-        // 32600 last id for roles/add-ons (Next use 32700)
+        // 32700 last id for roles/add-ons (Next use 32800)
         // Limit id for roles/add-ons --- "59999"
         //#######################################
 
@@ -995,6 +996,15 @@ public static class Options
             .SetColor(new Color32(140, 255, 255, byte.MaxValue));
 
         CustomRoleManager.GetNormalOptions(Custom_RoleType.CrewmateSupport).ForEach(r => r.SetupCustomOption());
+
+        /*
+        *  INVESTIGATIVE ROLES
+        */
+        TextOptionItem.Create(10000035, "RoleType.CrewInvestigative", TabGroup.CrewmateRoles)
+            .SetGameMode(CustomGameMode.Standard)
+            .SetColor(new Color32(140, 255, 255, byte.MaxValue));
+
+        CustomRoleManager.GetNormalOptions(Custom_RoleType.CrewmateInvestigative).ForEach(r => r.SetupCustomOption());
 
         /*
          * KILLING ROLES
@@ -1514,6 +1524,9 @@ public static class Options
             .SetColor(Color.cyan);
 
         CanOnlyGuessEnabled = BooleanOptionItem.Create(60696, "CanOnlyGuessEnabled", true, TabGroup.ModSettings, false)
+            .SetHeader(true)
+            .SetGameMode(CustomGameMode.Standard);
+        CanGuessCrewInvestigative = BooleanOptionItem.Create(60697, "CanGuessCrewInvestigative", true, TabGroup.ModSettings, false)
             .SetHeader(true)
             .SetGameMode(CustomGameMode.Standard);
 
@@ -2188,6 +2201,8 @@ public static class Options
         #endregion
         Logger.Info("Game settings setup", "Load Options");
         yield return null;
+
+        AFKDetector.SetupCustomOption();
 
         // End Load Settings
         OptionSaver.Load();

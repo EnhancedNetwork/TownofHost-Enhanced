@@ -154,7 +154,7 @@ internal class MoonDancer : CovenManager
             if (HasNecronomicon(killer))
             {
                 var rd = IRandom.Instance;
-                if (target.GetCustomRole().IsCovenTeam())
+                if (target.GetCustomRole().IsCovenTeam() && !(Main.PlayerStates[killer.PlayerId].IsRandomizer || Main.PlayerStates[target.PlayerId].IsRandomizer))
                 {
                     killer.Notify(GetString("MoonDancerCantBlastOff"));
                     return false;

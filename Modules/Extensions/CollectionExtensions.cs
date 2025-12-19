@@ -152,6 +152,50 @@ public static class CollectionExtensions
     }
 
     /// <summary>
+    ///     Determines whether a collection contains any elements that satisfy a predicate and returns the first element that
+    ///     satisfies the predicate
+    /// </summary>
+    /// <param name="collection">The collection to search</param>
+    /// <param name="predicate">The predicate to check for each element</param>
+    /// <param name="element">
+    ///     The first element that satisfies the predicate, or the default value of <typeparamref name="T" />
+    ///     if no elements satisfy the predicate
+    /// </param>
+    /// <typeparam name="T">The type of the elements in the collection</typeparam>
+    /// <returns><c>true</c> if the collection contains any elements that satisfy the predicate, <c>false</c> otherwise</returns>
+    public static bool FindFirst<T>(this IEnumerable<T> collection, Func<T, bool> predicate, out T element)
+    {
+        if (collection is List<T> list)
+        {
+            for (var i = 0; i < list.Count; i++)
+            {
+                T item = list[i];
+
+                if (predicate(item))
+                {
+                    element = item;
+                    return true;
+                }
+            }
+
+            element = default(T);
+            return false;
+        }
+
+        foreach (T item in collection)
+        {
+            if (predicate(item))
+            {
+                element = item;
+                return true;
+            }
+        }
+
+        element = default(T);
+        return false;
+    }
+
+    /// <summary>
     /// Return the first byte of a HashSet(Byte)
     /// </summary>
     public static byte First(this HashSet<byte> source)

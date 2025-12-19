@@ -88,6 +88,8 @@ class CheckMurderPatch
 
         var killer = __instance;
 
+        AFKDetector.SetNotAFK(killer.PlayerId);
+
         Logger.Info($"{killer.GetNameWithRole().RemoveHtmlTags()} => {target.GetNameWithRole().RemoveHtmlTags()}", "CheckMurder");
 
         if (CheckForInvalidMurdering(killer, target, true) == false)
@@ -187,8 +189,7 @@ class CheckMurderPatch
             return false;
         }
 
-        var divice = Options.CurrentGameMode == CustomGameMode.FFA ? 3000f : 1500f;
-        float minTime = Mathf.Max(0.04f, AmongUsClient.Instance.Ping / divice * 6f); //Ping value is milliseconds (ms), so ÷ 2000
+        float minTime = Utils.CalculatePingDelay(); // Ping value is in milliseconds (ms); this computes the corresponding minimum delay (in seconds) based on ping
         // No value is stored in TimeSinceLastKill || Stored time is greater than or equal to minTime => Allow kill
 
         //↓ If not permitted
@@ -259,6 +260,12 @@ class CheckMurderPatch
 
         var targetRoleClass = target.GetRoleClass();
         var targetSubRoles = target.GetCustomSubRoles();
+
+        if (AFKDetector.ShieldedPlayers.Contains(target.PlayerId))
+        {
+            killer.Notify(GetString("AFKShielded"));
+            return false;
+        }
 
         Logger.Info($"Start", "FirstDied.CheckMurder");
 
@@ -1151,6 +1158,8 @@ class FixedUpdateInNormalGamePatch
     static void AsHost(bool amHost, bool inLobby, bool lowLoad, PlayerControl player, AmongUsClient amongUsClient, NetworkedPlayerInfo playerData, bool playerAmOwner, int playerClientId, bool inGame, int timerLowLoad, long nowTime, byte playerId, bool isInTask)
     {
         if (!amHost) return;
+
+        AFKDetector.OnFixedUpdate(player);
         if (inLobby)
         {
             if (!lowLoad && !Main.DoBlockNameChange)
@@ -1463,13 +1472,14 @@ class FixedUpdateInNormalGamePatch
                     Suffix.Append(Radar.GetPlayerArrow(localPlayer, player, isForMeeting: false));
                     Suffix.Append(Necromancer.NecromancerReminder(localPlayer, player, isForMeeting: false));
                     Suffix.Append(CopyCat.CopycatReminder(localPlayer, player, isForMeeting: false));
+                    Suffix.Append(Randomizer.RandomizerReminder(localPlayer, player, isForMeeting: false));
 
                     if (localPlayerRole.IsImpostor() && player.GetPlayerTaskState().IsTaskFinished)
                     {
                         if (player.Is(CustomRoles.Snitch) && player.Is(CustomRoles.Madmate))
                             Mark.Append(CustomRoles.Impostor.GetColoredTextByRole("★"));
                     }
-                    if ((localPlayer.IsPlayerCovenTeam() || !localPlayer.IsAlive()) && player.IsPlayerCovenTeam() && CovenManager.HasNecronomicon(player))
+                    if ((localPlayer.IsPlayerCovenTeam() && player.IsPlayerCovenTeam() && !(Main.PlayerStates[localPlayer.PlayerId].IsRandomizer || Main.PlayerStates[player.PlayerId].IsRandomizer) || !localPlayer.IsAlive()) && CovenManager.HasNecronomicon(player))
                     {
                         Mark.Append(CustomRoles.Coven.GetColoredTextByRole("♣"));
                     }
@@ -1488,6 +1498,8 @@ class FixedUpdateInNormalGamePatch
                     // }
                     break;
             }
+
+            Suffix.Append(AFKDetector.GetSuffix(localPlayer, player));
 
             // Devourer
             if (Devourer.HasEnabled)
@@ -1861,7 +1873,7 @@ class PlayerControlCompleteTaskPatch
                             break;
 
                         case CustomRoles.Madmate when taskState.IsTaskFinished && player.Is(CustomRoles.Snitch):
-                            foreach (var impostor in Main.AllAlivePlayerControls.Where(pc => pc.Is(Custom_Team.Impostor) && !Main.PlayerStates[pc.PlayerId].IsNecromancer).ToArray())
+                            foreach (var impostor in Main.AllAlivePlayerControls.Where(pc => pc.Is(Custom_Team.Impostor) && !Main.PlayerStates[pc.PlayerId].IsFalseRole).ToArray())
                             {
                                 NameColorManager.Add(impostor.PlayerId, player.PlayerId, "#ff1919");
                             }
@@ -2031,7 +2043,7 @@ public static class PlayerControlMixupOutfitPatch
 
         // if player is Desync Impostor and the vanilla sees player as Imposter, the vanilla process does not hide your name, so the other person's name is hidden
         if ((!PlayerControl.LocalPlayer.Is(Custom_Team.Impostor) // Not an Impostor
-            || Main.PlayerStates[PlayerControl.LocalPlayer.PlayerId].IsNecromancer // Necromancer
+            || Main.PlayerStates[PlayerControl.LocalPlayer.PlayerId].IsFalseRole // Necromancer/Randomizer
             ) &&
             PlayerControl.LocalPlayer.HasDesyncRole())  // Desync Impostor
         {

@@ -39,7 +39,7 @@ public class Fragile : IAddon
             || (killerRole.IsCoven() && CovenCanKillFragile.GetBool()))
         {
             target.SetDeathReason(PlayerState.DeathReason.Shattered);
-            if (FragileKillerLunge.GetBool())
+            if (FragileKillerLunge.GetBool() && !killer.Is(CustomRoles.Swift))
             {
                 killer.RpcMurderPlayer(target);
             }

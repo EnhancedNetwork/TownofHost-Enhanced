@@ -1001,6 +1001,8 @@ class IntroCutsceneDestroyPatch
 
             Utils.CheckAndSetVentInteractions();
 
+            if (AFKDetector.ActivateOnStart.GetBool()) _ = new LateTask(() => Main.AllAlivePlayerControls.Do(AFKDetector.RecordPosition), 1f);
+
             if (Main.CurrentServerIsVanilla && Options.BypassRateLimitAC.GetBool())
             {
                 Main.Instance.StartCoroutine(Utils.NotifyEveryoneAsync());
@@ -1164,6 +1166,8 @@ public class IntroCutsceneDestroyPatch
             }
 
             Utils.CheckAndSetVentInteractions();
+
+            if (AFKDetector.ActivateOnStart.GetBool()) _ = new LateTask(() => Main.AllAlivePlayerControls.Do(AFKDetector.RecordPosition), 1f);
 
             if (Main.CurrentServerIsVanilla && Options.BypassRateLimitAC.GetBool())
             {

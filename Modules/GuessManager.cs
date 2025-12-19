@@ -22,35 +22,16 @@ public static class GuessManager
     public static string GetFormatString()
     {
         string text = GetString("PlayerIdList");
-        foreach (var pc in Main.AllAlivePlayerControls)
+        foreach (var pc in Main.AllAlivePlayerControls.OrderBy(x => x.GetVisiblePlayerId()))
         {
-            string id = pc.PlayerId.ToString();
+            string id = pc.GetVisiblePlayerId().ToString();
             string name = pc.GetRealName();
             text += $"\n{id} → {name}";
         }
         return text;
     }
 
-    public static bool CheckCommond(ref string msg, string command, bool exact = true)
-    {
-        var comList = command.Split('|');
-        foreach (string comm in comList)
-        {
-            if (exact)
-            {
-                if (msg == "/" + comm) return true;
-            }
-            else
-            {
-                if (msg.StartsWith("/" + comm))
-                {
-                    msg = msg.Replace("/" + comm, string.Empty);
-                    return true;
-                }
-            }
-        }
-        return false;
-    }
+    public static bool CheckCommond(ref string msg, string command, bool exact = true) => ChatManager.CheckCommond(ref msg, command, exact);
 
     public static byte GetColorFromMsg(string msg)
     {
@@ -186,18 +167,26 @@ public static class GuessManager
                 pc.ShowInfoMessage(isUI, error);
                 return true;
             }
-            var target = Utils.GetPlayerById(targetId);
+            var target = Utils.GetPlayerById(targetId, obfuscated: true);
 
             Logger.Msg($" {pc.PlayerId}", "Guesser - pc.PlayerId");
             Logger.Msg($" {target.PlayerId}", "Guesser - target.PlayerId");
             Logger.Msg($" {role}", "Guesser - role");
+
+            if (role.GetStaticRoleClass().ThisRoleType == Custom_RoleType.CrewmateInvestigative && 
+                !Options.CanGuessCrewInvestigative.GetBool())
+            {
+                Logger.Info($"Guess disabled for Crewmate Investigative roles.", "GuessManager");
+                pc.ShowInfoMessage(isUI, GetString("CantGuessCrewInvestigative"));
+                return true;
+            }
 
             if (target != null)
             {
 
                 if (target.Is(CustomRoles.VoodooMaster) && VoodooMaster.Dolls[target.PlayerId].Count > 0)
                 {
-                    target = Utils.GetPlayerById(VoodooMaster.Dolls[target.PlayerId].Where(x => Utils.GetPlayerById(x).IsAlive()).ToList().RandomElement());
+                    target = Utils.GetPlayerById(VoodooMaster.Dolls[target.PlayerId].Where(x => Utils.GetPlayerById(x).IsAlive()).ToList().RandomElement(), obfuscated: true);
                     _ = new LateTask(() =>
                     {
                         Utils.SendMessage(string.Format(GetString("VoodooMasterTargetInMeeting"), target.GetRealName()), Utils.GetPlayerListByRole(CustomRoles.VoodooMaster).First().PlayerId);
