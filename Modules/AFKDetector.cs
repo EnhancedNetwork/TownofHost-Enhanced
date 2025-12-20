@@ -70,7 +70,7 @@ public static class AFKDetector
         data.Timer -= Time.fixedDeltaTime;
         var currentTimer = (int)Math.Round(data.Timer);
 
-        if (!data.Counted && data.CurrentPhase == Data.Phase.Warning && data.Timer <= 3f && !pc.IsNonHostModdedClient())
+        if (!data.Counted && data.CurrentPhase == Data.Phase.Warning && data.Timer <= 3f && !pc.IsModded())
         {
             NumAFK++;
             data.Counted = true;

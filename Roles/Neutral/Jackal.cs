@@ -196,11 +196,11 @@ internal class Jackal : RoleBase
     private void AssignNewJackal(PlayerControl target, bool inMeeting)
     {
         Logger.Info("Starting Jackal Death Assign.", "Jackal");
-        var readySideKicks = Main.AllAlivePlayerControls.Where(x => x.IsAlive() && x.Is(CustomRoles.Sidekick) && x.PlayerId != target.PlayerId).ToList();
+        var readySideKicks = Main.AllAlivePlayerControls.Where(x => x.IsAlive() && x.Is(CustomRoles.Sidekick) && x?.PlayerId != target?.PlayerId).ToList();
 
         if (readySideKicks.Count < 1)
         {
-            readySideKicks = Main.AllAlivePlayerControls.Where(x => x.IsAlive() && x.Is(CustomRoles.Recruit) && x.PlayerId != target.PlayerId).ToList();
+            readySideKicks = [.. Main.AllAlivePlayerControls.Where(x => x.IsAlive() && x.Is(CustomRoles.Recruit) && x?.PlayerId != target?.PlayerId)];
         }
 
         if (readySideKicks.Count < 1)
