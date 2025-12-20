@@ -1015,14 +1015,18 @@ class FixedUpdateInNormalGamePatch
 
     public static void Postfix(PlayerControl __instance)
     {
-        if (__instance == null || __instance.PlayerId == 255 || __instance.notRealPlayer) return;
+        if (__instance == null || __instance.PlayerId >= 254) return;
 
         CheckMurderPatch.Update(__instance.PlayerId);
+
+        if (AmongUsClient.Instance.AmHost && __instance.AmOwner)
+            CustomNetObject.FixedUpdate();
+        
+        byte id = __instance.PlayerId;
 
         if (GameStates.IsHideNSeek) return;
         if (!GameStates.IsModHost) return;
 
-        byte id = __instance.PlayerId;
         if (AmongUsClient.Instance.AmHost && GameStates.IsInTask && ReportDeadBodyPatch.CanReport[id] && ReportDeadBodyPatch.WaitReport[id].Count > 0)
         {
             if (Glitch.HasEnabled && Glitch.OnCheckFixedUpdateReport(id))
@@ -1044,6 +1048,8 @@ class FixedUpdateInNormalGamePatch
         }
         catch (Exception ex)
         {
+            if (OnGameJoinedPatch.JoiningGame && ex is NullReferenceException) return;
+            
             Utils.ThrowException(ex);
             Logger.Error($"Error for {__instance.GetNameWithRole().RemoveHtmlTags()}: Error: {ex}", "FixedUpdateInNormalGamePatch");
         }
@@ -1227,9 +1233,6 @@ class FixedUpdateInNormalGamePatch
             {
                 if (Options.LadderDeath.GetBool() && player.IsAlive())
                     FallFromLadder.FixedUpdate(player);
-
-                if (CustomNetObject.AllObjects.Count > 0)
-                    CustomNetObject.FixedUpdate();
 
                 if (!lowLoad)
                 {

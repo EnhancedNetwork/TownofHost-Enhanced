@@ -781,31 +781,31 @@ public static class DraftAssign
         return;
     }
 
-    public static DraftCmdResult AddPlayersToDraft()
-    {
-        if (!DraftActive) return DraftCmdResult.NoCurrentDraft;
+    // public static DraftCmdResult AddPlayersToDraft()
+    // {
+    //     if (!DraftActive) return DraftCmdResult.NoCurrentDraft;
 
-        var rd = IRandom.Instance;
+    //     var rd = IRandom.Instance;
 
-        // foreach player that doesn't have a bucket/role assigned
-        foreach (var player in Main.AllAlivePlayerControls.ExceptBy(AssignedSlots.Keys, x => x.PlayerId))
-        {
-            var unassigned = UnassignedSlots.Shuffle(rd).ToList();
+    //     // foreach player that doesn't have a bucket/role assigned
+    //     foreach (var player in Main.AllAlivePlayerControls.ExceptBy(AssignedSlots.Keys, x => x.PlayerId))
+    //     {
+    //         var unassigned = UnassignedSlots.Shuffle(rd).ToList();
 
-            var toAssign = unassigned.First();
+    //         var toAssign = unassigned.First();
 
-            UnassignedSlots.Remove(toAssign);
-            AssignedSlots.Add(player.PlayerId, toAssign);
+    //         UnassignedSlots.Remove(toAssign);
+    //         AssignedSlots.Add(player.PlayerId, toAssign);
 
-            var pool = UnassignedDraftPools.FirstOrDefault(x => x.Key == toAssign);
+    //         var pool = UnassignedDraftPools.FirstOrDefault(x => x.Key == toAssign);
 
-            DraftPools.Add(player.PlayerId, pool.Value);
-            UnassignedDraftPools.Remove(pool);
+    //         DraftPools.Add(player.PlayerId, pool.Value);
+    //         UnassignedDraftPools.Remove(pool);
 
-            Logger.Info($"Pool [{string.Join(", ", pool.Value)}] assigned to {player.name}", "PoolAssigned");
-        }
-        return DraftCmdResult.Success;
-    }
+    //         Logger.Info($"Pool [{string.Join(", ", pool.Value)}] assigned to {player.name}", "PoolAssigned");
+    //     }
+    //     return DraftCmdResult.Success;
+    // }
 
     public static void Reset()
     {

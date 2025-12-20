@@ -1710,7 +1710,7 @@ static class ExtendedPlayerControl
     // Credit to EHR
     public static void FixBlackScreen(this PlayerControl pc)
     {
-        if (pc == null || !AmongUsClient.Instance.AmHost || pc.IsNonHostModdedClient()) return;
+        if (pc == null || !AmongUsClient.Instance.AmHost || pc.IsModded()) return;
 
         if (GameStates.IsMeeting || ExileController.Instance || AntiBlackout.SkipTasks || pc.inVent || pc.inMovingPlat || pc.onLadder || !Main.AllPlayerControls.FindFirst(x => !x.IsAlive(), out var dummyGhost))
         {
