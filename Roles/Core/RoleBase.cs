@@ -12,7 +12,7 @@ public abstract class RoleBase
     public PlayerState _state;
 #pragma warning disable IDE1006
     public PlayerControl _Player => _state != null ? Utils.GetPlayerById(_state.PlayerId) ?? null : null;
-    public List<byte> _playerIdList => Main.PlayerStates.Values.Where(x => x.MainRole == _state.MainRole).Select(x => x.PlayerId).Cast<byte>().ToList();
+    public List<byte> _playerIdList => [.. Main.PlayerStates.Values.Where(x => x != null && x.MainRole == _state?.MainRole).Select(x => x.PlayerId).Cast<byte>()];
 #pragma warning restore IDE1006
 
     public virtual bool IsEnable { get; set; } = false;

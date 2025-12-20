@@ -149,7 +149,7 @@ public class RoleAssign
 
         foreach (var role in PrevRoleResult.Values)
         {
-            PreventPrevRolesAttempts.Add(role, 0);
+            PreventPrevRolesAttempts.TryAdd(role, 0);
         }
 
         Dictionary<RoleAssignType, List<RoleAssignInfo>> Roles = [];
@@ -1111,19 +1111,21 @@ public class RoleAssign
             var randomPlayer = AllPlayers.RandomElement();
             var assignedRole = FinalRolesList.RandomElement();
 
-            if (PrevRoleResult.ContainsKey(randomPlayer.PlayerId))
-            {
-                if (!PrevRolePreventAttempts.ContainsKey(randomPlayer.PlayerId)) PrevRolePreventAttempts.Add(randomPlayer.PlayerId, 0);
+            var id = randomPlayer.PlayerId;
 
-                if (++PrevRolePreventAttempts[randomPlayer.PlayerId] >= PREVENT_REPEAT_STR)
+            if (PrevRoleResult.ContainsKey(id))
+            {
+                PrevRolePreventAttempts.TryAdd(id, 0);
+
+                if (++PrevRolePreventAttempts[id] >= PREVENT_REPEAT_STR)
                 {
-                    PrevRoleResult.Remove(randomPlayer.PlayerId);
+                    PrevRoleResult.Remove(id);
                 }
                 continue;
             }
 
             // Assign random role for random player
-            RoleResult[randomPlayer.PlayerId] = assignedRole;
+            RoleResult[id] = assignedRole;
             Logger.Info($"Player: {randomPlayer.GetRealName()} => {assignedRole}", "RoleAssign");
 
             // Remove random role and player from list

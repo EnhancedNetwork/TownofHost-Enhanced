@@ -16,10 +16,13 @@ using static TOHE.Translator;
 namespace TOHE;
 
 [HarmonyPatch(typeof(AmongUsClient), nameof(AmongUsClient.OnGameJoined))]
-class OnGameJoinedPatch
+internal static class OnGameJoinedPatch
 {
+    public static bool JoiningGame;
+
     public static void Postfix(AmongUsClient __instance)
     {
+        JoiningGame = true;
         while (!Options.IsLoaded) System.Threading.Tasks.Task.Delay(1);
         Logger.Info($"{__instance.GameId} Joining room - Room code: {GameCode.IntToGameName(AmongUsClient.Instance.GameId) ?? string.Empty}", "OnGameJoined");
 
@@ -111,6 +114,11 @@ class OnGameJoinedPatch
                     Logger.Info(" No found", "Game Mode");
                     break;
             }
+
+            _ = new LateTask(() =>
+            {
+                JoiningGame = false;
+            }, 1f, "OnGameJoinedPatch");
         }
 
         _ = new LateTask(() =>
