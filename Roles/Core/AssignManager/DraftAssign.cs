@@ -321,6 +321,8 @@ public static class DraftAssign
 
     AfterPoolsAssigned:
 
+        FixSlotDistribution();
+
         Logger.Info("================================================", "PoolsAssigned");
         foreach (var id in PoolIds)
         {
@@ -338,6 +340,47 @@ public static class DraftAssign
         RoleSlot GetSlot(int index)
         {
             return SlotLookup[index];
+        }
+
+        /// <summary>
+        /// Adjusts the role slot distribution to match the set of currently connected players.
+        /// Ensures that slots marked as always evil are assigned to existing player IDs and that
+        /// non-always-evil slots are not reserved for non-existent players by swapping entries
+        /// in <c>SlotLookup</c> and <c>PoolLookup</c> until a consistent assignment is reached.
+        /// </summary>
+        void FixSlotDistribution()
+        {
+            var allPlayerIds = Main.AllPlayerControls.Select(x => x.PlayerId).ToList();
+            var allSlotIds = SlotLookup.Select((value, index) => new { Value = value, Index = index })
+                .Where(item => item.Value != null).Select(item => item.Index).ToList();
+
+            List<byte> slotsToReassignFrom = [];
+            List<byte> slotsToReassignTo = [];
+
+            foreach (var id in allSlotIds)
+            {
+                if (!allPlayerIds.Contains((byte)id))
+                {
+                    if (GetSlot(id).IsEvil == RoleSlot.Evil.ALWAYS) slotsToReassignFrom.Add((byte)id);
+                }
+                else
+                {
+                    if (GetSlot(id).IsEvil != RoleSlot.Evil.ALWAYS) slotsToReassignTo.Add((byte)id);
+                }
+            }
+
+            while (slotsToReassignFrom.Count > 0 && slotsToReassignTo.Count > 0)
+            {
+                slotsToReassignFrom.Shuffle();
+                slotsToReassignTo.Shuffle();
+
+                // Swaps Slots and Pools at the From/To Locations
+                (SlotLookup[slotsToReassignFrom[0]], SlotLookup[slotsToReassignTo[0]]) = (SlotLookup[slotsToReassignTo[0]], SlotLookup[slotsToReassignFrom[0]]);
+                (PoolLookup[slotsToReassignFrom[0]], PoolLookup[slotsToReassignTo[0]]) = (PoolLookup[slotsToReassignTo[0]], PoolLookup[slotsToReassignFrom[0]]);
+
+                slotsToReassignTo.RemoveAt(0);
+                slotsToReassignFrom.RemoveAt(0);
+            }
         }
 
         CustomRoles GetRoleFromSlot(List<CustomRoles> roles, RoleSlot slot)
@@ -921,4 +964,14 @@ public class RoleSlot(HashSet<RoleBucket> buckets, HashSet<CustomRoles> roles)
             TryAddType(type);
         }
     }
+
+    public enum Evil
+    {
+        ALWAYS,
+        SOMETIMES,
+        NEVER
+    }
+
+    public Evil IsEvil => !Types.Contains(RoleAssign.RoleAssignType.Crewmate) ? Evil.ALWAYS : 
+        Types.Any(x => x != RoleAssign.RoleAssignType.Crewmate) ? Evil.SOMETIMES : Evil.NEVER;
 }
