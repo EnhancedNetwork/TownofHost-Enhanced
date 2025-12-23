@@ -68,6 +68,7 @@ public enum CustomRPC : byte // 178/255 USED
     SyncDeadPassedMeetingList,
     SyncAbilityUseLimit,
     PlayGuardAndKill,
+    RequestCommandProcessing,
 
     //Roles 
     SyncRoleSkill,
@@ -153,6 +154,7 @@ internal class RPCHandlerPatch
     => (CustomRPC)id is CustomRPC.VersionCheck
         or CustomRPC.RequestRetryVersionCheck
         or CustomRPC.AntiBlackout
+        or CustomRPC.RequestCommandProcessing
         or CustomRPC.Judge
         or CustomRPC.ExorcistExorcise
         or CustomRPC.CouncillorJudge
@@ -404,6 +406,24 @@ internal class RPCHandlerPatch
                     NotificationPopperPatch.AddSettingsChangeMessage(item, key, playSound);
                 }
                 break;
+            case CustomRPC.RequestCommandProcessing:
+                {
+                    if (!AmongUsClient.Instance.AmHost) break;
+
+                    string methodName = reader.ReadString();
+                    PlayerControl player = reader.ReadByte().GetPlayer();
+                    string text = reader.ReadString();
+                    bool vipCommand = reader.ReadBoolean();
+                    bool modCommand = reader.ReadBoolean();
+
+                    if (vipCommand && !Utils.IsPlayerVIP(player.FriendCode)) break;
+                    if (modCommand && !Utils.IsPlayerModerator(player.FriendCode)) break;
+
+                    const BindingFlags flags = BindingFlags.Static | BindingFlags.NonPublic | BindingFlags.Public;
+                    typeof(ChatCommands).GetMethod(methodName, flags)?.Invoke(null, [player, text, text.Split(' ')]);
+                    Logger.Info($"Invoke Command: {methodName} ({player?.Data?.PlayerName}, {text})", "RequestCommandProcessing");
+                    break;
+                }
             case CustomRPC.SyncAbilityUseLimit:
                 {
                     var pc = Utils.GetPlayerById(reader.ReadByte());

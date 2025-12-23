@@ -4379,5 +4379,6 @@
   "AFKMinPlayersToActivate": "Min players to Activate",
   "AFKActivateOnStart": "Activate on Start",
 
-  "FixBlackScreenWaitForDead": "Waiting for Dead Players to fix Black Screen"
+  "FixBlackScreenWaitForDead": "Waiting for Dead Players to fix Black Screen",
+  "AFKSuffix": "AFK"
 }

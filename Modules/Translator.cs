@@ -223,7 +223,9 @@ public static class Translator
             else
             {
 #if DEBUG
-                Logger.Warn($"<INVALID:{nameToFind}> (vanillaStr)", "Missing Translation");
+                // Only log if not purposly untranslated
+                if (nameToFind is not ("NotAssigned" or "Coven"))
+                    Logger.Warn($"<INVALID:{nameToFind}> (vanillaStr)", "Missing Translation");
 #endif
                 return showInvalid ? $"<INVALID:{nameToFind}> (vanillaStr)" : nameToFind;
             }
@@ -305,7 +307,8 @@ public static class Translator
             Logger.Error("Here was the error:\n" + Ex.ToString(), "Translator");
         }
 #if DEBUG
-        if (res ==  $"<INVALID:{str}>")
+        // Only log if not purposly untranslated    
+        if (res ==  $"<INVALID:{str}>" && str is not ("NotAssigned" or "Coven"))
             Logger.Warn(res, "Missing Translation");
 #endif
         return res;

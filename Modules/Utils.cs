@@ -3207,6 +3207,11 @@ public static class Utils
         return minTime;
     }
 
+    public static bool IsRevivingRoleAlive()
+    {
+        return Main.AllAlivePlayerControls.Any(x => x.GetCustomRole() is CustomRoles.Altruist);
+    }
+
     public static int AllPlayersCount => Main.PlayerStates.Values.Count(state => state.countTypes != CountTypes.OutOfGame);
     public static int AllAlivePlayersCount => Main.AllAlivePlayerControls.Count(pc => !pc.Is(CountTypes.OutOfGame));
     public static bool IsAllAlive => Main.PlayerStates.Values.All(state => state.countTypes == CountTypes.OutOfGame || !state.IsDead);

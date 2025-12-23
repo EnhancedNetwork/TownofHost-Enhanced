@@ -247,7 +247,6 @@ public static class Options
     public static OptionItem AutoPlayAgainCountdown;
 
     public static OptionItem EnableVoteCommand;
-    public static OptionItem ShouldVoteCmdsSpamChat;
 
     public static OptionItem LowLoadMode;
     public static OptionItem LowLoadDelayUpdateNames;
@@ -282,9 +281,12 @@ public static class Options
 
     public static OptionItem NoGameEnd;
     public static OptionItem AllowConsole;
+    public static OptionItem DontUpdateDeadPlayers;
+    public static OptionItem DeepLowLoad;
     //public static OptionItem DisableAntiBlackoutProtects;
 
     public static OptionItem RoleAssigningAlgorithm;
+    public static OptionItem KickNotJoinedPlayersRegularly;
     public static OptionItem KPDCamouflageMode;
     public static OptionItem EnableUpMode;
 
@@ -1363,8 +1365,15 @@ public static class Options
         UseQuickChatSpamCheat = StringOptionItem.Create(60695, "UseQuickChatSpamCheat", EnumHelper.GetAllNames<QuickChatSpamMode>(), 0, TabGroup.SystemSettings, false)
             .SetColor(Color.cyan)
             .SetHeader(true);
+        
         CrossLanguageGetRole = BooleanOptionItem.Create(60260, "CrossLanguageGetRole", false, TabGroup.SystemSettings, false)
             .SetColor(Color.cyan);
+
+        DeepLowLoad = BooleanOptionItem.Create(19325, "DeepLowLoad", false, TabGroup.SystemSettings)
+            .SetColor(Color.red);
+
+        DontUpdateDeadPlayers = BooleanOptionItem.Create(19326, "DontUpdateDeadPlayers", true, TabGroup.SystemSettings)
+            .SetColor(Color.red);
 
         NoGameEnd = BooleanOptionItem.Create(60380, "NoGameEnd", false, TabGroup.SystemSettings, false)
             .SetColor(Color.red)
@@ -1374,6 +1383,9 @@ public static class Options
         /* DisableAntiBlackoutProtects = BooleanOptionItem.Create(60384, "DisableAntiBlackoutProtects", false, TabGroup.SystemSettings, false)
              .SetGameMode(CustomGameMode.Standard)
              .SetColor(Color.red);*/
+
+        KickNotJoinedPlayersRegularly = BooleanOptionItem.Create(60295, "KickNotJoinedPlayersRegularly", true, TabGroup.SystemSettings)
+            .SetColor(Color.yellow);
 
         RoleAssigningAlgorithm = StringOptionItem.Create(60400, "RoleAssigningAlgorithm", roleAssigningAlgorithms, 3, TabGroup.SystemSettings, true)
             .RegisterUpdateValueEvent((object obj, OptionItem.UpdateValueEventArgs args) => IRandom.SetInstanceById(args.CurrentValue))
@@ -2092,9 +2104,6 @@ public static class Options
             .SetGameMode(CustomGameMode.Standard);
         EnableVoteCommand = BooleanOptionItem.Create(60746, "EnableVote", true, TabGroup.ModSettings, false)
             .SetColor(new Color32(147, 241, 240, byte.MaxValue))
-            .SetGameMode(CustomGameMode.Standard);
-        ShouldVoteCmdsSpamChat = BooleanOptionItem.Create(60747, "ShouldVoteSpam", false, TabGroup.ModSettings, false)
-            .SetParent(EnableVoteCommand)
             .SetGameMode(CustomGameMode.Standard);
         // 其它设定
         TextOptionItem.Create(10000031, "MenuTitle.Other", TabGroup.ModSettings)

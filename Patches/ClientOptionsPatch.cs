@@ -16,6 +16,7 @@ public static class OptionsMenuBehaviourStartPatch
     private static ClientOptionItem ShowModdedClientText;
     private static ClientOptionItem HorseMode;
     private static ClientOptionItem LongMode;
+    private static ClientOptionItem EnableCommandHelper;
     private static ClientOptionItem ForceOwnLanguage;
     private static ClientOptionItem ForceOwnLanguageRoleName;
     private static ClientOptionItem EnableCustomButton;
@@ -129,6 +130,8 @@ public static class OptionsMenuBehaviourStartPatch
                 }
             }
         }
+        if (EnableCommandHelper == null || EnableCommandHelper.ToggleButton == null)
+            EnableCommandHelper = ClientOptionItem.Create("EnableCommandHelper", Main.EnableCommandHelper, __instance);
         if (ForceOwnLanguage == null || ForceOwnLanguage.ToggleButton == null)
         {
             ForceOwnLanguage = ClientOptionItem.Create("ForceOwnLanguage", Main.ForceOwnLanguage, __instance);

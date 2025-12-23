@@ -180,7 +180,14 @@ public class GameStartManagerPatch
                 }
             }
         }
+
+#if !ANDROID
         public static void Postfix(GameStartManager __instance)
+        {
+            DoPostfix(__instance);
+        }
+#endif
+        public static void DoPostfix(GameStartManager __instance)
         {
             if (!AmongUsClient.Instance) return;
 

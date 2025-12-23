@@ -532,7 +532,7 @@ public static class GuessManager
         hudManager.SetHudActive(false);
         _ = new LateTask(() => hudManager.SetHudActive(false), 0.3f, "SetHudActive in ClientGuess", shoudLog: false);
     }
-    private static bool MsgToPlayerAndRole(string msg, out byte id, out CustomRoles role, out string error)
+    public static bool MsgToPlayerAndRole(string msg, out byte id, out CustomRoles role, out string error)
     {
         if (msg.StartsWith("/")) msg = msg.Replace("/", string.Empty);
 

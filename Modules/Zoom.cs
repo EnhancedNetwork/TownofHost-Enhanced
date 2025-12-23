@@ -3,13 +3,13 @@ using UnityEngine;
 
 namespace TOHE;
 
-// 来源：https://github.com/tugaru1975/TownOfPlus/TOPmods/Zoom.cs 
-// 参考：https://github.com/Yumenopai/TownOfHost_Y
-[HarmonyPatch(typeof(HudManager), nameof(HudManager.Update))]
+// Credit：https://github.com/tugaru1975/TownOfPlus/TOPmods/Zoom.cs 
+// Credit：https://github.com/Yumenopai/TownOfHost_Y
+// [HarmonyPatch(typeof(HudManager), nameof(HudManager.Update))]
 public static class Zoom
 {
     private static bool ResetButtons = false;
-    public static void Postfix()
+    public static void DoZoom()
     {
         //if (PlayerControl.LocalPlayer.Is(RoleType.Impostor) && Options.OperateVisibilityImpostor.GetBool()) return;
         if (GameStates.IsShip && !GameStates.IsMeeting && GameStates.IsCanMove && PlayerControl.LocalPlayer.Data.IsDead || GameStates.IsLobby && GameStates.IsCanMove)

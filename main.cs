@@ -53,16 +53,16 @@ public class Main : BasePlugin
     public static ConfigEntry<string> DebugKeyInput { get; private set; }
 
     public const string PluginGuid = "com.0xdrmoe.townofhostenhanced";
-    public const string PluginVersion = "2025.1220.242.00004"; // YEAR.MMDD.VERSION.CANARYDEV
-    public const string PluginDisplayVersion = "2.4.2a4";
+    public const string PluginVersion = "2025.1220.250.00001"; // YEAR.MMDD.VERSION.CANARYDEV
+    public const string PluginDisplayVersion = "2.5.0a1";
     public static readonly List<(int year, int month, int day, int revision)> SupportedVersionAU =
     [
         (2025, 11, 18, 0) // 2025.11.18 & 17.1
     ];
 
     /******************* Change one of the three variables to true before making a release. *******************/
-    public static readonly bool devRelease = false; // Discontinued, use Beta instead
-    public static readonly bool canaryRelease = true; // Latest: V2.4.0 Beta 6
+    public static readonly bool devRelease = true; // Latest: v2.5.0 Alpha 1
+    public static readonly bool canaryRelease = false; // Latest: V2.4.0 Beta 6
     public static readonly bool fullRelease = false; // Latest: V2.4.1
 
     public static bool hasAccess = true;
@@ -108,6 +108,7 @@ public class Main : BasePlugin
     public static ConfigEntry<bool> ShowModdedClientText { get; private set; }
     public static ConfigEntry<bool> HorseMode { get; private set; }
     public static ConfigEntry<bool> LongMode { get; private set; }
+    public static ConfigEntry<bool> EnableCommandHelper { get; private set; }
     public static ConfigEntry<bool> ForceOwnLanguage { get; private set; }
     public static ConfigEntry<bool> ForceOwnLanguageRoleName { get; private set; }
     public static ConfigEntry<bool> EnableCustomButton { get; private set; }
@@ -555,6 +556,7 @@ public class Main : BasePlugin
         ShowModdedClientText = Config.Bind("Client Options", "ShowModdedClientText", true);
         HorseMode = Config.Bind("Client Options", "HorseMode", false);
         LongMode = Config.Bind("Client Options", "LongMode", false);
+        EnableCommandHelper = Config.Bind("Client Options", "EnableCommandHelper", true);
         ForceOwnLanguage = Config.Bind("Client Options", "ForceOwnLanguage", false);
         ForceOwnLanguageRoleName = Config.Bind("Client Options", "ForceOwnLanguageRoleName", false);
         EnableCustomButton = Config.Bind("Client Options", "EnableCustomButton", true);

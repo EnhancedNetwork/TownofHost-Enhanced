@@ -865,9 +865,15 @@ class ReportDeadBodyPatch
                     Logger.Info("The maximum number of meeting buttons has been reached", "ReportDeadBody");
                 }
             }
-            else
+            else if (target == null)
             {
                 Logger.Info($"player called meeting with {__instance.RemainingEmergencies} buttons left", "ReportDeadBody");
+                if (__instance.RemainingEmergencies <= 0)
+                {
+                    Logger.Info("The button has been canceled because the maximum number of available buttons has been exceeded", "ReportDeadBody");
+                    return false;
+                }
+                else __instance.RemainingEmergencies--;
             }
         }
         catch (Exception e)
@@ -1001,19 +1007,20 @@ class ReportDeadBodyPatch
         _ = new LateTask(Utils.SyncAllSettings, 3f, "Sync all settings after report");
     }
 }
-[HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.FixedUpdate))]
+// [HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.FixedUpdate))]
 class FixedUpdateInNormalGamePatch
 {
     private static readonly StringBuilder RealName = new();
     private static readonly StringBuilder DeathReason = new();
     private static readonly StringBuilder Mark = new(20);
     private static readonly StringBuilder Suffix = new(120);
+    private static readonly Dictionary<byte, int> DeadBufferTime = [];
     public static readonly Dictionary<byte, int> BufferTime = [];
     public static readonly Dictionary<byte, int> TeleportBuffer = [];
     public static readonly Dictionary<byte, TMPro.TextMeshPro> RoleTextCache = [];
     private static int LevelKickBufferTime = 20;
 
-    public static void Postfix(PlayerControl __instance)
+    public static void Postfix(PlayerControl __instance, bool lowLoad)
     {
         if (__instance == null || __instance.PlayerId >= 254) return;
 
@@ -1042,9 +1049,18 @@ class FixedUpdateInNormalGamePatch
             }
         }
 
+        if (GameStates.InGame && Options.DontUpdateDeadPlayers.GetBool() && !(__instance.IsHost() && __instance.AmOwner) && !__instance.IsAlive() && !__instance.Is(CustomRoles.Altruist))
+        {
+            int buffer = Options.DeepLowLoad.GetBool() ? 150 : 60;
+            DeadBufferTime.TryAdd(id, buffer);
+            DeadBufferTime[id]--;
+            if (DeadBufferTime[id] > 0) return;
+            DeadBufferTime[id] = buffer;
+        }
+
         try
         {
-            DoPostfix(__instance);
+            DoPostfix(__instance, lowLoad);
         }
         catch (Exception ex)
         {
@@ -1055,7 +1071,7 @@ class FixedUpdateInNormalGamePatch
         }
     }
 
-    private static void DoPostfix(PlayerControl __instance)
+    private static void DoPostfix(PlayerControl __instance, bool lowLoad)
     {
         // FixedUpdate is called 30 times every 1 second
         // If count only one player
@@ -1070,6 +1086,9 @@ class FixedUpdateInNormalGamePatch
             return;
         }
         byte playerId = player.PlayerId;
+
+        bool self = playerId == localPlayerId;
+        bool alive = player.IsAlive();
 
         var playerData = player.Data;
         if (playerData == null) return;
@@ -1087,8 +1106,8 @@ class FixedUpdateInNormalGamePatch
 
         var nowTime = Utils.TimeStamp;
 
-        // The code is called once every 1 second (by one player)
-        bool lowLoad = false;
+        // // The code is called once every 1 second (by one player)
+        // bool lowLoad = false;
 
         if (!BufferTime.TryGetValue(player.PlayerId, out var timerLowLoad))
         {
@@ -1096,41 +1115,32 @@ class FixedUpdateInNormalGamePatch
             timerLowLoad = 30;
         }
 
-        timerLowLoad--;
+        // timerLowLoad--;
 
-        if (timerLowLoad > 0)
-        {
-            if (Options.LowLoadMode.GetBool())
-                lowLoad = true;
-        }
-        else
-        {
-            timerLowLoad = 30;
-        }
+        // if (timerLowLoad > 0)
+        // {
+        //     if (Options.LowLoadMode.GetBool())
+        //         lowLoad = true;
+        // }
+        // else
+        // {
+        //     timerLowLoad = 30;
+        // }
 
-        BufferTime[player.PlayerId] = timerLowLoad;
+        // BufferTime[player.PlayerId] = timerLowLoad;
 
-        if (__instance.AmOwner && timerLowLoad == 30)
-        {
-            TeleportBuffer.Clear();
-        }
+        // if (__instance.AmOwner && timerLowLoad == 30)
+        // {
+        //     TeleportBuffer.Clear();
+        // }
 
-        if (!lowLoad)
+        if (self)
         {
+            // CustomSabotage.UpdateAll();
             Zoom.OnFixedUpdate();
+            TextBoxPatch.CheckChatOpen();
 
-            //try
-            //{
-            //    // ChatUpdatePatch doesn't work when host chat is hidden
-            //    if (AmongUsClient.Instance.AmHost && player.AmOwner && !DestroyableSingleton<HudManager>.Instance.Chat.isActiveAndEnabled)
-            //    {
-            //        ChatUpdatePatch.Postfix(ChatUpdatePatch.Instance);
-            //    }
-            //}
-            //catch (Exception er)
-            //{
-            //    Logger.Error($"Error: {er}", "ChatUpdatePatch");
-            //}
+            if (!lowLoad) NameNotifyManager.OnFixedUpdate();
         }
 
         // Only during the game
@@ -1156,7 +1166,7 @@ class FixedUpdateInNormalGamePatch
 
         if (!lowLoad)
         {
-            NameNotifyManager.OnFixedUpdate(player);
+            NameNotifyManager.OnFixedUpdate();
             TargetArrow.OnFixedUpdate(player);
             LocateArrow.OnFixedUpdate(player);
         }
