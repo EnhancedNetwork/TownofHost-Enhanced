@@ -1551,9 +1551,9 @@ class FixedUpdateInNormalGamePatch
                 float offset = 0.2f;
                 float colorBlind = -0.2f;
 
-                if (NameNotifyManager.Notice.TryGetValue(localPlayerId, out var notify) && notify.Text.Contains('\n'))
+                if (NameNotifyManager.Notifies.TryGetValue(localPlayerId, out var notify) && notify.Any(x => x.Key.Contains('\n')))
                 {
-                    int count = notify.Text.Count(x => x == '\n');
+                    int count = string.Join("\n", notify.Select(x => x.Key)).Count(x => x == '\n');
                     for (int i = 0; i < count; i++)
                     {
                         offset += 0.1f;

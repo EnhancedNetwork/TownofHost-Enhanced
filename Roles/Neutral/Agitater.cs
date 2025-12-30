@@ -89,8 +89,8 @@ internal class Agitater : RoleBase
         LastBombedPlayer = killer.PlayerId;
         CurrentBombedPlayerTime = Utils.GetTimeStamp();
         killer.RpcGuardAndKill(killer);
-        killer.Notify(GetString("AgitaterPassNotify"), hasPriority: true);
-        target.Notify(GetString("AgitaterTargetNotify"), hasPriority: true);
+        killer.Notify(GetString("AgitaterPassNotify"));
+        target.Notify(GetString("AgitaterTargetNotify"));
         AgitaterHasBombed = true;
         killer.ResetKillCooldown();
         killer.SetKillCooldown();
@@ -187,8 +187,8 @@ internal class Agitater : RoleBase
         Utils.MarkEveryoneDirtySettings();
 
 
-        player.Notify(GetString("AgitaterPassNotify"), hasPriority: true);
-        target.Notify(GetString("AgitaterTargetNotify"), hasPriority: true);
+        player.Notify(GetString("AgitaterPassNotify"));
+        target.Notify(GetString("AgitaterTargetNotify"));
 
         SendRPC(CurrentBombedPlayer, LastBombedPlayer);
         Logger.Msg($"{player.GetNameWithRole()} passed bomb to {target.GetNameWithRole()}", "Agitater Pass");

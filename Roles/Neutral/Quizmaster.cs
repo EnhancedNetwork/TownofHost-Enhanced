@@ -3,6 +3,7 @@ using Hazel;
 using System;
 using TOHE.Modules;
 using TOHE.Modules.Rpc;
+using TOHE.Patches;
 using TOHE.Roles.Core;
 using static TOHE.MeetingHudStartPatch;
 using static TOHE.Options;
@@ -269,7 +270,7 @@ internal class Quizmaster : RoleBase
 
         if (pc.PlayerId == MarkedPlayer)
         {
-            ShowQuestion(pc);
+            ShowQuestionCommand(pc, "Command.ShowQuestion", "/qmquiz", []);
         }
         else if (pc.PlayerId != Player.PlayerId && pc.PlayerId != MarkedPlayer)
         {
@@ -292,8 +293,7 @@ internal class Quizmaster : RoleBase
         if (Player == null) return;
 
         firstSabotageOfRound = Sabotages.None;
-        //killsForRound = 0;
-        //allowedVenting = true;
+
         allowedKilling = false;
         diedThisRound = 0;
         if (MarkedPlayer != byte.MaxValue)
@@ -411,16 +411,22 @@ internal class Quizmaster : RoleBase
         Utils.SendMessage(GetString("QuizmasterChat.Wrong").Replace("{QMTARGET}", target.GetRealName()), Player.PlayerId, GetString("QuizmasterChat.Title"));
         Utils.SendMessage(GetString("QuizmasterChat.WrongTarget").Replace("{QMWRONG}", wrongAnswer).Replace("{QMRIGHT}", rightAnswer).Replace("{QM}", Player.GetRealName()), target.PlayerId, GetString("QuizmasterChat.Title"));
     }
-    public static void AnswerByChat(PlayerControl plr, string[] args)
+
+    public static void AnswerCommand(PlayerControl plr, string commandKey, string msg, string[] args)
     {
-        if (Player == null) return;
+        if (!AmongUsClient.Instance.AmHost)
+        {
+            ChatCommands.RequestCommandProcessingFromHost(msg, commandKey);
+            return;
+        }
+
         if (MarkedPlayer == plr.PlayerId)
         {
             var answerSyntaxValid = args.Length == 2;
             if (answerSyntaxValid)
             {
                 string answer = args[1].ToUpper();
-                var answerValid = (answer == "A" || answer == "B" || answer == "C");
+                var answerValid = answer == "A" || answer == "B" || answer == "C";
                 var rightAnswer = Question.AnswerLetter.Trim().ToUpper();
 
                 if (answerValid)
@@ -446,8 +452,14 @@ internal class Quizmaster : RoleBase
         }
     }
 
-    public static void ShowQuestion(PlayerControl plr)
+    public static void ShowQuestionCommand(PlayerControl plr, string commandKey, string msg, string[] args)
     {
+        if (!AmongUsClient.Instance.AmHost)
+        {
+            ChatCommands.RequestCommandProcessingFromHost(msg, commandKey);
+            return;
+        }
+
         if (Player == null) return;
         if (plr.PlayerId == MarkedPlayer)
         {

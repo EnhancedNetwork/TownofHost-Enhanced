@@ -532,13 +532,13 @@ static class ExtendedPlayerControl
         {
             if (player.AmOwner)
             {
-                time = (Main.AllPlayerKillCooldown[player.PlayerId] /= 2);
+                time = Main.AllPlayerKillCooldown[player.PlayerId] /= 2;
                 target.ShowFailedMurder();
                 player.SetKillTimer(time);
             }
             else if (player.IsModded())
             {
-                time = (Main.AllPlayerKillCooldown[player.PlayerId] /= 2);
+                time = Main.AllPlayerKillCooldown[player.PlayerId] /= 2;
                 player.SetKillTimer(time);
 
                 var message = new RpcGuardAndKillModded(player, target, time);

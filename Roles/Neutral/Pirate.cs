@@ -4,6 +4,7 @@ using System.Text.RegularExpressions;
 using TOHE.Modules;
 using TOHE.Modules.ChatManager;
 using TOHE.Modules.Rpc;
+using TOHE.Patches;
 using TOHE.Roles.Core;
 using TOHE.Roles.Double;
 using UnityEngine;
@@ -111,7 +112,7 @@ internal class Pirate : RoleBase
 
         DuelDone[PirateTarget] = false;
 
-        if (!Options.DisableShieldAnimations.GetBool()) killer.RpcGuardAndKill(killer);
+        if (!DisableShieldAnimations.GetBool()) killer.RpcGuardAndKill(killer);
         else killer.SetKillCooldown();
 
         return false;
@@ -177,90 +178,80 @@ internal class Pirate : RoleBase
         PirateTarget = byte.MaxValue;
         SendRPC(target: byte.MaxValue);
     }
-    public static bool DuelCheckMsg(PlayerControl pc, string msg, bool isUI = false)
+
+    public static void DuelCommand(PlayerControl player, string commandKey, string text, string[] args)
     {
-        var originMsg = msg;
-        if (!AmongUsClient.Instance.AmHost) return false;
-        if (!GameStates.IsMeeting || pc == null || GameStates.IsExilling) return false;
-        if (!pc.Is(CustomRoles.Pirate) && PirateTarget != pc.PlayerId) return false;
-
-
-        msg = msg.ToLower().TrimStart().TrimEnd();
-        bool operate = false;
-        if (CheckCommond(ref msg, "duel")) operate = true;
-        else return false;
-
-        if (!pc.IsAlive())
+        if (!AmongUsClient.Instance.AmHost)
         {
-            pc.ShowInfoMessage(isUI, GetString("PirateDead"));
-            return true;
+            ChatCommands.RequestCommandProcessingFromHost(text, commandKey);
+            return;
         }
 
-        if (operate)
+        var originMsg = text;
+
+        if (!GameStates.IsMeeting || player == null || GameStates.IsExilling) return;
+        if (!player.Is(CustomRoles.Pirate) && PirateTarget != player.PlayerId) return;
+
+        if (!player.IsAlive())
         {
+            player.ShowInfoMessage(false, GetString("PirateDead"));
+            return;
+        }
 
-            if (TryHideMsg.GetBool())
+        if (TryHideMsg.GetBool())
+        {
+            TryHideMsgForDuel();
+            ChatManager.SendPreviousMessagesToAll();
+        }
+        else if (player.AmOwner) SendMessage(originMsg, 255, player.GetRealName());
+
+        if (!GetNumFromCommand(text, out int rpsOption, out string error))
+        {
+            SendMessage(error, player.PlayerId);
+            return;
+        }
+
+        Logger.Info($"{player.GetNameWithRole()} selected {rpsOption}", "Pirate");
+
+        if (DuelDone[player.PlayerId])
+        {
+            _ = new LateTask(() =>
             {
-                //if (Options.NewHideMsg.GetBool()) ChatManager.SendPreviousMessagesToAll();
-                //else TryHideMsgForDuel();
-                TryHideMsgForDuel();
-                ChatManager.SendPreviousMessagesToAll();
-            }
-            else if (pc.AmOwner) SendMessage(originMsg, 255, pc.GetRealName());
-
-            if (!MsgToPlayerAndRole(msg, out int rpsOption, out string error))
+                player.ShowInfoMessage(false, GetString("DuelAlreadyDone"));
+                Logger.Msg("Duel attempted more than once", "Pirate");
+            }, 0.2f, "Pirate Duel Already Done");
+            return;
+        }
+        else
+        {
+            if (player.Is(CustomRoles.Pirate))
             {
-                SendMessage(error, pc.PlayerId);
-                return true;
+                pirateChose = rpsOption;
             }
-
-            Logger.Info($"{pc.GetNameWithRole()} selected {rpsOption}", "Pirate");
-
-            if (DuelDone[pc.PlayerId])
-            {
-                _ = new LateTask(() =>
-                {
-                    pc.ShowInfoMessage(isUI, GetString("DuelAlreadyDone"));
-                    Logger.Msg("Duel attempted more than once", "Pirate");
-                }, 0.2f, "Pirate Duel Already Done");
-                return true;
-            }
-
             else
             {
-                if (pc.Is(CustomRoles.Pirate))
-                {
-                    pirateChose = rpsOption;
-
-                }
-                else
-                {
-                    targetChose = rpsOption;
-                }
-                _ = new LateTask(() =>
-                {
-                    pc.ShowInfoMessage(isUI, string.Format(GetString("DuelDone"), rpsOption));
-                }, 0.2f, "Pirate Duel Done");
-
-                DuelDone[pc.PlayerId] = true;
-                return true;
-
+                targetChose = rpsOption;
             }
+            _ = new LateTask(() =>
+            {
+                player.ShowInfoMessage(false, string.Format(GetString("DuelDone"), rpsOption));
+            }, 0.2f, "Pirate Duel Done");
+
+            DuelDone[player.PlayerId] = true;
+            return;
         }
-        return true;
     }
 
-
-    private static bool MsgToPlayerAndRole(string msg, out int rpsOpt, out string error)
+    private static bool GetNumFromCommand(string msg, out int rpsOpt, out string error)
     {
         if (msg.StartsWith("/")) msg = msg.Replace("/", string.Empty);
 
-        Regex r = new("\\d+");
+        Regex r = new("\\d+"); // regex for numbers
         MatchCollection mc = r.Matches(msg);
         string result = string.Empty;
         for (int i = 0; i < mc.Count; i++)
         {
-            result += mc[i];//匹配结果是完整的数字，此处可以不做拼接的
+            result += mc[i];
         }
 
         if (int.TryParse(result, out int num))
@@ -282,27 +273,6 @@ internal class Pirate : RoleBase
 
         error = string.Empty;
         return true;
-    }
-
-    public static bool CheckCommond(ref string msg, string command)
-    {
-        var comList = command.Split('|');
-        for (int i = 0; i < comList.Length; i++)
-        {
-            //if (exact)
-            //{
-            //    if (msg == "/" + comList[i]) return true;
-            //}
-            //else
-            //{
-            if (msg.StartsWith("/" + comList[i]))
-            {
-                msg = msg.Replace("/" + comList[i], string.Empty);
-                return true;
-            }
-            //}
-        }
-        return false;
     }
 
     public static void TryHideMsgForDuel()
@@ -345,6 +315,4 @@ internal class Pirate : RoleBase
         }
         ChatUpdatePatch.DoBlockChat = false;
     }
-
-
 }

@@ -2,6 +2,7 @@ using Hazel;
 using System;
 using System.Text.RegularExpressions;
 using TOHE.Modules.ChatManager;
+using TOHE.Patches;
 using TOHE.Roles.Crewmate;
 using UnityEngine;
 using static TOHE.Options;
@@ -70,82 +71,75 @@ internal class Ritualist : CovenManager
         => IsForMeeting && seer.IsAlive() && target.IsAlive() ? ColorString(GetRoleColor(CustomRoles.Ritualist), target.PlayerId.ToString()) + " " + TargetPlayerName : "";
     public override string PVANameText(PlayerVoteArea pva, PlayerControl seer, PlayerControl target)
         => seer.IsAlive() && target.IsAlive() ? ColorString(GetRoleColor(CustomRoles.Ritualist), target.PlayerId.ToString()) + " " + pva.NameText.text : "";
-    public static bool RitualistMsgCheck(PlayerControl pc, string msg, bool isUI = false)
+
+    public static void RitualCommand(PlayerControl player, string commandKey, string text, string[] args)
     {
-        var originMsg = msg;
-
-        if (!AmongUsClient.Instance.AmHost) return false;
-        if (!GameStates.IsMeeting || pc == null || GameStates.IsExilling) return false;
-        if (!pc.Is(CustomRoles.Ritualist)) return false;
-
-        int operate = 0; // 1:ID 2:猜测
-        msg = msg.ToLower().TrimStart().TrimEnd();
-        if (CheckCommond(ref msg, "id|guesslist|gl编号|玩家编号|玩家id|id列表|玩家列表|列表|所有id|全部id||編號|玩家編號")) operate = 1;
-        else if (CheckCommond(ref msg, "rt|rit|ritual|bloodritual|鲜血仪式|仪式|献祭|举行|附魔", false)) operate = 2;
-        else return false;
-
-        if (!pc.IsAlive())
+        if (!AmongUsClient.Instance.AmHost)
         {
-            pc.ShowInfoMessage(isUI, GetString("GuessDead"));
-            return true;
+            ChatCommands.RequestCommandProcessingFromHost(text, commandKey);
+            return;
         }
 
-        if (operate == 1)
+        var originMsg = text;
+
+        if (!GameStates.IsMeeting || player == null || GameStates.IsExilling) return;
+        if (!player.Is(CustomRoles.Ritualist)) return;
+
+        bool isUI = player.IsModded();
+
+        if (!player.IsAlive())
         {
-            SendMessage(GuessManager.GetFormatString(), pc.PlayerId);
-            return true;
+            player.ShowInfoMessage(isUI, GetString("GuessDead"));
+            return;
         }
 
-        else if (operate == 2)
+        if (TryHideMsg.GetBool())
         {
-            if (TryHideMsg.GetBool())
-            {
-                TryHideMsgForRitual();
-                ChatManager.SendPreviousMessagesToAll();
-            }
-            else if (pc.AmOwner) SendMessage(originMsg, 255, pc.GetRealName());
-            if (RitualLimit[pc.PlayerId] <= 0)
-            {
-                pc.ShowInfoMessage(isUI, GetString("RitualistRitualMax"));
-                return true;
-            }
-
-            if (!MsgToPlayerAndRole(msg, out byte targetId, out CustomRoles role, out string error))
-            {
-                pc.ShowInfoMessage(isUI, error);
-                return true;
-            }
-            var target = GetPlayerById(targetId);
-            if (role.IsAdditionRole())
-            {
-                pc.ShowInfoMessage(isUI, GetString("RitualistGuessAddon"));
-                return true;
-            }
-            if (!target.Is(role))
-            {
-                RPC.PlaySoundRPC(Sounds.SabotageSound, pc.PlayerId);
-                pc.ShowInfoMessage(isUI, GetString("RitualistRitualFail"));
-                RitualLimit[pc.PlayerId] = 0;
-                return true;
-            }
-            if (!target.CanBeRecruitedBy(pc))
-            {
-                pc.ShowInfoMessage(isUI, GetString("RitualistRitualImpossible"));
-                return true;
-            }
-
-            Logger.Info($"{pc.GetNameWithRole()} enchant {target.GetNameWithRole()}", "Ritualist");
-
-            RitualLimit[pc.PlayerId]--;
-
-            EnchantedPlayers[pc.PlayerId].Add(target.PlayerId);
-            RPC.PlaySoundRPC(Sounds.TaskUpdateSound, target.PlayerId);
-            SendMessage(string.Format(GetString("RitualistConvertNotif"), CustomRoles.Ritualist.ToColoredString()), target.PlayerId);
-            RPC.PlaySoundRPC(Sounds.TaskComplete, pc.PlayerId);
-            SendMessage(string.Format(GetString("RitualistRitualSuccess"), target.GetRealName()), pc.PlayerId);
-            return true;
+            TryHideMsgForRitual();
+            ChatManager.SendPreviousMessagesToAll();
         }
-        return false;
+        else if (player.AmOwner) SendMessage(originMsg, 255, player.GetRealName());
+        if (RitualLimit[player.PlayerId] <= 0)
+        {
+            player.ShowInfoMessage(isUI, GetString("RitualistRitualMax"));
+            return;
+        }
+
+        if (!GetTargetAndRoleFromCommand(text, out byte targetId, out CustomRoles role, out string error))
+        {
+            player.ShowInfoMessage(isUI, error);
+            return;
+        }
+        var target = GetPlayerById(targetId);
+        if (role.IsAdditionRole())
+        {
+            player.ShowInfoMessage(isUI, GetString("RitualistGuessAddon"));
+            return;
+        }
+        if (!target.Is(role))
+        {
+            RPC.PlaySoundRPC(Sounds.SabotageSound, player.PlayerId);
+            player.ShowInfoMessage(isUI, GetString("RitualistRitualFail"));
+            RitualLimit[player.PlayerId] = 0;
+            return;
+        }
+        if (!target.CanBeRecruitedBy(player))
+        {
+            player.ShowInfoMessage(isUI, GetString("RitualistRitualImpossible"));
+            return;
+        }
+
+        Logger.Info($"{player.GetNameWithRole()} enchant {target.GetNameWithRole()}", "Ritualist");
+
+        RitualLimit[player.PlayerId]--;
+
+        EnchantedPlayers[player.PlayerId].Add(target.PlayerId);
+        RPC.PlaySoundRPC(Sounds.TaskUpdateSound, target.PlayerId);
+        target.ShowInfoMessage(target.IsModded(), string.Format(GetString("RitualistConvertNotif"), CustomRoles.Ritualist.ToColoredString()));
+        // SendMessage(string.Format(GetString("RitualistConvertNotif"), CustomRoles.Ritualist.ToColoredString()), target.PlayerId);
+        RPC.PlaySoundRPC(Sounds.TaskComplete, player.PlayerId);
+        player.ShowInfoMessage(isUI, string.Format(GetString("RitualistRitualSuccess"), target.GetRealName()));
+        // SendMessage(string.Format(GetString("RitualistRitualSuccess"), target.GetRealName()), player.PlayerId);
     }
     private static void TryHideMsgForRitual()
     {
@@ -160,7 +154,7 @@ internal class Ritualist : CovenManager
         List<CustomRoles> roles = [.. CustomRolesHelper.AllRoles.Where(x => x is not CustomRoles.NotAssigned)];
         var rd = IRandom.Instance;
         string msg;
-        string[] command = ["rt", "rit", "ritual", "bloodritual"];
+        string[] command = GetString("Command.Ritual").Split("|");
         for (int i = 0; i < 20; i++)
         {
             msg = "/";
@@ -176,7 +170,7 @@ internal class Ritualist : CovenManager
                 msg += rd.Next(100) < 50 ? string.Empty : " ";
                 CustomRoles role = roles.RandomElement();
                 msg += rd.Next(100) < 50 ? string.Empty : " ";
-                msg += Utils.GetRoleName(role);
+                msg += GetRoleName(role);
 
             }
             var player = Main.AllAlivePlayerControls.RandomElement();
@@ -203,7 +197,7 @@ internal class Ritualist : CovenManager
             EnchantedPlayers[rit].Clear();
         }
     }
-    public void ConvertRole(PlayerControl killer, PlayerControl target)
+    public static void ConvertRole(PlayerControl killer, PlayerControl target)
     {
         var addon = killer.GetBetrayalAddon(true);
         if (target.CanBeRecruitedBy(killer))
@@ -217,16 +211,16 @@ internal class Ritualist : CovenManager
             }
         }
     }
-    private static bool MsgToPlayerAndRole(string msg, out byte id, out CustomRoles role, out string error)
+    private static bool GetTargetAndRoleFromCommand(string msg, out byte id, out CustomRoles role, out string error)
     {
         if (msg.StartsWith("/")) msg = msg.Replace("/", string.Empty);
 
-        Regex r = new("\\d+");
+        Regex r = new("\\d+"); // number regex
         MatchCollection mc = r.Matches(msg);
         string result = string.Empty;
         for (int i = 0; i < mc.Count; i++)
         {
-            result += mc[i];//匹配结果是完整的数字，此处可以不做拼接的
+            result += mc[i];
         }
 
         if (int.TryParse(result, out int num))
@@ -241,7 +235,7 @@ internal class Ritualist : CovenManager
             return false;
         }
 
-        PlayerControl target = Utils.GetPlayerById(id);
+        PlayerControl target = GetPlayerById(id);
         if (target == null || target.Data.IsDead)
         {
             error = GetString("GuessNull");
@@ -257,26 +251,6 @@ internal class Ritualist : CovenManager
 
         error = string.Empty;
         return true;
-    }
-    public static bool CheckCommond(ref string msg, string command, bool exact = true)
-    {
-        var comList = command.Split('|');
-        foreach (var comm in comList)
-        {
-            if (exact)
-            {
-                if (msg == "/" + comm) return true;
-            }
-            else
-            {
-                if (msg.StartsWith("/" + comm))
-                {
-                    msg = msg.Replace("/" + comm, string.Empty);
-                    return true;
-                }
-            }
-        }
-        return false;
     }
     public static bool CanBeConverted(PlayerControl pc)
     {

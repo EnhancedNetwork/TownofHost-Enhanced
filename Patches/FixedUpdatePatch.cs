@@ -185,7 +185,7 @@ public static class FixedUpdatePatch
                     if (closestVent == null) continue;
 
                     int ventId = closestVent.Id;
-                    bool canUseVent = pc.CanUseVent(ventId);
+                    bool canUseVent = pc.CanUseVents();
 
                     if (!ClosestVent.TryGetValue(pc.PlayerId, out int lastVentId) || !CanUseClosestVent.TryGetValue(pc.PlayerId, out bool lastCanUseVent))
                     {
@@ -195,7 +195,7 @@ public static class FixedUpdatePatch
                     }
 
                     if (ventId != lastVentId || canUseVent != lastCanUseVent)
-                        VentilationSystemDeterioratePatch.SerializeV2(ventilationSystem, pc);
+                        VentSystemDeterioratePatch.SerializeV2(ventilationSystem, pc);
 
                     ClosestVent[pc.PlayerId] = ventId;
                     CanUseClosestVent[pc.PlayerId] = canUseVent;

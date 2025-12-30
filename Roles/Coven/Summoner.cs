@@ -3,6 +3,7 @@ using AmongUs.GameOptions;
 using Hazel;
 using TOHE.Modules;
 using TOHE.Modules.ChatManager;
+using TOHE.Patches;
 using TOHE.Roles.Core;
 using UnityEngine;
 using static TOHE.Options;
@@ -36,16 +37,16 @@ internal class Summoner : CovenManager
     private static OptionItem HasAbilityUses;
     private static OptionItem MaxSummonsAllowed;
 
-    private readonly Dictionary<byte, RoleBase> SummonedOriginalRoles = new();
+    private static readonly Dictionary<byte, RoleBase> SummonedOriginalRoles = [];
 
-    private readonly List<byte> SummonedPlayerIds = new List<byte>();
+    private static readonly Dictionary<byte, HashSet<byte>> SummonedPlayerIds = [];
 
-    public static readonly Dictionary<byte, int> SummonedKillCounts = new();
-    public static readonly Dictionary<byte, float> SummonedHealth = new();
-    private static List<(PlayerControl, float)> PendingRevives = new();
-    public static readonly Dictionary<byte, long> LastUpdateTimes = new();
+    public static readonly Dictionary<byte, int> SummonedKillCounts = [];
+    public static readonly Dictionary<byte, float> SummonedHealth = [];
+    private static readonly List<(PlayerControl, float)> PendingRevives = [];
+    public static readonly Dictionary<byte, long> LastUpdateTimes = [];
+    private static readonly Dictionary<byte, bool> HasSummonedThisMeeting = [];
 
-    private bool HasSummonedThisMeeting = false;
     public override void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = NecroKillCooldownOption.GetFloat();
     public override void SetupCustomOption()
     {
@@ -98,13 +99,12 @@ internal class Summoner : CovenManager
        .SetParent(HasAbilityUses).SetValueFormat(OptionFormat.Times);
     }
 
-
-
     public override void Add(byte playerId)
     {
         base.Add(playerId);
         playerId.SetAbilityUseLimit(MaxSummonsAllowed.GetInt());
         CustomRoleManager.CheckDeadBodyOthers.Add(OnPlayerDead);
+        HasSummonedThisMeeting[playerId] = false;
     }
 
     public override void Init()
@@ -115,6 +115,7 @@ internal class Summoner : CovenManager
         SummonedPlayerIds.Clear();
         PendingRevives.Clear();
         SummonedKillCounts.Clear();
+        HasSummonedThisMeeting.Clear();
     }
 
     public override string GetMark(PlayerControl seer, PlayerControl seen, bool isForMeeting = false)
@@ -135,18 +136,18 @@ internal class Summoner : CovenManager
         }
         return true;
     }
-    public static bool SummonerCheckMsg(PlayerControl pc, string msg, bool isUI = false)
+
+    public static void SummonCommand(PlayerControl pc, string commandKey, string msg, string[] args)
     {
-        if (!AmongUsClient.Instance.AmHost) return false; // Skip if system message or not host
-        if (!GameStates.IsMeeting || pc == null || GameStates.IsExilling) return false; // Only during meetings
-        if (!pc.Is(CustomRoles.Summoner) || !(pc.GetRoleClass() is Summoner summonerInstance)) return false;
+        if (!AmongUsClient.Instance.AmHost)
+        {
+            ChatCommands.RequestCommandProcessingFromHost(msg, commandKey);
+            return;
+        }
 
-        msg = msg.ToLower().Trim();
-        Logger.Info($"Received command: {msg} from {pc.PlayerId}, Host: {AmongUsClient.Instance.AmHost}", "Summoner");
+        if (!GameStates.IsMeeting || pc == null || GameStates.IsExilling) return; // Only during meetings
+        if (!pc.Is(CustomRoles.Summoner)) return;
 
-        if (!CheckCommand(ref msg, "summon|sm")) return false;
-
-        // Always try hiding the message if the command is intercepted
         HideSummonCommand();
         ChatManager.SendPreviousMessagesToAll();
 
@@ -154,14 +155,14 @@ internal class Summoner : CovenManager
         {
             Logger.Warn("Summoner is dead and cannot use commands.", "Summoner");
             SendMessage(GetString("Summoner.SummonerDead"), pc.PlayerId, CustomRoles.Summoner.ToColoredString().ToUpper());
-            return true;
+            return;
         }
 
         if (!byte.TryParse(msg, out var targetId))
         {
             Logger.Warn("Invalid target ID for /summon command.", "Summoner");
             SendMessage(GetString("Summoner.InvalidID"), pc.PlayerId, CustomRoles.Summoner.ToColoredString().ToUpper());
-            return true;
+            return;
         }
 
         PlayerControl targetPlayer = Main.AllPlayerControls.FirstOrDefault(player => player.PlayerId == targetId);
@@ -170,17 +171,20 @@ internal class Summoner : CovenManager
         {
             Logger.Warn("Target player is invalid or does not exist.", "Summoner");
             SendMessage(GetString("Summoner.NullPlayer"), pc.PlayerId, CustomRoles.Summoner.ToColoredString().ToUpper());
-            return true;
+            return;
         }
 
-        bool isAlreadySummoned = summonerInstance.SummonedPlayerIds.Contains(targetPlayer.PlayerId);
+        if (!SummonedPlayerIds.ContainsKey(pc.PlayerId))
+            SummonedPlayerIds[pc.PlayerId] = [];
+
+        bool isAlreadySummoned = SummonedPlayerIds[pc.PlayerId].Contains(targetPlayer.PlayerId);
         bool allowResummoning = AllowSummoningRevivedPlayers.GetBool();
 
         // Handle the case where reviving already summoned players is allowed
         if (allowResummoning && isAlreadySummoned)
         {
             // Add to pending revives list without using a summon or marking the meeting as used
-            summonerInstance.RevivePlayer(targetPlayer);
+            RevivePlayer(pc, targetPlayer);
             Logger.Info($"Player {targetPlayer.PlayerId} (already Summoned) added to pending revives.", "Summoner");
 
             if (ResummonTakesUse.GetBool() && HasAbilityUses.GetBool())
@@ -196,36 +200,36 @@ internal class Summoner : CovenManager
                 SendMessage(string.Format(GetString("Summoner.SummonAnnouncementAgain"), targetPlayer.GetRealName()), byte.MaxValue, CustomRoles.Summoner.ToColoredString().ToUpper());
             }
 
-            return true;
+            return;
         }
 
         // Check summon use limit
         if (HasAbilityUses.GetBool() && pc.GetAbilityUseLimit() <= 0)
         {
             SendMessage(GetString("Summoner.NoUses"), pc.PlayerId, CustomRoles.Summoner.ToColoredString().ToUpper());
-            return true;
+            return;
         }
 
         if (targetPlayer == pc)
         {
             Logger.Warn($"{targetPlayer.GetRealName()} tried to summon self, lol", "Summoner");
             SendMessage(GetString("Summoner.SummonSelf"), pc.PlayerId, CustomRoles.Summoner.ToColoredString().ToUpper());
-            return true;
+            return;
         }
 
         if (targetPlayer.IsAlive())
         {
             Logger.Warn($"{targetPlayer.GetRealName()} is already alive.", "Summoner");
             SendMessage(GetString("Summoner.PlayerAlive"), pc.PlayerId, CustomRoles.Summoner.ToColoredString().ToUpper());
-            return true;
+            return;
         }
 
         // Check if Summoner has already summoned this meeting
-        if (summonerInstance.HasSummonedThisMeeting)
+        if (HasSummonedThisMeeting[pc.PlayerId])
         {
             Logger.Warn("Summoner has already summoned a player this meeting.", "Summoner");
             SendMessage(GetString("Summoner.SummonedThisMeeting"), pc.PlayerId, CustomRoles.Summoner.ToColoredString().ToUpper());
-            return true;
+            return;
         }
 
         // Check if Summoner has already summoned this meeting
@@ -233,13 +237,11 @@ internal class Summoner : CovenManager
         {
             Logger.Warn($"Summoner tried summoning {targetPlayer.GetRealName()} but settings disallow it", "Summoner");
             SendMessage(string.Format(GetString("Summoner.AlreadySummoned"), targetPlayer.GetRealName()), pc.PlayerId, CustomRoles.Summoner.ToColoredString().ToUpper());
-            return true;
+            return;
         }
 
         // Normal summoning logic
-        HideSummonCommand();
-        ChatManager.SendPreviousMessagesToAll();
-        summonerInstance.RevivePlayer(targetPlayer);
+        RevivePlayer(pc, targetPlayer);
 
         // Increment summon count if allowed
         if (!isAlreadySummoned || !allowResummoning)
@@ -247,7 +249,7 @@ internal class Summoner : CovenManager
             pc.RpcRemoveAbilityUse();
         }
 
-        summonerInstance.HasSummonedThisMeeting = true;
+        HasSummonedThisMeeting[pc.PlayerId] = true;
 
         // Send global message
         string summonMessage = RevealSummonedPlayer.GetBool()
@@ -262,7 +264,6 @@ internal class Summoner : CovenManager
         }
 
         Logger.Info($"Summoner {pc.PlayerId} has summoned player {targetPlayer.PlayerId}. System message sent: {summonMessage}", "Summoner");
-        return true; // Suppress the command message
     }
 
     private static void HideSummonCommand()
@@ -275,12 +276,12 @@ internal class Summoner : CovenManager
             return;
         }
 
-        string[] decoyCommands = ["/summon", "/sm"];
+        string[] decoyCommands = GetString("Command.Summon").Split("|");
         var random = IRandom.Instance;
 
         for (int i = 0; i < 20; i++)
         {
-            string decoyMessage = decoyCommands[random.Next(0, decoyCommands.Length)];
+            string decoyMessage = "/" + decoyCommands[random.Next(0, decoyCommands.Length)];
 
 
             var randomPlayer = Main.AllAlivePlayerControls.RandomElement();
@@ -301,22 +302,7 @@ internal class Summoner : CovenManager
         ChatUpdatePatch.DoBlockChat = false;
     }
 
-
-    public static bool CheckCommand(ref string msg, string command)
-    {
-        var comList = command.Split('|');
-        foreach (var comm in comList)
-        {
-            if (msg.StartsWith("/" + comm))
-            {
-                msg = msg.Replace("/" + comm, string.Empty).Trim();
-                return true;
-            }
-        }
-        return false;
-    }
-
-    public void RevivePlayer(PlayerControl targetPlayer)
+    public static void RevivePlayer(PlayerControl summoner, PlayerControl targetPlayer)
     {
         if (targetPlayer == null || targetPlayer.Data == null || !targetPlayer.Data.IsDead)
         {
@@ -335,17 +321,17 @@ internal class Summoner : CovenManager
         else
         {
             // Perform immediate revive if not in a meeting
-            PerformRevive(targetPlayer, reviveDelay);
+            PerformRevive(summoner, targetPlayer, reviveDelay);
         }
     }
-    public void CancelPendingRevives()
+    public static void CancelPendingRevives()
     {
         foreach (var (player, delay) in PendingRevives.ToList())
         {
             PendingRevives.Remove((player, delay));
         }
     }
-    private void SaveOriginalRole(PlayerControl player)
+    private static void SaveOriginalRole(PlayerControl player)
     {
         if (!SummonedOriginalRoles.ContainsKey(player.PlayerId))
         {
@@ -354,7 +340,7 @@ internal class Summoner : CovenManager
             Logger.Info($"Saved original role for player {player.PlayerId}: {originalRole}.", "Summoner");
         }
     }
-    public void RestoreOriginalRole(PlayerControl player)
+    public static void RestoreOriginalRole(PlayerControl player)
     {
         if (SummonedOriginalRoles.TryGetValue(player.PlayerId, out RoleBase originalRole))
         {
@@ -381,7 +367,10 @@ internal class Summoner : CovenManager
 
         Logger.Info($"Summoner {target.PlayerId} has died. Resetting summoned players.", "Summoner");
 
-        foreach (var summonedId in SummonedPlayerIds.ToList())
+        if (!SummonedPlayerIds.ContainsKey(_Player.PlayerId))
+            SummonedPlayerIds[_Player.PlayerId] = [];
+
+        foreach (var summonedId in SummonedPlayerIds[_Player.PlayerId].ToList())
         {
             // PlayerControl summonedPlayer = Main.AllPlayerControls.FirstOrDefault(p => p.PlayerId == summonedId);
             PlayerControl summonedPlayer = GetPlayerById(summonedId);
@@ -461,7 +450,7 @@ internal class Summoner : CovenManager
         }
     }
 
-    private void PerformRevive(PlayerControl targetPlayer, float reviveDelay)
+    private static void PerformRevive(PlayerControl summoner, PlayerControl targetPlayer, float reviveDelay)
     {
         if (targetPlayer.IsAlive()) return;
 
@@ -482,7 +471,11 @@ internal class Summoner : CovenManager
             // Assign Summoned role
             targetPlayer.RpcChangeRoleBasis(CustomRoles.Summoned);
             targetPlayer.RpcSetCustomRole(CustomRoles.Summoned);
-            SummonedPlayerIds.Add(targetPlayer.PlayerId);
+
+            if (!SummonedPlayerIds.ContainsKey(summoner.PlayerId))
+                SummonedPlayerIds[summoner.PlayerId] = [];
+
+            SummonedPlayerIds[summoner.PlayerId].Add(targetPlayer.PlayerId);
             if (!SummonedKillCounts.ContainsKey(targetPlayer.PlayerId))
             {
                 SummonedKillCounts[targetPlayer.PlayerId] = 0;
@@ -537,12 +530,12 @@ internal class Summoner : CovenManager
         base.AfterMeetingTasks();
 
         // Reset the summoning flag for the next meeting
-        HasSummonedThisMeeting = false;
+        HasSummonedThisMeeting[_Player.PlayerId] = false;
 
         // Process all pending revives
         foreach (var (player, delay) in PendingRevives.ToList())
         {
-            PerformRevive(player, delay);
+            PerformRevive(_Player, player, delay);
             PendingRevives.Remove((player, delay)); // Remove the processed revive
         }
     }
@@ -640,7 +633,7 @@ internal class Summoned : RoleBase
                         {
                             _ = new LateTask(() =>
                             {
-                                summonerInstance.RestoreOriginalRole(player); // Restore their original role on report
+                                Summoner.RestoreOriginalRole(player); // Restore their original role on report
                             }, .2f, "SummonerRestoreROle");
                         }
                     }
@@ -725,7 +718,7 @@ internal class Summoned : RoleBase
             {
                 _ = new LateTask(() =>
                 {
-                    summonerInstance.RestoreOriginalRole(pc); // Restore their original role on report
+                    Summoner.RestoreOriginalRole(pc); // Restore their original role on report
                 }, .2f, "SummonerRestoreROle");
             }
         }

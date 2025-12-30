@@ -2,7 +2,7 @@ using System;
 using System.IO;
 using System.Text;
 
-namespace TOHE;
+namespace TOHE.Modules;
 
 public static class TagManager
 {
@@ -51,11 +51,13 @@ public static class TagManager
         return reader.ReadToEnd();
     }
 
+    private static readonly string[] TagFolders = ["MOD_TAGS", "VIP_TAGS", "SPONSOR_TAGS"];
+
     // Check for the friend's tag file in any folder (not just in the root directory)
     public static bool CheckFriendCode(string friendCode, bool log = false)
     {
         var folderPaths = Directory.GetDirectories(TAGS_FILE_PATH)
-            .Where(folder => !new[] { "MOD_TAGS", "VIP_TAGS", "SPONSOR_TAGS" }.Contains(Path.GetFileName(folder)))
+            .Where(folder => !TagFolders.Contains(Path.GetFileName(folder)))
             .Concat([TAGS_FILE_PATH])
             .ToList();
 
@@ -76,7 +78,7 @@ public static class TagManager
     public static string ReadTagName(string friendCode)
     {
         var folderPaths = Directory.GetDirectories(TAGS_FILE_PATH)
-            .Where(folder => !new[] { "MOD_TAGS", "VIP_TAGS", "SPONSOR_TAGS" }.Contains(Path.GetFileName(folder)))
+            .Where(folder => !TagFolders.Contains(Path.GetFileName(folder)))
             .Concat([TAGS_FILE_PATH])
             .ToList();
 
@@ -102,7 +104,7 @@ public static class TagManager
     public static string ReadTagColor(string friendCode)
     {
         var folderPaths = Directory.GetDirectories(TAGS_FILE_PATH)
-            .Where(folder => !new[] { "MOD_TAGS", "VIP_TAGS", "SPONSOR_TAGS" }.Contains(Path.GetFileName(folder)))
+            .Where(folder => !TagFolders.Contains(Path.GetFileName(folder)))
             .Concat([TAGS_FILE_PATH])
             .ToList();
 
@@ -170,7 +172,7 @@ public static class TagManager
     public static int ReadPermission(string friendCode)
     {
         var folderPaths = Directory.GetDirectories(TAGS_FILE_PATH)
-            .Where(folder => !new[] { "MOD_TAGS", "VIP_TAGS", "SPONSOR_TAGS" }.Contains(Path.GetFileName(folder)))
+            .Where(folder => !TagFolders.Contains(Path.GetFileName(folder)))
             .Concat([TAGS_FILE_PATH])
             .ToList();
 
@@ -190,14 +192,15 @@ public static class TagManager
                 break;
             }
         }
-        int.TryParse(temp, out int result);
+        _ = int.TryParse(temp, out int result);
         return result;
     }
 
+    private static readonly string[] TruePattern = ["yes", "y", "true", "t", "1"];
     public static bool CanUseSayCommand(string friendCode)
     {
         var folderPaths = Directory.GetDirectories(TAGS_FILE_PATH)
-            .Where(folder => !new[] { "MOD_TAGS", "VIP_TAGS", "SPONSOR_TAGS" }.Contains(Path.GetFileName(folder)))
+            .Where(folder => !TagFolders.Contains(Path.GetFileName(folder)))
             .Concat([TAGS_FILE_PATH])
             .ToList();
 
@@ -217,14 +220,14 @@ public static class TagManager
                 break;
             }
         }
-        if (new[] { "yes", "y", "true", "t", "1" }.Any(c => temp.Contains(c))) return true;
+        if (TruePattern.Any(c => temp.Contains(c))) return true;
         return false;
     }
 
     public static bool CanUseEndCommand(string friendCode)
     {
         var folderPaths = Directory.GetDirectories(TAGS_FILE_PATH)
-            .Where(folder => !new[] { "MOD_TAGS", "VIP_TAGS", "SPONSOR_TAGS" }.Contains(Path.GetFileName(folder)))
+            .Where(folder => !TagFolders.Contains(Path.GetFileName(folder)))
             .Concat([TAGS_FILE_PATH])
             .ToList();
 
@@ -244,14 +247,14 @@ public static class TagManager
                 break;
             }
         }
-        if (new[] { "yes", "y", "true", "t", "1" }.Any(c => temp.Contains(c))) return true;
+        if (TruePattern.Any(c => temp.Contains(c))) return true;
         return false;
     }
 
     public static bool CanUseExecuteCommand(string friendCode)
     {
         var folderPaths = Directory.GetDirectories(TAGS_FILE_PATH)
-            .Where(folder => !new[] { "MOD_TAGS", "VIP_TAGS", "SPONSOR_TAGS" }.Contains(Path.GetFileName(folder)))
+            .Where(folder => !TagFolders.Contains(Path.GetFileName(folder)))
             .Concat([TAGS_FILE_PATH])
             .ToList();
 
@@ -271,14 +274,14 @@ public static class TagManager
                 break;
             }
         }
-        if (new[] { "yes", "y", "true", "t", "1" }.Any(c => temp.Contains(c))) return true;
+        if (TruePattern.Any(c => temp.Contains(c))) return true;
         return false;
     }
 
     public static bool AssignGameMaster(string friendCode)
     {
         var folderPaths = Directory.GetDirectories(TAGS_FILE_PATH)
-            .Where(folder => !new[] { "MOD_TAGS", "VIP_TAGS", "SPONSOR_TAGS" }.Contains(Path.GetFileName(folder)))
+            .Where(folder => !TagFolders.Contains(Path.GetFileName(folder)))
             .Concat([TAGS_FILE_PATH])
             .ToList();
 
@@ -298,7 +301,7 @@ public static class TagManager
                 break;
             }
         }
-        if (new[] { "yes", "y", "true", "t", "1" }.Any(c => temp.Contains(c))) return true;
+        if (TruePattern.Any(c => temp.Contains(c))) return true;
         return false;
     }
 }

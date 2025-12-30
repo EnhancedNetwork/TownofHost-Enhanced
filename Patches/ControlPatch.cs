@@ -203,7 +203,7 @@ internal class ControllerManagerUpdatePatch
             // Forse end game
             if (GetKeysDown(KeyCode.Return, KeyCode.L, KeyCode.LeftShift) && GameStates.IsInGame)
             {
-                NameNotifyManager.Notice.Clear();
+                NameNotifyManager.Notifies.Clear();
                 //Utils.DoNotifyRoles(ForceLoop: true);
                 CustomWinnerHolder.ResetAndSetWinner(CustomWinner.Draw);
                 GameManager.Instance.LogicFlow.CheckEndCriteria();

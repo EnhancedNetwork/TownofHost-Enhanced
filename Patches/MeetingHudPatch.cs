@@ -4,6 +4,7 @@ using System;
 using System.Text;
 using TMPro;
 using TOHE.Modules;
+using TOHE.Patches;
 using TOHE.Roles.AddOns.Common;
 using TOHE.Roles.AddOns.Crewmate;
 using TOHE.Roles.AddOns.Impostor;
@@ -1437,9 +1438,9 @@ class MeetingHudUpdatePatch
                 ClearShootButton(__instance, true);
 
             if (myRole is CustomRoles.Nemesis && !PlayerControl.LocalPlayer.IsAlive() && GameObject.Find("ShootButton") == null)
-                Nemesis.CreateJudgeButton(__instance);
+                Nemesis.CreateRevengeButton(__instance);
             if (myRole is CustomRoles.Retributionist && !PlayerControl.LocalPlayer.IsAlive() && GameObject.Find("ShootButton") == null)
-                Retributionist.CreateJudgeButton(__instance);
+                Retributionist.CreateRetributionButton(__instance);
 
             ClearShootButton(__instance);
 

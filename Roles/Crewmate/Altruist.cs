@@ -100,6 +100,7 @@ internal class Altruist : RoleBase
             _Player.Data.IsDead = true;
             _Player.RpcExileV2();
             Main.PlayerStates[_Player.PlayerId].SetDead();
+            MurderPlayerPatch.AfterPlayerDeathTasks(reporter, reporter, true);
 
             deadPlayer.RpcTeleport(deadBodyObject.transform.position);
             deadPlayer.RpcRevive();

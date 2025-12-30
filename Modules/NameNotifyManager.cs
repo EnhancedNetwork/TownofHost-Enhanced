@@ -8,6 +8,7 @@ public static class NameNotifyManager
 {
     public static Dictionary<byte, Dictionary<string, long>> Notifies = [];
     private static long LastUpdate;
+    public static bool Notifying(PlayerControl player) => Notifies.ContainsKey(player.PlayerId) && Notifies[player.PlayerId]?.Count > 0;
 
     public static void Reset()
     {

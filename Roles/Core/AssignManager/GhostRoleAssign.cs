@@ -1,5 +1,6 @@
 using Hazel;
 using System.Text;
+using TOHE.Patches;
 
 namespace TOHE.Roles.Core.AssignManager;
 

@@ -5,6 +5,8 @@ using System.Text.RegularExpressions;
 using AmongUs.GameOptions;
 using Cpp2IL.Core.Extensions;
 using Rewired;
+using TOHE.Modules;
+using TOHE.Patches;
 using TOHE.Roles.Core.AssignManager;
 using TOHE.Roles.Crewmate;
 using TOHE.Roles.Double;

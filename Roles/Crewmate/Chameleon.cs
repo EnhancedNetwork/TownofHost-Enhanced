@@ -153,7 +153,7 @@ internal class Chameleon : RoleBase
             else if (remainTime <= 10)
             {
                 if (!chameleon.IsModded())
-                    chameleon.Notify(string.Format(GetString("ChameleonInvisStateCountdown"), remainTime), sendInLog: false);
+                    chameleon.Notify(string.Format(GetString("ChameleonInvisStateCountdown"), remainTime), log: false);
             }
         }
 

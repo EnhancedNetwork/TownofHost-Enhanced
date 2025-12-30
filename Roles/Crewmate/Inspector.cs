@@ -3,6 +3,7 @@ using System;
 using TOHE.Modules;
 using TOHE.Modules.ChatManager;
 using TOHE.Modules.Rpc;
+using TOHE.Patches;
 using TOHE.Roles.AddOns.Common;
 using TOHE.Roles.Core;
 using TOHE.Roles.Coven;
@@ -89,222 +90,209 @@ internal class Inspector : RoleBase
         }
     }
 
-    public static bool InspectCheckMsg(PlayerControl pc, string msg, bool isUI = false)
+    public static void InspectCommand(PlayerControl player, string commandKey, string text, string[] args)
     {
-        var originMsg = msg;
-
-        if (!AmongUsClient.Instance.AmHost) return false;
-        if (!GameStates.IsMeeting || pc == null || GameStates.IsExilling) return false;
-        if (!pc.Is(CustomRoles.Inspector)) return false;
-
-        int operate = 0;
-        msg = msg.ToLower().TrimStart().TrimEnd();
-        if (CheckCommond(ref msg, "id|guesslist|gl编号|玩家编号|玩家id|id列表|玩家列表|列表|所有id|全部id|編號|玩家編號")) operate = 1;
-        else if (CheckCommond(ref msg, "compare|cmp|比较|比較", false)) operate = 2;
-        else return false;
-
-        if (!pc.IsAlive())
+        if (!AmongUsClient.Instance.AmHost)
         {
-            SendMessage(GetString("InspectorDead"), pc.PlayerId);
-            return true;
+            ChatCommands.RequestCommandProcessingFromHost(text, commandKey);
+            return;
         }
 
-        if (operate == 1)
+        var originMsg = text;
+
+        if (!GameStates.IsMeeting || player == null || GameStates.IsExilling) return;
+        if (!player.Is(CustomRoles.Inspector)) return;
+
+        if (!player.IsAlive())
         {
-            SendMessage(GuessManager.GetFormatString(), pc.PlayerId);
-            return true;
+            SendMessage(GetString("InspectorDead"), player.PlayerId);
+            return;
         }
-        else if (operate == 2)
+
+        if (TryHideMsg.GetBool())
         {
+            TryHideMsgForCompare();
+            ChatManager.SendPreviousMessagesToAll();
+        }
+        else if (player.AmOwner) SendMessage(originMsg, 255, player.GetRealName());
 
-            if (TryHideMsg.GetBool())
-            {
-                //if (Options.NewHideMsg.GetBool()) ChatManager.SendPreviousMessagesToAll();
-                //else TryHideMsgForCompare(); 
-                TryHideMsgForCompare();
-                ChatManager.SendPreviousMessagesToAll();
-            }
-            else if (pc.AmOwner) SendMessage(originMsg, 255, pc.GetRealName());
+        if (!GetIdsFromCommand(text, out byte targetId1, out byte targetId2, out string error))
+        {
+            SendMessage(error, player.PlayerId);
+            return;
+        }
+        var target1 = GetPlayerById(targetId1);
+        // Voodoo Master Check 1
+        bool target1IsVM = false;
+        if (target1.Is(CustomRoles.VoodooMaster) && VoodooMaster.Dolls[target1.PlayerId].Count > 0)
+        {
+            target1 = GetPlayerById(VoodooMaster.Dolls[target1.PlayerId].Where(x => GetPlayerById(x).IsAlive()).ToList().RandomElement());
+            SendMessage(string.Format(GetString("VoodooMasterTargetInMeeting"), target1.GetRealName()), CustomRoles.VoodooMaster.GetPlayerListByRole().First().PlayerId);
+            target1IsVM = true;
+        }
+        var target1Name = target1.GetRealName();
+        if (target1IsVM) target1Name = CustomRoles.VoodooMaster.GetPlayerListByRole().First().GetRealName();
 
-            if (!MsgToPlayerAndRole(msg, out byte targetId1, out byte targetId2, out string error))
-            {
-                SendMessage(error, pc.PlayerId);
-                return true;
-            }
-            var target1 = GetPlayerById(targetId1);
-            // Voodoo Master Check 1
-            bool target1IsVM = false;
-            if (target1.Is(CustomRoles.VoodooMaster) && VoodooMaster.Dolls[target1.PlayerId].Count > 0)
-            {
-                target1 = Utils.GetPlayerById(VoodooMaster.Dolls[target1.PlayerId].Where(x => Utils.GetPlayerById(x).IsAlive()).ToList().RandomElement());
-                Utils.SendMessage(string.Format(GetString("VoodooMasterTargetInMeeting"), target1.GetRealName()), Utils.GetPlayerListByRole(CustomRoles.VoodooMaster).First().PlayerId);
-                target1IsVM = true;
-            }
-            var target1Name = target1.GetRealName();
-            if (target1IsVM) target1Name = Utils.GetPlayerListByRole(CustomRoles.VoodooMaster).First().GetRealName();
+        var target2 = GetPlayerById(targetId2);
+        // Voodoo Master Check 1
+        bool target2IsVM = false;
+        if (target2.Is(CustomRoles.VoodooMaster) && VoodooMaster.Dolls[target1.PlayerId].Count > 0)
+        {
+            target2 = GetPlayerById(VoodooMaster.Dolls[target2.PlayerId].Where(x => GetPlayerById(x).IsAlive()).ToList().RandomElement());
+            SendMessage(string.Format(GetString("VoodooMasterTargetInMeeting"), target2.GetRealName()), CustomRoles.VoodooMaster.GetPlayerListByRole().First().PlayerId);
+            target2IsVM = true;
+        }
+        var target2Name = target2.GetRealName();
+        if (target2IsVM) target2Name = Utils.GetPlayerListByRole(CustomRoles.VoodooMaster).First().GetRealName();
 
-            var target2 = GetPlayerById(targetId2);
-            // Voodoo Master Check 1
-            bool target2IsVM = false;
-            if (target2.Is(CustomRoles.VoodooMaster) && VoodooMaster.Dolls[target1.PlayerId].Count > 0)
-            {
-                target2 = Utils.GetPlayerById(VoodooMaster.Dolls[target2.PlayerId].Where(x => Utils.GetPlayerById(x).IsAlive()).ToList().RandomElement());
-                Utils.SendMessage(string.Format(GetString("VoodooMasterTargetInMeeting"), target2.GetRealName()), Utils.GetPlayerListByRole(CustomRoles.VoodooMaster).First().PlayerId);
-                target2IsVM = true;
-            }
-            var target2Name = target2.GetRealName();
-            if (target2IsVM) target2Name = Utils.GetPlayerListByRole(CustomRoles.VoodooMaster).First().GetRealName();
+        if (target1 != null && target2 != null)
+        {
+            Logger.Info($"{player.GetNameWithRole()} checked {target1.GetNameWithRole()} and {target2.GetNameWithRole()}", "Inspector");
 
-            if (target1 != null && target2 != null)
+            var abilityLimit = player.GetAbilityUseLimit();
+            if (abilityLimit < 1 || RoundCheckLimit[player.PlayerId] < 1)
             {
-                Logger.Info($"{pc.GetNameWithRole()} checked {target1.GetNameWithRole()} and {target2.GetNameWithRole()}", "Inspector");
-
-                var abilityLimit = pc.GetAbilityUseLimit();
-                if (abilityLimit < 1 || RoundCheckLimit[pc.PlayerId] < 1)
-                {
-                    if (abilityLimit < 1)
-                    {
-                        _ = new LateTask(() =>
-                        {
-                            pc.ShowInfoMessage(isUI, GetString("InspectCheckMax"));
-                            Logger.Msg("Check attempted at max checks per game", "Inspector");
-                        }, 0.2f, "Inspector Msg 1");
-                    }
-                    else
-                    {
-                        _ = new LateTask(() =>
-                        {
-                            pc.ShowInfoMessage(isUI, GetString("InspectCheckRound"));
-                            Logger.Msg("Check attempted at max checks per meeting", "Inspector");
-                        }, 0.2f, "Inspector Msg 2");
-                    }
-                    return true;
-                }
-                if (pc.PlayerId == target1.PlayerId || pc.PlayerId == target2.PlayerId)
+                if (abilityLimit < 1)
                 {
                     _ = new LateTask(() =>
                     {
-                        pc.ShowInfoMessage(isUI, GetString("InspectCheckSelf"), ColorString(GetRoleColor(CustomRoles.Inspector), GetString("Inspector").ToUpper()));
-                        Logger.Msg("Check attempted on self", "Inspector");
-                    }, 0.2f, "Inspector Msg 3");
-                    return true;
-                }
-                else if (target1.GetCustomRole().IsRevealingRole(target1) || target1.IsAnySubRole(role => role.IsRevealingRole(target1)) || target2.GetCustomRole().IsRevealingRole(target2) || target2.IsAnySubRole(role => role.IsRevealingRole(target2)))
-                {
-                    _ = new LateTask(() =>
-                    {
-                        pc.ShowInfoMessage(isUI, GetString("InspectCheckReveal"), ColorString(GetRoleColor(CustomRoles.Inspector), GetString("Inspector").ToUpper()));
-                        Logger.Msg("Check attempted on revealed role", "Inspector");
-                    }, 0.2f, "Inspector Msg 4");
-                    return true;
+                        player.ShowInfoMessage(false, GetString("InspectCheckMax"));
+                        Logger.Msg("Check attempted at max checks per game", "Inspector");
+                    }, 0.2f, "Inspector Msg 1");
                 }
                 else
                 {
-                    if
-                    (
-                        (
-                        (target1.IsPlayerCoven() || target1.Is(CustomRoles.Enchanted) || Illusionist.IsNonCovIllusioned(target1.PlayerId)) && !Lich.IsCursed(target1)
-                        &&
-                        (target2.IsPlayerCoven() || target2.Is(CustomRoles.Enchanted) || Illusionist.IsNonCovIllusioned(target2.PlayerId)) && !Lich.IsCursed(target2)
-                        )
-                        ||
-                        (
-                        (Illusionist.IsCovIllusioned(target1.PlayerId) || (target1.GetCustomRole().IsCrewmateTeamV2() && (target1.GetCustomSubRoles().All(role => role.IsCrewmateTeamV2()) || target1.GetCustomSubRoles().Count == 0)) || target1.Is(CustomRoles.Admired)) && !Lich.IsCursed(target1)
-                        &&
-                        (Illusionist.IsCovIllusioned(target2.PlayerId) || (target2.GetCustomRole().IsCrewmateTeamV2() && (target2.GetCustomSubRoles().All(role => role.IsCrewmateTeamV2()) || target2.GetCustomSubRoles().Count == 0)) || target2.Is(CustomRoles.Admired)) && !Lich.IsCursed(target2)
-                        )
-                        ||
-                        (
-                        (target1.GetCustomRole().IsImpostorTeamV2() || target1.IsAnySubRole(role => role.IsImpostorTeamV2())) && !target1.Is(CustomRoles.Admired) && !Lich.IsCursed(target1)
-                        &&
-                        (target2.GetCustomRole().IsImpostorTeamV2() || target2.IsAnySubRole(role => role.IsImpostorTeamV2())) && !target2.Is(CustomRoles.Admired) && !Lich.IsCursed(target2)
-                        )
-                        ||
-                        (
-                        (target1.GetCustomRole().IsNeutralTeamV2() || target1.IsAnySubRole(role => role.IsNeutralTeamV2()) || Lich.IsCursed(target1)) && !target1.Is(CustomRoles.Admired)
-                        &&
-                        (target2.GetCustomRole().IsNeutralTeamV2() || target2.IsAnySubRole(role => role.IsNeutralTeamV2()) || Lich.IsCursed(target2)) && !target2.Is(CustomRoles.Admired)
-                        )
-                    )
+                    _ = new LateTask(() =>
                     {
-                        _ = new LateTask(() =>
-                        {
-                            pc.ShowInfoMessage(isUI, string.Format(GetString("InspectCheckTrue"), target1.GetRealName(), target2.GetRealName()), ColorString(GetRoleColor(CustomRoles.Inspector), GetString("Inspector").ToUpper()));
-                            Logger.Msg("Check attempt, result TRUE", "Inspector");
-                        }, 0.2f, "Inspector Msg 5");
-                    }
-                    else
-                    {
-                        _ = new LateTask(() =>
-                        {
-                            pc.ShowInfoMessage(isUI, string.Format(GetString("InspectCheckFalse"), target1Name, target2Name), ColorString(GetRoleColor(CustomRoles.Inspector), GetString("Inspector").ToUpper()));
-                            Logger.Msg("Check attempt, result FALSE", "Inspector");
-                        }, 0.2f, "Inspector Msg 6");
-                    }
-
-                    if (InspectCheckTargetKnow.GetBool())
-                    {
-                        string textToSend = $"{target1Name}";
-                        if (InspectCheckOtherTargetKnow.GetBool())
-                            textToSend += $" and {target2Name}";
-                        textToSend += GetString("InspectCheckTargetMsg");
-
-                        string textToSend1 = $"{target2Name}";
-                        if (InspectCheckOtherTargetKnow.GetBool())
-                            textToSend1 += $" and {target1Name}";
-                        textToSend1 += GetString("InspectCheckTargetMsg");
-                        _ = new LateTask(() =>
-                        {
-                            SendMessage(textToSend, target1.PlayerId, ColorString(GetRoleColor(CustomRoles.Inspector), GetString("Inspector").ToUpper()));
-                            SendMessage(textToSend1, target2.PlayerId, ColorString(GetRoleColor(CustomRoles.Inspector), GetString("Inspector").ToUpper()));
-                            Logger.Msg("Check attempt, target1 notified", "Inspector");
-                            Logger.Msg("Check attempt, target2 notified", "Inspector");
-                        }, 0.2f, "Inspector Msg 7");
-
-                        if (InspectCheckRevealTargetTeam.GetBool() && pc.AllTasksCompleted())
-                        {
-                            string roleT1 = "", roleT2 = "";
-                            if (Lich.IsCursed(target1)) roleT1 = "Neutral";
-                            else if (target1.Is(CustomRoles.Admired)) roleT1 = "Crewmate";
-                            else if (target1.GetCustomRole().IsImpostorTeamV2() || target1.IsAnySubRole(role => role.IsImpostorTeamV2())) roleT1 = "Impostor";
-                            else if (target1.GetCustomRole().IsNeutralTeamV2() || target1.IsAnySubRole(role => role.IsNeutralTeamV2())) roleT1 = "Neutral";
-                            else if (target1.GetCustomRole().IsCrewmateTeamV2() && (target1.GetCustomSubRoles().Any(role => role.IsCrewmateTeamV2()) || (target1.GetCustomSubRoles().Count == 0))) roleT1 = "Crewmate";
-
-                            if (Lich.IsCursed(target2)) roleT2 = "Neutral";
-                            else if (target2.Is(CustomRoles.Admired)) roleT2 = "Crewmate";
-                            else if (target2.GetCustomRole().IsImpostorTeamV2() || target2.IsAnySubRole(role => role.IsImpostorTeamV2())) roleT2 = "Impostor";
-                            else if (target2.GetCustomRole().IsNeutralTeamV2() || target2.IsAnySubRole(role => role.IsNeutralTeamV2())) roleT2 = "Neutral";
-                            else if ((target2.GetCustomRole().IsCrewmateTeamV2() && (target2.GetCustomSubRoles().Any(role => role.IsCrewmateTeamV2()) || target2.GetCustomSubRoles().Count == 0))) roleT2 = "Crewmate";
-
-                            _ = new LateTask(() =>
-                            {
-                                SendMessage(string.Format(GetString("InspectorTargetReveal"), target2Name, roleT2), target1.PlayerId, ColorString(GetRoleColor(CustomRoles.Inspector), GetString("Inspector").ToUpper()));
-                                SendMessage(string.Format(GetString("InspectorTargetReveal"), target1Name, roleT1), target2.PlayerId, ColorString(GetRoleColor(CustomRoles.Inspector), GetString("Inspector").ToUpper()));
-                                Logger.Msg($"check attempt, target1 notified target2 as {roleT2} and target2 notified target1 as {roleT1}", "Inspector");
-                            }, 0.3f, "Inspector Msg 8");
-                        }
-                    }
-                    else
-                    {
-                        if (target1.Is(CustomRoles.Aware))
-                        {
-                            Aware.AwareInteracted[target1.PlayerId].Add(GetRoleName(CustomRoles.Inspector));
-                        }
-                        if (target2.Is(CustomRoles.Aware))
-                        {
-                            Aware.AwareInteracted[target2.PlayerId].Add(GetRoleName(CustomRoles.Inspector));
-                        }
-                    }
-                    pc.RpcRemoveAbilityUse();
-                    RoundCheckLimit[pc.PlayerId]--;
-                    SendRPC(pc.PlayerId);
+                        player.ShowInfoMessage(false, GetString("InspectCheckRound"));
+                        Logger.Msg("Check attempted at max checks per meeting", "Inspector");
+                    }, 0.2f, "Inspector Msg 2");
                 }
+                return;
+            }
+            if (player.PlayerId == target1.PlayerId || player.PlayerId == target2.PlayerId)
+            {
+                _ = new LateTask(() =>
+                {
+                    player.ShowInfoMessage(false, GetString("InspectCheckSelf"), ColorString(GetRoleColor(CustomRoles.Inspector), GetString("Inspector").ToUpper()));
+                    Logger.Msg("Check attempted on self", "Inspector");
+                }, 0.2f, "Inspector Msg 3");
+                return;
+            }
+            else if (target1.GetCustomRole().IsRevealingRole(target1) || target1.IsAnySubRole(role => role.IsRevealingRole(target1)) || target2.GetCustomRole().IsRevealingRole(target2) || target2.IsAnySubRole(role => role.IsRevealingRole(target2)))
+            {
+                _ = new LateTask(() =>
+                {
+                    player.ShowInfoMessage(false, GetString("InspectCheckReveal"), ColorString(GetRoleColor(CustomRoles.Inspector), GetString("Inspector").ToUpper()));
+                    Logger.Msg("Check attempted on revealed role", "Inspector");
+                }, 0.2f, "Inspector Msg 4");
+                return;
+            }
+            else
+            {
+                if
+                (
+                    (
+                    (target1.IsPlayerCoven() || target1.Is(CustomRoles.Enchanted) || Illusionist.IsNonCovIllusioned(target1.PlayerId)) && !Lich.IsCursed(target1)
+                    &&
+                    (target2.IsPlayerCoven() || target2.Is(CustomRoles.Enchanted) || Illusionist.IsNonCovIllusioned(target2.PlayerId)) && !Lich.IsCursed(target2)
+                    )
+                    ||
+                    (
+                    (Illusionist.IsCovIllusioned(target1.PlayerId) || (target1.GetCustomRole().IsCrewmateTeamV2() && (target1.GetCustomSubRoles().All(role => role.IsCrewmateTeamV2()) || target1.GetCustomSubRoles().Count == 0)) || target1.Is(CustomRoles.Admired)) && !Lich.IsCursed(target1)
+                    &&
+                    (Illusionist.IsCovIllusioned(target2.PlayerId) || (target2.GetCustomRole().IsCrewmateTeamV2() && (target2.GetCustomSubRoles().All(role => role.IsCrewmateTeamV2()) || target2.GetCustomSubRoles().Count == 0)) || target2.Is(CustomRoles.Admired)) && !Lich.IsCursed(target2)
+                    )
+                    ||
+                    (
+                    (target1.GetCustomRole().IsImpostorTeamV2() || target1.IsAnySubRole(role => role.IsImpostorTeamV2())) && !target1.Is(CustomRoles.Admired) && !Lich.IsCursed(target1)
+                    &&
+                    (target2.GetCustomRole().IsImpostorTeamV2() || target2.IsAnySubRole(role => role.IsImpostorTeamV2())) && !target2.Is(CustomRoles.Admired) && !Lich.IsCursed(target2)
+                    )
+                    ||
+                    (
+                    (target1.GetCustomRole().IsNeutralTeamV2() || target1.IsAnySubRole(role => role.IsNeutralTeamV2()) || Lich.IsCursed(target1)) && !target1.Is(CustomRoles.Admired)
+                    &&
+                    (target2.GetCustomRole().IsNeutralTeamV2() || target2.IsAnySubRole(role => role.IsNeutralTeamV2()) || Lich.IsCursed(target2)) && !target2.Is(CustomRoles.Admired)
+                    )
+                )
+                {
+                    _ = new LateTask(() =>
+                    {
+                        player.ShowInfoMessage(false, string.Format(GetString("InspectCheckTrue"), target1.GetRealName(), target2.GetRealName()), ColorString(GetRoleColor(CustomRoles.Inspector), GetString("Inspector").ToUpper()));
+                        Logger.Msg("Check attempt, result TRUE", "Inspector");
+                    }, 0.2f, "Inspector Msg 5");
+                }
+                else
+                {
+                    _ = new LateTask(() =>
+                    {
+                        player.ShowInfoMessage(false, string.Format(GetString("InspectCheckFalse"), target1Name, target2Name), ColorString(GetRoleColor(CustomRoles.Inspector), GetString("Inspector").ToUpper()));
+                        Logger.Msg("Check attempt, result FALSE", "Inspector");
+                    }, 0.2f, "Inspector Msg 6");
+                }
+
+                if (InspectCheckTargetKnow.GetBool())
+                {
+                    string textToSend = $"{target1Name}";
+                    if (InspectCheckOtherTargetKnow.GetBool())
+                        textToSend += $" and {target2Name}";
+                    textToSend += GetString("InspectCheckTargetMsg");
+
+                    string textToSend1 = $"{target2Name}";
+                    if (InspectCheckOtherTargetKnow.GetBool())
+                        textToSend1 += $" and {target1Name}";
+                    textToSend1 += GetString("InspectCheckTargetMsg");
+                    _ = new LateTask(() =>
+                    {
+                        SendMessage(textToSend, target1.PlayerId, ColorString(GetRoleColor(CustomRoles.Inspector), GetString("Inspector").ToUpper()));
+                        SendMessage(textToSend1, target2.PlayerId, ColorString(GetRoleColor(CustomRoles.Inspector), GetString("Inspector").ToUpper()));
+                        Logger.Msg("Check attempt, target1 notified", "Inspector");
+                        Logger.Msg("Check attempt, target2 notified", "Inspector");
+                    }, 0.2f, "Inspector Msg 7");
+
+                    if (InspectCheckRevealTargetTeam.GetBool() && player.AllTasksCompleted())
+                    {
+                        string roleT1 = "", roleT2 = "";
+                        if (Lich.IsCursed(target1)) roleT1 = "Neutral";
+                        else if (target1.Is(CustomRoles.Admired)) roleT1 = "Crewmate";
+                        else if (target1.GetCustomRole().IsImpostorTeamV2() || target1.IsAnySubRole(role => role.IsImpostorTeamV2())) roleT1 = "Impostor";
+                        else if (target1.GetCustomRole().IsNeutralTeamV2() || target1.IsAnySubRole(role => role.IsNeutralTeamV2())) roleT1 = "Neutral";
+                        else if (target1.GetCustomRole().IsCrewmateTeamV2() && (target1.GetCustomSubRoles().Any(role => role.IsCrewmateTeamV2()) || (target1.GetCustomSubRoles().Count == 0))) roleT1 = "Crewmate";
+
+                        if (Lich.IsCursed(target2)) roleT2 = "Neutral";
+                        else if (target2.Is(CustomRoles.Admired)) roleT2 = "Crewmate";
+                        else if (target2.GetCustomRole().IsImpostorTeamV2() || target2.IsAnySubRole(role => role.IsImpostorTeamV2())) roleT2 = "Impostor";
+                        else if (target2.GetCustomRole().IsNeutralTeamV2() || target2.IsAnySubRole(role => role.IsNeutralTeamV2())) roleT2 = "Neutral";
+                        else if (target2.GetCustomRole().IsCrewmateTeamV2() && (target2.GetCustomSubRoles().Any(role => role.IsCrewmateTeamV2()) || target2.GetCustomSubRoles().Count == 0)) roleT2 = "Crewmate";
+
+                        _ = new LateTask(() =>
+                        {
+                            SendMessage(string.Format(GetString("InspectorTargetReveal"), target2Name, roleT2), target1.PlayerId, ColorString(GetRoleColor(CustomRoles.Inspector), GetString("Inspector").ToUpper()));
+                            SendMessage(string.Format(GetString("InspectorTargetReveal"), target1Name, roleT1), target2.PlayerId, ColorString(GetRoleColor(CustomRoles.Inspector), GetString("Inspector").ToUpper()));
+                            Logger.Msg($"check attempt, target1 notified target2 as {roleT2} and target2 notified target1 as {roleT1}", "Inspector");
+                        }, 0.3f, "Inspector Msg 8");
+                    }
+                }
+                else
+                {
+                    if (target1.Is(CustomRoles.Aware))
+                    {
+                        Aware.AwareInteracted[target1.PlayerId].Add(GetRoleName(CustomRoles.Inspector));
+                    }
+                    if (target2.Is(CustomRoles.Aware))
+                    {
+                        Aware.AwareInteracted[target2.PlayerId].Add(GetRoleName(CustomRoles.Inspector));
+                    }
+                }
+                player.RpcRemoveAbilityUse();
+                RoundCheckLimit[player.PlayerId]--;
+                SendRPC(player.PlayerId);
             }
         }
-        return true;
     }
 
-    private static bool MsgToPlayerAndRole(string msg, out byte id1, out byte id2, out string error)
+    private static bool GetIdsFromCommand(string msg, out byte id1, out byte id2, out string error)
     {
         if (msg.StartsWith("/")) msg = msg.Replace("/", string.Empty);
         msg = msg.TrimStart().TrimEnd();
@@ -344,26 +332,7 @@ internal class Inspector : RoleBase
         error = string.Empty;
         return true;
     }
-    public static bool CheckCommond(ref string msg, string command, bool exact = true)
-    {
-        var comList = command.Split('|');
-        foreach (var comm in comList)
-        {
-            if (exact)
-            {
-                if (msg == "/" + comm) return true;
-            }
-            else
-            {
-                if (msg.StartsWith("/" + comm))
-                {
-                    msg = msg.Replace("/" + comm, string.Empty);
-                    return true;
-                }
-            }
-        }
-        return false;
-    }
+
     private static void TryHideMsgForCompare()
     {
         ChatUpdatePatch.DoBlockChat = true;

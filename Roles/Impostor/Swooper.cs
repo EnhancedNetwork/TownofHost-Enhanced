@@ -153,7 +153,7 @@ internal class Swooper : RoleBase
             else if (remainTime <= 10)
             {
                 if (!swooper.IsModded())
-                    swooper.Notify(string.Format(GetString("SwooperInvisStateCountdown"), remainTime), sendInLog: false);
+                    swooper.Notify(string.Format(GetString("SwooperInvisStateCountdown"), remainTime), log: false);
             }
         }
 

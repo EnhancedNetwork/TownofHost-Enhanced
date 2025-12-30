@@ -235,7 +235,7 @@ internal class Alchemist : RoleBase
             else if (remainTime <= 10)
             {
                 if (!alchemist.IsModded())
-                    alchemist.Notify(string.Format(GetString("SwooperInvisStateCountdown"), remainTime), sendInLog: false);
+                    alchemist.Notify(string.Format(GetString("SwooperInvisStateCountdown"), remainTime), log: false);
             }
         }
 
@@ -268,7 +268,7 @@ internal class Alchemist : RoleBase
     {
         if (!AmongUsClient.Instance.AmHost) return;
 
-        NameNotifyManager.Notice.Remove(player.PlayerId);
+        NameNotifyManager.Notifies.Remove(player.PlayerId);
 
         switch (PotionID)
         {
@@ -359,7 +359,7 @@ internal class Alchemist : RoleBase
 
         PotionID = 10;
         var pc = __instance.myPlayer;
-        NameNotifyManager.Notice.Remove(pc.PlayerId);
+        NameNotifyManager.Notifies.Remove(pc.PlayerId);
 
         _ = new LateTask(() =>
         {
