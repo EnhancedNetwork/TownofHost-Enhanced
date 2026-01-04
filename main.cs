@@ -55,7 +55,7 @@ public class Main : BasePlugin
 
     public const string PluginGuid = "com.0xdrmoe.townofhostenhanced";
     public const string PluginVersion = "2025.1220.250.00001"; // YEAR.MMDD.VERSION.CANARYDEV
-    public const string PluginDisplayVersion = "2.5.0a1";
+    public const string PluginDisplayVersion = "2.5.0 dev 1";
     public static readonly List<(int year, int month, int day, int revision)> SupportedVersionAU =
     [
         (2025, 11, 18, 0) // 2025.11.18 & 17.1

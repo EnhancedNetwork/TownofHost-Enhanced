@@ -4178,6 +4178,6 @@
 
   "Command.ChangeRole": "改变职业|修改职业",
   "CommandDescription.ChangeRole": "",
-  "CommandArgs.ChangeRole.Role": "",
+  "CommandArgs.ChangeRole.Role": ""
 
 }

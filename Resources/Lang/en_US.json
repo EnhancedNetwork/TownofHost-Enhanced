@@ -4611,5 +4611,15 @@
   "Command.ChangeRole": "changerole|mudarfunção",
   "CommandDescription.ChangeRole": "",
   "CommandArgs.ChangeRole.Role": "",
-  
+
+  "Command.Deck": "deck",
+  "CommandDescription.Deck": "",
+
+  "Command.Draft": "draft",
+  "CommandDescription.Draft": "",
+  "CommandArgs.Draft.Arg1": "",
+
+  "Command.DraftDesc": "dd|draftdescription",
+  "CommandDescription.DraftDesc": "",
+  "CommandArgs.DraftDesc.Number": ""
 }

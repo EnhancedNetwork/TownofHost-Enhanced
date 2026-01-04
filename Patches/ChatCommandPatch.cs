@@ -291,6 +291,9 @@ internal class ChatCommands
             Command.Create("Command.Quit", "{?}", "CommandDescription.Quit", Command.UsageLevels.Everyone, Command.UsageTimes.Always, QuitCommand, true, false, ["CommandArgs.Quit.Arg1"]), // ["quit", "qt", "sair", "退出", "退"]
             Command.Create("Command.FixNames", "", "CommandDescription.FixNames", Command.UsageLevels.Everyone, Command.UsageTimes.InGame, FixNamesCommand, true, false), // ["xf", "修复", "修"]
             Command.Create("Command.ChangeRole", "{role}", "CommandDescription.ChangeRole", Command.UsageLevels.Debug, Command.UsageTimes.InGame, ChangeRoleCommand, true, true, ["CommandArgs.ChangeRole.Role"]), // ["changerole", "mudarfunção", "改变职业", "修改职业"]
+            Command.Create("Command.Deck", "", "CommandDescription.Deck", Command.UsageLevels.Everyone, Command.UsageTimes.InLobby, DeckCommand, true, false), // ["deck"]
+            Command.Create("Command.Draft", "[start|desc|add|reset|number]", "CommandDescription.Draft", Command.UsageLevels.Everyone, Command.UsageTimes.InLobby, DraftCommand, true, false, ["CommandArgs.Draft.Arg1"]), // ["draft"]
+            Command.Create("Command.DraftDesc", "{number}", "CommandDescription.DraftDesc", Command.UsageLevels.Everyone, Command.UsageTimes.InLobby, DraftDescCommand, false, false, ["CommandArgs.DraftDesc.Number"]), //["dd", "draftdescription"]
 
             // Commands with methods in other classes (mostly role commands)
             Command.Create("Command.Guess", "{id} {role}", GetString("CommandDescription.Guess"), Command.UsageLevels.Everyone, Command.UsageTimes.InMeeting, GuessManager.GuessCommand, false, false, [GetString("CommandArgs.Guess.Id"), GetString("CommandArgs.Guess.Role")]), // ["shoot", "guess", "bet", "st", "gs", "bt", "猜", "赌", "賭"]
@@ -323,10 +326,6 @@ internal class ChatCommands
             /gno
             /rand
             /8ball
-
-            /deck
-            /draft
-            /dd
 
             /spam
             /pv
@@ -917,125 +916,7 @@ internal class ChatCommands
                     }
                     Utils.SendMessage("<align=\"center\"><size=150%>" + str + "</align></size>", PlayerControl.LocalPlayer.PlayerId, Utils.ColorString(Utils.GetRoleColor(CustomRoles.Medium), GetString("8BallTitle")));
                     break;
-                case "/deck":
-                    if (!PlayerControl.LocalPlayer.FriendCode.GetDevUser().IsDev && !Options.devEnableDraft)
-                    {
-                        break;
-                    }
-                    canceled = true;
-                    if (!GameStates.IsLobby)
-                    {
-                        Utils.SendMessage(GetString("Message.OnlyCanUseInLobby"), PlayerControl.LocalPlayer.PlayerId);
-                        break;
-                    }
-
-                    PlayerControl.LocalPlayer.SendDeckList();
-
-                    break;
-                case "/draft":
-                    if (!PlayerControl.LocalPlayer.FriendCode.GetDevUser().IsDev && !Options.devEnableDraft)
-                    {
-                        break;
-                    }
-                    canceled = true;
-                    if (!GameStates.IsLobby)
-                    {
-                        Utils.SendMessage(GetString("Message.OnlyCanUseInLobby"), PlayerControl.LocalPlayer.PlayerId);
-                        break;
-                    }
-
-                    if (args.Length < 2 || args[1] == "start")
-                    {
-                        var startResult = DraftAssign.StartDraft();
-
-                        if (startResult == DraftAssign.DraftCmdResult.NoCurrentDraft)
-                        {
-                            Utils.SendMessage(GetString("StartDraftWrongGameMode"), PlayerControl.LocalPlayer.PlayerId);
-                        }
-                        else
-                        {
-                            foreach (var pc in Main.AllPlayerControls)
-                            {
-                                Utils.SendMessage(string.Format(GetString("DraftPoolMessage"), pc.GetFormattedDraftPool()), pc.PlayerId);
-                            }
-                        }
-                    }
-                    else if (args[1] == "desc" || args[1] == "description")
-                    {
-                        if (args.Length > 2) args[1] = args[2];
-                        goto case "/dd";
-                    }
-                    else if (args[1] == "add")
-                    {
-                        var addResult = DraftAssign.DraftActive;
-
-                        if (!addResult)
-                        {
-                            Utils.SendMessage(GetString("NoCurrentDraft"), PlayerControl.LocalPlayer.PlayerId);
-                        }
-                        else
-                        {
-                            foreach (var pc in Main.AllPlayerControls)
-                            {
-                                Utils.SendMessage(string.Format(GetString("DraftPoolMessage"), pc.GetFormattedDraftPool()), pc.PlayerId);
-                            }
-                        }
-                    }
-                    else if (args[1] == "reset")
-                    {
-                        DraftAssign.Reset();
-                    }
-                    else if (args[1] == "enable" && PlayerControl.LocalPlayer.FriendCode.GetDevUser().IsDev)
-                    {
-                        Options.devEnableDraft = true;
-                        Options.DraftHeader.SetHidden(false);
-                        Options.DraftMode.SetHidden(false);
-                        Utils.SendMessage($"{PlayerControl.LocalPlayer.GetRealName()} has enabled draft for you. (No leaks yet please)", PlayerControl.LocalPlayer.PlayerId);
-                    }
-                    else
-                    {
-                        CustomRoles draftedRole;
-                        DraftAssign.DraftCmdResult cmdResult;
-                        if (int.TryParse(args[1], out int index))
-                        {
-                            (cmdResult, draftedRole) = PlayerControl.LocalPlayer.DraftRole(index);
-                            PlayerControl.LocalPlayer.SendDraftDescription(index);
-                        }
-                        else
-                        {
-                            Utils.SendMessage(GetString("InvalidDraftSelection"), PlayerControl.LocalPlayer.PlayerId);
-                            break;
-                        }
-
-                        if (cmdResult == DraftAssign.DraftCmdResult.NoCurrentDraft)
-                        {
-                            Utils.SendMessage(GetString("NoCurrentDraft"), PlayerControl.LocalPlayer.PlayerId);
-                            break;
-                        }
-                        else if (cmdResult == DraftAssign.DraftCmdResult.DraftRemoved)
-                        {
-                            Utils.SendMessage(GetString("DraftSelectionCleared"), PlayerControl.LocalPlayer.PlayerId);
-                            break;
-                        }
-                        else
-                        {
-                            Utils.SendMessage(string.Format(GetString("DraftSelection"), draftedRole.ToColoredString()), PlayerControl.LocalPlayer.PlayerId);
-                        }
-                    }
-                    break;
-                case "/dd":
-                case "/draftdescription":
-                    if (int.TryParse(args[1], out int index2))
-                    {
-                        PlayerControl.LocalPlayer.SendDraftDescription(index2);
-                    }
-                    else
-                    {
-                        Utils.SendMessage(GetString("InvalidDraftSelection"), PlayerControl.LocalPlayer.PlayerId);
-                        break;
-                    }
-                    break;
-
+                
                 case "/spam":
                     canceled = true;
                     ChatManager.SendQuickChatSpam();
@@ -1757,142 +1638,6 @@ internal class ChatCommands
                 Utils.SendMessage("<align=\"center\"><size=150%>" + str + "</align></size>", player.PlayerId, Utils.ColorString(Utils.GetRoleColor(CustomRoles.Medium), GetString("8BallTitle")));
                 break;
 
-            case "/deck":
-                if (!PlayerControl.LocalPlayer.FriendCode.GetDevUser().IsDev && !Options.devEnableDraft && !player.FriendCode.GetDevUser().IsDev)
-                {
-                    break;
-                }
-                if (!GameStates.IsLobby)
-                {
-                    Utils.SendMessage(GetString("Message.OnlyCanUseInLobby"), player.PlayerId);
-                    break;
-                }
-
-                player.SendDeckList();
-
-                break;
-            case "/draft":
-                if (!PlayerControl.LocalPlayer.FriendCode.GetDevUser().IsDev && !Options.devEnableDraft && !player.FriendCode.GetDevUser().IsDev)
-                {
-                    break;
-                }
-                if (!GameStates.IsLobby)
-                {
-                    Utils.SendMessage(GetString("Message.OnlyCanUseInLobby"), player.PlayerId);
-                    break;
-                }
-
-                var tagCanStartDraft = TagManager.ReadPermission(player.FriendCode) >= 3;
-                if (args.Length < 2 || args[1] == "start")
-                {
-                    if (!tagCanStartDraft && !Utils.IsPlayerModerator(player.FriendCode) && !player.FriendCode.GetDevUser().IsDev)
-                    {
-                        Utils.SendMessage(GetString("StartDraftNoAccess"), player.PlayerId);
-                        break;
-                    }
-
-                    var startResult = DraftAssign.StartDraft();
-
-                    if (startResult == DraftAssign.DraftCmdResult.NoCurrentDraft)
-                    {
-                        Utils.SendMessage(GetString("StartDraftWrongGameMode"), player.PlayerId);
-                    }
-                    else
-                    {
-                        foreach (var pc in Main.AllPlayerControls)
-                        {
-                            Utils.SendMessage(string.Format(GetString("DraftPoolMessage"), pc.GetFormattedDraftPool()), pc.PlayerId);
-                        }
-                    }
-                }
-                else if (args[1] == "desc" || args[1] == "description")
-                {
-                    if (args.Length > 2) args[1] = args[2];
-                    goto case "/dd";
-                }
-                else if (args[1] == "add")
-                {
-                    if (!tagCanStartDraft && !Utils.IsPlayerModerator(player.FriendCode))
-                    {
-                        Utils.SendMessage(GetString("StartDraftNoAccess"), player.PlayerId);
-                        break;
-                    }
-                    var addResult = DraftAssign.DraftActive;
-
-                    if (!addResult)
-                    {
-                        Utils.SendMessage(GetString("NoCurrentDraft"), player.PlayerId);
-                    }
-                    else
-                    {
-                        foreach (var pc in Main.AllPlayerControls)
-                        {
-                            Utils.SendMessage(string.Format(GetString("DraftPoolMessage"), pc.GetFormattedDraftPool()), pc.PlayerId);
-                        }
-                    }
-                }
-                else if (args[1] == "reset")
-                {
-                    if (!tagCanStartDraft && !Utils.IsPlayerModerator(player.FriendCode))
-                    {
-                        Utils.SendMessage(GetString("StartDraftNoAccess"), player.PlayerId);
-                        break;
-                    }
-                    DraftAssign.Reset();
-                }
-                else if (args[1] == "enable" && player.FriendCode.GetDevUser().IsDev)
-                {
-                    Options.devEnableDraft = true;
-                    Options.DraftHeader.SetHidden(false);
-                    Options.DraftMode.SetHidden(false);
-                    foreach (var pc in Main.AllPlayerControls)
-                        Utils.SendMessage($"Developer {player.GetRealName()} has enabled draft for you. (No leaks yet please)", pc.PlayerId);
-                }
-                else
-                {
-                    CustomRoles draftedRole;
-                    DraftAssign.DraftCmdResult cmdResult;
-                    if (int.TryParse(args[1], out int index))
-                    {
-                        (cmdResult, draftedRole) = player.DraftRole(index);
-                        player.SendDraftDescription(index);
-                    }
-                    else
-                    {
-                        Utils.SendMessage(GetString("InvalidDraftSelection"), player.PlayerId);
-                        break;
-                    }
-
-                    if (cmdResult == DraftAssign.DraftCmdResult.NoCurrentDraft)
-                    {
-                        Utils.SendMessage(GetString("NoCurrentDraft"), player.PlayerId);
-                        break;
-                    }
-                    else if (cmdResult == DraftAssign.DraftCmdResult.DraftRemoved)
-                    {
-                        Utils.SendMessage(GetString("DraftSelectionCleared"), player.PlayerId);
-                        break;
-                    }
-                    else
-                    {
-                        Utils.SendMessage(string.Format(GetString("DraftSelection"), draftedRole.ToColoredString()), player.PlayerId);
-                        SendRolesInfo(draftedRole.ToString(), player.PlayerId, isDev: player.FriendCode.GetDevUser().DeBug);
-                    }
-                }
-                break;
-            case "/dd":
-            case "/draftdescription":
-                if (int.TryParse(args[1], out int index2))
-                {
-                    player.SendDraftDescription(index2);
-                }
-                else
-                {
-                    Utils.SendMessage(GetString("InvalidDraftSelection"), player.PlayerId);
-                    break;
-                }
-                break;
-            
             default:
                 if (SpamManager.CheckSpam(player, text)) return;
                 break;
@@ -3046,6 +2791,117 @@ internal class ChatCommands
                 Utils.MarkEveryoneDirtySettings();
                 break;
             }
+        }
+    }
+
+    private static void DeckCommand(PlayerControl player, string commandKey, string text, string[] args)
+    {
+        if (!AmongUsClient.Instance.AmHost)
+        {
+            RequestCommandProcessingFromHost(text, commandKey);
+            return;
+        }
+
+        player.SendDeckList();
+    }
+
+    private static void DraftCommand(PlayerControl player, string commandKey, string text, string[] args)
+    {
+        if (!AmongUsClient.Instance.AmHost)
+        {
+            RequestCommandProcessingFromHost(text, commandKey);
+            return;
+        }
+
+        if (args.Length < 2 || args[1] == "start")
+        {
+            var startResult = DraftAssign.StartDraft();
+
+            if (startResult == DraftAssign.DraftCmdResult.NoCurrentDraft)
+            {
+                Utils.SendMessage(GetString("StartDraftWrongGameMode"), PlayerControl.LocalPlayer.PlayerId);
+            }
+            else
+            {
+                foreach (var pc in Main.AllPlayerControls)
+                {
+                    Utils.SendMessage(string.Format(GetString("DraftPoolMessage"), pc.GetFormattedDraftPool()), pc.PlayerId);
+                }
+            }
+        }
+        else if (args[1] == "desc" || args[1] == "description")
+        {
+            if (args.Length > 2) args[1] = args[2];
+            DraftDescCommand(player, "Command.DraftDesc", text, args);
+            return;
+        }
+        else if (args[1] == "add")
+        {
+            var addResult = DraftAssign.DraftActive;
+
+            if (!addResult)
+            {
+                Utils.SendMessage(GetString("NoCurrentDraft"), PlayerControl.LocalPlayer.PlayerId);
+            }
+            else
+            {
+                foreach (var pc in Main.AllPlayerControls)
+                {
+                    Utils.SendMessage(string.Format(GetString("DraftPoolMessage"), pc.GetFormattedDraftPool()), pc.PlayerId);
+                }
+            }
+        }
+        else if (args[1] == "reset")
+        {
+            DraftAssign.Reset();
+        }
+        else
+        {
+            CustomRoles draftedRole;
+            DraftAssign.DraftCmdResult cmdResult;
+            if (int.TryParse(args[1], out int index))
+            {
+                (cmdResult, draftedRole) = PlayerControl.LocalPlayer.DraftRole(index);
+                PlayerControl.LocalPlayer.SendDraftDescription(index);
+            }
+            else
+            {
+                Utils.SendMessage(GetString("InvalidDraftSelection"), PlayerControl.LocalPlayer.PlayerId);
+                return;
+            }
+
+            if (cmdResult == DraftAssign.DraftCmdResult.NoCurrentDraft)
+            {
+                Utils.SendMessage(GetString("NoCurrentDraft"), PlayerControl.LocalPlayer.PlayerId);
+                return;
+            }
+            else if (cmdResult == DraftAssign.DraftCmdResult.DraftRemoved)
+            {
+                Utils.SendMessage(GetString("DraftSelectionCleared"), PlayerControl.LocalPlayer.PlayerId);
+                return;
+            }
+            else
+            {
+                Utils.SendMessage(string.Format(GetString("DraftSelection"), draftedRole.ToColoredString()), PlayerControl.LocalPlayer.PlayerId);
+            }
+        }
+    }
+
+    private static void DraftDescCommand(PlayerControl player, string commandKey, string text, string[] args)
+    {
+        if (!AmongUsClient.Instance.AmHost)
+        {
+            RequestCommandProcessingFromHost(text, commandKey);
+            return;
+        }
+
+        if (int.TryParse(args[1], out int index2))
+        {
+            player.SendDraftDescription(index2);
+        }
+        else
+        {
+            Utils.SendMessage(GetString("InvalidDraftSelection"), player.PlayerId);
         }
     }
 
