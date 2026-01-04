@@ -266,6 +266,7 @@ internal class ChatCommands
             Command.Create("Command.MyRole", "", GetString("CommandDescription.MyRole"), Command.UsageLevels.Everyone, Command.UsageTimes.InGame, MyRoleCommand, true, false), // ["m", "myrole", "м", "мояроль", "我的职业", "minhafunção", "м", "身份", "我", "我的身份"]
             Command.Create("Command.Help", "", GetString("CommandDescription.Help"), Command.UsageLevels.Everyone, Command.UsageTimes.Always, HelpCommand, true, false), // ["h", "help", "хэлп", "хелп", "помощь", "帮助", "ajuda", "教程"] 
             Command.Create("Command.SetRole", "{id} {role}", GetString("CommandDescription.SetRole"), Command.UsageLevels.Host, Command.UsageTimes.InLobby, SetRoleCommand, true, false, [GetString("CommandArgs.SetRole.Id"), GetString("CommandArgs.SetRole.Role")]), // ["setrole", "setaddon", "сетроль", "预设职业", "definir-função"]
+            Command.Create("Command.Fix", "{id}", "CommandDescription.Fix", Command.UsageLevels.HostOrModerator, Command.UsageTimes.InGame, FixCommand, true, false, ["CommandArgs.Fix.Id"]), // ["fix|blackscreenfix|fixblackscreen|фикс|исправить"]
             Command.Create("Command.AFKExempt", "{id}", GetString("CommandDescription.AFKExempt"), Command.UsageLevels.HostOrModerator, Command.UsageTimes.Always, AFKExemptCommand, true, false, [GetString("CommandArgs.AFKExempt.Id")]), // ["afkexempt", "освафк", "афкосв", "挂机检测器不会检测", "afk-isentar"]
             Command.Create("Command.TPOut", "", GetString("CommandDescription.TPOut"), Command.UsageLevels.Everyone, Command.UsageTimes.InLobby, TPOutCommand, true, false), // ["tpout", "тпаут", "传送出", "传出"]
             Command.Create("Command.TPIn", "", GetString("CommandDescription.TPIn"), Command.UsageLevels.Everyone, Command.UsageTimes.InLobby, TPInCommand, true, false), // ["tpin", "тпин", "传送进", "传进"]
@@ -320,7 +321,7 @@ internal class ChatCommands
             /mt
             /cs
             /sd
-            /poll
+            
             /rps
             /coinflip
             /gno
@@ -329,6 +330,7 @@ internal class ChatCommands
 
             /spam
             /pv
+            /poll
 
             /modcolor
             /vipcolor
