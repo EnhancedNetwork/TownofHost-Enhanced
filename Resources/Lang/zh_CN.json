@@ -3956,5 +3956,228 @@
   "ChiefOfPoliceKillButtonText": "招募",
   "PolicPreventRecruitNonKiller": "防止招募没有击杀按钮的玩家",
   "PolicSuidiceWhenTargetNotKiller": "招募非带刀玩家或非<color=#8cffff>船员</color>时自杀",
-  "PolicPassConverted": "可以将已转换的附加职业转移给<color=#ffb347>警长</color>"
+  "PolicPassConverted": "可以将已转换的附加职业转移给<color=#ffb347>警长</color>",
+
+  "Command.Dump": "dump|дамп|лог|导出日志|日志|导出",
+  "CommandDescription.Dump": "Dumps the log file",
+
+  "Command.Version": "v|version|в|версия|检查版本|versão|版本",
+  "CommandDescription.Version": "Sends the current mod version",
+
+  "Command.Save": "save|savepreset",
+  "CommandDescription.Save": "",
+  "CommandArgs.Save.Path": "",
+
+  "Command.Load": "load|loadpreset",
+  "CommandDescription.Load": "",
+  "CommandArgs.Load.Path": "",
+
+  "Command.Docs": "docs",
+  "CommandDescription.Docs": "",
+  "CommandArgs.Docs.Role": "",
+
+  "Command.Winner": "win|winner|победители|获胜者|vencedor|胜利|获胜|赢|获胜的人|赢家",
+  "CommandDescription.Winner": "",
+
+  "Command.LastResult": "l|lastresult|л|对局职业信息|resultados|ultimoresultado|fimdejogo|上局信息|信息|情况",
+  "CommandDescription.LastResult": "",
+
+  "Command.GameResult": "gr|gameresults|resultados|对局结果|上局结果|结果",
+  "CommandDescription.GameResult": "",
+
+  "Command.KillLog": "kh|killlog|击杀日志|击杀情况",
+  "CommandDescription.KillLog": "",
+
+  "Command.RoleSummary": "rs|sum|rolesummary|sumario|sumário|summary|результат|上局职业|职业信息|对局职业",
+  "CommandDescription.RoleSummary": "",
+
+  "Command.GhostInfo": "ghostinfo|幽灵职业介绍|鬼魂职业介绍|幽灵职业|鬼魂职业",
+  "CommandDescription.GhostInfo": "",
+
+  "Command.ApocInfo": "apocinfo|apocalypseinfo|末日中立职业介绍|末日中立介绍|末日类中立职业介绍|末日类中立介绍",
+  "CommandDescription.ApocInfo": "",
+
+  "Command.CovenInfo": "coveninfo|covinfo|巫师阵营职业介绍|巫师阵营介绍|巫师介绍",
+  "CommandDescription.CovenInfo": "",
+
+  "Command.Rename": "rn|rename|name|рн|ренейм|переименовать|修改名称|renomear|重命名|命名为",
+  "CommandDescription.Rename": "",
+  "CommandArgs.Rename.Name": "",
+
+  "Command.HideName": "hn|hidename|хн|спрник|隐藏姓名|semnome|escondernome|隐藏名字|藏名",
+  "CommandDescription.HideName": "",
+  
+  "Command.Level": "level|лвл|уровень|修改等级|nível|nivel|等级|等级设置为",
+  "CommandDescription.Level": "",
+  "CommandArgs.Level.Level": "",
+
+  "Command.Now": "n|now|н|当前设置|atual|设置|系统设置|模组设置",
+  "CommandDescription.Now": "",
+
+  "Command.Disconnect": "dis|disconnect|дис|断连|desconectar|断连",
+  "CommandDescription.Disconnect": "",
+  "CommandArgs.Disconnect.Team": "",
+
+  "Command.R": "r|р|função|role|роль",
+  "CommandDescription.R": "",
+  "CommandArgs.R.Role": "",
+
+  "Command.Factions": "f|factions|faction",
+  "CommandDescription.Factions": "",
+
+  "Command.MyRole": "m|myrole|м|мояроль|我的职业|minhafunção|м|身份|我|我的身份",
+  "CommandDescription.MyRole": "",
+
+  "Command.Help": "h|help|хэлп|хелп|помощь|帮助|ajuda|教程",
+  "CommandDescription.Help": "",
+
+  "Command.SetRole": "setrole|setaddon|сетроль|预设职业|definir-função",
+  "CommandDescription.SetRole": "",
+
+  "Command.AFKExempt": "afkexempt|освафк|афкосв|挂机检测器不会检测|afk-isentar",
+  "CommandDescription.AFKExempt": "",
+  "CommandArgs.AFKExempt.Id": "",
+
+  "Command.TPOut": "tpout|тпаут|传送出|传出",
+  "CommandDescription.TPOut": "",
+
+  "Command.TPIn": "tpin|тпин|传送进|传进",
+  "CommandDescription.TPIn": "",
+
+  "Command.KCount": "gamestate|gstate|gs|kcount|kc|кубийц|гс|статигры|对局状态|estadojogo|status|количество|убийцы|存活阵营|阵营|存货阵营信息|阵营信息",
+  "CommandDescription.KCount": "",
+
+  "Command.Template": "t|template|т|темплейт|模板|шаблон|пример|模板信息",
+  "CommandDescription.Template": "",
+  "CommandArgs.Template.Tag": "",
+
+  "Command.MessageWait": "mw|messagewait|мв|медленныйрежим|消息冷却|espera-mensagens|消息等待时间",
+  "CommandDescription.MessageWait": "",
+  "CommandArgs.MessageWait.Duration": "",
+
+  "Command.Death": "death|d|д|смерть|死亡原因|abate|morto|умер|причина|死亡",
+  "CommandDescription.Death": "",
+  "CommandArgs.Death.Id": "",
+
+  "Command.Say": "say|s|сказать|с|说|falar|dizer",
+  "CommandDescription.Say": "",
+  "CommandArgs.Say.Message": "",
+
+  "Command.Vote": "vote|голос|投票给|votar|投票|票",
+  "CommandDescription.Vote": "",
+  "CommandArgs.Vote.Id": "",
+
+  "Command.Ban": "ban|kick|бан|кик|забанить|кикнуть|封禁|踢出|banir|expulsar|выгнать|踢",
+  "CommandDescription.Ban": "",
+
+  "Command.Warn": "warn|aviso|варн|пред|предупредить|警告|提醒",
+  "CommandDescription.Warn": "",
+
+  "Command.Exe": "exe|выкинуть|驱逐|executar|уничтожить|повесить|казнить|казнь|мут|驱赶",
+  "CommandDescription.Exe": "",
+  "CommandArgs.Exe.Id": "",
+
+  "Command.Color": "colour|color|cor|цвет|颜色|更改颜色|修改颜色|换颜色",
+  "CommandDescription.Color": "",
+  "CommandArgs.Color.Color": "",
+
+  "Command.Start": "start|开始|старт",
+  "CommandDescription.Start": "",
+  "CommandArgs.Start.Time": "",
+
+  "Command.End": "end|encerrar|завершить|结束|结束游戏",
+  "CommandDescription.End": "",
+
+  "Command.ID": "id|айди|编号|玩家编号|mid|玩家列表|玩家信息|玩家编号列表|guesslist|gl编号|玩家id|id列表|列表|所有id|全部id|編號|玩家編號",
+  "CommandDesciption.ID": "",
+
+  "Command.Fix": "fix|blackscreenfix|fixblackscreen|фикс|исправить|修复",
+  "CommandDescription.Fix": "",
+  "CommandArgs.Fix.Id": "",
+
+  "Command.SetPlayers": "setplayers|maxjogadores|设置最大玩家数|设置最大玩家数量|设置玩家数|设置玩家数量|玩家数|玩家数量|玩家",
+  "CommandDescription.SetPlayers": "",
+  "CommandArgs.SetPlayers.Num": "",
+
+  "Command.Icons": "icon|icons|符号|标志",
+  "CommandDescription.Icons": "",
+  "Command.IconHelp": "iconhelp|符号帮助|标志帮助",
+
+  "Command.Me": "me|我的权限|权限",
+  "CommandDescription.Me": "",
+  "CommandArgs.Me.Id": "",
+
+  "Command.TagColor": "tagcolor|tagcolour|标签颜色|附加名称颜色",
+  "CommandDescription.TagColor": "",
+  "CommandArgs.TagColor.Color": "",
+
+  "Command.Kill": "kill|matar|убить|击杀|杀死",
+  "CommandDescription.Kill": "",
+  "CommandArgs.Kill.Id": "",
+
+  "Command.Quit": "quit|qt|sair|退出|退",
+  "CommandDescription.Quit": "",
+  "CommandArgs.Quit.Arg1": "",
+
+  "Command.Guess": "shoot|guess|bet|st|gs|bt|猜|赌|賭",
+  "CommandDescription.Guess": "",
+
+  "Command.Trial": "sp|jj|tl|trial|审判|判|审|審判|審|Murder",
+  "CommandDescription.Trial": "",
+
+  "Command.Finish": "finish|结束|结束会议|結束|結束會議",
+  "CommandDescription.Finish": "",
+
+  "Command.Reveal": "reveal|展示",
+  "CommandDescription.Reveal": "",
+
+  "Command.Inspect": "compare|cmp|比较|比較",
+  "CommandDescription.Inspect": "",
+
+  "Command.Duel": "duel",
+  "CommandDescription.Duel": "",
+  "CommandArgs.Duel.Num": "",
+
+  "Command.Revenge": "rv",
+  "CommandDescription.Revenge": "",
+
+  "Command.Retribution": "ret",
+  "CommandDescription.Retribution": "",
+
+  "Command.Exorcism": "exorcise|exorcism|ex",
+  "CommandDescription.Exorcism": "",
+
+  "Command.Ritual": "rt|rit|ritual|bloodritual|鲜血仪式|仪式|献祭|举行|附魔",
+  "CommandDescription.Ritual": "",
+  
+  "Command.Medium": "通灵|ms|mediumship|medium",
+  "CommandDescription.Medium": "",
+  "CommandArgs.Medium.YN": "",
+
+  "Command.Summon": "summon|sm",
+  "CommandDescription.Summon": "",
+
+  "Command.Swap": "sw|换票|换|換票|換|swap|st",
+  "CommandDescription.Swap": "",
+
+  "Command.Expel": "exp|expel|独裁|獨裁",
+  "CommandDescription.Expel": "",
+
+  "Command.Daybreak": "db|daybreak",
+  "CommandDescription.Daybreak": "",
+
+  "Command.Answer": "ans|asw|answer|回答",
+  "CommandDescription.Answer": "",
+  "CommandArgs.Answer.ABC": "",
+  
+  "Command.ShowQuestion": "qmquiz|提问",
+  "CommandDescription.ShowQuestion": "",
+
+  "Command.FixNames": "修复|修",
+  "CommandDescription.FixNames": "",
+
+  "Command.ChangeRole": "改变职业|修改职业",
+  "CommandDescription.ChangeRole": "",
+  "CommandArgs.ChangeRole.Role": "",
+
 }

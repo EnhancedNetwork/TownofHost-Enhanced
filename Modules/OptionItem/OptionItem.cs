@@ -176,7 +176,7 @@ public abstract class OptionItem
     }
     public virtual string GetNameVanilla()
     {
-        return Translator.GetString(Name, ReplacementDictionary, vanilla: true);
+        return Translator.GetString(Name, ReplacementDictionary);
     }
     public virtual bool GetBool() => CurrentValue != 0 && (Parent == null || Parent.GetBool());
     public virtual int GetInt() => CurrentValue;

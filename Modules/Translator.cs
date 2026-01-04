@@ -211,34 +211,25 @@ public static class Translator
             ? RoleString
             : GetString($"{role}");
     }
-    public static string GetString(string s, Dictionary<string, string> replacementDic = null, bool console = false, bool showInvalid = true, bool vanilla = false)
-    {
-        if (vanilla)
-        {
-            string nameToFind = s;
-            if (Enum.TryParse(nameToFind, out StringNames text))
-            {
-                return DestroyableSingleton<TranslationController>.Instance.GetString(text);
-            }
-            else
-            {
-#if DEBUG
-                // Only log if not purposly untranslated
-                if (nameToFind is not ("NotAssigned" or "Coven"))
-                    Logger.Warn($"<INVALID:{nameToFind}> (vanillaStr)", "Missing Translation");
-#endif
-                return showInvalid ? $"<INVALID:{nameToFind}> (vanillaStr)" : nameToFind;
-            }
-        }
-        var langId = TranslationController.InstanceExists ? TranslationController.Instance.currentLanguage.languageID : SupportedLangs.English;
+    public static string GetString(string s, Dictionary<string, string> replacementDic = null, bool console = false)
+    {   
+        SupportedLangs langId = TranslationController.InstanceExists ? TranslationController.Instance.currentLanguage.languageID : SupportedLangs.English;
         if (console) langId = SupportedLangs.English;
         if (Main.ForceOwnLanguage.Value) langId = GetUserTrueLang();
-        string str = GetString(s, langId, showInvalid);
+
+        if (Main.ForceOwnLanguage.Value) langId = GetUserTrueLang();
+
+        string str = GetString(s, langId);
+
         if (replacementDic != null)
-            foreach (var rd in replacementDic)
-            {
+        {
+            foreach (KeyValuePair<string, string> rd in replacementDic)
                 str = str.Replace(rd.Key, rd.Value);
-            }
+        }
+
+        // if (modLanguageId == 1) // Hungarian (none of the fonts support ő/ű and innersloth doesn't care, thankfully at least German has ö/ü)
+        //     str = str.Replace("ő", "ö", StringComparison.CurrentCultureIgnoreCase).Replace("ű", "ü", StringComparison.CurrentCultureIgnoreCase);
+
         return str;
     }
     public static bool TryGetStrings(string strItem, out string[] s)
@@ -284,37 +275,35 @@ public static class Translator
         return false;
     }
 
-    public static string GetString(string str, SupportedLangs langId, bool showInvalid = true)
+    public static string GetString(string str, SupportedLangs langId)
     {
-        var res = showInvalid ? $"<INVALID:{str}>" : str;
+        var res = $"*{str}";
+
         try
         {
-            if (translateMaps.TryGetValue(str, out var dic) && (!dic.TryGetValue((int)langId, out res) || res == "" || (langId is not SupportedLangs.SChinese and not SupportedLangs.TChinese && Regex.IsMatch(res, @"[\u4e00-\u9fa5]") && res == GetString(str, SupportedLangs.SChinese)))) //strに該当する&無効なlangIdかresが空
-            {
-                if (langId == SupportedLangs.English) res = $"*{str}";
-                else res = GetString(str, SupportedLangs.English);
-            }
-            if (!translateMaps.ContainsKey(str)) //translateMapsにない場合、StringNamesにあれば取得する
-            {
-                var stringNames = EnumHelper.GetAllValues<StringNames>().Where(x => x.ToString() == str).ToArray();
-                if (stringNames != null && stringNames.Any())
-                    res = GetString(stringNames.FirstOrDefault());
-            }
+            if (translateMaps.TryGetValue(str, out Dictionary<int, string> dic) && (!dic.TryGetValue((int)langId, out res) || string.IsNullOrEmpty(res) || (langId is not SupportedLangs.SChinese and not SupportedLangs.TChinese && Regex.IsMatch(res, @"[\u4e00-\u9fa5]") && res == GetString(str, SupportedLangs.SChinese))))
+                res = langId == SupportedLangs.English ? $"*{str}" : GetString(str, SupportedLangs.English);
+
+            if (!translateMaps.ContainsKey(str) && Enum.GetValues<StringNames>().FindFirst(x => x.ToString() == str, out StringNames stringNames))
+                res = GetString(stringNames);
         }
-        catch (Exception Ex)
+        catch (Exception ex)
         {
-            Logger.Fatal($"Error oucured at [{str}] in String.csv", "Translator");
-            Logger.Error("Here was the error:\n" + Ex.ToString(), "Translator");
+            Logger.Fatal($"Error oucured at [{str}] in the translation file", "Translator");
+            Logger.Error("Here was the error:\n" + ex, "Translator");
         }
-#if DEBUG
-        // Only log if not purposly untranslated    
-        if (res ==  $"<INVALID:{str}>" && str is not ("NotAssigned" or "Coven"))
-            Logger.Warn(res, "Missing Translation");
-#endif
+
         return res;
     }
+
     public static string GetString(StringNames stringName)
-        => DestroyableSingleton<TranslationController>.Instance.GetString(stringName, new Il2CppReferenceArray<Il2CppSystem.Object>(0));
+    {
+#if ANDROID
+        return TranslationController.Instance.GetString(stringName);
+#else
+        return TranslationController.Instance.GetString(stringName, new Il2CppReferenceArray<Il2CppSystem.Object>(0));
+#endif
+    }
     public static string GetRoleString(string str, bool forUser = true)
     {
         var CurrentLanguage = TranslationController.Instance.currentLanguage.languageID;

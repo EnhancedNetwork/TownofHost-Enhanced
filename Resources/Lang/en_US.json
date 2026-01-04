@@ -2431,6 +2431,10 @@
   "NemesisKillSucceed": "[{0}] was killed by the Nemesis!",
   "NemesisKillDisable": "Sorry, but according to Host's settings, Nemesis revenge is prohibited in this game",
   "NemesisKillMax": "You've reached the maximum amount of kills, you can't kill anymore!",
+  "Nemesis.InvalidTarget": "Invalid Target",
+
+  "Retributionist.InvalidTarget": "Invalid Target",
+  "Dictator.InvalidTarget": "Invalid Target",
 
   "CelebrityDead": "Shock! Celebrity [{0}], has unfortunately been mercilessly killed in the recent period!",
   "CyberDead": "Oh no! It appears the Cyber, <b>{0}</b>, has died recently.",
@@ -4303,6 +4307,7 @@
   "Starspawn.Isolate": "Isolate",
   "Starspawn.TryHideMsg": "Try to Hide Daybreak Command",
   "Starspawn.VisitersMsg": "Isolate blocked the following roles:\n",
+  "Daybreak.BlockCommands": "Command Blocked by Daybreak",
 
   "PariahWinWhenDead": "Pariahs Can Win When Dead",
   "PariahHasImpVis": "Pariahs Have <color=#ff1919>Impostor</color> Vision",
@@ -4380,5 +4385,231 @@
   "AFKActivateOnStart": "Activate on Start",
 
   "FixBlackScreenWaitForDead": "Waiting for Dead Players to fix Black Screen",
-  "AFKSuffix": "AFK"
+  "AFKSuffix": "AFK",
+
+  "KickNotJoinedPlayersRegularly": "Kick Not Joined Players Regularly",
+  "EnableCommandHelper": "Enable Command Helper",
+
+  "Command.Dump": "dump|дамп|лог",
+  "CommandDescription.Dump": "Dumps the log file",
+
+  "Command.Version": "v|version|в|версия|versão",
+  "CommandDescription.Version": "Sends the current mod version",
+
+  "Command.Save": "save|savepreset",
+  "CommandDescription.Save": "Saves the current settings to a file",
+  "CommandArgs.Save.Path": "Relative path to save to",
+
+  "Command.Load": "load|loadpreset",
+  "CommandDescription.Load": "Loads settings from file",
+  "CommandArgs.Load.Path": "Relative path to load from",
+
+  "Command.Docs": "docs",
+  "CommandDescription.Docs": "Dev stuff",
+  "CommandArgs.Docs.Role": "Role",
+
+  "Command.Winner": "win|winner|победители|vencedor",
+  "CommandDescription.Winner": "",
+
+  "Command.LastResult": "l|lastresult|л|resultados|ultimoresultado|fimdejogo",
+  "CommandDescription.LastResult": "",
+
+  "Command.GameResult": "gr|gameresults|resultados",
+  "CommandDescription.GameResult": "",
+
+  "Command.KillLog": "kh|killlog",
+  "CommandDescription.KillLog": "",
+
+  "Command.RoleSummary": "rs|sum|rolesummary|sumario|sumário|summary|результат",
+  "CommandDescription.RoleSummary": "",
+
+  "Command.GhostInfo": "ghostinfo",
+  "CommandDescription.GhostInfo": "",
+
+  "Command.ApocInfo": "apocinfo|apocalypseinfo",
+  "CommandDescription.ApocInfo": "",
+
+  "Command.CovenInfo": "coveninfo|covinfo",
+  "CommandDescription.CovenInfo": "",
+
+  "Command.Rename": "rn|rename|name|рн|ренейм|переименовать|renomear",
+  "CommandDescription.Rename": "",
+  "CommandArgs.Rename.Name": "",
+
+  "Command.HideName": "hn|hidename|хн|спрник|semnome|escondernome",
+  "CommandDescription.HideName": "",
+  
+  "Command.Level": "level|лвл|уровень|nível|nivel",
+  "CommandDescription.Level": "",
+  "CommandArgs.Level.Level": "",
+
+  "Command.Now": "n|now|н|atual",
+  "CommandDescription.Now": "",
+
+  "Command.Disconnect": "dis|disconnect|дис|desconectar",
+  "CommandDescription.Disconnect": "",
+  "CommandArgs.Disconnect.Team": "",
+
+  "Command.R": "r|р|função|role|роль",
+  "CommandDescription.R": "",
+  "CommandArgs.R.Role": "",
+
+  "Command.Factions": "f|factions|faction",
+  "CommandDescription.Factions": "",
+
+  "Command.MyRole": "m|myrole|м|мояроль|minhafunção|м",
+  "CommandDescription.MyRole": "",
+
+  "Command.Help": "h|help|хэлп|хелп|помощь|ajuda",
+  "CommandDescription.Help": "",
+
+  "Command.SetRole": "setrole|setaddon|сетроль|definir-função",
+  "CommandDescription.SetRole": "",
+
+  "Command.AFKExempt": "afkexempt|освафк|афкосв|afk-isentar",
+  "CommandDescription.AFKExempt": "",
+  "CommandArgs.AFKExempt.Id": "",
+
+  "Command.TPOut": "tpout|тпаут",
+  "CommandDescription.TPOut": "",
+
+  "Command.TPIn": "tpin|тпин",
+  "CommandDescription.TPIn": "",
+
+  "Command.KCount": "gamestate|gstate|gs|kcount|kc|кубийц|гс|статигры|estadojogo|status|количество|убийцы",
+  "CommandDescription.KCount": "",
+
+  "Command.Template": "t|template|т|темплейт|шаблон|пример",
+  "CommandDescription.Template": "",
+  "CommandArgs.Template.Tag": "",
+
+  "Command.MessageWait": "mw|messagewait|мв|медленныйрежим|espera-mensagens",
+  "CommandDescription.MessageWait": "",
+  "CommandArgs.MessageWait.Duration": "",
+
+  "Command.Death": "death|d|д|смерть|abate|morto|умер|причина",
+  "CommandDescription.Death": "",
+  "CommandArgs.Death.Id": "",
+
+  "Command.Say": "say|s|сказать|с|falar|dizer",
+  "CommandDescription.Say": "",
+  "CommandArgs.Say.Message": "",
+
+  "Command.Vote": "vote|голос|votar",
+  "CommandDescription.Vote": "",
+  "CommandArgs.Vote.Id": "",
+
+  "Command.Ban": "ban|kick|бан|кик|забанить|кикнуть|banir|expulsar|выгнать",
+  "CommandDescription.Ban": "",
+
+  "Command.Warn": "warn|aviso|варн|пред|предупредить",
+  "CommandDescription.Warn": "",
+
+  "Command.Exe": "exe|выкинуть|executar|уничтожить|повесить|казнить|казнь|мут",
+  "CommandDescription.Exe": "",
+  "CommandArgs.Exe.Id": "",
+
+  "Command.Color": "colour|color|cor|цвет",
+  "CommandDescription.Color": "",
+  "CommandArgs.Color.Color": "",
+
+  "Command.Start": "start|старт",
+  "CommandDescription.Start": "",
+  "CommandArgs.Start.Time": "",
+
+  "Command.End": "end|encerrar|завершить",
+  "CommandDescription.End": "",
+
+  "Command.ID": "id|айди|mid|guesslist",
+  "CommandDesciption.ID": "",
+
+  "Command.Fix": "fix|blackscreenfix|fixblackscreen|фикс|исправить",
+  "CommandDescription.Fix": "",
+  "CommandArgs.Fix.Id": "",
+
+  "Command.SetPlayers": "setplayers|maxjogadores",
+  "CommandDescription.SetPlayers": "",
+  "CommandArgs.SetPlayers.Num": "",
+
+  "Command.Icons": "icon|icons",
+  "CommandDescription.Icons": "",
+  "Command.IconHelp": "iconhelp",
+
+  "Command.Me": "me",
+  "CommandDescription.Me": "",
+  "CommandArgs.Me.Id": "",
+
+  "Command.TagColor": "tagcolor|tagcolour",
+  "CommandDescription.TagColor": "",
+  "CommandArgs.TagColor.Color": "",
+
+  "Command.Kill": "kill|matar|убить",
+  "CommandDescription.Kill": "",
+  "CommandArgs.Kill.Id": "",
+
+  "Command.Quit": "quit|qt|sair",
+  "CommandDescription.Quit": "",
+  "CommandArgs.Quit.Arg1": "",
+
+  "Command.Guess": "shoot|guess|bet|st|gs|bt",
+  "CommandDescription.Guess": "",
+
+  "Command.Trial": "sp|jj|tl|trial|Murder",
+  "CommandDescription.Trial": "",
+
+  "Command.Finish": "finish",
+  "CommandDescription.Finish": "",
+
+  "Command.Reveal": "reveal",
+  "CommandDescription.Reveal": "",
+
+  "Command.Inspect": "compare|cmp",
+  "CommandDescription.Inspect": "",
+
+  "Command.Duel": "duel",
+  "CommandDescription.Duel": "",
+  "CommandArgs.Duel.Num": "",
+
+  "Command.Revenge": "rv",
+  "CommandDescription.Revenge": "",
+
+  "Command.Retribution": "ret",
+  "CommandDescription.Retribution": "",
+
+  "Command.Exorcism": "exorcise|exorcism|ex",
+  "CommandDescription.Exorcism": "",
+
+  "Command.Ritual": "rt|rit|ritual|bloodritual",
+  "CommandDescription.Ritual": "",
+  
+  "Command.Medium": "ms|mediumship|medium",
+  "CommandDescription.Medium": "",
+  "CommandArgs.Medium.YN": "",
+
+  "Command.Summon": "summon|sm",
+  "CommandDescription.Summon": "",
+
+  "Command.Swap": "sw|swap|st",
+  "CommandDescription.Swap": "",
+
+  "Command.Expel": "exp|expel",
+  "CommandDescription.Expel": "",
+
+  "Command.Daybreak": "db|daybreak",
+  "CommandDescription.Daybreak": "",
+
+  "Command.Answer": "ans|asw|answer",
+  "CommandDescription.Answer": "",
+  "CommandArgs.Answer.ABC": "",
+  
+  "Command.ShowQuestion": "qmquiz",
+  "CommandDescription.ShowQuestion": "",
+
+  "Command.FixNames": "xf",
+  "CommandDescription.FixNames": "",
+
+  "Command.ChangeRole": "changerole|mudarfunção",
+  "CommandDescription.ChangeRole": "",
+  "CommandArgs.ChangeRole.Role": "",
+  
 }

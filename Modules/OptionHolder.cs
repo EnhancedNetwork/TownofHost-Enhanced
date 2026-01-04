@@ -1,5 +1,6 @@
 using System;
 using TOHE.Modules;
+using TOHE.Patches;
 using TOHE.Roles.AddOns;
 using TOHE.Roles.AddOns.Impostor;
 using TOHE.Roles.Core;

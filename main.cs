@@ -12,6 +12,7 @@ using System.Text;
 using System.Text.Json;
 using TOHE.Modules;
 using TOHE.Modules.Rpc;
+using TOHE.Patches;
 using TOHE.Patches.Crowded;
 using TOHE.Roles.AddOns;
 using TOHE.Roles.Core;
@@ -641,6 +642,8 @@ public class Main : BasePlugin
         //SpamManager.Init();
         DevManager.Init();
         Cloud.Init();
+
+        ChatCommands.LoadCommands();
 
         IRandom.SetInstance(new NetRandomWrapper());
 

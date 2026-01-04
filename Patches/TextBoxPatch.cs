@@ -129,15 +129,14 @@ public static class TextBoxPatch
             double highestMatchRate = 0;
             string inputCheck = input.Split(' ')[0];
             var exactMatch = false;
-            bool english = TranslationController.Instance.currentLanguage.languageID == SupportedLangs.English;
 
             foreach ((string key, Command cmd) in Command.AllCommands)
             {
-                string[] commandForms = english ? cmd.CommandForms.TakeWhile(x => x.All(char.IsAscii)).ToArray() : cmd.CommandForms;
+                HashSet<string> commandForms = cmd.CommandForms;
 
                 foreach (string form in commandForms)
                 {
-                    if (english && !form.All(char.IsAscii)) continue;
+                    // if (english && !form.All(char.IsAscii)) continue;
 
                     string check = "/" + form;
                     if (check.Length < inputCheck.Length) continue;

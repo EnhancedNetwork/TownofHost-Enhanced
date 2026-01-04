@@ -512,7 +512,7 @@ static class ExtendedPlayerControl
         player.SetKillTimer(CD: time);
         if (target == null) target = player;
 
-        Logger.Info($"SetKillCooldown for [{player.PlayerId}]{player.GetRealName()} => [{target.PlayerId}]{target.GetRealName()}, forceAnime: {forceAnime}", "SetKillCooldown");
+        Logger.Info($"SetKillCooldown for [{player.PlayerId}]{player.GetRealName()} => [{time}, forceAnime: {forceAnime}", "SetKillCooldown");
 
         if (time >= 0f) Main.AllPlayerKillCooldown[player.PlayerId] = time * 2;
         else Main.AllPlayerKillCooldown[player.PlayerId] *= 2;
@@ -564,7 +564,7 @@ static class ExtendedPlayerControl
                 Observer.ActivateGuardAnimation(target.PlayerId, target);
             }
         }
-        player.ResetKillCooldown();
+        // player.ResetKillCooldown();
     }
     public static void SetKillCooldownV2(this PlayerControl player, float time = -1f)
     {
@@ -603,7 +603,7 @@ static class ExtendedPlayerControl
                 Observer.ActivateGuardAnimation(target.PlayerId, target);
             }
         }
-        player.ResetKillCooldown();
+        // player.ResetKillCooldown();
     }
 
     public static void RpcShowGuardAndKill(this PlayerControl seer, PlayerControl target)
