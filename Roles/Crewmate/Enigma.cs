@@ -1,3 +1,4 @@
+using TOHE.Roles.Neutral;
 using static TOHE.MeetingHudStartPatch;
 using static TOHE.Options;
 using static TOHE.Translator;
@@ -291,8 +292,8 @@ internal class Enigma : RoleBase
         private string GetStage1Clue(PlayerControl killer, string letter)
         {
             string randomLetter = GetRandomLetter(killer, letter);
-            int random = rd.Next(1, 2);
-            if (random == 1)
+            int random = rd.Next(2);
+            if (random == 0)
                 return string.Format(GetString("EnigmaClueName1"), letter, randomLetter);
             else
                 return string.Format(GetString("EnigmaClueName1"), randomLetter, letter);
@@ -444,19 +445,21 @@ internal class Enigma : RoleBase
 
         public override string GetMessage(PlayerControl killer, bool showStageClue)
         {
-            CustomRoles role = killer.GetCustomRole();
             switch (this.ClueStage)
             {
                 case 1:
-                    if (role.IsImpostor()) return GetString("EnigmaClueRole1");
-                    if (role.IsNeutral()) return GetString("EnigmaClueRole2");
-                    if (role.IsCoven()) return GetString("EnigmaClueRole5");
+                    if (Lich.IsCursed(killer)) return GetString("EnigmaClueRole2");
+                    if (killer.IsPlayerImpostorTeam()) return GetString("EnigmaClueRole1");
+                    if (killer.IsPlayerNeutralTeam()) return GetString("EnigmaClueRole2");
+                    if (killer.IsPlayerCovenTeam()) return GetString("EnigmaClueRole5");
                     return GetString("EnigmaClueRole3");
                 case 2:
-                    if (showStageClue) return string.Format(GetString("EnigmaClueRole4"), killer.GetDisplayRoleAndSubName(killer, false));
-                    if (role.IsImpostor()) return GetString("EnigmaClueRole1");
-                    if (role.IsNeutral()) return GetString("EnigmaClueRole2");
-                    if (role.IsCoven()) return GetString("EnigmaClueRole5");
+                    if (Lich.IsCursed(killer) && showStageClue) return string.Format(GetString("EnigmaClueRole4"), CustomRoles.Lich.ToColoredString());
+                    if (showStageClue) return string.Format(GetString("EnigmaClueRole4"), killer.GetDisplayRoleAndSubName(killer, false, false));
+                    if (Lich.IsCursed(killer)) return GetString("EnigmaClueRole2");
+                    if (killer.IsPlayerImpostorTeam()) return GetString("EnigmaClueRole1");
+                    if (killer.IsPlayerNeutralTeam()) return GetString("EnigmaClueRole2");
+                    if (killer.IsPlayerCovenTeam()) return GetString("EnigmaClueRole5");
                     return GetString("EnigmaClueRole3");
             }
 

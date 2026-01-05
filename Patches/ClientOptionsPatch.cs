@@ -13,6 +13,7 @@ public static class OptionsMenuBehaviourStartPatch
     private static ClientOptionItem DarkTheme;
     private static ClientOptionItem DisableLobbyMusic;
     private static ClientOptionItem ShowTextOverlay;
+    private static ClientOptionItem ShowModdedClientText;
     private static ClientOptionItem HorseMode;
     private static ClientOptionItem LongMode;
     private static ClientOptionItem ForceOwnLanguage;
@@ -41,6 +42,11 @@ public static class OptionsMenuBehaviourStartPatch
             Main.AutoRehost.Value = false;
         }
 
+#if ANDROID
+        Main.UnlockFPS.Value = false;
+#endif
+
+#if !ANDROID
         if (UnlockFPS == null || UnlockFPS.ToggleButton == null)
         {
             UnlockFPS = ClientOptionItem.Create("UnlockFPS", Main.UnlockFPS, __instance, UnlockFPSButtonToggle);
@@ -50,6 +56,8 @@ public static class OptionsMenuBehaviourStartPatch
                 Logger.SendInGame(string.Format(Translator.GetString("FPSSetTo"), Application.targetFrameRate));
             }
         }
+#endif
+
         if (ShowFPS == null || ShowFPS.ToggleButton == null)
         {
             ShowFPS = ClientOptionItem.Create("ShowFPS", Main.ShowFPS, __instance);
@@ -81,6 +89,10 @@ public static class OptionsMenuBehaviourStartPatch
         if (ShowTextOverlay == null || ShowTextOverlay.ToggleButton == null)
         {
             ShowTextOverlay = ClientOptionItem.Create("ShowTextOverlay", Main.ShowTextOverlay, __instance);
+        }
+        if (ShowModdedClientText == null || ShowModdedClientText.ToggleButton == null)
+        {
+            ShowModdedClientText = ClientOptionItem.Create("ShowModdedClientText", Main.ShowModdedClientText, __instance);
         }
         if (HorseMode == null || HorseMode.ToggleButton == null)
         {
@@ -137,6 +149,8 @@ public static class OptionsMenuBehaviourStartPatch
         {
             EnableCustomDecorations = ClientOptionItem.Create("EnableCustomDecorations", Main.EnableCustomDecorations, __instance);
         }
+
+#if !ANDROID
         if (SwitchVanilla == null || SwitchVanilla.ToggleButton == null)
         {
             SwitchVanilla = ClientOptionItem.Create("SwitchVanilla", Main.SwitchVanilla, __instance, SwitchVanillaButtonToggle);
@@ -146,6 +160,7 @@ public static class OptionsMenuBehaviourStartPatch
                 Main.Instance.Unload();
             }
         }
+#endif
 
 #if DEBUG
         if (EOSManager.Instance.friendCode.GetDevUser().DeBug)
@@ -166,6 +181,7 @@ public static class OptionsMenuBehaviourStartPatch
 #endif
     }
 }
+
 [HarmonyPatch(typeof(OptionsMenuBehaviour), nameof(OptionsMenuBehaviour.Close))]
 public static class OptionsMenuBehaviourClosePatch
 {

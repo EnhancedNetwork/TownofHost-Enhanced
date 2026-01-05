@@ -105,7 +105,7 @@ public class GameStartManagerPatch
                 if (Main.NormalOptions.KillCooldown == 0f)
                     Main.NormalOptions.KillCooldown = Main.LastKillCooldown.Value;
 
-                AURoleOptions.SetOpt(Main.NormalOptions.Cast<IGameOptions>());
+                AURoleOptions.SetOpt(Main.NormalOptions.CastFast<IGameOptions>());
                 if (AURoleOptions.ShapeshifterCooldown == 0f)
                     AURoleOptions.ShapeshifterCooldown = Main.LastShapeshifterCooldown.Value;
 
@@ -171,7 +171,7 @@ public class GameStartManagerPatch
                             return;
                         }
 
-                        if (joinedTime + Options.StartWhenTimePassed.GetInt() < Utils.GetTimeStamp())
+                        if (joinedTime + Options.StartWhenTimePassed.GetInt() < Utils.GetTimeStamp() && !GameStates.IsVanillaServer)
                         {
                             BeginGameAutoStart(Options.AutoStartTimer.GetInt());
                             return;
@@ -292,14 +292,6 @@ public class GameStartManagerPatch
                 && version.tag == $"{ThisAssembly.Git.Commit}({ThisAssembly.Git.Branch})";
         }
     }
-    [HarmonyPatch(typeof(TextBoxTMP), nameof(TextBoxTMP.SetText))]
-    public static class HiddenTextPatch
-    {
-        private static void Postfix(TextBoxTMP __instance)
-        {
-            if (__instance.name == "GameIdText") __instance.outputText.text = new string('*', __instance.text.Length);
-        }
-    }
 }
 [HarmonyPatch(typeof(GameStartManager), nameof(GameStartManager.BeginGame))]
 public class GameStartManagerBeginGamePatch
@@ -360,12 +352,12 @@ public class GameStartManagerBeginGamePatch
         //}
 
         IGameOptions opt = GameStates.IsNormalGame
-            ? Main.NormalOptions.Cast<IGameOptions>()
-            : Main.HideNSeekOptions.Cast<IGameOptions>();
+            ? Main.NormalOptions.CastFast<IGameOptions>()
+            : Main.HideNSeekOptions.CastFast<IGameOptions>();
 
         if (GameStates.IsNormalGame)
         {
-            Options.DefaultKillCooldown = Main.NormalOptions.KillCooldown;
+            Options.DefaultKillCooldown = Main.NormalOptions?.KillCooldown ?? 20;
             Main.LastKillCooldown.Value = Main.NormalOptions.KillCooldown;
             Main.NormalOptions.KillCooldown = 0f;
 
@@ -378,7 +370,8 @@ public class GameStartManagerBeginGamePatch
             AURoleOptions.GuardianAngelCooldown = 0f;
         }
 
-        PlayerControl.LocalPlayer.RpcSyncSettings(GameOptionsManager.Instance.gameOptionsFactory.ToBytes(opt, AprilFoolsMode.IsAprilFoolsModeToggledOn));
+        GameManager.Instance.LogicOptions.SetDirty();
+        OptionItem.SyncAllOptions();
         RPC.RpcVersionCheck();
     }
     private static byte SelectRandomMap()
@@ -394,25 +387,39 @@ public class GameStartManagerBeginGamePatch
             The Fungle   = 5
         */
 
+        int skeld = Options.SkeldChance.GetInt();
+        int mira = Options.MiraChance.GetInt();
+        int polus = Options.PolusChance.GetInt();
+        int dleks = Options.DleksChance.GetInt();
+        int airship = Options.AirshipChance.GetInt();
+        int fungle = Options.FungleChance.GetInt();
+
         if (Options.UseMoreRandomMapSelection.GetBool())
         {
-            if (rand.Next(1, 100) <= Options.SkeldChance.GetInt()) randomMaps.Add(0);
-            if (rand.Next(1, 100) <= Options.MiraChance.GetInt()) randomMaps.Add(1);
-            if (rand.Next(1, 100) <= Options.PolusChance.GetInt()) randomMaps.Add(2);
-            if (rand.Next(1, 100) <= Options.DleksChance.GetInt()) randomMaps.Add(3);
-            if (rand.Next(1, 100) <= Options.AirshipChance.GetInt()) randomMaps.Add(4);
-            if (rand.Next(1, 100) <= Options.FungleChance.GetInt()) randomMaps.Add(5);
+            if (rand.Next(100) <= Options.SkeldChance.GetInt()) randomMaps.Add(0);
+            if (rand.Next(100) <= Options.MiraChance.GetInt()) randomMaps.Add(1);
+            if (rand.Next(100) <= Options.PolusChance.GetInt()) randomMaps.Add(2);
+            if (rand.Next(100) <= Options.DleksChance.GetInt()) randomMaps.Add(3);
+            if (rand.Next(100) <= Options.AirshipChance.GetInt()) randomMaps.Add(4);
+            if (rand.Next(100) <= Options.FungleChance.GetInt()) randomMaps.Add(5);
         }
         else
         {
-            var tempRand = rand.Next(1, 100);
+            // var tempRand = rand.Next(100);
 
-            if (tempRand <= Options.SkeldChance.GetInt()) randomMaps.Add(0);
-            if (tempRand <= Options.MiraChance.GetInt()) randomMaps.Add(1);
-            if (tempRand <= Options.PolusChance.GetInt()) randomMaps.Add(2);
-            if (tempRand <= Options.DleksChance.GetInt()) randomMaps.Add(3);
-            if (tempRand <= Options.AirshipChance.GetInt()) randomMaps.Add(4);
-            if (tempRand <= Options.FungleChance.GetInt()) randomMaps.Add(5);
+            // if (tempRand <= Options.SkeldChance.GetInt()) randomMaps.Add(0);
+            // if (tempRand <= Options.MiraChance.GetInt()) randomMaps.Add(1);
+            // if (tempRand <= Options.PolusChance.GetInt()) randomMaps.Add(2);
+            // if (tempRand <= Options.DleksChance.GetInt()) randomMaps.Add(3);
+            // if (tempRand <= Options.AirshipChance.GetInt()) randomMaps.Add(4);
+            // if (tempRand <= Options.FungleChance.GetInt()) randomMaps.Add(5);
+
+            randomMaps.AddRange(Enumerable.Repeat((byte)0, skeld));
+            randomMaps.AddRange(Enumerable.Repeat((byte)1, mira));
+            randomMaps.AddRange(Enumerable.Repeat((byte)2, polus));
+            randomMaps.AddRange(Enumerable.Repeat((byte)3, dleks));
+            randomMaps.AddRange(Enumerable.Repeat((byte)4, airship));
+            randomMaps.AddRange(Enumerable.Repeat((byte)5, fungle));
         }
 
         if (randomMaps.Any())
@@ -452,7 +459,8 @@ class ResetStartStatePatch
             if (GameStates.IsNormalGame)
                 Main.NormalOptions.KillCooldown = Options.DefaultKillCooldown;
 
-            PlayerControl.LocalPlayer.RpcSyncSettings(GameOptionsManager.Instance.gameOptionsFactory.ToBytes(GameOptionsManager.Instance.CurrentGameOptions, AprilFoolsMode.IsAprilFoolsModeToggledOn));
+            GameManager.Instance.LogicOptions.SetDirty();
+            OptionItem.SyncAllOptions();
         }
     }
 }

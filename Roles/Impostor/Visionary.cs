@@ -1,3 +1,5 @@
+using TOHE.Roles.Neutral;
+
 namespace TOHE.Roles.Impostor;
 
 internal class Visionary : RoleBase
@@ -16,9 +18,12 @@ internal class Visionary : RoleBase
 
     public override string PlayerKnowTargetColor(PlayerControl seer, PlayerControl target)
     {
+        if (!seer.Is(CustomRoles.Visionary)) return string.Empty;
         if (!seer.IsAlive() || !target.IsAlive() || target.Data.IsDead) return string.Empty;
 
         var customRole = target.GetCustomRole();
+
+        if (Lich.IsCursed(target)) return "7f8c8d";
 
         foreach (var SubRole in target.GetCustomSubRoles())
         {

@@ -1,5 +1,9 @@
 using Hazel;
 using System;
+using System.Text;
+using TOHE.Modules;
+using TOHE.Modules.Rpc;
+using UnityEngine;
 using static TOHE.Translator;
 
 namespace TOHE.Roles.Crewmate;
@@ -18,10 +22,7 @@ internal class Benefactor : RoleBase
     private static OptionItem ShieldDuration;
     private static OptionItem ShieldIsOneTimeUse;
 
-    private static int maxTasksMarkedPerRound = new();
-
     private static readonly Dictionary<byte, HashSet<int>> taskIndex = [];
-    private static readonly Dictionary<byte, int> TaskMarkPerRound = [];
     private static readonly Dictionary<byte, long> shieldedPlayers = [];
 
     public override void SetupCustomOption()
@@ -39,45 +40,18 @@ internal class Benefactor : RoleBase
     {
         taskIndex.Clear();
         shieldedPlayers.Clear();
-        TaskMarkPerRound.Clear();
-        maxTasksMarkedPerRound = TaskMarkPerRoundOpt.GetInt();
     }
     public override void Add(byte playerId)
     {
-        TaskMarkPerRound[playerId] = 0;
-    }
-    public override void Remove(byte playerId)
-    {
-        TaskMarkPerRound.Remove(playerId);
+        taskIndex[playerId] = [];
+        playerId.SetAbilityUseLimit(0);
     }
 
     private static void SendRPC(int type, byte benefactorId = 0xff, byte targetId = 0xff, int taskIndex = -1)
     {
-        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.BenefactorRPC, SendOption.Reliable, -1);
-        writer.Write(type);
-        if (type == 0)
-        {
-            writer.Write(benefactorId);
-        }
-        if (type == 2)
-        {
-            writer.Write(benefactorId);
-            writer.Write(TaskMarkPerRound[benefactorId]);
-            writer.Write(taskIndex);
-        }
-        if (type == 3)
-        {
-            writer.Write(benefactorId);
-            writer.Write(taskIndex);
-            writer.Write(targetId);
-            writer.Write(shieldedPlayers[targetId].ToString());
-        }
-        if (type == 4)
-        {
-            writer.Write(targetId);
-        }
-        AmongUsClient.Instance.FinishRpcImmediately(writer);
-
+        var stimeStamp = shieldedPlayers.TryGetValue(targetId, out long timeStamp) ? timeStamp.ToString() : "";
+        var msg = new RpcBenefactor(PlayerControl.LocalPlayer.NetId, type, benefactorId, taskIndex, targetId, stimeStamp);
+        RpcUtils.LateBroadcastReliableMessage(msg);
     }
 
     public static void ReceiveRPC(MessageReader reader)
@@ -86,25 +60,21 @@ internal class Benefactor : RoleBase
         if (type == 0)
         {
             byte benefactorId = reader.ReadByte();
-            TaskMarkPerRound[benefactorId] = 0;
-            if (taskIndex.ContainsKey(benefactorId)) taskIndex[benefactorId].Clear();
+            taskIndex[benefactorId].Clear();
         }
         if (type == 1) shieldedPlayers.Clear();
         if (type == 2)
         {
             byte benefactorId = reader.ReadByte();
-            int taskMarked = reader.ReadInt32();
-            TaskMarkPerRound[benefactorId] = taskMarked;
             int taskInd = reader.ReadInt32();
-            if (!taskIndex.ContainsKey(benefactorId)) taskIndex[benefactorId] = [];
             taskIndex[benefactorId].Add(taskInd);
         }
         if (type == 3)
         {
             byte benefactorId = reader.ReadByte();
             int taskInd = reader.ReadInt32();
-            if (!taskIndex.ContainsKey(benefactorId)) taskIndex[benefactorId] = [];
             taskIndex[benefactorId].Remove(taskInd);
+
             byte targetId = reader.ReadByte();
             string stimeStamp = reader.ReadString();
             if (long.TryParse(stimeStamp, out long timeStamp)) shieldedPlayers[targetId] = timeStamp;
@@ -116,20 +86,27 @@ internal class Benefactor : RoleBase
         }
     }
 
-    public override string GetProgressText(byte PlayerId, bool comms)
+    public override string GetProgressText(byte playerId, bool comms)
     {
-        if (!TaskMarkPerRound.ContainsKey(PlayerId)) TaskMarkPerRound[PlayerId] = 0;
-        int markedTasks = TaskMarkPerRound[PlayerId];
-        int x = Math.Max(maxTasksMarkedPerRound - markedTasks, 0);
-        return Utils.ColorString(Utils.GetRoleColor(CustomRoles.Taskinator).ShadeColor(0.25f), $"({x})");
+        var ProgressText = new StringBuilder();
+        Color TextColor = Utils.GetRoleColor(CustomRoles.Benefactor).ShadeColor(0.25f);
+
+        var maxUses = TaskMarkPerRoundOpt.GetInt();
+        var usesLeft = Math.Max(maxUses - playerId.GetAbilityUseLimit(), 0);
+        if (usesLeft < 1) TextColor = Color.red;
+
+        ProgressText.Append(Utils.GetTaskCount(playerId, comms));
+        ProgressText.Append(Utils.ColorString(TextColor, Utils.ColorString(Color.white, " - ") + $"({usesLeft})"));
+        return ProgressText.ToString();
     }
 
     public override void AfterMeetingTasks()
     {
-        foreach (var playerId in TaskMarkPerRound.Keys.ToArray())
+        foreach (var playerId in taskIndex.Keys.ToArray())
         {
-            TaskMarkPerRound[playerId] = 0;
-            if (taskIndex.ContainsKey(playerId)) taskIndex[playerId].Clear();
+            playerId.SetAbilityUseLimit(0);
+            if (playerId == 0xff) continue; // I have no idea how it gets set to 255, but it throws an error when it does
+            taskIndex[playerId].Clear();
             SendRPC(type: 0, benefactorId: playerId); //clear taskindex
         }
         if (shieldedPlayers.Any())
@@ -139,27 +116,28 @@ internal class Benefactor : RoleBase
         }
     }
 
-    public override void OnOthersTaskComplete(PlayerControl player, PlayerTask task) // runs for every player which compeletes a task
+    public override void OnOthersTaskComplete(PlayerControl player, PlayerTask task, bool playerIsOverridden, PlayerControl realPlayer) // runs for every player which compeletes a task
     {
         if (!AmongUsClient.Instance.AmHost) return;
 
         if (player == null || _Player == null) return;
-        if (!player.IsAlive() || !_Player.IsAlive()) return;
+        if (!player.IsAlive()) return;
 
         byte playerId = player.PlayerId;
 
         if (player.Is(CustomRoles.Benefactor))
         {
-            if (!TaskMarkPerRound.ContainsKey(playerId)) TaskMarkPerRound[playerId] = 0;
-            if (TaskMarkPerRound[playerId] >= maxTasksMarkedPerRound)
+            var taskMarkPerRound = TaskMarkPerRoundOpt.GetInt();
+            if (playerId.GetAbilityUseLimit() >= taskMarkPerRound)
             {
-                TaskMarkPerRound[playerId] = maxTasksMarkedPerRound;
-                Logger.Info($"Max task per round ({TaskMarkPerRound[playerId]}) reached for {player.GetNameWithRole()}", "Benefactor");
+                playerId.SetAbilityUseLimit(taskMarkPerRound);
+                Logger.Info($"Max task per round ({taskMarkPerRound}) reached for {player.GetNameWithRole()}", "Benefactor");
                 return;
             }
-            TaskMarkPerRound[playerId]++;
-            if (!taskIndex.ContainsKey(playerId)) taskIndex[playerId] = [];
+
+            player.RpcIncreaseAbilityUseLimitBy(1);
             taskIndex[playerId].Add(task.Index);
+
             SendRPC(type: 2, benefactorId: playerId, taskIndex: task.Index); //add in task mark per round and taskindex
             player.Notify(GetString("BenefactorTaskMarked"));
         }
@@ -171,10 +149,8 @@ internal class Benefactor : RoleBase
                 {
                     var benefactorPC = Utils.GetPlayerById(benefactorId);
                     if (benefactorPC == null) continue;
-
                     player.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Benefactor), GetString("BenefactorTargetGotShield")));
                     player.RpcGuardAndKill();
-
                     long now = Utils.GetTimeStamp();
                     shieldedPlayers[playerId] = now;
                     taskIndex[benefactorId].Remove(task.Index);
@@ -203,7 +179,7 @@ internal class Benefactor : RoleBase
     public override void OnFixedUpdate(PlayerControl player, bool lowLoad, long nowTime, int timerLowLoad)
     {
         if (lowLoad) return;
-        foreach (var shieldedData in shieldedPlayers.Where(x => x.Value + ShieldDuration.GetInt() < nowTime).ToArray())
+        foreach (var shieldedData in shieldedPlayers.Where(x => x.Value + ShieldDuration.GetInt() < nowTime))
         {
             var targetId = shieldedData.Key;
             var target = targetId.GetPlayer();
@@ -216,4 +192,3 @@ internal class Benefactor : RoleBase
         }
     }
 }
-

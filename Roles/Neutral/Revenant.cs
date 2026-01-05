@@ -24,13 +24,15 @@ internal class Revenant : RoleBase
     public override bool OnCheckMurderAsTarget(PlayerControl killer, PlayerControl target)
     {
         CustomRoles role = killer.GetCustomRole();
-
-        killer.RpcMurderPlayer(killer);
-        killer.SetRealKiller(target);
+        if (role.IsTNA() || !killer.IsAlive()) return false;
 
         target.RpcChangeRoleBasis(role);
         target.RpcSetCustomRole(role);
         target.GetRoleClass()?.OnAdd(target.PlayerId);
+        if (killer.Is(CustomRoles.Narc)) target.RpcSetCustomRole(CustomRoles.Narc);
+
+        killer.RpcMurderPlayer(killer);
+        killer.SetRealKiller(target);
 
         target.Notify(string.Format(GetString("RevenantTargeted"), Utils.GetRoleName(role)));
 

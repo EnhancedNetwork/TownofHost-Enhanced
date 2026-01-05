@@ -1,5 +1,6 @@
 using TOHE.Roles.Crewmate;
 using TOHE.Roles.Impostor;
+using TOHE.Roles.Neutral;
 
 namespace TOHE.Patches;
 
@@ -11,7 +12,7 @@ public static class HauntMenuMinigameSetFilterTextPatch
         if (__instance.HauntTarget != null && DeadKnowRole(PlayerControl.LocalPlayer) && GameStates.IsNormalGame)
         {
             // Override job title display with custom role name
-            __instance.FilterText.text = Utils.GetDisplayRoleAndSubName(PlayerControl.LocalPlayer.PlayerId, __instance.HauntTarget.PlayerId, false);
+            __instance.FilterText.text = Utils.GetDisplayRoleAndSubName(PlayerControl.LocalPlayer.PlayerId, __instance.HauntTarget.PlayerId, false, false);
             return false;
         }
         return true;
@@ -22,6 +23,7 @@ public static class HauntMenuMinigameSetFilterTextPatch
             {
                 if (Nemesis.PreventKnowRole(seer)) return false;
                 if (Retributionist.PreventKnowRole(seer)) return false;
+                if (Doppelganger.PreventKnowRole(seer)) return false;
 
                 if (!Options.GhostCanSeeOtherRoles.GetBool())
                     return false;

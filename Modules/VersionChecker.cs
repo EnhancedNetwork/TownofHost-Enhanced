@@ -1,6 +1,3 @@
-using System;
-using UnityEngine;
-
 namespace TOHE.Modules;
 
 // https://github.com/tukasa0001/TownOfHost/blob/main/Modules/VersionChecker.cs
@@ -13,14 +10,17 @@ public static class VersionChecker
     {
         if (Ischecked) return;
 
-        var amongUsVersion = Version.Parse(Application.version);
-        Logger.Info($" {amongUsVersion}", "Among Us Version Check");
+        var amongUsVersion = Constants.GetVersion(Constants.Year, Constants.Month, Constants.Day, Constants.Revision);
+        Logger.Info($"AU: {amongUsVersion}", "Among Us Version Check");
 
-        var SupportedVersion = Version.Parse(Main.SupportedVersionAU);
-        Logger.Info($" {SupportedVersion}", "Supported Version Check");
-
-        IsSupported = amongUsVersion >= SupportedVersion;
-        Logger.Info($" {IsSupported}", "Version Is Supported?");
+        foreach (var version in Main.SupportedVersionAU)
+        {
+            if (Constants.GetVersion(version.year, version.month, version.day, version.revision) == amongUsVersion)
+            {
+                IsSupported = true;
+                break;
+            }
+        }
 
         if (!IsSupported)
         {

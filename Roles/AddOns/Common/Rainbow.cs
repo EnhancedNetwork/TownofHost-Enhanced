@@ -1,3 +1,5 @@
+using AmongUs.InnerNet.GameDataMessages;
+using TOHE.Modules.Rpc;
 using static TOHE.Options;
 
 namespace TOHE.Roles.AddOns.Common;
@@ -55,18 +57,14 @@ public class Rainbow : IAddon
     }
     private static void ChangeAllColor()
     {
-        var sender = CustomRpcSender.Create("Rainbow Sender");
-        // When the player is in the vent and changes color, he gets stuck
         foreach (var player in Main.AllPlayerControls.Where(x => x.Is(CustomRoles.Rainbow) && x.IsAlive() && !x.inMovingPlat && !x.inVent && !x.walkingToVent && !x.onLadder))
         {
             int color = PickRandomColor();
             player.SetColor(color);
-            sender.AutoStartRpc(player.NetId, (byte)RpcCalls.SetColor)
-                .Write(player.Data.NetId)
-                .Write((byte)color)
-                .EndRpc();
+
+            var message = new RpcSetColorMessage(player.NetId, player.Data.NetId, (byte)color);
+            RpcUtils.LateBroadcastReliableMessage(message);
         }
-        sender.SendMessage();
     }
     private static int PickRandomColor()
     {

@@ -72,11 +72,12 @@ internal class Dazzler : RoleBase
         shapeshifter.Notify(GetString("RejectShapeshift.AbilityWasUsed"), time: 2f);
         return false;
     }
-    public override void OnShapeshift(PlayerControl shapeshifter, PlayerControl target, bool IsAnimate, bool shapeshifting)
+    public override bool OnShapeshift(PlayerControl shapeshifter, PlayerControl target, bool IsAnimate, bool shapeshifting)
     {
-        if (!shapeshifting) return;
+        if (!shapeshifting) return false;
 
         DoDazzled(shapeshifter, target);
+        return false;
     }
 
     private static void DoDazzled(PlayerControl shapeshifter, PlayerControl target)

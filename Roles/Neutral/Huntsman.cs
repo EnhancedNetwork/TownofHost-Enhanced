@@ -1,7 +1,8 @@
 using AmongUs.GameOptions;
 using Hazel;
-using InnerNet;
 using System;
+using TOHE.Modules.Rpc;
+using TOHE.Roles.AddOns.Common;
 using TOHE.Roles.AddOns.Impostor;
 using TOHE.Roles.Core;
 using static TOHE.Options;
@@ -65,14 +66,13 @@ internal class Huntsman : RoleBase
 
     public void SendRPC(bool isSetTarget, byte targetId = byte.MaxValue)
     {
-        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, SendOption.Reliable, -1);
-        writer.WriteNetObject(_Player);
+        var writer = MessageWriter.Get(SendOption.Reliable);
         writer.Write(isSetTarget);
         if (isSetTarget)
         {
             writer.Write(targetId);
         }
-        AmongUsClient.Instance.FinishRpcImmediately(writer);
+        RpcUtils.LateBroadcastReliableMessage(new RpcSyncRoleSkill(PlayerControl.LocalPlayer.NetId, _Player.NetId, writer));
     }
     public override void ReceiveRPC(MessageReader reader, PlayerControl NaN)
     {
@@ -132,7 +132,7 @@ internal class Huntsman : RoleBase
     {
         if (target == null || player == null) return false;
 
-        if (player.Is(CustomRoles.Lovers) && target.Is(CustomRoles.Lovers)) return false;
+        if (Lovers.AreLovers(player, target)) return false;
 
         if (target.Is(CustomRoles.Romantic)
             && Romantic.BetPlayer.TryGetValue(target.PlayerId, out byte romanticPartner) && romanticPartner == player.PlayerId) return false;

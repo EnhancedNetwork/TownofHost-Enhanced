@@ -59,7 +59,7 @@ public class Bait : IAddon
                 baitAliveList.Add(whpc.GetRealName());
             }
             string separator = TranslationController.Instance.currentLanguage.languageID is SupportedLangs.English or SupportedLangs.Russian ? "], [" : "】, 【";
-            MeetingHudStartPatch.AddMsg(string.Format(GetString("BaitAdviceAlive"), string.Join(separator, baitAliveList)), 255, Utils.ColorString(Utils.GetRoleColor(CustomRoles.Bait), GetString("BaitAliveTitle")));
+            MeetingHudStartPatch.AddMsg(string.Format(GetString("BaitAdviceAlive"), string.Join(separator, baitAliveList)), 255, Utils.ColorString(Utils.GetRoleColor(CustomRoles.Bait), GetString("Bait").ToUpper()));
         }
     }
     public static void BaitAfterDeathTasks(PlayerControl killer, PlayerControl target)
@@ -79,6 +79,7 @@ public class Bait : IAddon
             || killer.Is(CustomRoles.Swooper)
             || killer.Is(CustomRoles.Wraith)
             || killer.Is(CustomRoles.Cleaner)
+            || killer.Is(CustomRoles.Swift)
             || (DisableReportWhenCC.GetBool() && Utils.IsActive(SystemTypes.Comms) && Camouflage.IsActive && !BaitCanBeReportedUnderAllConditions.GetBool())
             || (killer.Is(CustomRoles.Oblivious) && Oblivious.ObliviousBaitImmune.GetBool()))
             return;

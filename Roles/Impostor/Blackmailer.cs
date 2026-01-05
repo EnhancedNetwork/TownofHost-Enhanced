@@ -1,6 +1,6 @@
 using AmongUs.GameOptions;
 using Hazel;
-using InnerNet;
+using TOHE.Modules.Rpc;
 using TOHE.Roles.Core;
 using static TOHE.MeetingHudStartPatch;
 using static TOHE.Translator;
@@ -57,10 +57,9 @@ internal class Blackmailer : RoleBase
     private void SendRPC(byte target = byte.MaxValue)
     {
         if (!AmongUsClient.Instance.AmHost) return;
-        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, SendOption.Reliable);
-        writer.WriteNetObject(_Player);
+        var writer = MessageWriter.Get(SendOption.Reliable);
         writer.Write(target);
-        AmongUsClient.Instance.FinishRpcImmediately(writer);
+        RpcUtils.LateBroadcastReliableMessage(new RpcSyncRoleSkill(PlayerControl.LocalPlayer.NetId, _Player.NetId, writer));
     }
     public override void ReceiveRPC(MessageReader reader, PlayerControl NaN)
     {
@@ -84,6 +83,13 @@ internal class Blackmailer : RoleBase
 
         DoBlackmaile(blackmailer, target);
         blackmailer.Notify(GetString("RejectShapeshift.AbilityWasUsed"), time: 2f);
+        return false;
+    }
+    public override bool OnShapeshift(PlayerControl shapeshifter, PlayerControl target, bool IsAnimate, bool shapeshifting)
+    {
+        if (!shapeshifting) return false;
+
+        DoBlackmaile(shapeshifter, target);
         return false;
     }
     private void DoBlackmaile(PlayerControl blackmailer, PlayerControl target)
@@ -130,7 +136,7 @@ internal class Blackmailer : RoleBase
         {
             var playername = pc.GetRealName(isMeeting: true);
             if (Main.OvverideOutfit.TryGetValue(pc.PlayerId, out var realfit)) playername = realfit.name;
-            AddMsg(string.Format(string.Format(GetString("BlackmailerDead"), playername), byte.MaxValue, Utils.ColorString(Utils.GetRoleColor(CustomRoles.Blackmailer), GetString("BlackmaileKillTitle"))));
+            AddMsg(string.Format(string.Format(GetString("BlackmailerDead"), playername), byte.MaxValue, Utils.ColorString(Utils.GetRoleColor(CustomRoles.Blackmailer), GetString("Blackmailer").ToUpper())));
         }
     }
 }

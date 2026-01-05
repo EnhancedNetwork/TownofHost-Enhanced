@@ -1,8 +1,8 @@
 using AmongUs.GameOptions;
 using Hazel;
-using InnerNet;
+using TOHE.Modules;
+using TOHE.Modules.Rpc;
 using TOHE.Roles.Core;
-using UnityEngine;
 using static TOHE.Options;
 
 namespace TOHE.Roles.Neutral;
@@ -53,10 +53,10 @@ internal class Bandit : RoleBase
     }
     public override void Add(byte playerId)
     {
-        AbilityLimit = MaxSteals.GetInt();
+        playerId.SetAbilityUseLimit(MaxSteals.GetInt());
         killCooldown = KillCooldownOpt.GetFloat();
 
-        var pc = Utils.GetPlayerById(playerId);
+        var pc = playerId.GetPlayer();
         pc?.AddDoubleTrigger();
     }
     public override void SetKillCooldown(byte id)
@@ -68,22 +68,24 @@ internal class Bandit : RoleBase
     public override bool CanUseSabotage(PlayerControl pc) => CanUsesSabotage.GetBool();
     public override bool CanUseKillButton(PlayerControl pc) => true;
 
-    private static CustomRoles? SelectRandomAddon(PlayerControl Target)
+    private static CustomRoles? SelectRandomAddon(PlayerControl killer, PlayerControl Target)
     {
         if (!AmongUsClient.Instance.AmHost) return null;
-        var AllSubRoles = Main.PlayerStates[Target.PlayerId].SubRoles.ToList();
-        for (int i = AllSubRoles.Count - 1; i >= 0; i--)
+
+        var AllSubRoles = Target.GetCustomSubRoles().ToList();
+        killer.CheckConflictedAddOnsFromList(ref AllSubRoles);
+
+        foreach (var subRole in AllSubRoles.ToList())
         {
-            var role = AllSubRoles[i];
-            if (role == CustomRoles.Cleansed || // making Bandit unable to steal Cleansed for obvious reasons. Although it can still be cleansed by cleanser.
-                role == CustomRoles.LastImpostor ||
-                role == CustomRoles.Lovers || // Causes issues involving Lovers Suicide
-                (role.IsImpOnlyAddon() && !CanStealImpOnlyAddon.GetBool()) ||
-                (role == CustomRoles.Nimble && CanVent.GetBool()) ||
-                ((role.IsBetrayalAddon() || role is CustomRoles.Lovers) && !CanStealBetrayalAddon.GetBool()))
+            if (subRole is CustomRoles.Cleansed or // making Bandit unable to steal Cleansed for obvious reasons. Although it can still be cleansed by cleanser.
+                CustomRoles.LastImpostor or
+                CustomRoles.Narc
+                || (subRole is CustomRoles.Nimble && CanVent.GetBool())
+                || (subRole.IsImpOnlyAddon() && !CanStealImpOnlyAddon.GetBool())
+                || ((subRole.IsBetrayalAddon() || subRole is CustomRoles.Lovers) && !CanStealBetrayalAddon.GetBool()))
             {
-                Logger.Info($"Removed {role} from list of stealable addons", "Bandit");
-                AllSubRoles.Remove(role);
+                Logger.Info($"Removed {subRole} from list of stealable addons", "Bandit");
+                AllSubRoles.Remove(subRole);
             }
         }
 
@@ -97,22 +99,17 @@ internal class Bandit : RoleBase
     }
     public void SendRPC(byte targetId, CustomRoles SelectedAddOn, bool removeNow)
     {
-        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, SendOption.Reliable, -1);
-        writer.WriteNetObject(_Player);
-        writer.Write(AbilityLimit);
+        var writer = MessageWriter.Get(SendOption.Reliable);
         writer.Write(removeNow);
         if (removeNow)
         {
             writer.Write(targetId);
             writer.WritePacked((int)SelectedAddOn);
         }
-        AmongUsClient.Instance.FinishRpcImmediately(writer);
+        RpcUtils.LateBroadcastReliableMessage(new RpcSyncRoleSkill(PlayerControl.LocalPlayer.NetId, _Player.NetId, writer));
     }
     public override void ReceiveRPC(MessageReader reader, PlayerControl pc)
     {
-        float Limit = reader.ReadSingle();
-        AbilityLimit = Limit;
-
         bool removeNow = reader.ReadBoolean();
         if (removeNow)
         {
@@ -124,14 +121,14 @@ internal class Bandit : RoleBase
     }
     private void StealAddon(PlayerControl killer, PlayerControl target, CustomRoles? SelectedAddOn)
     {
-        target.AddInSwitchAddons(killer, IsAddon: SelectedAddOn);
+        target.AddInSwitchAddons(killer, SelectedAddOn ?? CustomRoles.NotAssigned);
 
         if (StealMode.GetValue() == 1)
         {
             Main.PlayerStates[target.PlayerId].RemoveSubRole((CustomRoles)SelectedAddOn);
             Logger.Info($"Successfully removed {SelectedAddOn} addon from {target.GetNameWithRole()}", "Bandit");
 
-            killer.RpcSetCustomRole((CustomRoles)SelectedAddOn);
+            killer.RpcSetCustomRole((CustomRoles)SelectedAddOn, false, false);
             Logger.Info($"Successfully Added {SelectedAddOn} addon to {killer.GetNameWithRole()}", "Bandit");
         }
         else
@@ -139,7 +136,7 @@ internal class Bandit : RoleBase
             Targets[target.PlayerId] = (CustomRoles)SelectedAddOn;
             Logger.Info($"{killer.GetNameWithRole()} will steal {SelectedAddOn} addon from {target.GetNameWithRole()} after meeting starts", "Bandit");
         }
-        AbilityLimit--;
+        killer.RpcRemoveAbilityUse();
         SendRPC(target.PlayerId, (CustomRoles)SelectedAddOn, StealMode.GetValue() == 1);
 
         Utils.NotifyRoles(SpecifySeer: killer, SpecifyTarget: target, ForceLoop: true);
@@ -159,7 +156,7 @@ internal class Bandit : RoleBase
         bool flag = false;
         if (!target.HasSubRole() || target.Is(CustomRoles.Stubborn)) flag = true;
 
-        var SelectedAddOn = SelectRandomAddon(target);
+        var SelectedAddOn = SelectRandomAddon(killer, target);
         if (SelectedAddOn == null || flag) // no stealable addons found on the target.
         {
             killer.Notify(Translator.GetString("Bandit_NoStealableAddons"));
@@ -168,7 +165,7 @@ internal class Bandit : RoleBase
             killer.SetKillCooldown();
             return true;
         }
-        if (AbilityLimit < 1)
+        if (killer.GetAbilityUseLimit() < 1)
         {
             Logger.Info("Max steals reached killing the player", "Bandit");
             killCooldown = KillCooldownOpt.GetFloat();
@@ -207,9 +204,8 @@ internal class Bandit : RoleBase
             Logger.Info($"Successfully removed {role} addon from {target.GetNameWithRole()}", "Bandit");
             SendRPC(targetId, role, true);
 
-            _Player.RpcSetCustomRole(role);
+            _Player.RpcSetCustomRole(role, false, false);
             Logger.Info($"Successfully Added {role} addon to {_Player?.GetNameWithRole()}", "Bandit");
         }
     }
-    public override string GetProgressText(byte playerId, bool comms) => Utils.ColorString(AbilityLimit > 0 ? Utils.GetRoleColor(CustomRoles.Bandit).ShadeColor(0.25f) : Color.gray, $"({AbilityLimit})");
 }

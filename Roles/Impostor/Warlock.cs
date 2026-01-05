@@ -87,7 +87,7 @@ internal class Warlock : RoleBase
         return false;
     }
 
-    public override void OnShapeshift(PlayerControl shapeshifter, PlayerControl target, bool IsAnimate, bool shapeshifting)
+    public override bool OnShapeshift(PlayerControl shapeshifter, PlayerControl target, bool IsAnimate, bool shapeshifting)
     {
         if (CursedPlayers[shapeshifter.PlayerId] != null)
         {
@@ -139,6 +139,7 @@ internal class Warlock : RoleBase
         {
             shapeshifter.Notify(Translator.GetString("WarlockNoTargetYet"));
         }
+        return false;
     }
 
     public override void OnFixedUpdate(PlayerControl player, bool lowLoad, long nowTime, int timerLowLoad)

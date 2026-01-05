@@ -1,8 +1,8 @@
 using AmongUs.GameOptions;
 using Hazel;
-using InnerNet;
 using System;
 using TOHE.Modules;
+using TOHE.Modules.Rpc;
 using TOHE.Roles.Core;
 using static TOHE.MeetingHudStartPatch;
 using static TOHE.Options;
@@ -101,10 +101,9 @@ internal class Quizmaster : RoleBase
     }
     public void SendRPC(byte targetId)
     {
-        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, SendOption.Reliable, -1);
-        writer.WriteNetObject(_Player);
+        var writer = MessageWriter.Get(SendOption.Reliable);
         writer.Write(targetId);
-        AmongUsClient.Instance.FinishRpcImmediately(writer);
+        RpcUtils.LateBroadcastReliableMessage(new RpcSyncRoleSkill(PlayerControl.LocalPlayer.NetId, _Player.NetId, writer));
     }
     public override void ReceiveRPC(MessageReader reader, PlayerControl NaN)
     {
@@ -325,11 +324,11 @@ internal class Quizmaster : RoleBase
             => hud.KillButton.OverrideText(GetString(allowedKilling ? "KillButtonText" : "QuizmasterKillButtonText"));
 
     public override string GetMark(PlayerControl seer, PlayerControl target = null, bool isForMeeting = false)
-        => (!isForMeeting && seer.PlayerId != target.PlayerId && MarkedPlayer == target.PlayerId) ? Utils.ColorString(Utils.GetRoleColor(CustomRoles.Quizmaster), " ?!") : string.Empty;
+        => (!isForMeeting && seer.PlayerId != target.PlayerId && MarkedPlayer == target.PlayerId) ? Utils.ColorString(Utils.GetRoleColor(CustomRoles.Quizmaster), " ？！") : string.Empty;
 
 
     public override string GetMarkOthers(PlayerControl seer, PlayerControl target, bool isForMeeting = false)
-            => (isForMeeting && MarkedPlayer == target.PlayerId) ? Utils.ColorString(Utils.GetRoleColor(CustomRoles.Quizmaster), " ?!") : string.Empty;
+            => (isForMeeting && MarkedPlayer == target.PlayerId) ? Utils.ColorString(Utils.GetRoleColor(CustomRoles.Quizmaster), " ？！") : string.Empty;
 
 
     public static void OnSabotageCall(SystemTypes systemType)
@@ -372,6 +371,7 @@ internal class Quizmaster : RoleBase
 
     private static void KillPlayer(PlayerControl plrToKill)
     {
+        if (!plrToKill.IsAlive() || plrToKill.IsTransformedNeutralApocalypse()) return;
         plrToKill.SetDeathReason(PlayerState.DeathReason.WrongAnswer);
         Main.PlayerStates[plrToKill.PlayerId].SetDead();
         plrToKill.Data.IsDead = true;
@@ -610,7 +610,7 @@ class CountQuestion : QuizQuestionBase
         Answer = QuizmasterQuestionType switch
         {
             QuizmasterQuestionType.MeetingCountQuestion => Quizmaster.meetingNum.ToString(),
-            QuizmasterQuestionType.ButtonPressedBeforeThisQuestion => (Quizmaster.buttonMeeting - 1).ToString(),
+            QuizmasterQuestionType.ButtonPressedBeforeThisQuestion => (Quizmaster.buttonMeeting > 0 ? Quizmaster.buttonMeeting - 1 : 0).ToString(),
             QuizmasterQuestionType.DiedFirstRoundCountQuestion => Quizmaster.diedThisRound.ToString(),
             _ => "None"
         };
@@ -703,7 +703,7 @@ class SabotageQuestion : QuizQuestionBase
         {
             MapNames.Skeld => SkeldSabotages.ConvertAll(f => f.ToString()),
             MapNames.Dleks => SkeldSabotages.ConvertAll(f => f.ToString()),
-            MapNames.Mira => MiraSabotages.ConvertAll(f => f.ToString()),
+            MapNames.MiraHQ => MiraSabotages.ConvertAll(f => f.ToString()),
             MapNames.Polus => PolusSabotages.ConvertAll(f => f.ToString()),
             MapNames.Airship => AirshitSabotages.ConvertAll(f => f.ToString()),
             MapNames.Fungle => FungleSabotages.ConvertAll(f => f.ToString()),

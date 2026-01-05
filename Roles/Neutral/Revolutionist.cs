@@ -1,5 +1,5 @@
-using AmongUs.GameOptions;
 using Hazel;
+using TOHE.Modules.Rpc;
 using TOHE.Roles.AddOns.Common;
 using TOHE.Roles.Core;
 using UnityEngine;
@@ -37,10 +37,10 @@ internal class Revolutionist : RoleBase
     public override void SetupCustomOption()
     {
         SetupRoleOptions(15200, TabGroup.NeutralRoles, CustomRoles.Revolutionist);
-        RevolutionistDrawTime = FloatOptionItem.Create(15202, "RevolutionistDrawTime", new(0f, 10f, 1f), 3f, TabGroup.NeutralRoles, false)
+        RevolutionistDrawTime = FloatOptionItem.Create(15202, GeneralOption.AbilityDuration, new(0f, 10f, 1f), 3f, TabGroup.NeutralRoles, false)
             .SetParent(CustomRoleSpawnChances[CustomRoles.Revolutionist])
             .SetValueFormat(OptionFormat.Seconds);
-        RevolutionistCooldown = FloatOptionItem.Create(15203, "RevolutionistCooldown", new(5f, 100f, 1f), 10f, TabGroup.NeutralRoles, false)
+        RevolutionistCooldown = FloatOptionItem.Create(15203, GeneralOption.AbilityCooldown, new(5f, 100f, 1f), 10f, TabGroup.NeutralRoles, false)
             .SetParent(CustomRoleSpawnChances[CustomRoles.Revolutionist])
             .SetValueFormat(OptionFormat.Seconds);
         RevolutionistDrawCount = IntegerOptionItem.Create(15204, "RevolutionistDrawCount", new(1, 14, 1), 6, TabGroup.NeutralRoles, false)
@@ -107,11 +107,8 @@ internal class Revolutionist : RoleBase
     }
     private static void SetDrawPlayerRPC(PlayerControl player, PlayerControl target, bool isDrawed)
     {
-        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SetDrawPlayer, SendOption.Reliable, -1);
-        writer.Write(player.PlayerId);
-        writer.Write(target.PlayerId);
-        writer.Write(isDrawed);
-        AmongUsClient.Instance.FinishRpcImmediately(writer);
+        var msg = new RpcSetDrawPlayer(PlayerControl.LocalPlayer.NetId, player.PlayerId, target.PlayerId, isDrawed);
+        RpcUtils.LateBroadcastReliableMessage(msg);
     }
     public static void ReceiveDrawPlayerRPC(MessageReader reader)
     {
@@ -121,18 +118,16 @@ internal class Revolutionist : RoleBase
         IsDraw[(RevolutionistId, DrawId)] = drawed;
     }
 
-    private static void SetCurrentDrawTargetRPC(byte arsonistId, byte targetId)
+    private static void SetCurrentDrawTargetRPC(byte revoId, byte targetId)
     {
-        if (PlayerControl.LocalPlayer.PlayerId == arsonistId)
+        if (PlayerControl.LocalPlayer.PlayerId == revoId)
         {
             CurrentDrawTarget = targetId;
         }
         else
         {
-            MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SetCurrentDrawTarget, SendOption.Reliable, -1);
-            writer.Write(arsonistId);
-            writer.Write(targetId);
-            AmongUsClient.Instance.FinishRpcImmediately(writer);
+            var msg = new RpcSetCurrentDrawTarget(PlayerControl.LocalPlayer.NetId, revoId, targetId);
+            RpcUtils.LateBroadcastReliableMessage(msg);
         }
     }
     public static void ReceiveSetCurrentDrawTarget(MessageReader reader)
@@ -234,7 +229,7 @@ internal class Revolutionist : RoleBase
                     SetDrawPlayerRPC(player, rv_target, true);
                     NotifyRoles(SpecifySeer: player, SpecifyTarget: rv_target);
                     ResetCurrentDrawTarget(playerId);
-                    if (IRandom.Instance.Next(1, 100) <= RevolutionistKillProbability.GetInt())
+                    if (IRandom.Instance.Next(100) < RevolutionistKillProbability.GetInt() && !rv_target.IsTransformedNeutralApocalypse())
                     {
                         rvTargetId.SetDeathReason(PlayerState.DeathReason.Sacrifice);
                         player.RpcMurderPlayer(rv_target);
@@ -245,7 +240,7 @@ internal class Revolutionist : RoleBase
                 }
                 else
                 {
-                    float range = NormalGameOptionsV08.KillDistances[Mathf.Clamp(player.Is(Reach.IsReach) ? 2 : Main.NormalOptions.KillDistance, 0, 2)] + 0.5f;
+                    float range = ExtendedPlayerControl.GetKillDistances(ovverideValue: player.Is(Reach.IsReach), newValue: 2) + 0.5f;
                     float dis = GetDistance(player.GetCustomPosition(), rv_target.GetCustomPosition());
                     if (dis <= range)
                     {

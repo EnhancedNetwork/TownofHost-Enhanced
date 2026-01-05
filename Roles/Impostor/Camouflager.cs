@@ -1,6 +1,6 @@
 using AmongUs.GameOptions;
 using Hazel;
-using InnerNet;
+using TOHE.Modules.Rpc;
 using TOHE.Roles.AddOns.Common;
 using UnityEngine;
 using static TOHE.Translator;
@@ -69,10 +69,9 @@ internal class Camouflager : RoleBase
 
     private void SendRPC()
     {
-        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, SendOption.Reliable, -1);
-        writer.WriteNetObject(_Player);
+        var writer = MessageWriter.Get(SendOption.Reliable);
         writer.Write(AbilityActivated);
-        AmongUsClient.Instance.FinishRpcImmediately(writer);
+        RpcUtils.LateBroadcastReliableMessage(new RpcSyncRoleSkill(PlayerControl.LocalPlayer.NetId, _Player.NetId, writer));
     }
     public override void ReceiveRPC(MessageReader reader, PlayerControl pc)
     {
@@ -99,12 +98,12 @@ internal class Camouflager : RoleBase
         shouldAnimate = false;
         return true;
     }
-    public override void OnShapeshift(PlayerControl shapeshifter, PlayerControl target, bool IsAnimate, bool shapeshifting)
+    public override bool OnShapeshift(PlayerControl shapeshifter, PlayerControl target, bool IsAnimate, bool shapeshifting)
     {
         if (!shapeshifting)
         {
             ClearCamouflage();
-            return;
+            return false;
         }
 
         AbilityActivated = true;
@@ -119,6 +118,7 @@ internal class Camouflager : RoleBase
                 Camouflage.CheckCamouflage();
             }
         }, timer, "Camouflager Use Shapeshift");
+        return ShowShapeshiftAnimationsOpt.GetBool();
     }
     public override void OnReportDeadBody(PlayerControl reporter, NetworkedPlayerInfo target)
     {
@@ -144,7 +144,8 @@ internal class Camouflager : RoleBase
     private void ClearCamouflage()
     {
         AbilityActivated = false;
-        SendRPC();
+        if (_Player != null && PlayerControl.LocalPlayer != null)
+            SendRPC();
         Camouflage.CheckCamouflage();
     }
 }

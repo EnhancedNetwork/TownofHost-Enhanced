@@ -114,66 +114,27 @@ internal class Merchant : RoleBase
         }
 
         var rd = IRandom.Instance;
-        CustomRoles addon = addons.RandomElement();
+        // CustomRoles addon = addons.RandomElement();
 
-        List<PlayerControl> AllAlivePlayer =
-            Main.AllAlivePlayerControls.Where(x =>
-                x.PlayerId != player.PlayerId
-                &&
-                (!x.Is(CustomRoles.Stubborn))
-                &&
-                !addon.IsConverted()
-                &&
-                CustomRolesHelper.CheckAddonConfilct(addon, x, checkLimitAddons: false)
-                &&
-                (!Cleanser.CantGetAddon() || (Cleanser.CantGetAddon() && !x.Is(CustomRoles.Cleansed)))
-                &&
-                (
-                    (OptionCanTargetCrew.GetBool() && x.GetCustomRole().IsCrewmate())
-                    ||
-                    (OptionCanTargetImpostor.GetBool() && x.GetCustomRole().IsImpostor())
-                    ||
-                    (OptionCanTargetNeutral.GetBool() && x.GetCustomRole().IsNeutral())
-                    ||
-                    (OptionCanTargetCoven.GetBool() && x.GetCustomRole().IsCoven())
-                )
-            ).ToList();
+        var AllAlivePlayer =
+            Main.AllAlivePlayerControls
+                .Where(x => x.PlayerId != player.PlayerId)
+                .ToList()
+                .GetAssignableAddons(addons, OptionCanTargetCrew.GetBool(), OptionCanTargetImpostor.GetBool(), OptionCanTargetNeutral.GetBool(), OptionCanTargetCoven.GetBool())
+                .Where(x => x.Value.Any())
+                .ToDictionary(x => x.Key, x => x.Value);
 
         if (AllAlivePlayer.Count > 0)
         {
-            bool helpfulAddon = GroupedAddons[AddonTypes.Helpful].Contains(addon);
-            bool harmfulAddon = GroupedAddons[AddonTypes.Harmful].Contains(addon);
+            var target = AllAlivePlayer.RandomElement();
+            PlayerControl targetPlayer = target.Key;
+            CustomRoles addon = target.Value.RandomElement();
 
-            if (helpfulAddon && OptionSellOnlyHarmfulToEvil.GetBool())
-            {
-                AllAlivePlayer = AllAlivePlayer.Where(a => a.GetCustomRole().IsCrewmate()).ToList();
-            }
+            Logger.Info($"Merchant sold {addon} to {targetPlayer.GetRealName()}", "Merchant");
 
-            if (harmfulAddon && OptionSellOnlyHelpfulToCrew.GetBool())
-            {
-                AllAlivePlayer = AllAlivePlayer.Where(a =>
-                    a.GetCustomRole().IsImpostor()
-                    ||
-                    a.GetCustomRole().IsNeutral()
-                    ||
-                    a.GetCustomRole().IsCoven()
-
-                ).ToList();
-            }
-
-            if (AllAlivePlayer.Count < 1)
-            {
-                SellFail(player);
-                return true;
-            }
-
-            PlayerControl target = AllAlivePlayer.RandomElement();
-
-            target.RpcSetCustomRole(addon);
-            target.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Merchant), GetString("MerchantAddonSell")));
+            targetPlayer.RpcSetCustomRole(addon, false, false);
+            targetPlayer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Merchant), GetString("MerchantAddonSell")));
             player.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Merchant), GetString("MerchantAddonDelivered")));
-
-            target.AddInSwitchAddons(target, addon);
 
             addonsSold[player.PlayerId] += 1;
         }

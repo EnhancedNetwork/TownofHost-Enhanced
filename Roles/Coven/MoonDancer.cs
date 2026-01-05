@@ -1,7 +1,8 @@
 using Hazel;
-using InnerNet;
 using TOHE.Modules;
+using TOHE.Modules.Rpc;
 using TOHE.Roles.AddOns;
+using TOHE.Roles.AddOns.Common;
 using TOHE.Roles.Crewmate;
 using TOHE.Roles.Double;
 using TOHE.Roles.Impostor;
@@ -43,21 +44,16 @@ internal class MoonDancer : CovenManager
     public override void Init()
     {
         BatonPassList.Clear();
-        addons.Clear();
         BlastedOffList.Clear();
         originalSpeed.Clear();
 
-        addons.AddRange(GroupedAddons[AddonTypes.Helpful]);
-        addons.AddRange(GroupedAddons[AddonTypes.Harmful]);
-        if (BatonPassEnabledAddons.GetBool())
-        {
-            addons = addons.Where(role => role.GetMode() != 0).ToList();
-        }
+        LoadAddons();
     }
     public override void Add(byte playerId)
     {
         BatonPassList[playerId] = [];
         BlastedOffList[playerId] = [];
+        GetPlayerById(playerId)?.AddDoubleTrigger();
     }
     private void SyncBlastList()
     {
@@ -67,8 +63,7 @@ internal class MoonDancer : CovenManager
     }
     private void SendRPC(byte playerId)
     {
-        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, SendOption.Reliable, -1);
-        writer.WriteNetObject(_Player);
+        var writer = MessageWriter.Get(SendOption.Reliable);
         writer.Write(playerId);
         if (playerId != byte.MaxValue)
         {
@@ -76,7 +71,7 @@ internal class MoonDancer : CovenManager
             foreach (var bl in BlastedOffList[playerId])
                 writer.Write(bl);
         }
-        AmongUsClient.Instance.FinishRpcImmediately(writer);
+        RpcUtils.LateBroadcastReliableMessage(new RpcSyncRoleSkill(PlayerControl.LocalPlayer.NetId, _Player.NetId, writer));
     }
     public override void ReceiveRPC(MessageReader reader, PlayerControl NaN)
     {
@@ -154,39 +149,52 @@ internal class MoonDancer : CovenManager
     public override bool OnCheckMurderAsKiller(PlayerControl killer, PlayerControl target)
     {
         if (killer == null || target == null) return false;
-        if (HasNecronomicon(killer))
+        if (killer.CheckDoubleTrigger(target, () => { SetBatonPass(killer, target); }))
         {
-            var rd = IRandom.Instance;
-            if (target.GetCustomRole().IsCovenTeam())
+            if (HasNecronomicon(killer))
             {
-                killer.Notify(GetString("MoonDancerCantBlastOff"));
-                return false;
-            }
-            if (rd.Next(0, 101) < BlastOffChance.GetInt())
-            {
-                if (CanBlast(killer, target.PlayerId))
+                var rd = IRandom.Instance;
+                if (target.GetCustomRole().IsCovenTeam())
                 {
-                    BlastPlayer(killer, target);
-                    if (!DisableShieldAnimations.GetBool()) killer.RpcGuardAndKill(killer);
-                    killer.ResetKillCooldown();
-                    killer.SetKillCooldown();
-                    killer.RPCPlayCustomSound("BlastOff");
-                    target.RPCPlayCustomSound("BlastOff");
+                    killer.Notify(GetString("MoonDancerCantBlastOff"));
+                    return false;
+                }
+                if (rd.Next(0, 101) < BlastOffChance.GetInt())
+                {
+                    if (CanBlast(killer, target.PlayerId))
+                    {
+                        BlastPlayer(killer, target);
+                        if (!DisableShieldAnimations.GetBool()) killer.RpcGuardAndKill(killer);
+                        killer.ResetKillCooldown();
+                        killer.SetKillCooldown();
+                        killer.RPCPlayCustomSound("BlastOff");
+                        target.RPCPlayCustomSound("BlastOff");
+                    }
+                    else
+                    {
+                        killer.ResetKillCooldown();
+                        killer.SetKillCooldown();
+                        killer.Notify(GetString("MoonDancerCantBlastOff"));
+                    }
+                    return false;
                 }
                 else
                 {
-                    killer.ResetKillCooldown();
-                    killer.SetKillCooldown();
-                    killer.Notify(GetString("MoonDancerCantBlastOff"));
+                    _ = new LateTask(() =>
+                    {
+                        killer.Notify(GetString("MoonDancerNormalKill"));
+                    }, target.Is(CustomRoles.Burst) ? Burst.BurstKillDelay.GetFloat() : 0f, "BurstKillCheck");
+                    return true;
                 }
-                return false;
-            }
-            else
-            {
-                killer.Notify(GetString("MoonDancerNormalKill"));
-                return true;
             }
         }
+        
+        return false;
+    }
+
+    private static void SetBatonPass(PlayerControl killer, PlayerControl target)
+    {
+        if (killer == null || target == null) return;
         if (target.GetCustomRole().IsCovenTeam())
         {
             BatonPassList[killer.PlayerId].Add(target.PlayerId);
@@ -197,9 +205,9 @@ internal class MoonDancer : CovenManager
             BatonPassList[killer.PlayerId].Add(target.PlayerId);
             killer.Notify(GetString("MoonDancerGiveHarmfulAddon"));
         }
+
         killer.ResetKillCooldown();
         killer.SetKillCooldown();
-        return false;
     }
 
     public override void OnReportDeadBody(PlayerControl reporter, NetworkedPlayerInfo target)
@@ -215,6 +223,16 @@ internal class MoonDancer : CovenManager
             DistributeAddOns(player);
         }
     }
+    private static void LoadAddons()
+    {
+        addons.Clear();
+        addons.AddRange(GroupedAddons[AddonTypes.Helpful]);
+        addons.AddRange(GroupedAddons[AddonTypes.Harmful]);
+        if (BatonPassEnabledAddons.GetBool())
+        {
+            addons = [.. addons.Where(role => role.GetMode() != 0)];
+        }
+    }
     private static void DistributeAddOns(PlayerControl md)
     {
         var rd = IRandom.Instance;
@@ -228,10 +246,12 @@ internal class MoonDancer : CovenManager
                 continue;
             }
 
+            player.CheckConflictedAddOnsFromList(ref addons);
+
             var addon = addons.RandomElement();
-            var helpful = GroupedAddons[AddonTypes.Helpful].Where(x => addons.Contains(x)).ToList();
-            var harmful = GroupedAddons[AddonTypes.Harmful].Where(x => addons.Contains(x)).ToList();
-            if (player.GetCustomRole().IsCovenTeam() || (player.Is(CustomRoles.Lovers) && md.Is(CustomRoles.Lovers)))
+            var helpful = GroupedAddons[AddonTypes.Helpful].Where(addons.Contains).ToList();
+            var harmful = GroupedAddons[AddonTypes.Harmful].Where(addons.Contains).ToList();
+            if (player.GetCustomRole().IsCovenTeam() || Lovers.AreLovers(player, md))
             {
                 if (helpful.Count <= 0)
                 {
@@ -251,9 +271,13 @@ internal class MoonDancer : CovenManager
                 }
                 addon = harmful.RandomElement();
             }
-            player.RpcSetCustomRole(addon);
-            player.AddInSwitchAddons(player, addon);
-            Logger.Info("Addon Passed.", "MoonDancer");
+
+            if (addon != 0) // not default value
+            {
+                player.RpcSetCustomRole(addon, false, false);
+                Logger.Info("Addon Passed.", "MoonDancer");
+            }
+            LoadAddons();
         }
         BatonPassList[md.PlayerId].Clear();
     }
@@ -289,6 +313,17 @@ internal class MoonDancer : CovenManager
             pc.SetRealKiller(moonDancer);
             pc.RpcExileV2();
             pc.SetDeathReason(PlayerState.DeathReason.BlastedOff);
+        }
+    }
+    public override void SetAbilityButtonText(HudManager hud, byte playerId)
+    {
+        if (HasNecronomicon(playerId))
+        {
+            hud.KillButton.OverrideText(GetString("MoonDancerNecroKillButtonText"));
+        }
+        else
+        {
+            hud.KillButton.OverrideText(GetString("MoonDancerKillButtonText"));
         }
     }
 }

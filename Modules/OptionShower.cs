@@ -101,7 +101,7 @@ public class OptionShower : MonoBehaviour
             if (Options.CurrentGameMode == CustomGameMode.Standard)
             {
                 //有効な役職一覧
-                sb.Append($"<color={Utils.GetRoleColorCode(CustomRoles.GM)}>{Utils.GetRoleName(CustomRoles.GM)}:</color> {(Main.EnableGM.Value ? GetString("RoleRate") : GetString("RoleOff"))}\n\n");
+                sb.Append($"<color={Utils.GetRoleColorCode(CustomRoles.GM)}>{Utils.GetRoleName(CustomRoles.GM)}:</color> {(Main.EnableGM.Value ? GetString("ColoredOn") : GetString("ColoredOff"))}\n\n");
                 sb.Append(GetString("ActiveRolesList")).Append('\n');
 
                 var count = 4;
@@ -110,8 +110,8 @@ public class OptionShower : MonoBehaviour
                     if (kvp.Value.GameMode is CustomGameMode.Standard or CustomGameMode.All && kvp.Value.GetBool()) //スタンダードか全てのゲームモードで表示する役職
                     {
                         string mode = kvp.Value.GetString();
-                        if (kvp.Key is CustomRoles.Lovers) mode = Utils.GetChance(Options.LoverSpawnChances.GetInt());
-                        else if (kvp.Key.IsAdditionRole() && Options.CustomAdtRoleSpawnRate.ContainsKey(kvp.Key))
+                        // if (kvp.Key is CustomRoles.Lovers) mode = Utils.GetChance(Options.LoverSpawnChances.GetInt());
+                        if (kvp.Key.IsAdditionRole() && Options.CustomAdtRoleSpawnRate.ContainsKey(kvp.Key))
                         {
                             mode = Utils.GetChance(Options.CustomAdtRoleSpawnRate[kvp.Key].GetFloat());
 

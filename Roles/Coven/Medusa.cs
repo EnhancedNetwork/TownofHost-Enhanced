@@ -1,6 +1,6 @@
 using AmongUs.GameOptions;
 using Hazel;
-using InnerNet;
+using TOHE.Modules.Rpc;
 using static TOHE.Options;
 using static TOHE.Translator;
 using static TOHE.Utils;
@@ -55,15 +55,15 @@ internal class Medusa : CovenManager
     {
         StonedPlayers[playerId] = [];
         isStoning = false;
+        GetPlayerById(playerId)?.AddDoubleTrigger();
     }
 
     public void SendRPC(PlayerControl player, PlayerControl target)
     {
-        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, SendOption.Reliable, -1);
-        writer.WriteNetObject(_Player);
+        var writer = MessageWriter.Get(SendOption.Reliable);
         writer.Write(player.PlayerId);
         writer.Write(target.PlayerId);
-        AmongUsClient.Instance.FinishRpcImmediately(writer);
+        RpcUtils.LateBroadcastReliableMessage(new RpcSyncRoleSkill(PlayerControl.LocalPlayer.NetId, _Player.NetId, writer));
     }
     public override void ReceiveRPC(MessageReader reader, PlayerControl NaN)
     {
@@ -93,27 +93,28 @@ internal class Medusa : CovenManager
     public override bool OnCheckMurderAsKiller(PlayerControl killer, PlayerControl target)
     {
         if (killer == null || target == null) return false;
-        if (HasNecronomicon(killer))
+        if (killer.CheckDoubleTrigger(target, () => { SetStoned(killer, target); }))
         {
-            if (target.GetCustomRole().IsCovenTeam())
+            if (HasNecronomicon(killer) && !target.GetCustomRole().IsCovenTeam())
             {
-                killer.Notify(GetString("CovenDontKillOtherCoven"));
+                killer.RpcMurderPlayer(target);
+                killer.ResetKillCooldown();
+                killer.SetKillCooldown();
+                Main.UnreportableBodies.Add(target.PlayerId);
                 return false;
             }
-            killer.RpcMurderPlayer(target);
-            killer.ResetKillCooldown();
-            killer.SetKillCooldown();
-            Main.UnreportableBodies.Add(target.PlayerId);
-            return false;
+            killer.Notify(GetString("CovenDontKillOtherCoven"));
         }
-        else
-        {
-            StonedPlayers[killer.PlayerId].Add(target.PlayerId);
-            killer.ResetKillCooldown();
-            killer.SetKillCooldown();
-            killer.Notify(string.Format(GetString("MedusaStonedPlayer"), target.GetRealName()));
-            return false;
-        }
+        return false;
+    }
+    private void SetStoned(PlayerControl killer, PlayerControl target)
+    {
+        if (killer == null || target == null) return;
+        StonedPlayers[killer.PlayerId].Add(target.PlayerId);
+        SendRPC(killer, target);
+        killer.ResetKillCooldown();
+        killer.SetKillCooldown();
+        killer.Notify(string.Format(GetString("MedusaStonedPlayer"), target.GetRealName()));
     }
     public override void UnShapeShiftButton(PlayerControl dusa)
     {
@@ -152,7 +153,7 @@ internal class Medusa : CovenManager
     public override string GetMarkOthers(PlayerControl seer, PlayerControl target, bool isForMeeting = false)
     {
         if (_Player == null) return string.Empty;
-        if (IsStoned(seer.PlayerId, target.PlayerId) && seer.GetCustomRole().IsCovenTeam() && seer.PlayerId != _Player.PlayerId)
+        if (IsStoned(seer.PlayerId, target.PlayerId) && ((seer.GetCustomRole().IsCovenTeam() && seer.PlayerId != _Player.PlayerId) || !seer.IsAlive() && seer.PlayerId != _Player.PlayerId))
         {
             return ColorString(GetRoleColor(CustomRoles.Medusa), "♻");
         }
@@ -162,6 +163,6 @@ internal class Medusa : CovenManager
 
     public override void SetAbilityButtonText(HudManager hud, byte playerId)
     {
-        hud.ReportButton.OverrideText(GetString("MedusaReportButtonText"));
+        hud.AbilityButton.OverrideText(GetString("MedusaReportButtonText"));
     }
 }

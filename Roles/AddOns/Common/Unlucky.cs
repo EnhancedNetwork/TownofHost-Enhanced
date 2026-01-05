@@ -46,7 +46,7 @@ public class Unlucky : IAddon
     { }
     public static bool SuicideRand(PlayerControl victim, StateSuicide state)
     {
-        var shouldBeSuicide = IRandom.Instance.Next(1, 100) <= state switch
+        var shouldBeSuicide = IRandom.Instance.Next(100) < state switch
         {
             StateSuicide.TryKill => UnluckyKillSuicideChance.GetInt(),
             StateSuicide.CompleteTask => UnluckyTaskSuicideChance.GetInt(),

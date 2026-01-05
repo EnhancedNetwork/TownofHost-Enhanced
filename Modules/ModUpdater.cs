@@ -1,6 +1,7 @@
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
+using System.Globalization;
 using System.IO;
 using System.Net.Http;
 using System.Threading;
@@ -48,6 +49,9 @@ public class ModUpdater
 
     public static IEnumerator PrefixCoroutine()
     {
+        Logger.Info("User Facing Version: " + DestroyableSingleton<ReferenceDataManager>.Instance.Refdata.userFacingVersion + " " + Constants.extraBuildVersionInfo, "CheckRelease");
+        Logger.Info("Constants Version: " + string.Format("{0}.{1}.{2}.{3}", Constants.Year, Constants.Month, Constants.Day, Constants.Revision) + " " + Constants.GetBroadcastVersion(), "CheckRelease");
+
         CheckCustomRegions();
         NewVersionCheck();
         DeleteOldFiles();
@@ -70,12 +74,22 @@ public class ModUpdater
         }
     }
 
+#if ANDROID
+    static string RegionConfigPath = Path.Combine(UnityEngine.Application.persistentDataPath, "BepInEx", "config", "at.duikbo.regioninstall.cfg");
+    static string MiniRegionInstallPath = Path.Combine(UnityEngine.Application.persistentDataPath, "BepInEx", "plugins", "Mini.RegionInstall.dll");
+#else
     const string RegionConfigPath = "./BepInEx/config/at.duikbo.regioninstall.cfg";
     const string MiniRegionInstallPath = "./BepInEx/plugins/Mini.RegionInstall.dll";
+#endif
+
     const string RegionConfigResource = "TOHE.Resources.at.duikbo.regioninstall.cfg";
     const string MiniRegionInstallResource = "TOHE.Resources.Mini.RegionInstall.dll";
     private static void CheckCustomRegions()
     {
+#if ANDROID
+        Logger.Info($"Skip check on Android platform", "CheckCustomRegions");
+        return;
+#endif
         var regions = ServerManager.Instance.AvailableRegions;
         var hasCustomRegions = false;
         var forceUpdate = false;
@@ -161,7 +175,7 @@ public class ModUpdater
         if (firstNotify && hasUpdate)
         {
             firstNotify = false;
-            
+
             if (!string.IsNullOrEmpty(latestTitleModName))
                 ShowPopupWithTwoButtons(string.Format(GetString("NewUpdateAvailable"), latestTitleModName), GetString("update"), onClickOnFirstButton: () => StartUpdate(downloadUrl));
         }
@@ -219,11 +233,23 @@ public class ModUpdater
         }
         else
         {
+            string[] tag = data["tag_name"]?.ToString()[1..].Split(".");
+            
+            var betaNum = int.Parse(Main.PluginVersion.Substring(14, 3), CultureInfo.InvariantCulture);
+            betaNum = betaNum == 0 ? 999 : betaNum;
+
+            var pluginNum = int.Parse(Main.PluginVersion.Substring(10, 1)) * 10000000 + int.Parse(Main.PluginVersion.Substring(11, 1)) * 1000000 + int.Parse(Main.PluginVersion.Substring(12, 1)) * 100000 + betaNum * 100;
+            var versionNum = int.Parse(tag[0]) * 10000000 + int.Parse(tag[1]) * 1000000 + int.Parse($"{tag[2][0]}") * 100000 + (tag[2].Length > 2 && tag[2][1] == 'b' ? int.Parse(tag[2][2..]) : 999) * 100;
+
+            Logger.Info($"Found local version: {pluginNum}; github version: {versionNum}", "CheckRelease");
+
+            hasUpdate = versionNum > pluginNum;
+
             string publishedAt = data["published_at"]?.ToString();
             latestVersion = DateTime.TryParse(publishedAt, out DateTime parsedDate) ? parsedDate : DateTime.MinValue;
             latestTitle = $"Day: {latestVersion?.Day} Month: {latestVersion?.Month} Year: {latestVersion?.Year}";
 
-            JArray assets = data["assets"].TryCast<JArray>();
+            JArray assets = data["assets"].CastFast<JArray>();
             for (int i = 0; i < assets.Count; i++)
             {
                 string assetName = assets[i]["name"].ToString();
@@ -233,12 +259,6 @@ public class ModUpdater
                     Logger.Info($"Github downloadUrl is set to {downloadUrl}", "CheckRelease");
                 }
             }
-
-            DateTime pluginTimestamp = DateTime.ParseExact(Main.PluginVersion.Substring(5, 4), "MMdd", System.Globalization.CultureInfo.InvariantCulture);
-            int year = int.Parse(Main.PluginVersion.Substring(0, 4));
-            pluginTimestamp = pluginTimestamp.AddYears(year - pluginTimestamp.Year);
-            Logger.Info($"Day: {pluginTimestamp.Day} Month: {pluginTimestamp.Month} Year: {pluginTimestamp.Year}", "PluginVersion");
-            hasUpdate = latestVersion?.Date > pluginTimestamp.Date;
         }
 
         Logger.Info("hasupdate: " + hasUpdate, "Github");
@@ -264,20 +284,33 @@ public class ModUpdater
     }
     public static void StartUpdate(string url)
     {
-        ShowPopup(GetString("updatePleaseWait"), StringNames.Cancel, false);
-        Task.Run(() => DownloadDLLAsync(url));
+#if ANDROID
+        ShowPopup(GetString("AndroidUpdateNotSupported"), StringNames.Close, true, InfoPopup.Close);
+        Logger.Warn("Update download is not supported on Android platform", "StartUpdate");
         return;
+#else
+    ShowPopup(GetString("updatePleaseWait"), StringNames.Cancel, false);
+    Task.Run(() => DownloadDLLAsync(url));
+    return;
+#endif
     }
     public static bool NewVersionCheck()
     {
         try
         {
             var fileName = Assembly.GetExecutingAssembly().Location;
-            if (Directory.Exists("TOH_DATA") && File.Exists(@"./TOHE-DATA/BanWords.txt"))
+#if ANDROID
+            if (Directory.Exists(Path.Combine(UnityEngine.Application.persistentDataPath, "TOH_DATA")) &&
+                File.Exists(Path.Combine(UnityEngine.Application.persistentDataPath, "TOHE-DATA", "BanWords.txt")))
             {
-                DirectoryInfo di = new("TOH_DATA");
+                DirectoryInfo di = new(Path.Combine(UnityEngine.Application.persistentDataPath, "TOH_DATA"));
+#else
+        if (Directory.Exists("TOH_DATA") && File.Exists(@"./TOHE-DATA/BanWords.txt"))
+        {
+            DirectoryInfo di = new("TOH_DATA");
+#endif
                 di.Delete(true);
-                Logger.Warn("Deleting old data´╝ÜTOH_DATA", "NewVersionCheck");
+                Logger.Warn("Deleting old data：TOH_DATA", "NewVersionCheck");
             }
         }
         catch (Exception ex)
@@ -464,7 +497,7 @@ public class ModUpdater
                 firstButtonGetChild.GetComponent<TMP_Text>().text = firstButtonText;
                 firstButton.GetComponent<PassiveButton>().OnClick = new();
                 if (onClickOnFirstButton != null)
-                    firstButton.GetComponent<PassiveButton>().OnClick.AddListener((UnityEngine.Events.UnityAction)(() => { onClickOnFirstButton(); InfoPopupV2.Close();}));
+                    firstButton.GetComponent<PassiveButton>().OnClick.AddListener((UnityEngine.Events.UnityAction)(() => { onClickOnFirstButton(); InfoPopupV2.Close(); }));
                 else firstButton.GetComponent<PassiveButton>().OnClick.AddListener((UnityEngine.Events.UnityAction)(() => InfoPopupV2.Close()));
             }
             if (secondButton != null)

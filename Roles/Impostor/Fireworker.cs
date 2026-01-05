@@ -1,6 +1,7 @@
 using AmongUs.GameOptions;
 using Hazel;
 using TOHE.Modules;
+using TOHE.Modules.Rpc;
 using UnityEngine;
 using static TOHE.Translator;
 
@@ -45,7 +46,7 @@ internal class Fireworker : RoleBase
     public override void SetupCustomOption()
     {
         Options.SetupRoleOptions(Id, TabGroup.ImpostorRoles, CustomRoles.Fireworker);
-        PlaceCooldown = FloatOptionItem.Create(Id + 9, "FireworkerCooldown", new(1f, 180f, 0.5f), 15f, TabGroup.ImpostorRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Fireworker])
+        PlaceCooldown = FloatOptionItem.Create(Id + 9, GeneralOption.AbilityCooldown, new(1f, 180f, 0.5f), 15f, TabGroup.ImpostorRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Fireworker])
             .SetValueFormat(OptionFormat.Seconds);
         FireworkerCount = IntegerOptionItem.Create(Id + 10, "FireworkerMaxCount", new(1, 20, 1), 3, TabGroup.ImpostorRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Fireworker])
             .SetValueFormat(OptionFormat.Pieces);
@@ -75,12 +76,9 @@ internal class Fireworker : RoleBase
 
     private static void SendRPC(byte playerId)
     {
-        Logger.Info($"Player{playerId}:SendRPC", "Fireworker");
-        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SendFireworkerState, SendOption.Reliable, -1);
-        writer.Write(playerId);
-        writer.Write(nowFireworkerCount[playerId]);
-        writer.Write((int)state[playerId]);
-        AmongUsClient.Instance.FinishRpcImmediately(writer);
+        Logger.Info($"Player{playerId}:SendRPC nowFireworkerCount:{nowFireworkerCount[playerId]} state:{state[playerId]}", "Fireworker");
+        var msg = new RpcSendFireworkerState(PlayerControl.LocalPlayer.NetId, playerId, nowFireworkerCount[playerId], (int)state[playerId]);
+        RpcUtils.LateBroadcastReliableMessage(msg);
     }
 
     public static void ReceiveRPC(MessageReader msg)
@@ -144,6 +142,7 @@ internal class Fireworker : RoleBase
                     {
                         var dis = Utils.GetDistance(pos, player.transform.position);
                         if (dis > fireworkerRadius) continue;
+                        if (player.IsTransformedNeutralApocalypse()) continue;
 
                         if (player == shapeshifter)
                         {

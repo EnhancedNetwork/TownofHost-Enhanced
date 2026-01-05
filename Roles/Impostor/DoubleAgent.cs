@@ -1,6 +1,6 @@
 using Hazel;
-using InnerNet;
 using TOHE.Modules;
+using TOHE.Modules.Rpc;
 using TOHE.Roles.Core;
 using TOHE.Roles.Coven;
 using TOHE.Roles.Crewmate;
@@ -34,14 +34,14 @@ internal class DoubleAgent : RoleBase
     private static OptionItem ChangeRoleToOnLast;
 
     [Obfuscation(Exclude = true)]
-    private enum ChangeRolesSelectOnLast
-    {
-        Role_NoChange,
-        Role_Random,
-        Role_AdmiredImpostor, // Team Crewmate
-        Role_Traitor, // Team Neutral
-        Role_Trickster, // Team Impostor as Crewmate
-    }
+    public static readonly string[] CRoleChangeRolesString =
+    [
+        GetString("Role_NoChange"),
+        GetString("Role_Random"),
+        $"{CustomRoles.Admired.ToColoredString()} {CustomRoles.Impostor.ToColoredString()}",
+        CustomRoles.Traitor.ToColoredString(),
+        CustomRoles.Trickster.ToColoredString(),
+    ];
     public static readonly CustomRoles[] CRoleChangeRoles =
     [
         0, // NoChange
@@ -62,7 +62,7 @@ internal class DoubleAgent : RoleBase
         ExplosionRadius = FloatOptionItem.Create(Id + 14, "DoubleAgentExplosionRadius", new(0.5f, 2f, 0.1f), 1.0f, TabGroup.ImpostorRoles, false)
             .SetParent(CustomRoleSpawnChances[CustomRoles.DoubleAgent])
             .SetValueFormat(OptionFormat.Multiplier);
-        ChangeRoleToOnLast = StringOptionItem.Create(Id + 15, "DoubleAgentChangeRoleTo", EnumHelper.GetAllNames<ChangeRolesSelectOnLast>(), 1, TabGroup.ImpostorRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.DoubleAgent]);
+        ChangeRoleToOnLast = StringOptionItem.Create(Id + 15, "DoubleAgentChangeRoleTo", CRoleChangeRolesString, 1, TabGroup.ImpostorRoles, false, useGetString: false).SetParent(CustomRoleSpawnChances[CustomRoles.DoubleAgent]);
     }
     public override void Init()
     {
@@ -106,9 +106,10 @@ internal class DoubleAgent : RoleBase
                 return;
             }
 
-            if (Bastion.BombedVents.Contains(vent.Id))
+            var bastion = Main.AllPlayerControls.FirstOrDefault(p => pc.Is(CustomRoles.Bastion));
+            if (bastion.GetRoleClass() is Bastion bastionClass && bastionClass.BombedVents.Contains(vent.Id))
             {
-                Bastion.BombedVents.Remove(vent.Id);
+                bastionClass.BombedVents.Remove(vent.Id);
                 _ = new LateTask(() =>
                 {
                     if (pc.inVent) pc.MyPhysics.RpcBootFromVent(vent.Id);
@@ -126,7 +127,8 @@ internal class DoubleAgent : RoleBase
 
         if (!BombIsActive)
         {
-            if (target.Is(Custom_Team.Impostor)) return false;
+            if (target.Is(Custom_Team.Impostor) && !voter.Is(CustomRoles.Narc)) return false;
+            if (target.IsPolice() && voter.Is(CustomRoles.Narc)) return false;
             if (voter == target) return false;
 
             if (target.Is(CustomRoles.VoodooMaster) && VoodooMaster.Dolls[target.PlayerId].Count > 0)
@@ -138,7 +140,7 @@ internal class DoubleAgent : RoleBase
             CurrentBombedTime = -1;
             CurrentBombedPlayers.Add(target.PlayerId);
             BombIsActive = true;
-            SendMessage(GetString("VoteHasReturned"), voter.PlayerId, title: ColorString(GetRoleColor(CustomRoles.DoubleAgent), string.Format(GetString("VoteAbilityUsed"), GetString("DoubleAgent"))));
+            SendMessage(GetString("VoteHasReturned"), voter.PlayerId, title: ColorString(GetRoleColor(CustomRoles.DoubleAgent), string.Format(GetString("VoteAbilityUsed"), GetString("DoubleAgent"))), noReplay: true);
             return false;
         }
         return true;
@@ -218,7 +220,7 @@ internal class DoubleAgent : RoleBase
                     Role = CRoleChangeRoles[IRandom.Instance.Next(2, CRoleChangeRoles.Length)];
 
                 // If role is not on Impostor team remove all Impostor addons if any.
-                if (!Role.IsImpostorTeam())
+                if (!Role.IsImpostorTeamV3())
                 {
                     foreach (CustomRoles allAddons in player.GetCustomSubRoles())
                     {
@@ -229,8 +231,11 @@ internal class DoubleAgent : RoleBase
                     }
                 }
                 // If Role is ImpostorTOHE aka Admired Impostor opt give Admired Addon if player dose not already have it.
-                if (Role == CustomRoles.ImpostorTOHE && !player.GetCustomSubRoles().Contains(CustomRoles.Admired))
+                if (Role == CustomRoles.ImpostorTOHE && !player.Is(CustomRoles.Admired) && !player.Is(CustomRoles.Narc))
                     player.GetCustomSubRoles()?.Add(CustomRoles.Admired);
+
+                // If Double Agent is Narc and Role is Traitor,Double Agent turns into Parasite instead
+                if (Role is CustomRoles.Traitor && player.Is(CustomRoles.Narc)) Role = CustomRoles.Parasite;
 
                 Init();
                 player.GetRoleClass().OnRemove(player.PlayerId);
@@ -240,8 +245,10 @@ internal class DoubleAgent : RoleBase
                 player.MarkDirtySettings();
 
                 string RoleName = ColorString(GetRoleColor(player.GetCustomRole()), GetRoleName(player.GetCustomRole()));
-                if (Role == CustomRoles.ImpostorTOHE)
-                    RoleName = ColorString(GetRoleColor(CustomRoles.Admired), $"{GetString("Admired")} {GetString("ImpostorTOHE")}");
+                if (Role == CustomRoles.ImpostorTOHE && !player.Is(CustomRoles.Narc))
+                    RoleName = ColorString(GetRoleColor(CustomRoles.Admired), $"{GetString("Admired-")}{GetString("ImpostorTOHE")}");
+                if (player.Is(CustomRoles.Narc))
+                    RoleName = ColorString(GetRoleColor(CustomRoles.Narc), $"{GetString("Narc-")}{GetString(Role.ToString())}");
                 player.Notify(ColorString(GetRoleColor(player.GetCustomRole()), GetString("DoubleAgentRoleChange") + RoleName));
             }
         }
@@ -254,7 +261,7 @@ internal class DoubleAgent : RoleBase
 
         foreach (PlayerControl target in Main.AllAlivePlayerControls) // Get players in radius of bomb that are not in a vent.
         {
-            if (GetDistance(player.GetCustomPosition(), target.GetCustomPosition()) <= ExplosionRadius.GetFloat())
+            if (GetDistance(player.GetCustomPosition(), target.GetCustomPosition()) <= ExplosionRadius.GetFloat() && !(player.IsTransformedNeutralApocalypse() || target.IsTransformedNeutralApocalypse()))
             {
                 if (player.inVent) continue;
                 Main.PlayerStates[target.PlayerId].deathReason = PlayerState.DeathReason.Bombed;
@@ -289,12 +296,11 @@ internal class DoubleAgent : RoleBase
     // Send bomb timer to Modded Clients when active.
     private void SendRPC(bool addData = false, byte targetId = byte.MaxValue)
     {
-        var writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, SendOption.None, -1);
-        writer.WriteNetObject(_Player);
+        var writer = MessageWriter.Get(SendOption.Reliable);
         writer.Write(addData);
         writer.Write(targetId);
         writer.WritePacked((int)CurrentBombedTime);
-        AmongUsClient.Instance.FinishRpcImmediately(writer);
+        RpcUtils.LateBroadcastReliableMessage(new RpcSyncRoleSkill(PlayerControl.LocalPlayer.NetId, _Player.NetId, writer));
     }
 
     // Receive and set bomb timer from Host when active.

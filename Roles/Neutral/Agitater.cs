@@ -1,6 +1,6 @@
 using AmongUs.GameOptions;
 using Hazel;
-using InnerNet;
+using TOHE.Modules.Rpc;
 using TOHE.Roles.Core;
 using UnityEngine;
 using static TOHE.Translator;
@@ -100,7 +100,7 @@ internal class Agitater : RoleBase
             if (CurrentBombedPlayer != byte.MaxValue && GameStates.IsInTask)
             {
                 var pc = Utils.GetPlayerById(CurrentBombedPlayer);
-                if (pc != null && pc.IsAlive() && killer != null)
+                if (pc != null && pc.IsAlive() && killer != null && !pc.IsTransformedNeutralApocalypse())
                 {
                     CurrentBombedPlayer.SetDeathReason(PlayerState.DeathReason.Bombed);
                     pc.RpcMurderPlayer(pc);
@@ -156,7 +156,7 @@ internal class Agitater : RoleBase
             {
                 var min = targetDistance.OrderBy(c => c.Value).FirstOrDefault();
                 var target = min.Key.GetPlayer();
-                var KillRange = GameOptionsData.KillDistances[Mathf.Clamp(GameOptionsManager.Instance.currentNormalGameOptions.KillDistance, 0, 2)];
+                var KillRange = ExtendedPlayerControl.GetKillDistances();
                 if (min.Value <= KillRange && !player.inVent && !player.inMovingPlat && !target.inVent && !target.inMovingPlat && player.RpcCheckAndMurder(target, true))
                 {
                     PassBomb(player, target);
@@ -188,7 +188,7 @@ internal class Agitater : RoleBase
 
 
         player.Notify(GetString("AgitaterPassNotify"));
-        target.Notify(GetString("AgitaterTargetNotify"));
+        target.Notify(GetString("AgitaterTargetNotify"), hasPriority: true);
 
         SendRPC(CurrentBombedPlayer, LastBombedPlayer);
         Logger.Msg($"{player.GetNameWithRole()} passed bomb to {target.GetNameWithRole()}", "Agitater Pass");
@@ -196,11 +196,10 @@ internal class Agitater : RoleBase
 
     public void SendRPC(byte newbomb, byte oldbomb)
     {
-        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, SendOption.Reliable, -1);
-        writer.WriteNetObject(_Player);
+        var writer = MessageWriter.Get(SendOption.Reliable);
         writer.Write(newbomb);
         writer.Write(oldbomb);
-        AmongUsClient.Instance.FinishRpcImmediately(writer);
+        RpcUtils.LateBroadcastReliableMessage(new RpcSyncRoleSkill(PlayerControl.LocalPlayer.NetId, _Player.NetId, writer));
     }
 
     public override void ReceiveRPC(MessageReader reader, PlayerControl NaN)

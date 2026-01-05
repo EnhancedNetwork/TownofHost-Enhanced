@@ -1,4 +1,5 @@
 using System;
+using System.Runtime.CompilerServices;
 
 namespace TOHE;
 
@@ -19,11 +20,14 @@ class LateTask
         }
         return false;
     }
-    public LateTask(Action action, float time, string name = "No Name Task", bool shoudLog = true)
+    public LateTask(Action action, float time, string name = "No Name Task", bool shoudLog = true, [CallerMemberName] string callerMethodName = "")
     {
         this.action = action;
         this.timer = time;
-        this.name = name;
+        if (name != "No Name Task")
+            this.name = name;
+        else
+            this.name = callerMethodName + " Task";
         this.shouldLog = shoudLog;
 
         Tasks.Add(this);

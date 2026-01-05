@@ -14,6 +14,14 @@ internal class Escapist : RoleBase
     public override CustomRoles ThisRoleBase => CustomRoles.Shapeshifter;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.ImpostorConcealing;
     //==================================================================\\
+
+    public override void SetAbilityButtonText(HudManager hud, byte id)
+    {
+        if (!EscapeLocation.TryGetValue(id, out Vector2 loc))
+            hud.AbilityButton.buttonLabelText.text = GetString("EscapistMarkButtonText");
+        else
+            hud.AbilityButton.buttonLabelText.text = GetString("EscapistTeleportButtonText");
+    }
     public override Sprite GetAbilityButtonSprite(PlayerControl player, bool shapeshifting) => CustomButton.Get("abscond");
 
     private static OptionItem ShapeshiftCooldown;

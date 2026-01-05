@@ -4,6 +4,7 @@ using System.Text.RegularExpressions;
 using TMPro;
 using TOHE.Modules;
 using TOHE.Modules.ChatManager;
+using TOHE.Modules.Rpc;
 using TOHE.Roles.AddOns.Common;
 using TOHE.Roles.Core;
 using TOHE.Roles.Coven;
@@ -221,12 +222,12 @@ public static class GuessManager
                 }
                 if (Jailer.IsTarget(pc.PlayerId) && role != CustomRoles.Jailer)
                 {
-                    pc.ShowInfoMessage(isUI, GetString("JailedCanOnlyGuessJailer"), Utils.ColorString(Utils.GetRoleColor(CustomRoles.Jailer), GetString("JailerTitle")));
+                    pc.ShowInfoMessage(isUI, GetString("JailedCanOnlyGuessJailer"), Utils.ColorString(Utils.GetRoleColor(CustomRoles.Jailer), GetString("Jailer").ToUpper()));
                     return true;
                 }
                 if (Jailer.IsTarget(target.PlayerId))
                 {
-                    pc.ShowInfoMessage(isUI, GetString("CantGuessJailed"), Utils.ColorString(Utils.GetRoleColor(CustomRoles.Jailer), GetString("JailerTitle")));
+                    pc.ShowInfoMessage(isUI, GetString("CantGuessJailed"), Utils.ColorString(Utils.GetRoleColor(CustomRoles.Jailer), GetString("Jailer").ToUpper()));
                     return true;
                 }
                 if (!Mundane.OnGuess(pc))
@@ -239,7 +240,13 @@ public static class GuessManager
                     pc.ShowInfoMessage(isUI, GetString("GuessShielded"));
                     return true;
                 }
+                if (NarcManager.CheckBlockGuesses(pc, target, isUI)) return true;
 
+                if (!role.IsEnable() && !role.RoleExist(true) && Options.CanOnlyGuessEnabled.GetBool())
+                {
+                    pc.ShowInfoMessage(isUI, string.Format(GetString("GuessRoleNotEnabled"), role.ToString()));
+                    return true;
+                }
                 if (role == CustomRoles.Bait && target.Is(CustomRoles.Bait) && Bait.BaitNotification.GetBool())
                 {
                     pc.ShowInfoMessage(isUI, GetString("GuessNotifiedBait"));
@@ -486,9 +493,8 @@ public static class GuessManager
                 meetingHud.CheckForEndVoting();
             }
             _ = new LateTask(() => hudManager.SetHudActive(false), 0.3f, "SetHudActive in GuesserMurderPlayer", shoudLog: false);
-            MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.GuessKill, SendOption.Reliable, -1);
-            writer.Write(pc.PlayerId);
-            AmongUsClient.Instance.FinishRpcImmediately(writer);
+            var msg = new RpcGuessKill(pc.NetId, pc.PlayerId);
+            RpcUtils.LateBroadcastReliableMessage(msg);
 
             GameEndCheckerForNormal.ShouldNotCheck = false;
         }
@@ -549,12 +555,13 @@ public static class GuessManager
             result += mc[i];//匹配结果是完整的数字，此处可以不做拼接的
         }
 
-        if (int.TryParse(result, out int num))
+        if (byte.TryParse(result, out byte num))
         {
-            id = Convert.ToByte(num);
+            id = num;
         }
         else
         {
+            Logger.Warn($"{msg}::{result} could not be parsed as a byte", "MsgToPlayerAndRole");
             //并不是玩家编号，判断是否颜色
             //byte color = GetColorFromMsg(msg);
             //好吧我不知道怎么取某位玩家的颜色，等会了的时候再来把这里补上
@@ -600,18 +607,18 @@ public static class GuessManager
             for (int i = 0; i < 20; i++)
             {
                 msg = "/";
-                if (rd.Next(1, 100) < 20)
+                if (rd.Next(100) < 20)
                 {
                     msg += "id";
                 }
                 else
                 {
                     msg += command[rd.Next(0, command.Length - 1)];
-                    msg += rd.Next(1, 100) < 50 ? string.Empty : " ";
+                    msg += rd.Next(100) < 50 ? string.Empty : " ";
                     msg += rd.Next(0, 15).ToString();
-                    msg += rd.Next(1, 100) < 50 ? string.Empty : " ";
+                    msg += rd.Next(100) < 50 ? string.Empty : " ";
                     CustomRoles role = roles.RandomElement();
-                    msg += rd.Next(1, 100) < 50 ? string.Empty : " ";
+                    msg += rd.Next(100) < 50 ? string.Empty : " ";
                     msg += Utils.GetRoleName(role);
                 }
                 var player = Main.AllAlivePlayerControls.RandomElement();
@@ -655,6 +662,8 @@ public static class GuessManager
                 if (PlayerControl.LocalPlayer.IsAlive() && PlayerControl.LocalPlayer.GetCustomRole().IsCoven() && Options.CovenCanGuess.GetBool())
                     CreateGuesserButton(__instance);
                 else if (PlayerControl.LocalPlayer.GetCustomRole() is CustomRoles.Doomsayer && !Options.PassiveNeutralsCanGuess.GetBool() && !Doomsayer.CheckCantGuess)
+                    CreateGuesserButton(__instance);
+                else if (PlayerControl.LocalPlayer.IsAlive() && PlayerControl.LocalPlayer.Is(CustomRoles.Guesser))
                     CreateGuesserButton(__instance);
             }
             else
@@ -937,6 +946,15 @@ public static class GuessManager
                 if (!listOfRoles.Contains(CustomRoles.EngineerTOHE))
                     listOfRoles.Add(CustomRoles.EngineerTOHE);
 
+                if (!listOfRoles.Contains(CustomRoles.TrackerTOHE))
+                    listOfRoles.Add(CustomRoles.TrackerTOHE);
+
+                if (!listOfRoles.Contains(CustomRoles.PhantomTOHE))
+                    listOfRoles.Add(CustomRoles.PhantomTOHE);
+
+                if (!listOfRoles.Contains(CustomRoles.DetectiveTOHE))
+                    listOfRoles.Add(CustomRoles.DetectiveTOHE);
+
                 if (!listOfRoles.Contains(CustomRoles.Amnesiac))
                     listOfRoles.Add(CustomRoles.Amnesiac);
 
@@ -977,6 +995,12 @@ public static class GuessManager
                 }
 
                 if (CustomRoles.SoulCollector.IsEnable())
+                {
+                    if (!listOfRoles.Contains(CustomRoles.Death))
+                        listOfRoles.Add(CustomRoles.Death);
+                }
+
+                if (CustomRoles.Lich.IsEnable())
                 {
                     if (!listOfRoles.Contains(CustomRoles.Death))
                         listOfRoles.Add(CustomRoles.Death);
@@ -1034,6 +1058,7 @@ public static class GuessManager
                     or CustomRoles.Sloth
                     or CustomRoles.Apocalypse
                     or CustomRoles.Coven
+                    or CustomRoles.Pariah
                     || (role.IsTNA() && !Options.TransformedNeutralApocalypseCanBeGuessed.GetBool())) continue;
 
                 if (role is CustomRoles.NiceMini && Mini.Age < 18) continue;
@@ -1110,7 +1135,7 @@ public static class GuessManager
             return;
         }
 
-        PlayerControl.LocalPlayer.RPCPlayCustomSound("Gunload");
+        CustomSoundsManager.Play("Gunload");
 
     }
 
@@ -1128,21 +1153,19 @@ public static class GuessManager
     }
 
     // Modded non-host client guess role/add-on
-    private static void SendRPC(int playerId, CustomRoles role)
+    private static void SendRPC(byte playerId, CustomRoles role)
     {
-        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (int)CustomRPC.Guess, SendOption.Reliable, -1);
-        writer.Write(playerId);
-        writer.Write((int)role);
-        AmongUsClient.Instance.FinishRpcImmediately(writer);
+        var msg = new RpcGuess(PlayerControl.LocalPlayer.NetId, playerId, role);
+        RpcUtils.LateBroadcastReliableMessage(msg);
     }
     public static void ReceiveRPC(MessageReader reader, PlayerControl pc)
     {
         Logger.Msg($"{pc}", "PlayerControl pc");
 
-        int PlayerId = reader.ReadInt32();
+        byte PlayerId = reader.ReadByte();
         Logger.Msg($"{PlayerId}", "Player Id");
 
-        CustomRoles role = (CustomRoles)reader.ReadInt32();
+        CustomRoles role = (CustomRoles)reader.ReadPackedInt32();
         Logger.Msg($"{role}", "Role Int32");
         Logger.Msg($"{GetString(role.ToString())}", "Role String");
 

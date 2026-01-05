@@ -1,8 +1,11 @@
 using AmongUs.GameOptions;
+using AmongUs.InnerNet.GameDataMessages;
 using Hazel;
 using Il2CppInterop.Runtime.InteropTypes.Arrays;
+using TOHE.Modules.Rpc;
 using TOHE.Roles.AddOns.Crewmate;
 using TOHE.Roles.AddOns.Impostor;
+using TOHE.Roles.Impostor;
 using TOHE.Roles.Neutral;
 
 namespace TOHE;
@@ -115,6 +118,7 @@ class RpcSetTasksPatch
      */
 
     public static List<byte> decidedCommonTasks = [];
+    public static List<byte> decidedMedBayPlayer = [];
     public static bool Prefix(NetworkedPlayerInfo __instance)
     {
         if (!AmongUsClient.Instance.AmHost) return false;
@@ -157,6 +161,13 @@ class RpcSetTasksPatch
             NumShortTasks = Madmate.MadSnitchTasks.GetInt();
         }
 
+        if (Options.CurrentGameMode is CustomGameMode.SpeedRun)
+        {
+            hasCommonTasks = SpeedRun.SpeedRun_NumCommonTasks.GetBool();
+            NumLongTasks = SpeedRun.SpeedRun_NumLongTasks.GetInt();
+            NumShortTasks = SpeedRun.SpeedRun_NumShortTasks.GetInt();
+        }
+
         // GM - no have tasks, Lazy Gay and Lazy have 1 task, FFA all are killers so need to assign any tasks
         if (pc.Is(CustomRoles.GM) || pc.Is(CustomRoles.LazyGuy) || pc.Is(CustomRoles.Lazy) || Options.CurrentGameMode == CustomGameMode.FFA)
         {
@@ -177,6 +188,18 @@ class RpcSetTasksPatch
             var taskState = pc.GetPlayerTaskState();
             taskState.AllTasksCount = NumShortTasks + NumLongTasks;
             hasCommonTasks = false;
+        }
+
+        if (pc.Is(CustomRoles.Crewpostor))
+        {
+            // when Crewpostor has Last Impostor,their kills wont be limited
+            // and they will only need 1 task for each kill
+            // so let the total number of alive players decide how many tasks Crewpostor will get
+            int CPTaskNum = LastImpostor.currentId == pc.PlayerId ? Main.AllAlivePlayerControls.Length : Crewpostor.KillAfterTask.GetInt() * Crewpostor.KillsPerRound.GetInt();
+
+            hasCommonTasks = false;
+            NumLongTasks = 0;
+            NumShortTasks = CPTaskNum;
         }
 
         // Above is override task num
@@ -203,6 +226,12 @@ class RpcSetTasksPatch
         List<TaskTypes> usedTaskTypes = [];
 
         int defaultcommoncount = Main.RealOptionsData.GetInt(Int32OptionNames.NumCommonTasks);
+
+        if (Options.CurrentGameMode is CustomGameMode.SpeedRun)
+        {
+            defaultcommoncount = SpeedRun.SpeedRun_NumCommonTasks.GetInt();
+        }
+
         int commonTasksNum = System.Math.Min(commonTasks.Count, defaultcommoncount);
 
         // Setting task num to 0 will make role description disappear from task panel for vanilla players and mod crews
@@ -323,9 +352,7 @@ class RpcSetTasksPatch
             __instance.SetTasks((Il2CppStructArray<byte>)TasksList.ToArray());
         }
 
-        MessageWriter messageWriter = AmongUsClient.Instance.StartRpc(__instance.NetId, (byte)RpcCalls.SetTasks, SendOption.Reliable);
-        messageWriter.WriteBytesAndSize((Il2CppStructArray<byte>)TasksList.ToArray());
-        messageWriter.EndMessage();
+        RpcUtils.LateBroadcastReliableMessage(new RpcSetTasksMessage(__instance.NetId, (Il2CppStructArray<byte>)TasksList.ToArray()));
         return false;
     }
 }

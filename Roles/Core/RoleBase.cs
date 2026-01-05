@@ -1,6 +1,6 @@
 using AmongUs.GameOptions;
 using Hazel;
-using InnerNet;
+using System.Text;
 using TOHE.Roles.Core;
 using UnityEngine;
 
@@ -15,7 +15,6 @@ public abstract class RoleBase
     public List<byte> _playerIdList => Main.PlayerStates.Values.Where(x => x.MainRole == _state.MainRole).Select(x => x.PlayerId).Cast<byte>().ToList();
 #pragma warning restore IDE1006
 
-    public float AbilityLimit { get; set; } = -100;
     public virtual bool IsEnable { get; set; } = false;
     public bool HasVoted = false;
     public virtual bool IsExperimental => false;
@@ -31,6 +30,12 @@ public abstract class RoleBase
     public void OnAdd(byte playerid) // The player with the class executes this
     {
         _state = Main.PlayerStates.GetValueOrDefault(playerid);
+
+        if (_state == null)
+        {
+            Logger.Warn($"Player state {playerid} is null", "RoleBase.OnAdd");
+        }
+
         try
         {
             CustomRoleManager.RoleClass.FirstOrDefault(r => r.Key == _state.MainRole).Value.IsEnable = true;
@@ -153,7 +158,7 @@ public abstract class RoleBase
     /// <summary>
     /// Other Player complete a marked task
     /// </summary>
-    public virtual void OnOthersTaskComplete(PlayerControl pc, PlayerTask task)
+    public virtual void OnOthersTaskComplete(PlayerControl pc, PlayerTask task, bool playerIsOverridden, PlayerControl realPlayer)
     { }
     /// <summary>
     /// The Role's tasks are needed for a task win
@@ -257,8 +262,7 @@ public abstract class RoleBase
     /// <summary>
     /// Called after check Shapeshift
     /// </summary>
-    public virtual void OnShapeshift(PlayerControl shapeshifter, PlayerControl target, bool IsAnimate, bool shapeshifting)
-    { }
+    public virtual bool OnShapeshift(PlayerControl shapeshifter, PlayerControl target, bool IsAnimate, bool shapeshifting) => true;
 
 
     // NOTE: when using UnShapeshift button, it will not be possible to revert to normal state because of complications
@@ -431,7 +435,13 @@ public abstract class RoleBase
     public virtual string GetLowerText(PlayerControl seer, PlayerControl seen = null, bool isForMeeting = false, bool isForHud = false) => string.Empty;
     public virtual string GetSuffix(PlayerControl seer, PlayerControl seen, bool isForMeeting = false) => string.Empty;
     [Obfuscation(Exclude = true)]
-    public virtual string GetProgressText(byte playerId, bool comms) => string.Empty;
+    public virtual string GetProgressText(byte playerId, bool comms)
+    {
+        var sb = new StringBuilder();
+        sb.Append(Utils.GetTaskCount(playerId, comms));
+        sb.Append(Utils.GetAbilityUseLimitDisplay(playerId, sb.Length <= 0));
+        return sb.ToString();
+    }
 
     // IMPORTANT note about otherIcons: 
     // These are only called once in the method, so object attributes are banned (as 99.99% of roles only want the method to run once)
@@ -445,22 +455,9 @@ public abstract class RoleBase
     public virtual string PlayerKnowTargetColor(PlayerControl seer, PlayerControl target) => string.Empty;
     public virtual bool OthersKnowTargetRoleColor(PlayerControl seer, PlayerControl target) => false;
 
-    public void OnReceiveRPC(MessageReader reader)
-    {
-        float Limit = reader.ReadSingle();
-        AbilityLimit = Limit;
-    }
-    public void SendSkillRPC()
-    {
-        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, SendOption.Reliable, -1);
-        writer.WriteNetObject(_Player);
-        writer.Write(AbilityLimit);
-        AmongUsClient.Instance.FinishRpcImmediately(writer);
-    }
+
     public virtual void ReceiveRPC(MessageReader reader, PlayerControl pc)
-    {
-        OnReceiveRPC(reader); // Default implementation
-    }
+    { }
 
     [Obfuscation(Exclude = true)]
     public enum GeneralOption
@@ -514,5 +511,7 @@ public abstract class RoleBase
         TrackerBase_TrackingCooldown,
         TrackerBase_TrackingDuration,
         TrackerBase_TrackingDelay,
+        DetectiveBase_DetectiveSuspectLimit,
+        ViperBase_ViperDissolveTime
     }
 }

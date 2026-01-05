@@ -1,12 +1,11 @@
 using AmongUs.GameOptions;
 using Hazel;
-using InnerNet;
 using System.Text;
+using TOHE.Modules.Rpc;
 using TOHE.Roles.Core;
 using static TOHE.Options;
 using static TOHE.Translator;
 using static TOHE.Utils;
-using static UnityEngine.GraphicsBuffer;
 
 namespace TOHE.Roles.Neutral;
 
@@ -24,7 +23,10 @@ internal class Baker : RoleBase
     private static OptionItem BreadNeededToTransform;
     public static OptionItem FamineStarveCooldown;
     private static OptionItem BTOS2Baker;
+    private static OptionItem ApocCanSeeReveals;
+    private static OptionItem RevealsPersist;
     private static OptionItem TransformNoMoreBread;
+    private static OptionItem RegenBread;
     public static OptionItem CanVent;
     private static byte BreadID = 0;
 
@@ -44,8 +46,11 @@ internal class Baker : RoleBase
         FamineStarveCooldown = FloatOptionItem.Create(Id + 11, "FamineStarveCooldown", new(0f, 180f, 2.5f), 30f, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Baker])
                 .SetValueFormat(OptionFormat.Seconds);
         BTOS2Baker = BooleanOptionItem.Create(Id + 12, "BakerBreadGivesEffects", true, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Baker]);
+        ApocCanSeeReveals = BooleanOptionItem.Create(Id + 16, "BakerApocCanSeeReveals", true, TabGroup.NeutralRoles, false).SetParent(BTOS2Baker);
+        RevealsPersist = BooleanOptionItem.Create(Id + 17, "BakerRevealsPersist", true, TabGroup.NeutralRoles, false).SetParent(ApocCanSeeReveals);
         TransformNoMoreBread = BooleanOptionItem.Create(Id + 13, "BakerTransformNoMoreBread", true, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Baker]);
         CanVent = BooleanOptionItem.Create(Id + 14, "BakerCanVent", true, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Baker]);
+        RegenBread = BooleanOptionItem.Create(Id + 15, "BakerRegenBread", true, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Baker]);
     }
     public override void Init()
     {
@@ -74,6 +79,7 @@ internal class Baker : RoleBase
     private static (int, int) BreadedPlayerCount(byte playerId)
     {
         int breaded = 0, all = BreadNeededToTransform.GetInt();
+        if (all == 0 || Main.AllAlivePlayerControls.Length == 0) return (-1, 100);
         foreach (var pc in Main.AllAlivePlayerControls)
         {
             if (pc.PlayerId == playerId) continue;
@@ -87,12 +93,11 @@ internal class Baker : RoleBase
     private static void SendRPC(byte typeId, PlayerControl player, PlayerControl target)
     {
         if (!player.IsNonHostModdedClient()) return;
-        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, SendOption.Reliable);
-        writer.WriteNetObject(player);
+        var writer = MessageWriter.Get(SendOption.Reliable);
         writer.Write(typeId);
         writer.Write(player.PlayerId);
         writer.Write(target.PlayerId);
-        AmongUsClient.Instance.FinishRpcImmediately(writer);
+        RpcUtils.LateBroadcastReliableMessage(new RpcSyncRoleSkill(PlayerControl.LocalPlayer.NetId, player.NetId, writer));
     }
     public override void ReceiveRPC(MessageReader reader, PlayerControl NaN)
     {
@@ -126,6 +131,18 @@ internal class Baker : RoleBase
             return targets.Contains(target.PlayerId);
         }
         return false;
+    }
+    public static bool ApocKnowRoleTarget(PlayerControl apoc, PlayerControl target)
+    {
+        if (apoc == null || !apoc.IsNeutralApocalypse()) return false;
+        if (!ApocCanSeeReveals.GetBool()) return false;
+        bool result = false;
+        foreach (var baker in RevealList.Keys)
+        {
+            if (RevealList[baker].Contains(target.PlayerId)) result = true;
+            if (!baker.GetPlayer().IsAlive() && !RevealsPersist.GetBool()) result = false;
+        }
+        return result;
     }
     public override string GetMark(PlayerControl seer, PlayerControl seen = null, bool isForMeeting = false)
     {
@@ -174,11 +191,18 @@ internal class Baker : RoleBase
     }
     private void OnPlayerDead(PlayerControl killer, PlayerControl deadPlayer, bool inMeeting)
     {
-        foreach (var playerId in BreadList.Keys.ToArray())
+        foreach (var playerId in BreadList.Keys.ToList())
         {
-            if (deadPlayer.PlayerId == playerId)
+            var baker = GetPlayerById(playerId);
+            if (HasBread(playerId, deadPlayer.PlayerId))
             {
-                BreadList[playerId].Remove(playerId);
+                BreadList[playerId].Remove(deadPlayer.PlayerId);
+                Logger.Info($"{deadPlayer.GetNameWithRole()} died, remove them from BreadList", "Baker");
+                if (RegenBread.GetBool())
+                {
+                    CanUseAbility = true;
+                    baker.Notify(string.Format(GetString("BakerBreadDied"), deadPlayer.GetRealName()));
+                }
             }
         }
     }
@@ -315,6 +339,8 @@ internal class Baker : RoleBase
 
         if (AllHasBread(player) || (TransformNoMoreBread.GetBool() && BreadedPlayerCount(player.PlayerId).Item1 >= Main.AllAlivePlayerControls.Where(x => !x.IsNeutralApocalypse() && !Main.PlayerStates[x.PlayerId].IsNecromancer).Count()))
         {
+            var bread = BreadedPlayerCount(player.PlayerId);
+            Logger.Info($"{player.GetRealName()} transformed to Famine with {bread.Item1}/{bread.Item2} bread", "Baker");
             player.RpcChangeRoleBasis(CustomRoles.Famine);
             player.RpcSetCustomRole(CustomRoles.Famine);
             player.GetRoleClass()?.OnAdd(_Player.PlayerId);
@@ -354,11 +380,10 @@ internal class Famine : RoleBase
 
     private static void SendRPC(PlayerControl player, PlayerControl target)
     {
-        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, SendOption.Reliable);
-        writer.WriteNetObject(player);
+        var writer = MessageWriter.Get(SendOption.Reliable);
         writer.Write(player.PlayerId);
         writer.Write(target.PlayerId);
-        AmongUsClient.Instance.FinishRpcImmediately(writer);
+        RpcUtils.LateBroadcastReliableMessage(new RpcSyncRoleSkill(PlayerControl.LocalPlayer.NetId, player.NetId, writer));
     }
     public override void ReceiveRPC(MessageReader reader, PlayerControl NaN)
     {
@@ -434,7 +459,7 @@ internal class Famine : RoleBase
             }
             else
             {
-                Main.AfterMeetingDeathPlayers.Remove(pc.PlayerId);
+                if (pc.GetDeathReason() is not PlayerState.DeathReason.Suicide) Main.AfterMeetingDeathPlayers.Remove(pc.PlayerId);
             }
         }
         CheckForEndVotingPatch.TryAddAfterMeetingDeathPlayers(PlayerState.DeathReason.Starved, [.. deathList]);

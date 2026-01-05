@@ -9,7 +9,7 @@ public static class GhostRoleAssign
     private static readonly Dictionary<CustomRoles, int> getCount = [];
 
     private static IRandom Rnd => IRandom.Instance;
-    private static bool GetChance(this CustomRoles role) => role.GetMode() == 100 || Rnd.Next(1, 100) <= role.GetMode();
+    private static bool GetChance(this CustomRoles role) => role.GetMode() == 100 || Rnd.Next(100) < role.GetMode();
     private static int ImpCount = 0;
     private static int CrewCount = 0;
 
@@ -20,7 +20,7 @@ public static class GhostRoleAssign
     public static void GhostAssignPatch(PlayerControl player)
     {
         if (GameStates.IsHideNSeek
-            || Options.CurrentGameMode == CustomGameMode.FFA
+            || Options.CurrentGameMode != CustomGameMode.Standard
             || player == null
             || player.Data == null
             || player.Data.Disconnected

@@ -1,7 +1,8 @@
 using AmongUs.GameOptions;
 using Hazel;
-using InnerNet;
+using TOHE.Modules.Rpc;
 using TOHE.Roles.Core;
+using TOHE.Roles.Neutral;
 
 namespace TOHE.Roles.Crewmate;
 
@@ -62,11 +63,10 @@ internal class Altruist : RoleBase
 
     public void SendRPC()
     {
-        var writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, SendOption.Reliable, -1);
-        writer.WriteNetObject(_Player);
+        var writer = MessageWriter.Get(SendOption.Reliable);
         writer.Write(IsRevivingMode);
         writer.Write(RevivedPlayerId);
-        AmongUsClient.Instance.FinishRpcImmediately(writer);
+        RpcUtils.LateBroadcastReliableMessage(new RpcSyncRoleSkill(PlayerControl.LocalPlayer.NetId, _Player.NetId, writer));
     }
 
     public override void ReceiveRPC(MessageReader reader, PlayerControl pc)
@@ -96,13 +96,13 @@ internal class Altruist : RoleBase
             RevivedPlayerId = deadPlayerId;
             //AllRevivedPlayerId.Add(deadPlayerId);
 
-            deadPlayer.RpcTeleport(deadBodyObject.transform.position);
-            deadPlayer.RpcRevive();
-
             _Player.SetDeathReason(PlayerState.DeathReason.Sacrificed);
             _Player.Data.IsDead = true;
             _Player.RpcExileV2();
             Main.PlayerStates[_Player.PlayerId].SetDead();
+
+            deadPlayer.RpcTeleport(deadBodyObject.transform.position);
+            deadPlayer.RpcRevive();
 
             if (ImpostorsCanGetsAlert.GetBool() || NeutralKillersCanGetsAlert.GetBool())
             {
@@ -142,6 +142,17 @@ internal class Altruist : RoleBase
                     }
                     if (getArrow)
                         TargetArrow.Add(pc.PlayerId, deadPlayerId);
+                }
+            }
+            if (Inquisitor.GetInquisitorsIfHeretic(deadPlayer, out HashSet<byte> inquisitors))
+            {
+                foreach (var inquisitor in inquisitors)
+                {
+                    PlayerControl pc = inquisitor.GetPlayer();
+                    Inquisitor.HereticRevived(pc);
+                    pc.KillFlash(playKillSound: false);
+                    pc.Notify(Translator.GetString("Altruist_DeadPlayerHasBeenRevived"));
+                    TargetArrow.Add(pc.PlayerId, deadPlayerId);
                 }
             }
             SendRPC();

@@ -1,4 +1,3 @@
-using System;
 using System.Text;
 using TMPro;
 using TOHE.Roles.AddOns.Common;
@@ -22,7 +21,6 @@ class HudManagerUpdatePatch
 {
     public static bool ShowDebugText = false;
     public static int LastCallNotifyRolesPerSecond = 0;
-    public static int NowCallNotifyRolesCount = 0;
     public static int LastSetNameDesyncCount = 0;
     public static int LastFPS = 0;
     public static int NowFrameCount = 0;
@@ -212,7 +210,7 @@ class SetVentOutlinePatch
     }
 }
 [HarmonyPatch(typeof(HudManager), nameof(HudManager.SetHudActive))]
-[HarmonyPatch(new Type[] { typeof(PlayerControl), typeof(RoleBehaviour), typeof(bool) })]
+[HarmonyPatch([typeof(PlayerControl), typeof(RoleBehaviour), typeof(bool)])]
 class SetHudActivePatch
 {
     public static bool IsActive = false;
@@ -228,7 +226,7 @@ class SetHudActivePatch
         if (GameStates.IsLobby || !isActive) return;
         if (player == null) return;
 
-        if (player.Is(CustomRoles.Oblivious) || player.Is(CustomRoles.KillingMachine))
+        if (player.Is(CustomRoles.Oblivious) || player.Is(CustomRoles.KillingMachine) || Options.CurrentGameMode != CustomGameMode.Standard)
             __instance.ReportButton.ToggleVisible(false);
 
         if (player.Is(CustomRoles.Mare) && !Utils.IsActive(SystemTypes.Electrical))
@@ -249,7 +247,8 @@ class VentButtonDoClickPatch
 
         var pc = PlayerControl.LocalPlayer;
         {
-            if (!pc.Is(CustomRoles.Swooper) || !pc.Is(CustomRoles.Wraith) || !pc.Is(CustomRoles.Chameleon) || pc.inVent || __instance.currentTarget == null || !pc.CanMove || !__instance.isActiveAndEnabled) return true;
+            if (pc.inVent || __instance.currentTarget == null || !pc.CanMove || !__instance.isActiveAndEnabled) return true;
+            if (!pc.Is(CustomRoles.Swooper) && !pc.Is(CustomRoles.Wraith) && !pc.Is(CustomRoles.Chameleon)) return true;
             pc?.MyPhysics?.RpcEnterVent(__instance.currentTarget.Id);
             return false;
         }
@@ -297,7 +296,7 @@ class TaskPanelBehaviourPatch
         // Display Description
         if (!player.GetCustomRole().IsVanilla())
         {
-            var RoleWithInfo = $"{player.GetDisplayRoleAndSubName(player, false)}:\r\n";
+            var RoleWithInfo = $"{player.GetDisplayRoleAndSubName(player, false, false)}:\r\n";
             RoleWithInfo += player.GetRoleInfo();
 
             var AllText = Utils.ColorString(player.GetRoleColor(), RoleWithInfo);
@@ -350,6 +349,27 @@ class TaskPanelBehaviourPatch
                     foreach (var id in list2.Where(x => SummaryText2.ContainsKey(x.Item2))) AllText += "\r\n" + SummaryText2[id.Item2];
 
                     AllText = $"<size=70%>{AllText}</size>";
+
+                    break;
+                case CustomGameMode.SpeedRun:
+                    var lines2 = taskText.Split("\r\n</color>\n")[0].Split("\r\n\n")[0].Split("\r\n");
+                    StringBuilder sb2 = new();
+                    foreach (var eachLine in lines2)
+                    {
+                        var line = eachLine.Trim();
+                        if ((line.StartsWith("<color=#FF1919FF>") || line.StartsWith("<color=#FF0000FF>")) && sb2.Length < 1 && !line.Contains('(')) continue;
+                        sb2.Append(line + "\r\n");
+                    }
+
+                    if (sb2.Length > 1)
+                    {
+                        var text = sb2.ToString().TrimEnd('\n').TrimEnd('\r');
+                        if (!Utils.HasTasks(player.Data, false) && sb2.ToString().Count(s => (s == '\n')) >= 1)
+                            text = $"{Utils.ColorString(Utils.GetRoleColor(player.GetCustomRole()).ShadeColor(0.2f), GetString("FakeTask"))}\r\n{text}";
+                        AllText += $"\r\n\r\n<size=85%>{text}</size>";
+                    }
+
+                    AllText += $"\r\n\r\n<size=80%>{SpeedRun.GetGameState()}</size>";
 
                     break;
             }

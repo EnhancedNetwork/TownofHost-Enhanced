@@ -2,6 +2,7 @@ using AmongUs.GameOptions;
 using Hazel;
 using System.Text;
 using TOHE.Modules;
+using TOHE.Modules.Rpc;
 using TOHE.Roles.Double;
 using UnityEngine;
 using static TOHE.Options;
@@ -46,10 +47,10 @@ internal class Ninja : RoleBase
 
     private static void SendRPC(byte playerId)
     {
-        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SetMarkedPlayer, SendOption.Reliable, -1);
-        writer.Write(playerId);
-        writer.Write(MarkedPlayer.ContainsKey(playerId) ? MarkedPlayer[playerId] : byte.MaxValue);
-        AmongUsClient.Instance.FinishRpcImmediately(writer);
+        var targetId = MarkedPlayer.ContainsKey(playerId) ? MarkedPlayer[playerId] : byte.MaxValue;
+        var msg = new RpcSetMarkedPlayer(PlayerControl.LocalPlayer.NetId, playerId, targetId);
+        RpcUtils.LateBroadcastReliableMessage(msg);
+
     }
     public static void ReceiveRPC(MessageReader reader)
     {
@@ -162,7 +163,7 @@ internal class Ninja : RoleBase
             hud.KillButton.OverrideText(GetString("KillButtonText"));
 
         if (MarkedPlayer.ContainsKey(playerid) && !Shapeshifting(playerid))
-            hud.AbilityButton.OverrideText(GetString("NinjaShapeshiftText"));
+            hud.AbilityButton.OverrideText(GetString("KillButtonText"));
     }
 
     public override Sprite GetKillButtonSprite(PlayerControl player, bool shapeshifting) => !shapeshifting ? CustomButton.Get("Mark") : null;

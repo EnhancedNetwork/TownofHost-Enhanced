@@ -1,9 +1,9 @@
-using Hazel;
 using System;
 using System.Text;
 using TMPro;
 using TOHE.Modules;
 using TOHE.Modules.ChatManager;
+using TOHE.Modules.Rpc;
 using TOHE.Roles.Core;
 using TOHE.Roles.Core.AssignManager;
 using TOHE.Roles.Crewmate;
@@ -42,18 +42,13 @@ class EndGamePatch
 
                         Main.PlayerStates[pvc].MainRole = prevrole;
 
-
-                        // PlayerControl is already destoryed here. bruh wtf
-                        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncPlayerSetting, SendOption.Reliable, -1);
-                        writer.Write(pvc);
-                        writer.WritePacked((int)prevrole);
-                        AmongUsClient.Instance.FinishRpcImmediately(writer);
+                        var message = new RpcSyncPlayerSetting(PlayerControl.LocalPlayer.NetId, pvc, prevrole);
+                        RpcUtils.LateBroadcastReliableMessage(message);
                     }
 
                     if (GhostRoleAssign.GhostGetPreviousRole.Any()) Logger.Info(string.Join(", ", GhostRoleAssign.GhostGetPreviousRole.Select(x => $"{Utils.GetPlayerInfoById(x.Key).PlayerName}/{x.Value}")), "OutroPatch.GhostGetPreviousRole");
                 }
             }
-
         }
         catch (Exception e)
         {
@@ -90,9 +85,9 @@ class EndGamePatch
                 if (date == DateTime.MinValue) continue;
                 var killerId = kvp.Value.GetRealKiller();
                 var targetId = kvp.Key;
-                sb.Append($"\n{date:T} {Main.AllPlayerNames[targetId]}({(Options.CurrentGameMode == CustomGameMode.FFA ? string.Empty : Utils.GetDisplayRoleAndSubName(targetId, targetId, true))}{(Options.CurrentGameMode == CustomGameMode.FFA ? string.Empty : Utils.GetSubRolesText(targetId, summary: true))}) [{Utils.GetVitalText(kvp.Key)}]");
+                sb.Append($"\n{date:T} {Main.AllPlayerNames[targetId]}({(Options.CurrentGameMode == CustomGameMode.FFA ? string.Empty : Utils.GetDisplayRoleAndSubName(targetId, targetId, false, true))}{(Options.CurrentGameMode == CustomGameMode.FFA ? string.Empty : Utils.GetSubRolesText(targetId, summary: true))}) [{Utils.GetVitalText(kvp.Key)}]");
                 if (killerId != byte.MaxValue && killerId != targetId)
-                    sb.Append($"\n\t⇐ {Main.AllPlayerNames[killerId]}({(Options.CurrentGameMode == CustomGameMode.FFA ? string.Empty : Utils.GetDisplayRoleAndSubName(killerId, killerId, true))}{(Options.CurrentGameMode == CustomGameMode.FFA ? string.Empty : Utils.GetSubRolesText(killerId, summary: true))})");
+                    sb.Append($"\n\t⇐ {Main.AllPlayerNames[killerId]}({(Options.CurrentGameMode == CustomGameMode.FFA ? string.Empty : Utils.GetDisplayRoleAndSubName(killerId, killerId, false, true))}{(Options.CurrentGameMode == CustomGameMode.FFA ? string.Empty : Utils.GetSubRolesText(killerId, summary: true))})");
             }
         else
         {
@@ -104,9 +99,9 @@ class EndGamePatch
                 var killerId = kvp.Value.GetRealKiller();
                 var targetId = kvp.Key;
 
-                sb.Append($"\n<line-height=85%><size=85%><voffset=-1em><color=#9c9c9c>{date:T}</color> {Main.AllPlayerNames[targetId]}({(Options.CurrentGameMode == CustomGameMode.FFA ? string.Empty : Utils.GetDisplayRoleAndSubName(targetId, targetId, true))}{(Options.CurrentGameMode == CustomGameMode.FFA ? string.Empty : Utils.GetSubRolesText(targetId, summary: true))}) 『{Utils.GetVitalText(kvp.Key, true)}』</voffset></size></line-height>");
+                sb.Append($"\n<line-height=85%><size=85%><voffset=-1em><color=#9c9c9c>{date:T}</color> {Main.AllPlayerNames[targetId]}({(Options.CurrentGameMode == CustomGameMode.FFA ? string.Empty : Utils.GetDisplayRoleAndSubName(targetId, targetId, false, true))}{(Options.CurrentGameMode == CustomGameMode.FFA ? string.Empty : Utils.GetSubRolesText(targetId, summary: true))}) 『{Utils.GetVitalText(kvp.Key, true)}』</voffset></size></line-height>");
                 if (killerId != byte.MaxValue && killerId != targetId)
-                    sb.Append($"<br>\t⇐ {Main.AllPlayerNames[killerId]}({(Options.CurrentGameMode == CustomGameMode.FFA ? string.Empty : Utils.GetDisplayRoleAndSubName(killerId, killerId, true))}{(Options.CurrentGameMode == CustomGameMode.FFA ? string.Empty : Utils.GetSubRolesText(killerId, summary: true))})");
+                    sb.Append($"<br>\t⇐ {Main.AllPlayerNames[killerId]}({(Options.CurrentGameMode == CustomGameMode.FFA ? string.Empty : Utils.GetDisplayRoleAndSubName(killerId, killerId, false, true))}{(Options.CurrentGameMode == CustomGameMode.FFA ? string.Empty : Utils.GetSubRolesText(killerId, summary: true))})");
             }
 
         }
@@ -118,10 +113,12 @@ class EndGamePatch
         {
             if (Options.CurrentGameMode != CustomGameMode.Standard) break;
             if (kvp.Value.MainRoleLogs.Where(x => !x.Item2.IsVanilla()).ToList().Count <= 1) continue;
-            sb2.Append($"\n[{kvp.Key}] {Main.AllPlayerNames[kvp.Key]} {Utils.GetDisplayRoleAndSubName(kvp.Key, kvp.Key)}");
+            sb2.Append($"\n[{kvp.Key}] {Main.AllPlayerNames[kvp.Key]} {Utils.GetDisplayRoleAndSubName(kvp.Key, kvp.Key, false, false)}");
+            CustomRoles prevRole = CustomRoles.NotAssigned;
             foreach (var item in kvp.Value.MainRoleLogs.OrderBy(x => x.Item1.Ticks))
             {
-                if (item.Item2.IsVanilla()) continue;
+                if (item.Item2.IsVanilla() || item.Item2 == prevRole) continue;
+                prevRole = item.Item2;
                 item.Item2.GetActualRoleName(out var rolename);
                 sb2.Append($"\n => {Utils.ColorString(Utils.GetRoleColor(item.Item2), rolename)} [{item.Item1:T}]");
             }
@@ -130,7 +127,8 @@ class EndGamePatch
         if (!MainRoleLog.Contains('\n')) MainRoleLog = "";
 
         if (GameStates.IsNormalGame)
-            Main.NormalOptions.KillCooldown = Options.DefaultKillCooldown;
+            if (Options.DefaultKillCooldown <= 150f)
+                Main.NormalOptions.KillCooldown = Options.DefaultKillCooldown;
 
         //winnerListÒâ¬Òé╗ÒââÒâê
         EndGameResult.CachedWinners = new Il2CppSystem.Collections.Generic.List<CachedPlayerData>();
@@ -208,13 +206,24 @@ class SetEverythingUpPatch
         string AdditionalWinnerText = "";
         string CustomWinnerColor = Utils.GetRoleColorCode(CustomRoles.Crewmate);
 
-        if (Options.CurrentGameMode == CustomGameMode.FFA)
+        switch (Options.CurrentGameMode)
         {
-            var winnerId = CustomWinnerHolder.WinnerIds.FirstOrDefault();
-            __instance.BackgroundBar.material.color = new Color32(0, 255, 255, 255);
-            WinnerText.text = Main.AllPlayerNames[winnerId] + " wins!";
-            WinnerText.color = Main.PlayerColors[winnerId];
-            goto EndOfText;
+            case CustomGameMode.FFA:
+                {
+                    var winnerId = CustomWinnerHolder.WinnerIds.FirstOrDefault();
+                    __instance.BackgroundBar.material.color = new Color32(0, 255, 255, 255);
+                    WinnerText.text = Main.AllPlayerNames[winnerId] + " Wins!";
+                    WinnerText.color = Main.PlayerColors[winnerId];
+                    goto EndOfText;
+                }
+            case CustomGameMode.SpeedRun:
+                {
+                    var winnerId = CustomWinnerHolder.WinnerIds.FirstOrDefault();
+                    __instance.BackgroundBar.material.color = new Color32(255, 251, 0, 255);
+                    WinnerText.text = Main.AllPlayerNames[winnerId] + " Wins!";
+                    WinnerText.color = Main.PlayerColors[winnerId];
+                    goto EndOfText;
+                }
         }
 
         var winnerRole = (CustomRoles)CustomWinnerHolder.WinnerTeam;
@@ -229,7 +238,7 @@ class SetEverythingUpPatch
                 __instance.BackgroundBar.material.color = Utils.GetRoleColor(winnerRole);
             }
         }
-        if (AmongUsClient.Instance.AmHost && Main.PlayerStates[PlayerControl.LocalPlayer.PlayerId].MainRole == CustomRoles.GM)
+        if (Main.PlayerStates[PlayerControl.LocalPlayer.PlayerId].MainRole == CustomRoles.GM)
         {
             __instance.WinText.text = GetString("GameOver");
             __instance.WinText.color = Utils.GetRoleColor(CustomRoles.GM);
@@ -355,6 +364,12 @@ class SetEverythingUpPatch
                     listFFA.Sort();
                     foreach (var id in listFFA.Where(x => EndGamePatch.SummaryText.ContainsKey(x.Item2)))
                         sb.Append($"\n  ").Append(EndGamePatch.SummaryText[id.Item2]);
+                    break;
+                }
+            case CustomGameMode.SpeedRun:
+                {
+                    sb.Clear();
+                    sb.Append(SpeedRun.GetGameState(forGameEnd: true));
                     break;
                 }
             default: // Normal game

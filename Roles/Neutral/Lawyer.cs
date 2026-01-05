@@ -1,6 +1,7 @@
 using AmongUs.GameOptions;
 using Hazel;
-using InnerNet;
+using TOHE.Modules.Rpc;
+using TOHE.Roles.AddOns.Common;
 using TOHE.Roles.Core;
 using static TOHE.Options;
 using static TOHE.Translator;
@@ -33,26 +34,7 @@ internal class Lawyer : RoleBase
     public static HashSet<byte> TargetList = [];
     private byte TargetId;
 
-    [Obfuscation(Exclude = true)]
-    private enum ChangeRolesSelectList
-    {
-        Role_Crewmate,
-        Role_Amnesiac,
-        Role_Jester,
-        Role_Opportunist,
-        Role_Celebrity,
-        Role_Bodyguard,
-        Role_Dictator,
-        Role_Mayor,
-        Role_Doctor,
-        Role_Maverick,
-        Role_Follower,
-        Role_Tracker,
-        Role_Mechanic,
-        Role_Refugee,
-        Role_Sheriff,
-        Role_Medic
-    }
+    public static readonly List<string> ChangeRoles = new List<string>();
     public static readonly CustomRoles[] CRoleChangeRoles =
     [
         CustomRoles.CrewmateTOHE,
@@ -76,17 +58,19 @@ internal class Lawyer : RoleBase
     public override void SetupCustomOption()
     {
         SetupSingleRoleOptions(Id, TabGroup.NeutralRoles, CustomRoles.Lawyer);
-        CanTargetImpostor = BooleanOptionItem.Create(Id + 10, "LawyerCanTargetImpostor", true, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Lawyer]);
-        CanTargetNeutralKiller = BooleanOptionItem.Create(Id + 11, "LawyerCanTargetNeutralKiller", false, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Lawyer]);
-        CanTargetNeutralApoc = BooleanOptionItem.Create(Id + 18, "LawyerCanTargetNeutralApocalypse", false, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Lawyer]);
-        CanTargetCoven = BooleanOptionItem.Create(Id + 19, "LawyerCanTargetCoven", false, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Lawyer]);
-        CanTargetCrewmate = BooleanOptionItem.Create(Id + 12, "LawyerCanTargetCrewmate", false, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Lawyer]);
+        CanTargetImpostor = BooleanOptionItem.Create(Id + 10, "CanTargetImpostor", true, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Lawyer]);
+        CanTargetNeutralKiller = BooleanOptionItem.Create(Id + 11, "CanTargetNeutralKiller", false, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Lawyer]);
+        CanTargetNeutralApoc = BooleanOptionItem.Create(Id + 18, "CanTargetNeutralApocalypse", false, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Lawyer]);
+        CanTargetCoven = BooleanOptionItem.Create(Id + 19, "CanTargetCoven", false, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Lawyer]);
+        CanTargetCrewmate = BooleanOptionItem.Create(Id + 12, "CanTargetCrewmate", false, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Lawyer]);
         CanTargetJester = BooleanOptionItem.Create(Id + 13, "LawyerCanTargetJester", false, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Lawyer]);
         KnowTargetRole = BooleanOptionItem.Create(Id + 14, "KnowTargetRole", false, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Lawyer]);
         TargetKnowsLawyer = BooleanOptionItem.Create(Id + 15, "TargetKnowsLawyer", false, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Lawyer]);
         HasImpostorVision = BooleanOptionItem.Create(Id + 20, GeneralOption.ImpostorVision, true, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Lawyer]);
+        ChangeRoles.Clear();
+        CRoleChangeRoles.ForEach(x => ChangeRoles.Add(x.ToColoredString()));
         ShouldChangeRoleAfterTargetDeath = BooleanOptionItem.Create(Id + 17, "LaywerShouldChangeRoleAfterTargetKilled", true, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Lawyer]);
-        ChangeRolesAfterTargetKilled = StringOptionItem.Create(Id + 16, "LawyerChangeRolesAfterTargetKilled", EnumHelper.GetAllNames<ChangeRolesSelectList>(), 1, TabGroup.NeutralRoles, false).SetParent(ShouldChangeRoleAfterTargetDeath);
+        ChangeRolesAfterTargetKilled = StringOptionItem.Create(Id + 16, "LawyerChangeRolesAfterTargetKilled", ChangeRoles.ToArray(), 1, TabGroup.NeutralRoles, false, useGetString: false).SetParent(ShouldChangeRoleAfterTargetDeath);
     }
     public override void Init()
     {
@@ -106,15 +90,15 @@ internal class Lawyer : RoleBase
             {
                 if (playerId == target.PlayerId) continue;
                 else if (TargetList.Contains(target.PlayerId)) continue;
-                else if (!CanTargetImpostor.GetBool() && target.Is(Custom_Team.Impostor)) continue;
+                else if (!CanTargetImpostor.GetBool() && target.Is(Custom_Team.Impostor) && !target.Is(CustomRoles.Narc)) continue;
                 else if (!CanTargetNeutralApoc.GetBool() && target.IsNeutralApocalypse()) continue;
                 else if (!CanTargetNeutralKiller.GetBool() && target.IsNeutralKiller()) continue;
                 else if (!CanTargetCoven.GetBool() && target.Is(Custom_Team.Coven)) continue;
-                else if (!CanTargetCrewmate.GetBool() && target.Is(Custom_Team.Crewmate)) continue;
+                else if (!CanTargetCrewmate.GetBool() && (target.Is(Custom_Team.Crewmate) || target.Is(CustomRoles.Narc))) continue;
                 else if (!CanTargetJester.GetBool() && target.Is(CustomRoles.Jester)) continue;
                 else if (target.Is(Custom_Team.Neutral) && !target.IsNeutralKiller() && !target.Is(CustomRoles.Jester) && !target.IsNeutralApocalypse()) continue;
                 if (target.GetCustomRole() is CustomRoles.GM or CustomRoles.SuperStar or CustomRoles.NiceMini or CustomRoles.EvilMini) continue;
-                if (lawyer.Is(CustomRoles.Lovers) && target.Is(CustomRoles.Lovers)) continue;
+                if (Lovers.AreLovers(lawyer, target)) continue;
 
                 targetList.Add(target);
             }
@@ -154,11 +138,10 @@ internal class Lawyer : RoleBase
     public override void ApplyGameOptions(IGameOptions opt, byte playerId) => opt.SetVision(HasImpostorVision.GetBool());
     private void SendRPC(bool SetTarget = false)
     {
-        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, SendOption.Reliable);
-        writer.WriteNetObject(_Player);
+        var writer = MessageWriter.Get(SendOption.Reliable);
         writer.Write(SetTarget);
         writer.Write(TargetId);
-        AmongUsClient.Instance.FinishRpcImmediately(writer);
+        RpcUtils.LateBroadcastReliableMessage(new RpcSyncRoleSkill(PlayerControl.LocalPlayer.NetId, _Player.NetId, writer));
     }
     public override void ReceiveRPC(MessageReader reader, PlayerControl NaN)
     {
@@ -176,7 +159,7 @@ internal class Lawyer : RoleBase
         }
     }
 
-    private bool IsTarget(byte playerId) => TargetId == playerId;
+    public bool IsTarget(byte playerId) => TargetId == playerId;
     public byte GetTargetId() => TargetId;
 
     public override bool HasTasks(NetworkedPlayerInfo player, CustomRoles role, bool ForRecompute)

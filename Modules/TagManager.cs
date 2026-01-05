@@ -6,7 +6,11 @@ namespace TOHE;
 
 public static class TagManager
 {
+#if ANDROID
+    private static readonly string TAGS_FILE_PATH = Path.Combine(UnityEngine.Application.persistentDataPath, "TOHE-DATA", "Tags");
+#else
     private static readonly string TAGS_FILE_PATH = "./TOHE-DATA/Tags";
+#endif
 
     public static void Init()
     {
@@ -17,13 +21,21 @@ public static class TagManager
     {
         try
         {
-            if (!Directory.Exists(@"TOHE-DATA/Tags")) Directory.CreateDirectory(@"TOHE-DATA/Tags");
+#if ANDROID
+            string dataDirectory = Path.Combine(UnityEngine.Application.persistentDataPath, "TOHE-DATA", "Tags");
+            string templateFilePath = Path.Combine(UnityEngine.Application.persistentDataPath, "TOHE-DATA", "Tags", "Tag_Template.txt");
+#else
+            string dataDirectory = @"TOHE-DATA/Tags";
+            string templateFilePath = @"./TOHE-DATA/Tags/Tag_Template.txt";
+#endif
+
+            if (!Directory.Exists(dataDirectory)) Directory.CreateDirectory(dataDirectory);
             var defaultTagMsg = GetResourcesTxt($"TOHE.Resources.Config.TagTemplate.txt");
-            if (!File.Exists(@"./TOHE-DATA/Tags/Tag_Template.txt")) // Default tag
+            if (!File.Exists(templateFilePath)) // Default tag
             {
-                using FileStream fs = File.Create(@"./TOHE-DATA/Tags/Tag_Template.txt");
+                using FileStream fs = File.Create(templateFilePath);
             }
-            File.WriteAllText(@"./TOHE-DATA/Tags/Tag_Template.txt", defaultTagMsg); // Overwriting default template
+            File.WriteAllText(templateFilePath, defaultTagMsg); // Overwriting default template
         }
         catch (Exception ex)
         {
@@ -111,6 +123,48 @@ public static class TagManager
             }
         }
         return temp;
+    }
+
+    public static string ReadColoredTag(string friendCode)
+    {
+        var tag = "";
+
+        string color = ReadTagColor(friendCode);
+        string tagName = ReadTagName(friendCode);
+
+        if (color.IsNullOrWhiteSpace() && !tagName.IsNullOrWhiteSpace()) return tagName;
+        if (tagName.IsNullOrWhiteSpace()) return "";
+
+        //static color
+        if (!Options.GradientTagsOpt.GetBool())
+        {
+            string startColorCode = "ffff00";
+            if (Utils.CheckColorHex(color)) startColorCode = color;
+            tag = $"<color=#{startColorCode}>{tagName}</color>";
+        }
+        // gradient color
+        else
+        {
+            string startColorCode = "ffff00";
+            string endColorCode = "ffff00";
+
+            if (color.Split(" ").Length == 2)
+            {
+                startColorCode = color.Split(" ")[0];
+                endColorCode = color.Split(" ")[1];
+            }
+            if (!Utils.CheckGradientCode(color))
+            {
+                startColorCode = "ffff00";
+                endColorCode = "ffff00";
+            }
+
+            if (startColorCode == endColorCode) tag = $"<color=#{startColorCode}>{tagName}</color>";
+
+            else tag = Utils.GradientColorText(startColorCode, endColorCode, tagName);
+        }
+
+        return tag;
     }
 
     public static int ReadPermission(string friendCode)

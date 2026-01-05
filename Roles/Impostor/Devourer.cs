@@ -1,5 +1,6 @@
 using AmongUs.GameOptions;
 using TOHE.Modules;
+using TOHE.Roles.Core;
 using static TOHE.Options;
 using static TOHE.Translator;
 
@@ -13,6 +14,7 @@ internal class Devourer : RoleBase
     //===========================SETUP================================\\
     public override CustomRoles Role => CustomRoles.Devourer;
     private const int Id = 5500;
+    public static bool HasEnabled => CustomRoleManager.HasEnabled(CustomRoles.Devourer);
     public override CustomRoles ThisRoleBase => CustomRoles.Shapeshifter;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.ImpostorHindering;
     //==================================================================\\
@@ -74,11 +76,12 @@ internal class Devourer : RoleBase
         DoEatSkin(shapeshifter, target);
         return false;
     }
-    public override void OnShapeshift(PlayerControl shapeshifter, PlayerControl target, bool IsAnimate, bool shapeshifting)
+    public override bool OnShapeshift(PlayerControl shapeshifter, PlayerControl target, bool IsAnimate, bool shapeshifting)
     {
-        if (!shapeshifting) return;
+        if (!shapeshifting) return false;
 
         DoEatSkin(shapeshifter, target);
+        return false;
     }
     private static void DoEatSkin(PlayerControl shapeshifter, PlayerControl target)
     {

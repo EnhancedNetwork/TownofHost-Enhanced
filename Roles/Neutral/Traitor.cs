@@ -31,7 +31,7 @@ internal class Traitor : RoleBase
         HasImpostorVision = BooleanOptionItem.Create(Id + 13, GeneralOption.ImpostorVision, true, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Traitor]);
         CanUsesSabotage = BooleanOptionItem.Create(Id + 15, GeneralOption.CanUseSabotage, true, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Traitor]);
         KnowMadmate = BooleanOptionItem.Create(Id + 16, "TraitorKnowMadmate", true, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Traitor]);
-        LegacyTraitor = BooleanOptionItem.Create(Id + 17, "LegacyTraitor", false, TabGroup.NeutralRoles, false)
+        LegacyTraitor = BooleanOptionItem.Create(Id + 17, "UseLegacyVersion", false, TabGroup.NeutralRoles, false)
                 .SetParent(CustomRoleSpawnChances[CustomRoles.Traitor]);
         TraitorShapeshiftCD = FloatOptionItem.Create(Id + 19, GeneralOption.ShapeshifterBase_ShapeshiftCooldown, new(1f, 180f, 1f), 15f, TabGroup.NeutralRoles, false)
                 .SetParent(LegacyTraitor)
@@ -60,6 +60,7 @@ internal class Traitor : RoleBase
     }
     public override string PlayerKnowTargetColor(PlayerControl seer, PlayerControl target)
     {
+        if (!seer.Is(CustomRoles.Traitor)) return string.Empty;
         if (Main.PlayerStates[seer.PlayerId].IsNecromancer || Main.PlayerStates[target.PlayerId].IsNecromancer) return string.Empty;
         if (target.Is(Custom_Team.Impostor))
         {
@@ -67,7 +68,7 @@ internal class Traitor : RoleBase
         }
         else if (target.Is(CustomRoles.Madmate) && KnowMadmate.GetBool())
         {
-            return "BB0F0F";
+            return Main.roleColors[CustomRoles.Madmate];
         }
 
         else return string.Empty;

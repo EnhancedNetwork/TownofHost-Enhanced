@@ -11,6 +11,7 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Text.Json;
 using TOHE.Modules;
+using TOHE.Modules.Rpc;
 using TOHE.Patches.Crowded;
 using TOHE.Roles.AddOns;
 using TOHE.Roles.Core;
@@ -25,8 +26,14 @@ namespace TOHE;
 
 [BepInPlugin(PluginGuid, "TOHE", PluginVersion)]
 [BepInIncompatibility("jp.ykundesu.supernewroles")]
+[BepInIncompatibility("com.ten.betteramongus")]
 [BepInIncompatibility("com.ten.thebetterroles")]
 [BepInIncompatibility("xyz.crowdedmods.crowdedmod")]
+[BepInIncompatibility("com.slushiegoose.townofus")]
+[BepInIncompatibility("com.gurge44.endlesshostroles")]
+[BepInIncompatibility("com.emptybottle.townofhost")]
+[BepInIncompatibility("me.eisbison.theotherroles")]
+[BepInIncompatibility("com.discussions.LotusContinued")]
 [BepInProcess("Among Us.exe")]
 public class Main : BasePlugin
 {
@@ -46,14 +53,17 @@ public class Main : BasePlugin
     public static ConfigEntry<string> DebugKeyInput { get; private set; }
 
     public const string PluginGuid = "com.0xdrmoe.townofhostenhanced";
-    public const string PluginVersion = "2025.0225.220.9999"; // YEAR.MMDD.VERSION.CANARYDEV
-    public const string PluginDisplayVersion = "2.2.0";
-    public const string SupportedVersionAU = "2024.10.29"; // Changed becasue Dark theme works at this version.
+    public const string PluginVersion = "2025.1203.241.00000"; // YEAR.MMDD.VERSION.CANARYDEV
+    public const string PluginDisplayVersion = "2.4.1 hotfix 1";
+    public static readonly List<(int year, int month, int day, int revision)> SupportedVersionAU =
+    [
+        (2025, 11, 18, 0) // 2025.11.18 & 17.1s
+    ];
 
     /******************* Change one of the three variables to true before making a release. *******************/
-    public static readonly bool devRelease = false; // Latest: V2.2.0 Alpha 17 Hotfix 1
-    public static readonly bool canaryRelease = false; // Latest: V2.2.0 Beta 4
-    public static readonly bool fullRelease = true; // Latest: V2.2.0
+    public static readonly bool devRelease = false; // Discontinued, use Beta instead
+    public static readonly bool canaryRelease = false; // Latest: V2.4.0 Beta 6
+    public static readonly bool fullRelease = true; // Latest: V2.4.1
 
     public static bool hasAccess = true;
 
@@ -81,8 +91,8 @@ public class Main : BasePlugin
     public static string credentialsText;
     public Coroutines coroutines;
     public Dispatcher dispatcher;
-    public static NormalGameOptionsV08 NormalOptions => GameOptionsManager.Instance.currentNormalGameOptions;
-    public static HideNSeekGameOptionsV08 HideNSeekOptions => GameOptionsManager.Instance.currentHideNSeekGameOptions;
+    public static NormalGameOptionsV10 NormalOptions => GameOptionsManager.Instance.currentNormalGameOptions;
+    public static HideNSeekGameOptionsV10 HideNSeekOptions => GameOptionsManager.Instance.currentHideNSeekGameOptions;
     //Client Options
     public static ConfigEntry<string> HideName { get; private set; }
     public static ConfigEntry<string> HideColor { get; private set; }
@@ -95,6 +105,7 @@ public class Main : BasePlugin
     public static ConfigEntry<bool> DarkTheme { get; private set; }
     public static ConfigEntry<bool> DisableLobbyMusic { get; private set; }
     public static ConfigEntry<bool> ShowTextOverlay { get; private set; }
+    public static ConfigEntry<bool> ShowModdedClientText { get; private set; }
     public static ConfigEntry<bool> HorseMode { get; private set; }
     public static ConfigEntry<bool> LongMode { get; private set; }
     public static ConfigEntry<bool> ForceOwnLanguage { get; private set; }
@@ -137,7 +148,12 @@ public class Main : BasePlugin
     public static readonly Dictionary<byte, Color32> PlayerColors = [];
     public static readonly Dictionary<byte, PlayerState.DeathReason> AfterMeetingDeathPlayers = [];
     public static readonly Dictionary<CustomRoles, string> roleColors = [];
+
+#if ANDROID
+    public static readonly string LANGUAGE_FOLDER_NAME = Path.Combine(UnityEngine.Application.persistentDataPath, "TOHE-DATA", "Language");
+#else
     public const string LANGUAGE_FOLDER_NAME = "TOHE-DATA/Language";
+#endif
 
     public static bool IsFixedCooldown => CustomRoles.Vampire.IsEnable() || CustomRoles.Poisoner.IsEnable();
     public static float RefixCooldownDelay = 0f;
@@ -166,18 +182,16 @@ public class Main : BasePlugin
     public static readonly Dictionary<byte, float> AllPlayerSpeed = [];
     public static readonly Dictionary<byte, float> LastAllPlayerSpeed = [];
     public static readonly HashSet<byte> PlayersDiedInMeeting = [];
-    public static readonly Dictionary<byte, long> AllKillers = [];
     public static readonly Dictionary<byte, (NetworkedPlayerInfo.PlayerOutfit outfit, string name)> OvverideOutfit = [];
     public static readonly Dictionary<byte, bool> CheckShapeshift = [];
     public static readonly Dictionary<byte, byte> ShapeshiftTarget = [];
     public static readonly HashSet<byte> UnShapeShifter = [];
     public static readonly HashSet<byte> DeadPassedMeetingPlayers = [];
-    public static readonly Dictionary<byte, bool> LowLoadUpdateName = [];
 
     public static bool GameIsLoaded { get; set; } = false;
 
-    public static bool isLoversDead = true;
-    public static readonly HashSet<PlayerControl> LoversPlayers = [];
+    // public static bool isLoversDead = true;
+    // public static readonly HashSet<PlayerControl> LoversPlayers = [];
 
     public static bool DoBlockNameChange = false;
     public static int updateTime;
@@ -192,14 +206,23 @@ public class Main : BasePlugin
     public static float DefaultCrewmateVision;
     public static float DefaultImpostorVision;
     public static bool IsInitialRelease = DateTime.Now.Month == 1 && DateTime.Now.Day is 17;
-    public static bool IsAprilFools = DateTime.Now.Month == 4 && DateTime.Now.Day is 1;
+    public static bool IsAprilFools
+    {
+        get
+        {
+            DateTime utcNow = DateTime.UtcNow;
+            DateTime t = new DateTime(utcNow.Year, 4, 1, 7, 0, 0, 0, DateTimeKind.Utc);
+            DateTime t2 = new DateTime(utcNow.Year, 4, 8, 7, 0, 0, 0, DateTimeKind.Utc);
+            return utcNow >= t && utcNow <= t2;
+        }
+    }
     public static bool ResetOptions = true;
     public static string FirstDied = ""; //Store with hash puid so things can pass through different round
     public static string FirstDiedPrevious = "";
     public static int MadmateNum = 0;
-    public static int BardCreations = 0;
     public static int MeetingsPassed = 0;
     public static long LastMeetingEnded = Utils.GetTimeStamp();
+    public static bool Daybreak;
 
 
     public static PlayerControl[] AllPlayerControls
@@ -211,7 +234,7 @@ public class Main : BasePlugin
             int i = 0;
             foreach (var pc in PlayerControl.AllPlayerControls)
             {
-                if (pc == null || pc.PlayerId == 255) continue;
+                if (pc == null || pc.PlayerId == 255 || pc.notRealPlayer) continue;
                 result[i++] = pc;
             }
 
@@ -231,7 +254,7 @@ public class Main : BasePlugin
             int i = 0;
             foreach (var pc in PlayerControl.AllPlayerControls)
             {
-                if (pc == null || pc.PlayerId == 255 || !pc.IsAlive() || pc.Data.Disconnected || Pelican.IsEaten(pc.PlayerId)) continue;
+                if (pc == null || pc.PlayerId == 255 || pc.notRealPlayer || !pc.IsAlive() || pc.Data == null || pc.Data.Disconnected || Pelican.IsEaten(pc.PlayerId)) continue;
                 result[i++] = pc;
             }
 
@@ -253,7 +276,7 @@ public class Main : BasePlugin
 
     public static StringNames[] how2playN = [StringNames.HowToPlayText1, StringNames.HowToPlayText2, StringNames.HowToPlayText41, StringNames.HowToPlayText42, StringNames.HowToPlayText43, StringNames.HowToPlayText44, StringNames.HowToPlayText5, StringNames.HowToPlayText6, StringNames.HowToPlayText7, StringNames.HowToPlayText81, StringNames.HowToPlayText82];
     public static StringNames[] how2playHnS = [StringNames.HideSeekHowToPlayCaptionOne, StringNames.HideSeekHowToPlayCaptionTwo, StringNames.HideSeekHowToPlayCaptionThree, StringNames.HideSeekHowToPlayPageOne, StringNames.HideSeekHowToPlaySubtextOne, StringNames.HideSeekHowToPlayCrewmateInfoOne, StringNames.HideSeekHowToPlayCrewmateInfoTwo, StringNames.HideSeekHowToPlayFlashlightConsoles, StringNames.HideSeekHowToPlayImpostorInfoOne, StringNames.HideSeekHowToPlayFinalHide, StringNames.HideSeekHowToPlayFlashlightDefault];
-    public static StringNames[] how2playEzHacked = [StringNames.ErrorAuthNonceFailure, StringNames.ErrorBanned, StringNames.ErrorBannedNoCode, StringNames.ErrorClientTimeout, StringNames.ErrorClientTimeoutConsole, StringNames.ErrorCommunications, StringNames.ErrorCrossPlatformCommunication, StringNames.ErrorDuplicateConnection, StringNames.ErrorFullGame, StringNames.ErrorHacking, StringNames.ErrorInactivity, StringNames.ErrorIntentionalLeaving, StringNames.ErrorInvalidName, StringNames.ErrorKicked, StringNames.ErrorKickedNoCode, StringNames.ErrorLobbyFailedGettingBlockedUsers];
+    public static StringNames[] how2playEzHacked = [StringNames.ErrorAuthNonceFailure, StringNames.ErrorBanned, StringNames.ErrorClientTimeout, StringNames.ErrorClientTimeoutConsole, StringNames.ErrorCommunications, StringNames.ErrorCrossPlatformCommunication, StringNames.ErrorDuplicateConnection, StringNames.ErrorFullGame, StringNames.ErrorHacking, StringNames.ErrorInactivity, StringNames.ErrorIntentionalLeaving, StringNames.ErrorInvalidName, StringNames.ErrorKicked];
     public static string Get_TName_Snacks => TranslationController.Instance.currentLanguage.languageID is SupportedLangs.SChinese or SupportedLangs.TChinese
         ? TName_Snacks_CN.RandomElement()
         : TName_Snacks_EN.RandomElement();
@@ -262,12 +285,12 @@ public class Main : BasePlugin
     {
         var sb = new StringBuilder();
         foreach (var title in roleColors) sb.Append($"{title.Key}:\n");
-        File.WriteAllText(@$"./{LANGUAGE_FOLDER_NAME}/templateRoleColor.dat", sb.ToString());
+        File.WriteAllText(Path.Combine(LANGUAGE_FOLDER_NAME, "templateRoleColor.dat"), sb.ToString());
     }
     public static void LoadCustomRoleColor()
     {
         const string filename = "RoleColor.dat";
-        string path = @$"./{LANGUAGE_FOLDER_NAME}/{filename}";
+        string path = Path.Combine(LANGUAGE_FOLDER_NAME, filename);
         if (File.Exists(path))
         {
             TOHE.Logger.Info($"Load custom Role Color file：{filename}", "LoadCustomRoleColor");
@@ -377,7 +400,7 @@ public class Main : BasePlugin
             }
             if (!Directory.Exists(LANGUAGE_FOLDER_NAME)) Directory.CreateDirectory(LANGUAGE_FOLDER_NAME);
             CreateTemplateRoleColorFile();
-            if (File.Exists(@$"./{LANGUAGE_FOLDER_NAME}/RoleColor.dat"))
+            if (File.Exists(Path.Combine(LANGUAGE_FOLDER_NAME, "RoleColor.dat")))
             {
                 UpdateCustomTranslation();
                 LoadCustomRoleColor();
@@ -449,7 +472,7 @@ public class Main : BasePlugin
     }
     static void UpdateCustomTranslation()
     {
-        string path = @$"./{LANGUAGE_FOLDER_NAME}/RoleColor.dat";
+        string path = Path.Combine(LANGUAGE_FOLDER_NAME, "RoleColor.dat");
         if (File.Exists(path))
         {
             TOHE.Logger.Info("Updating Custom Role Colors", "UpdateRoleColors");
@@ -497,7 +520,7 @@ public class Main : BasePlugin
         {
             sb.Append($"{kvp.Key.ToString()}:{kvp.Value}\n");
         }
-        File.WriteAllText(@$"./{LANGUAGE_FOLDER_NAME}/export_RoleColor.dat", sb.ToString());
+        File.WriteAllText(Path.Combine(LANGUAGE_FOLDER_NAME, "export_RoleColor.dat"), sb.ToString());
     }
 
     private void InitializeFileHash()
@@ -529,6 +552,7 @@ public class Main : BasePlugin
         DarkTheme = Config.Bind("Client Options", "DarkTheme", false);
         DisableLobbyMusic = Config.Bind("Client Options", "DisableLobbyMusic", false);
         ShowTextOverlay = Config.Bind("Client Options", "ShowTextOverlay", false);
+        ShowModdedClientText = Config.Bind("Client Options", "ShowModdedClientText", true);
         HorseMode = Config.Bind("Client Options", "HorseMode", false);
         LongMode = Config.Bind("Client Options", "LongMode", false);
         ForceOwnLanguage = Config.Bind("Client Options", "ForceOwnLanguage", false);
@@ -556,7 +580,6 @@ public class Main : BasePlugin
         //TOHE.Logger.Disable("NotifyRoles");
         TOHE.Logger.Disable("SwitchSystem");
         TOHE.Logger.Disable("ModNews");
-        TOHE.Logger.Disable("CustomRpcSender");
         TOHE.Logger.Disable("RpcSetNamePrivate");
         TOHE.Logger.Disable("KnowRoleTarget");
         if (!DebugModeManager.AmDebugger)
@@ -578,6 +601,7 @@ public class Main : BasePlugin
             TOHE.Logger.Disable("PlayerControl.RpcSetRole");
             TOHE.Logger.Disable("SyncCustomSettings");
             //TOHE.Logger.Disable("DoNotifyRoles");
+            TOHE.Logger.Disable("CustomRpcSender");
         }
         //TOHE.Logger.isDetail = true;
 
@@ -628,23 +652,32 @@ public class Main : BasePlugin
         handler.Info($"{nameof(ThisAssembly.Git.Sha)}: {ThisAssembly.Git.Sha}");
         handler.Info($"{nameof(ThisAssembly.Git.Tag)}: {ThisAssembly.Git.Tag}");
 
+        // Injecting BaseModdedRpc has a very high chance for the game to crash on load!!!
+        // And you need to inject it for all the modded rpc to work!!!
+        // Works after injected. No idea how to resolve this problem.
+        ClassInjector.RegisterTypeInIl2Cpp<BaseModdedRpc>();
+        ClassInjector.RegisterTypeInIl2Cpp<CustomModdedData>();
+
         ClassInjector.RegisterTypeInIl2Cpp<ErrorText>();
         ClassInjector.RegisterTypeInIl2Cpp<OptionShower>();
         ClassInjector.RegisterTypeInIl2Cpp<MeetingHudPagingBehaviour>();
         ClassInjector.RegisterTypeInIl2Cpp<ShapeShifterPagingBehaviour>();
         ClassInjector.RegisterTypeInIl2Cpp<VitalsPagingBehaviour>();
 
-        NormalGameOptionsV08.RecommendedImpostors = NormalGameOptionsV08.MaxImpostors = Enumerable.Repeat(127, 127).ToArray();
-        NormalGameOptionsV08.MinPlayers = Enumerable.Repeat(4, 127).ToArray();
-        HideNSeekGameOptionsV08.MinPlayers = Enumerable.Repeat(4, 127).ToArray();
+        NormalGameOptionsV10.RecommendedImpostors = NormalGameOptionsV10.MaxImpostors = Enumerable.Repeat(128, 128).ToArray();
+        NormalGameOptionsV10.MinPlayers = Enumerable.Repeat(4, 128).ToArray();
+        HideNSeekGameOptionsV10.MinPlayers = Enumerable.Repeat(4, 128).ToArray();
         DisconnectPopup.ErrorMessages[DisconnectReasons.Hacking] = StringNames.ErrorHacking;
 
         Harmony.PatchAll();
 
-        ConsoleManager.DetachConsole();
+        // ConsoleManager.DetachConsole();
+#if !ANDROID
         if (DebugModeManager.AmDebugger) ConsoleManager.CreateConsole();
+#endif
 
-        InitializeFileHash();
+        // InitializeFileHash();
+        FileHash = "drafting_2025_09_09";
         TOHE.Logger.Msg("========= TOHE loaded! =========", "Plugin Load");
     }
 }
@@ -658,11 +691,13 @@ public enum CustomRoles
     Noisemaker,
     Scientist,
     Tracker,
+    Detective,
 
     // Impostor(Vanilla)
     Impostor,
     Phantom,
     Shapeshifter,
+    Viper,
 
     // Crewmate Vanilla Remakes
     CrewmateTOHE,
@@ -671,11 +706,13 @@ public enum CustomRoles
     NoisemakerTOHE,
     ScientistTOHE,
     TrackerTOHE,
+    DetectiveTOHE,
 
     // Impostor Vanilla Remakes
     ImpostorTOHE,
     PhantomTOHE,
     ShapeshifterTOHE,
+    ViperTOHE,
 
     // Impostor Ghost
     Bloodmoon,
@@ -711,6 +748,7 @@ public enum CustomRoles
     EvilHacker,
     EvilMini,
     EvilTracker,
+    Exorcist,
     Fireworker,
     Gangster,
     Godfather,
@@ -772,6 +810,7 @@ public enum CustomRoles
     Benefactor,
     Bodyguard,
     Captain,
+    Catalyst,
     Celebrity,
     Chameleon,
     ChiefOfPolice,
@@ -781,7 +820,7 @@ public enum CustomRoles
     Crusader,
     Deceiver,
     Deputy,
-    Detective,
+    Forensic,
     Dictator,
     Doctor,
     Enigma,
@@ -816,10 +855,12 @@ public enum CustomRoles
     President,
     Psychic,
     Randomizer,
+    Requiter,
     Retributionist,
     Reverie,
     Sheriff,
     Snitch,
+    Socialite,
     SpeedBooster,
     Spiritualist,
     Spy,
@@ -847,6 +888,7 @@ public enum CustomRoles
     BloodKnight,
     Collector,
     Cultist,
+    Cupid,
     CursedSoul,
     Death,
     Demon,
@@ -862,12 +904,15 @@ public enum CustomRoles
     Imitator,
     Infectious,
     Innocent,
+    Inquisitor,
     Jackal,
     Jester,
     Juggernaut,
     Lawyer,
+    Lich,
     Maverick,
     Opportunist,
+    Pariah,
     Pelican,
     Pestilence,
     Pickpocket,
@@ -896,6 +941,7 @@ public enum CustomRoles
     Specter,
     Spiritcaller,
     Stalker,
+    Starspawn,
     Sunnyboy,
     Taskinator,
     Terrorist,
@@ -914,6 +960,8 @@ public enum CustomRoles
     Coven,
     Conjurer,
     CovenLeader,
+    Harvester,
+    Dreamweaver,
     HexMaster,
     Illusionist,
     Jinx,
@@ -924,6 +972,7 @@ public enum CustomRoles
     PotionMaster,
     Ritualist,
     Sacrifist,
+    Sorceress,
     VoodooMaster,
 
     //two-way camp
@@ -934,6 +983,9 @@ public enum CustomRoles
 
     //GM
     GM,
+
+    // Speed run
+    Runner,
 
     // Sub-role after 500
     NotAssigned = 500,
@@ -979,9 +1031,11 @@ public enum CustomRoles
     Lucky,
     Madmate,
     Mare,
+    Rat,
     Rebirth,
     Mimic,
     Mundane,
+    Narc,
     Necroview,
     Nimble,
     Oblivious,
@@ -1043,6 +1097,7 @@ public enum CustomWinner
     God = CustomRoles.God,
     Vector = CustomRoles.Vector,
     Innocent = CustomRoles.Innocent,
+    Inquisitor = CustomRoles.Inquisitor,
     Pelican = CustomRoles.Pelican,
     Youtuber = CustomRoles.Youtuber,
     Egoist = CustomRoles.Egoist,
@@ -1093,7 +1148,9 @@ public enum CustomWinner
 public enum AdditionalWinners
 {
     None = -1,
+    NeutralPariah = CustomRoles.Pariah,
     Lovers = CustomRoles.Lovers,
+    Cupid = CustomRoles.Cupid,
     Opportunist = CustomRoles.Opportunist,
     Executioner = CustomRoles.Executioner,
     Lawyer = CustomRoles.Lawyer,

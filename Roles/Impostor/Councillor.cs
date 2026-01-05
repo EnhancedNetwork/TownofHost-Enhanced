@@ -1,7 +1,9 @@
 using Hazel;
 using System;
 using System.Text.RegularExpressions;
+using TOHE.Modules;
 using TOHE.Modules.ChatManager;
+using TOHE.Modules.Rpc;
 using TOHE.Roles.Core;
 using TOHE.Roles.Coven;
 using TOHE.Roles.Crewmate;
@@ -54,7 +56,7 @@ internal class Councillor : RoleBase
     public override void Add(byte playerId)
     {
         MurderLimitMeeting = MurderLimitPerMeeting.GetInt();
-        AbilityLimit = MurderLimitPerGame.GetInt();
+        playerId.SetAbilityUseLimit(MurderLimitPerGame.GetInt());
     }
     public override void AfterMeetingTasks()
     {
@@ -114,7 +116,7 @@ internal class Councillor : RoleBase
                     pc.ShowInfoMessage(isUI, GetString("CouncillorMurderMaxMeeting"));
                     return true;
                 }
-                else if (AbilityLimit <= 0)
+                else if (pc.GetAbilityUseLimit() <= 0)
                 {
                     pc.ShowInfoMessage(isUI, GetString("CouncillorMurderMaxGame"));
                     return true;
@@ -127,7 +129,7 @@ internal class Councillor : RoleBase
 
                 if (Jailer.IsTarget(target.PlayerId))
                 {
-                    pc.ShowInfoMessage(isUI, GetString("CanNotTrialJailed"), Utils.ColorString(Utils.GetRoleColor(CustomRoles.Jailer), GetString("JailerTitle")));
+                    pc.ShowInfoMessage(isUI, GetString("CanNotTrialJailed"), Utils.ColorString(Utils.GetRoleColor(CustomRoles.Jailer), GetString("Jailer").ToUpper()));
                     return true;
                 }
                 if (pc.PlayerId == target.PlayerId)
@@ -160,7 +162,7 @@ internal class Councillor : RoleBase
                     return true;
                 }
                 else if (target.Is(CustomRoles.Pestilence)) CouncillorSuicide = true;
-                else if (target.Is(CustomRoles.Trickster)) CouncillorSuicide = true;
+                // else if (target.Is(CustomRoles.Trickster)) CouncillorSuicide = true;
                 else if (target.IsTransformedNeutralApocalypse() && !target.Is(CustomRoles.Pestilence))
                 {
                     pc.ShowInfoMessage(isUI, GetString("ApocalypseImmune"));
@@ -186,8 +188,12 @@ internal class Councillor : RoleBase
                     pc.ShowInfoMessage(isUI, GetString("EGGuessSnitchTaskDone"));
                     return true;
                 }
-                else if ((target.Is(CustomRoles.Madmate) ||
-                        target.Is(CustomRoles.Refugee) || target.Is(CustomRoles.Parasite) || target.Is(CustomRoles.Crewpostor)))
+                else if (pc.Is(CustomRoles.Narc))
+                {
+                    if (NarcManager.CheckBlockGuesses(pc, target, isUI)) return true;
+                    else CouncillorSuicide = target.IsPlayerCrewmateTeam();
+                }
+                else if (target.Is(CustomRoles.Madmate) || target.GetCustomRole().IsMadmate())
                 {
                     if (pc.Is(CustomRoles.Admired) || (pc.IsAnySubRole(x => x.IsConverted()) && !pc.Is(CustomRoles.Madmate)))
                     {
@@ -208,7 +214,7 @@ internal class Councillor : RoleBase
                         CouncillorSuicide = true;
                     }
                 }
-                else if ((target.GetCustomRole().IsImpostor()))
+                else if (target.GetCustomRole().IsImpostor())
                 {
                     if (pc.Is(CustomRoles.Admired) || (pc.IsAnySubRole(x => x.IsConverted()) && !pc.Is(CustomRoles.Madmate)))
                     {
@@ -245,8 +251,7 @@ internal class Councillor : RoleBase
                 string Name = dp.GetRealName();
 
                 MurderLimitMeeting--;
-                AbilityLimit--;
-                SendSkillRPC();
+                pc.RpcRemoveAbilityUse();
 
                 if (!GameStates.IsProceeding)
                     _ = new LateTask(() =>
@@ -284,7 +289,7 @@ internal class Councillor : RoleBase
         string result = string.Empty;
         for (int i = 0; i < mc.Count; i++)
         {
-            result += mc[i];//匹配结果是完整的数字，此处可以不做拼接的
+            result += mc[i];
         }
 
         if (int.TryParse(result, out int num))
@@ -293,15 +298,11 @@ internal class Councillor : RoleBase
         }
         else
         {
-            //并不是玩家编号，判断是否颜色
-            //byte color = GetColorFromMsg(msg);
-            //好吧我不知道怎么取某位玩家的颜色，等会了的时候再来把这里补上
             id = byte.MaxValue;
             error = GetString("Councillor_MurderHelp");
             return false;
         }
 
-        //判断选择的玩家是否合理
         PlayerControl target = Utils.GetPlayerById(id);
         if (target == null || target.Data.IsDead)
         {
@@ -337,9 +338,8 @@ internal class Councillor : RoleBase
 
     private static void SendRPC(byte playerId)
     {
-        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.CouncillorJudge, SendOption.Reliable, -1);
-        writer.Write(playerId);
-        AmongUsClient.Instance.FinishRpcImmediately(writer);
+        var msg = new RpcCouncillorJudge(PlayerControl.LocalPlayer.NetId, playerId);
+        RpcUtils.LateBroadcastReliableMessage(msg);
     }
     public static void ReceiveRPC_Custom(MessageReader reader, PlayerControl pc)
     {
@@ -382,6 +382,4 @@ internal class Councillor : RoleBase
             button.OnClick.AddListener((UnityEngine.Events.UnityAction)(() => CouncillorOnClick(pva.TargetPlayerId/*, __instance*/)));
         }
     }
-
-    public override string GetProgressText(byte playerId, bool coooms) => Utils.ColorString(AbilityLimit <= 0 ? Color.gray : Utils.GetRoleColor(CustomRoles.Councillor), $"({AbilityLimit})") ?? "Invalid";
 }

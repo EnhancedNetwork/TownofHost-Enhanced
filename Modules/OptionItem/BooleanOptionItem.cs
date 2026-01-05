@@ -1,4 +1,5 @@
 using System;
+using System.Text.Json;
 
 namespace TOHE;
 
@@ -26,5 +27,16 @@ public class BooleanOptionItem(int id, string name, bool defaultValue, TabGroup 
     public override void SetValue(int value, bool doSync = true)
     {
         base.SetValue(value % 2 == 0 ? 0 : 1, doSync);
+    }
+    public override void SetValue(object afterValue, bool doSync = true)
+    {
+        if (afterValue is bool bVal)
+            base.SetValue(bVal ? 1 : 0, doSync);
+        else
+            base.SetValue(afterValue, doSync);
+    }
+    public override object ParseJson(JsonElement json)
+    {
+        return json.GetBoolean();
     }
 }

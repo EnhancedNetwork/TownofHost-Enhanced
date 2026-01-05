@@ -131,9 +131,13 @@ public static class Camouflage
                 CamouflageOutfit = new NetworkedPlayerInfo.PlayerOutfit()
                     .Set("", 17, "hat_baseball_Black", "skin_Scientist-Darkskin", "visor_pusheenSmileVisor", "pet_Pip", "");
                 break;
-            case 11: // Sarha, Sponsor
+            case 11: // Sarha, Co-President
                 CamouflageOutfit = new NetworkedPlayerInfo.PlayerOutfit()
                     .Set("", 17, "hat_mira_flower", "skin_PusheenPurpleskin", "visor_hl_hmph", "pet_Charles", "");
+                break;
+            case 12: // Marg
+                CamouflageOutfit = new NetworkedPlayerInfo.PlayerOutfit()
+                    .Set("", 13, "hat_rabbitEars", "skin_hl_pekora", "visor_claws_knife", "pet_claws_spaceCat", "");
                 break;
         }
     }
@@ -155,6 +159,11 @@ public static class Camouflage
                 {
                     pc.RpcRemovePet();
                 }
+
+                if (pc.inVent)
+                {
+                    pc.currentRoleAnimations.ToArray().ForEach(x => x.ToggleRenderer(false));
+                }
             }
             if (Main.CurrentServerIsVanilla && Options.BypassRateLimitAC.GetBool())
             {
@@ -162,7 +171,7 @@ public static class Camouflage
             }
             else
             {
-                Utils.DoNotifyRoles();
+                Utils.NotifyRoles();
             }
         }
     }
