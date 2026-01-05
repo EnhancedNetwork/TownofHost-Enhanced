@@ -4409,217 +4409,217 @@
   "CommandArgs.Docs.Role": "Role",
 
   "Command.Winner": "win|winner|победители|vencedor",
-  "CommandDescription.Winner": "",
+  "CommandDescription.Winner": "Displays the winner(s) of the previous game",
 
   "Command.LastResult": "l|lastresult|л|resultados|ultimoresultado|fimdejogo",
-  "CommandDescription.LastResult": "",
+  "CommandDescription.LastResult": "Displays the game summary of the previous game",
 
   "Command.GameResult": "gr|gameresults|resultados",
-  "CommandDescription.GameResult": "",
+  "CommandDescription.GameResult": "Displays the result of the previous game",
 
   "Command.KillLog": "kh|killlog",
-  "CommandDescription.KillLog": "",
+  "CommandDescription.KillLog": "Displays the kill log of the previous game",
 
   "Command.RoleSummary": "rs|sum|rolesummary|sumario|sumário|summary|результат",
-  "CommandDescription.RoleSummary": "",
+  "CommandDescription.RoleSummary": "Displays the role summary of the previous game",
 
   "Command.GhostInfo": "ghostinfo",
-  "CommandDescription.GhostInfo": "",
+  "CommandDescription.GhostInfo": "Displays a summary of Ghost roles",
 
   "Command.ApocInfo": "apocinfo|apocalypseinfo",
-  "CommandDescription.ApocInfo": "",
+  "CommandDescription.ApocInfo": "Displays a summary of the Apocalypse faction",
 
   "Command.CovenInfo": "coveninfo|covinfo",
-  "CommandDescription.CovenInfo": "",
+  "CommandDescription.CovenInfo": "Displays a summary of the Coven faction",
 
   "Command.Rename": "rn|rename|name|рн|ренейм|переименовать|renomear",
-  "CommandDescription.Rename": "",
-  "CommandArgs.Rename.Name": "",
+  "CommandDescription.Rename": "Changes your name",
+  "CommandArgs.Rename.Name": "New Name",
 
   "Command.HideName": "hn|hidename|хн|спрник|semnome|escondernome",
-  "CommandDescription.HideName": "",
+  "CommandDescription.HideName": "Hides the host's name in lobby",
   
   "Command.Level": "level|лвл|уровень|nível|nivel",
-  "CommandDescription.Level": "",
-  "CommandArgs.Level.Level": "",
+  "CommandDescription.Level": "Changes your player level",
+  "CommandArgs.Level.Level": "New Level",
 
   "Command.Now": "n|now|н|atual",
-  "CommandDescription.Now": "",
+  "CommandDescription.Now": "Displays the current settings",
 
   "Command.Disconnect": "dis|disconnect|дис|desconectar",
-  "CommandDescription.Disconnect": "",
-  "CommandArgs.Disconnect.Team": "",
+  "CommandDescription.Disconnect": "Ends the game with disconnect reason",
+  "CommandArgs.Disconnect.Team": "Team to give win to",
 
   "Command.R": "r|р|função|role|роль",
-  "CommandDescription.R": "",
-  "CommandArgs.R.Role": "",
+  "CommandDescription.R": "Displays the list of enabled roles or the current settings for a role",
+  "CommandArgs.R.Role": "Role to check settings for",
 
   "Command.Factions": "f|factions|faction",
-  "CommandDescription.Factions": "",
+  "CommandDescription.Factions": "Displays current min/max for each non-crew alignment",
 
   "Command.MyRole": "m|myrole|м|мояроль|minhafunção|м",
-  "CommandDescription.MyRole": "",
+  "CommandDescription.MyRole": "Displays the current settings for your role",
 
   "Command.Help": "h|help|хэлп|хелп|помощь|ajuda",
-  "CommandDescription.Help": "",
+  "CommandDescription.Help": "Displays the help message",
 
   "Command.SetRole": "setrole|setaddon|сетроль|definir-função",
-  "CommandDescription.SetRole": "",
+  "CommandDescription.SetRole": "Sets the role/addon you will get next game",
 
   "Command.AFKExempt": "afkexempt|освафк|афкосв|afk-isentar",
-  "CommandDescription.AFKExempt": "",
-  "CommandArgs.AFKExempt.Id": "",
+  "CommandDescription.AFKExempt": "Exempts a player from the AFK system",
+  "CommandArgs.AFKExempt.Id": "Player to Exempt",
 
   "Command.TPOut": "tpout|тпаут",
-  "CommandDescription.TPOut": "",
+  "CommandDescription.TPOut": "Teleports out of the lobby dropship",
 
   "Command.TPIn": "tpin|тпин",
-  "CommandDescription.TPIn": "",
+  "CommandDescription.TPIn": "Teleports into the lobby dropship",
 
   "Command.KCount": "gamestate|gstate|gs|kcount|kc|кубийц|гс|статигры|estadojogo|status|количество|убийцы",
-  "CommandDescription.KCount": "",
+  "CommandDescription.KCount": "Displays the current number of Evil players left",
 
   "Command.Template": "t|template|т|темплейт|шаблон|пример",
-  "CommandDescription.Template": "",
-  "CommandArgs.Template.Tag": "",
+  "CommandDescription.Template": "Displays one of the messages in template.txt",
+  "CommandArgs.Template.Tag": "Template Name",
 
   "Command.MessageWait": "mw|messagewait|мв|медленныйрежим|espera-mensagens",
-  "CommandDescription.MessageWait": "",
-  "CommandArgs.MessageWait.Duration": "",
+  "CommandDescription.MessageWait": "Sets the minimum delay between system chat messages",
+  "CommandArgs.MessageWait.Duration": "Delay between Messages",
 
   "Command.Death": "death|d|д|смерть|abate|morto|умер|причина",
-  "CommandDescription.Death": "",
-  "CommandArgs.Death.Id": "",
+  "CommandDescription.Death": "Displays a player's killer and death reason",
+  "CommandArgs.Death.Id": "Player to Check",
 
   "Command.Say": "say|s|сказать|с|falar|dizer",
-  "CommandDescription.Say": "",
-  "CommandArgs.Say.Message": "",
+  "CommandDescription.Say": "Sends a system message in chat",
+  "CommandArgs.Say.Message": "Message to Send",
 
   "Command.Vote": "vote|голос|votar",
-  "CommandDescription.Vote": "",
-  "CommandArgs.Vote.Id": "",
+  "CommandDescription.Vote": "Sets your vote in meeting",
+  "CommandArgs.Vote.Id": "Player to vote. (skip = 253)",
 
   "Command.Ban": "ban|kick|бан|кик|забанить|кикнуть|banir|expulsar|выгнать",
-  "CommandDescription.Ban": "",
+  "CommandDescription.Ban": "Bans/Kicks a player",
 
   "Command.Warn": "warn|aviso|варн|пред|предупредить",
-  "CommandDescription.Warn": "",
+  "CommandDescription.Warn": "Warns a player",
 
   "Command.Exe": "exe|выкинуть|executar|уничтожить|повесить|казнить|казнь|мут",
-  "CommandDescription.Exe": "",
-  "CommandArgs.Exe.Id": "",
+  "CommandDescription.Exe": "Executes a player",
+  "CommandArgs.Exe.Id": "Player to Execute",
 
   "Command.Color": "colour|color|cor|цвет",
-  "CommandDescription.Color": "",
-  "CommandArgs.Color.Color": "",
+  "CommandDescription.Color": "Changes your player color",
+  "CommandArgs.Color.Color": "Skin Color",
 
   "Command.Start": "start|старт",
-  "CommandDescription.Start": "",
-  "CommandArgs.Start.Time": "",
+  "CommandDescription.Start": "Starts the start countdown",
+  "CommandArgs.Start.Time": "Countdown time",
 
   "Command.End": "end|encerrar|завершить",
-  "CommandDescription.End": "",
+  "CommandDescription.End": "Ends the game in a draw",
 
   "Command.ID": "id|айди|mid|guesslist",
-  "CommandDesciption.ID": "",
+  "CommandDesciption.ID": "Displays the list of player ids",
 
   "Command.Fix": "fix|blackscreenfix|fixblackscreen|фикс|исправить",
-  "CommandDescription.Fix": "",
-  "CommandArgs.Fix.Id": "",
+  "CommandDescription.Fix": "Fix a player who is blackscreened",
+  "CommandArgs.Fix.Id": "Player to fix",
 
   "Command.SetPlayers": "setplayers|maxjogadores",
-  "CommandDescription.SetPlayers": "",
-  "CommandArgs.SetPlayers.Num": "",
+  "CommandDescription.SetPlayers": "Sets the max player count (max 15 on vanilla servers)",
+  "CommandArgs.SetPlayers.Num": "Player Count",
 
   "Command.Icons": "icon|icons",
-  "CommandDescription.Icons": "",
+  "CommandDescription.Icons": "Displays the icon help message",
   "Command.IconHelp": "iconhelp",
 
   "Command.Me": "me",
-  "CommandDescription.Me": "",
-  "CommandArgs.Me.Id": "",
+  "CommandDescription.Me": "Displays a player's permission levels",
+  "CommandArgs.Me.Id": "Player to check",
 
   "Command.TagColor": "tagcolor|tagcolour",
-  "CommandDescription.TagColor": "",
-  "CommandArgs.TagColor.Color": "",
+  "CommandDescription.TagColor": "Changes your tag color",
+  "CommandArgs.TagColor.Color": "Tag Color",
 
   "Command.Kill": "kill|matar|убить",
-  "CommandDescription.Kill": "",
-  "CommandArgs.Kill.Id": "",
+  "CommandDescription.Kill": "Kills a player",
+  "CommandArgs.Kill.Id": "Player to kill",
 
   "Command.Quit": "quit|qt|sair",
-  "CommandDescription.Quit": "",
-  "CommandArgs.Quit.Arg1": "",
+  "CommandDescription.Quit": "Permanently quits the lobby",
+  "CommandArgs.Quit.Arg1": "Confirm",
 
   "Command.Guess": "shoot|guess|bet|st|gs|bt",
-  "CommandDescription.Guess": "",
+  "CommandDescription.Guess": "Guess a player's role/addon",
 
   "Command.Trial": "sp|jj|tl|trial|Murder",
-  "CommandDescription.Trial": "",
+  "CommandDescription.Trial": "Judge a player",
 
   "Command.Finish": "finish",
-  "CommandDescription.Finish": "",
+  "CommandDescription.Finish": "End the meeting",
 
   "Command.Reveal": "reveal",
-  "CommandDescription.Reveal": "",
+  "CommandDescription.Reveal": "Reveal yourself as president",
 
   "Command.Inspect": "compare|cmp",
-  "CommandDescription.Inspect": "",
+  "CommandDescription.Inspect": "Compare the alignments of two other players",
 
   "Command.Duel": "duel",
-  "CommandDescription.Duel": "",
-  "CommandArgs.Duel.Num": "",
+  "CommandDescription.Duel": "Choose your weapon for the duel",
+  "CommandArgs.Duel.Num": "0, 1, 2",
 
   "Command.Revenge": "rv",
-  "CommandDescription.Revenge": "",
+  "CommandDescription.Revenge": "Take revenge on a player",
 
   "Command.Retribution": "ret",
-  "CommandDescription.Retribution": "",
+  "CommandDescription.Retribution": "Get retribution on a player",
 
   "Command.Exorcism": "exorcise|exorcism|ex",
-  "CommandDescription.Exorcism": "",
+  "CommandDescription.Exorcism": "Start an Exorcism",
 
   "Command.Ritual": "rt|rit|ritual|bloodritual",
-  "CommandDescription.Ritual": "",
+  "CommandDescription.Ritual": "Enchants a player if you can guess their role",
   
   "Command.Medium": "ms|mediumship|medium",
-  "CommandDescription.Medium": "",
-  "CommandArgs.Medium.YN": "",
+  "CommandDescription.Medium": "Answer the Medium's question",
+  "CommandArgs.Medium.YN": "Y/N",
 
   "Command.Summon": "summon|sm",
-  "CommandDescription.Summon": "",
+  "CommandDescription.Summon": "Summons a player to do your bidding",
 
   "Command.Swap": "sw|swap|st",
-  "CommandDescription.Swap": "",
+  "CommandDescription.Swap": "Choose a player to swap the votes of",
 
   "Command.Expel": "exp|expel",
-  "CommandDescription.Expel": "",
+  "CommandDescription.Expel": "Dictate a player",
 
   "Command.Daybreak": "db|daybreak",
-  "CommandDescription.Daybreak": "",
+  "CommandDescription.Daybreak": "Cause daybreak, preventing players from guessing or using commands this meeting",
 
   "Command.Answer": "ans|asw|answer",
-  "CommandDescription.Answer": "",
-  "CommandArgs.Answer.ABC": "",
+  "CommandDescription.Answer": "Answer the Quizmaster's question",
+  "CommandArgs.Answer.ABC": "A/B/C",
   
   "Command.ShowQuestion": "qmquiz",
-  "CommandDescription.ShowQuestion": "",
+  "CommandDescription.ShowQuestion": "Shows the Quizmaster question",
 
   "Command.FixNames": "xf",
-  "CommandDescription.FixNames": "",
+  "CommandDescription.FixNames": "Attempts to fix names in meeting",
 
   "Command.ChangeRole": "changerole|mudarfunção",
-  "CommandDescription.ChangeRole": "",
-  "CommandArgs.ChangeRole.Role": "",
+  "CommandDescription.ChangeRole": "Changes role in game",
+  "CommandArgs.ChangeRole.Role": "New Role",
 
   "Command.Deck": "deck",
-  "CommandDescription.Deck": "",
+  "CommandDescription.Deck": "Displays current draft deck",
 
   "Command.Draft": "draft",
-  "CommandDescription.Draft": "",
-  "CommandArgs.Draft.Arg1": "",
+  "CommandDescription.Draft": "Drafting command",
+  "CommandArgs.Draft.Arg1": "start|desc|add|reset|number",
 
   "Command.DraftDesc": "dd|draftdescription",
-  "CommandDescription.DraftDesc": "",
-  "CommandArgs.DraftDesc.Number": ""
+  "CommandDescription.DraftDesc": "Displays the current settings for one of your draft options",
+  "CommandArgs.DraftDesc.Number": "Role Number"
 }
