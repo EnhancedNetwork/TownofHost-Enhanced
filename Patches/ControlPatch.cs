@@ -200,7 +200,7 @@ internal class ControllerManagerUpdatePatch
             // ############################################################################################################
             if (!AmongUsClient.Instance.AmHost) return;
 
-            // Forse end game
+            // Force end game
             if (GetKeysDown(KeyCode.Return, KeyCode.L, KeyCode.LeftShift) && GameStates.IsInGame)
             {
                 NameNotifyManager.Notifies.Clear();

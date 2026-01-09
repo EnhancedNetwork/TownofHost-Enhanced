@@ -18,6 +18,7 @@ public class CustomRpcSender
     public readonly string name;
     public readonly SendOption sendOption;
     public bool isUnsafe;
+    public bool shouldLog;
     public delegate void onSendDelegateType();
     public onSendDelegateType onSendDelegate;
 
@@ -42,23 +43,25 @@ public class CustomRpcSender
     // private int rootMessageCount;
 
     private CustomRpcSender() { }
-    public CustomRpcSender(string name, SendOption sendOption, bool isUnsafe)
+    public CustomRpcSender(string name, SendOption sendOption, bool isUnsafe, bool log)
     {
         stream = MessageWriter.Get(sendOption);
 
         this.name = name;
         this.sendOption = sendOption;
         this.isUnsafe = isUnsafe;
+        this.shouldLog = log;
         this.currentRpcTarget = -2;
-        onSendDelegate = () => Logger.Info($"{this.name}'s onSendDelegate =>", "CustomRpcSender");
+        onSendDelegate = () => {if(this.shouldLog) Logger.Info($"{this.name}'s onSendDelegate =>", "CustomRpcSender");};
 
         currentState = State.Ready;
         // rootMessageCount = 0;
-        Logger.Info($"\"{name}\" is ready", "CustomRpcSender");
+        if (this.shouldLog)
+            Logger.Info($"\"{name}\" is ready", "CustomRpcSender");
     }
-    public static CustomRpcSender Create(string name = "No Name Sender", SendOption sendOption = SendOption.None, bool isUnsafe = false)
+    public static CustomRpcSender Create(string name = "No Name Sender", SendOption sendOption = SendOption.None, bool isUnsafe = false, bool log = true)
     {
-        return new CustomRpcSender(name, sendOption, isUnsafe);
+        return new CustomRpcSender(name, sendOption, isUnsafe, log);
     }
 
     #region Start/End Message

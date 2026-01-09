@@ -1831,27 +1831,46 @@ public static class Utils
     private static readonly StringBuilder TargetDeathReason = new();
     private static readonly StringBuilder TargetSuffix = new();
     private static readonly StringBuilder TargetMark = new(20);
-    public static async void NotifyRoles(PlayerControl SpecifySeer = null, PlayerControl SpecifyTarget = null, bool isForMeeting = false, bool NoCache = false, bool ForceLoop = true, bool CamouflageIsForMeeting = false, bool MushroomMixupIsActive = false)
+    public static void NotifyRoles(PlayerControl SpecifySeer = null, PlayerControl SpecifyTarget = null, bool isForMeeting = false, bool NoCache = false, bool ForceLoop = true, bool CamouflageIsForMeeting = false, bool MushroomMixupIsActive = false, bool GuesserIsForMeeting = false, SendOption SendOption = SendOption.Reliable)
     {
-        if (!AmongUsClient.Instance.AmHost || GameStates.IsHideNSeek || Main.AllPlayerControls == null || SetUpRoleTextPatch.IsInIntro) return;
-        if (MeetingHud.Instance)
+        try
         {
-            // When the meeting window is active and game is not ended
-            if (!GameEndCheckerForNormal.GameIsEnded) return;
-        }
-        else
-        {
-            // When some one press report button but NotifyRoles is not for meeting
-            if (Main.MeetingIsStarted && !isForMeeting) return;
-        }
+            if (!AmongUsClient.Instance.AmHost) return;
+            if (!SetUpRoleTextPatch.IsInIntro && ((SpecifySeer != null && SpecifySeer.IsModded() && (Options.CurrentGameMode == CustomGameMode.Standard || SpecifySeer.IsHost())) || (GameStates.IsMeeting && !isForMeeting) || GameStates.IsLobby)) return;
 
-        //var caller = new System.Diagnostics.StackFrame(1, false);
-        //var callerMethod = caller.GetMethod();
-        //string callerMethodName = callerMethod.Name;
-        //string callerClassName = callerMethod.DeclaringType.FullName;
-        //Logger.Info($" Was called from: {callerClassName}.{callerMethodName}", "NotifyRoles");
+            PlayerControl[] apc = Main.AllPlayerControls;
+            PlayerControl[] seerList = SpecifySeer != null ? [SpecifySeer] : apc;
+            PlayerControl[] targetList = SpecifyTarget != null ? [SpecifyTarget] : apc;
 
-        await DoNotifyRoles(SpecifySeer, SpecifyTarget, isForMeeting, NoCache, ForceLoop, CamouflageIsForMeeting, MushroomMixupIsActive);
+            var sender = CustomRpcSender.Create("NotifyRoles", SendOption, log: false);
+            var hasValue = false;
+
+            foreach (PlayerControl seer in seerList)
+            {
+                hasValue |= WriteSetNameRpcsToSender(ref sender, isForMeeting, NoCache, ForceLoop, CamouflageIsForMeeting, GuesserIsForMeeting, MushroomMixupIsActive, seer, seerList, targetList, out bool senderWasCleared, SendOption);
+                if (senderWasCleared) hasValue = false;
+
+                if (sender.stream.Length > 500)
+                {
+                    sender.SendMessage();
+                    sender = CustomRpcSender.Create("NotifyRoles", SendOption, log: false);
+                    hasValue = false;
+                }
+            }
+
+            sender.SendMessage(!hasValue || sender.stream.Length <= 3);
+
+            if (Options.CurrentGameMode != CustomGameMode.Standard) return;
+
+            string seers = seerList.Length == apc.Length ? "Everyone" : string.Join(", ", seerList.Select(x => x.GetRealName()));
+            string targets = targetList.Length == apc.Length ? "Everyone" : string.Join(", ", targetList.Select(x => x.GetRealName()));
+
+            if (seers.Length == 0) seers = "\u2205";
+            if (targets.Length == 0) targets = "\u2205";
+
+            Logger.Info($" Seers: {seers} ---- Targets: {targets}", "NR");
+        }
+        catch (Exception e) { ThrowException(e); }
     }
     public static Task DoNotifyRoles(PlayerControl SpecifySeer = null, PlayerControl SpecifyTarget = null, bool isForMeeting = false, bool NoCache = false, bool ForceLoop = true, bool CamouflageIsForMeeting = false, bool MushroomMixupIsActive = false, SendOption SendOption = SendOption.Reliable)
     {

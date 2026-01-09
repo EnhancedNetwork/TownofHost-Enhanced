@@ -3839,7 +3839,7 @@
   "Booster": "Server Booster",
   "Translator": "Translator",
   "NoAccess": "Unauthorized Access!\n\n Please open up a ticket in the discord server to know more (discord.gg/tohe)",
-  "DCNotify.Hacking": "You were <color=#ff1919>banned</color> for hacking.\n\nPlease stop.",
+  "DCNotify.Hacking": "You were <color=#ffff00>disconnected</color> by the server.\n\n",
   "DCNotify.Banned": "You were <color=#ff1919>banned</color> from this lobby.\n\nContact the Host if this was a mistake.",
   "DCNotify.Kicked": "You were <color=#ffff00>kicked</color> from this lobby.\n\nYou may still rejoin.",
   "DCNotify.DCFromServer": "You disconnected from the server.\r\nThis could be an issue with either the servers or your network.",
@@ -4389,6 +4389,8 @@
 
   "KickNotJoinedPlayersRegularly": "Kick Not Joined Players Regularly",
   "EnableCommandHelper": "Enable Command Helper",
+
+  "Message.CommandUnavailableShort": "Command Unavailable",
 
   "Command.Dump": "dump|дамп|лог",
   "CommandDescription.Dump": "Dumps the log file",

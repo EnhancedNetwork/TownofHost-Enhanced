@@ -42,7 +42,7 @@ public static class FixedUpdatePatch
                 if (hudManager)
                 {
                     UpdateHud(hudManager);
-                    Zoom.DoZoom();
+                    // Zoom.DoZoom();
                     // HudSpritePatch.Postfix(hudManager);
                 }
             }

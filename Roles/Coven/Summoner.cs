@@ -527,8 +527,6 @@ internal class Summoner : CovenManager
 
     public override void AfterMeetingTasks()
     {
-        base.AfterMeetingTasks();
-
         // Reset the summoning flag for the next meeting
         HasSummonedThisMeeting[_Player.PlayerId] = false;
 
