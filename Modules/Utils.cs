@@ -6,6 +6,7 @@ using Il2CppInterop.Generator.Extensions;
 using Il2CppInterop.Runtime.InteropTypes.Arrays;
 using InnerNet;
 using System;
+using System.Collections;
 using System.Data;
 using System.Diagnostics;
 using System.IO;
@@ -1236,53 +1237,42 @@ public static class Utils
         return !isHost && color == 18 ? byte.MaxValue : color is < 0 or > 18 ? byte.MaxValue : Convert.ToByte(color);
     }
 
-    public static void ShowHelpToClient(byte ID)
+    public static StringBuilder AppendGetString(this StringBuilder builder, string key)
     {
-        SendMessage(
-            GetString("CommandList")
-            + $"\n  ○ /n {GetString("Command.now")}"
-            + $"\n  ○ /r {GetString("Command.roles")}"
-            + $"\n  ○ /m {GetString("Command.myrole")}"
-            + $"\n  ○ /xf {GetString("Command.solvecover")}"
-            + $"\n  ○ /l {GetString("Command.lastresult")}"
-            + $"\n  ○ /win {GetString("Command.winner")}"
-            + "\n\n" + GetString("CommandOtherList")
-            + $"\n  ○ /color {GetString("Command.color")}"
-            + $"\n  ○ /qt {GetString("Command.quit")}"
-            + $"\n ○ /death {GetString("Command.death")}"
-            + $"\n ○ /icons {GetString("Command.iconinfo")}"
-            , ID);
+        return builder.Append(GetString(key));
     }
+
+    private static Command.UsageLevels currentBlock = Command.UsageLevels.Everyone;
+    private static void BuildHelp(Command command)
+    {
+        if (command.UsageLevel != currentBlock)
+        {
+            currentBlock = command.UsageLevel;
+            helpString.Append("\n\n");
+            helpString.AppendGetString($"CommandList.{currentBlock}");
+        }
+    
+        helpString.Append(command.ToHelpString());
+    }
+    private static readonly StringBuilder helpString = new();
     public static void ShowHelp(byte ID)
     {
-        SendMessage(
-            GetString("CommandList")
-            + $"\n  ○ /n {GetString("Command.now")}"
-            + $"\n  ○ /r {GetString("Command.roles")}"
-            + $"\n  ○ /m {GetString("Command.myrole")}"
-            + $"\n  ○ /l {GetString("Command.lastresult")}"
-            + $"\n  ○ /win {GetString("Command.winner")}"
-            + "\n\n" + GetString("CommandOtherList")
-            + $"\n  ○ /color {GetString("Command.color")}"
-            + $"\n  ○ /rn {GetString("Command.rename")}"
-            + $"\n  ○ /qt {GetString("Command.quit")}"
-            + $"\n  ○ /icons {GetString("Command.iconinfo")}"
-            + $"\n  ○ /death {GetString("Command.death")}"
-            + "\n\n" + GetString("CommandHostList")
-            + $"\n  ○ /s {GetString("Command.say")}"
-            + $"\n  ○ /rn {GetString("Command.rename")}"
-            + $"\n  ○ /poll {GetString("Command.Poll")}"
-            + $"\n  ○ /xf {GetString("Command.solvecover")}"
-            + $"\n  ○ /mw {GetString("Command.mw")}"
-            + $"\n  ○ /kill {GetString("Command.kill")}"
-            + $"\n  ○ /exe {GetString("Command.exe")}"
-            + $"\n  ○ /level {GetString("Command.level")}"
-            + $"\n  ○ /id {GetString("Command.idlist")}"
-            + $"\n  ○ /qq {GetString("Command.qq")}"
-            + $"\n  ○ /dump {GetString("Command.dump")}"
-            + $"\n  ○ /start {GetString("Command.start")}"
-        //    + $"\n  ○ /iconhelp {GetString("Command.iconhelp")}"
-            , ID);
+        PlayerControl pc = ID.GetPlayer();
+        if (pc == null) return;
+
+        List<Command> commands = [.. Command.AllCommands.Values.OrderBy(x => x.UsageLevel).ThenBy(x => x.UsageTime)];
+
+        helpString.Clear();
+        helpString.Append("CommandList");
+
+        foreach (Command command in commands)
+        {
+            if (!command.CanUseCommand(pc, checkTime: false)) continue;
+
+            BuildHelp(command);
+        }
+
+        SendMessage(helpString.ToString(), ID);
     }
     public static string[] SplitMessage(this string LongMsg)
     {

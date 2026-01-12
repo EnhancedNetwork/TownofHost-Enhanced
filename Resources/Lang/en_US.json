@@ -4386,11 +4386,35 @@
 
   "FixBlackScreenWaitForDead": "Waiting for Dead Players to fix Black Screen",
   "AFKSuffix": "AFK",
+  "AFKWarning": "AFK Warning!",
 
   "KickNotJoinedPlayersRegularly": "Kick Not Joined Players Regularly",
   "EnableCommandHelper": "Enable Command Helper",
 
   "Message.CommandUnavailableShort": "Command Unavailable",
+  "DeepLowLoad": "Low Load",
+  "DontUpdateDeadPlayers": "Don't Update Dead Players",
+
+  "Commands.NoAccess.Level.Modded": "No Access: Requires Modded Client",
+  "Commands.NoAccess.Level.Host": "No Access: Host Only",
+  "Commands.NoAccess.Level.HostOrVIP": "No Access: VIP or higher required",
+  "Commands.NoAccess.Level.HostOrModerator": "No Access: Moderator or higher required",
+  "Commands.NoAccess.Level.Developer": "No Access",
+  "Commands.NoAccess.Level.HostOrExePerm": "No Access: Permissions required",
+  "Commands.NoAccess.Level.HostOrEndPerm": "No Access: Permissions required",
+  "Commands.NoAccess.Level.HostOrSayPerm": "No Access: Permissions required",
+  "Commands.NoAccess.Level.HostOrBanPerm": "No Access: Permissions required",
+  "Commands.NoAccess.Level.HostOrWarnPerm": "No Access: Permissions required",
+  "Commands.NoAccess.Level.HostOrStartPerm": "No Access: Permissions required",
+  "Commands.NoAccess.Level.RoleSpecific": "No Access: Not required role",
+  "Commands.NoAccess.Level.MiniGames": "No Access: Minigames disabled",
+  "Commands.NoAccess.Level.Debug": "No Access: Betas/Alphas only",
+
+  "Commands.NoAccess.Time.InLobby": "No Access: Lobby Only",
+  "Commands.NoAccess.Time.InGame": "No Access: In Game Only",
+  "Commands.NoAccess.Time.InMeeting": "No Access: In Meeting Only",
+  "Commands.NoAccess.Time.AfterDeath": "No Access: Only When Dead",
+  "Commands.NoAccess.Time.AfterDeathOrLobby": "No Access: When Dead or In Lobby",
 
   "Command.Dump": "dump|дамп|лог",
   "CommandDescription.Dump": "Dumps the log file",

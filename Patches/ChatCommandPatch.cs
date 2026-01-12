@@ -194,6 +194,12 @@ internal class Command(string commandKey, string arguments, string description, 
             }
     }
 
+    public string ToHelpString()
+    {
+        var names = GetString(CommandKey).Split("|");
+        return $"\n  ○ /{names[0]} {Description}";
+    }
+
     public static Command Create(string commandKey, string arguments, string description, UsageLevels usageLevel, UsageTimes usageTime, Action<PlayerControl, string, string, string[]> action, bool isCanceled, bool alwaysHidden, string[] argsDescriptions = null, CustomRoles[] requiredRole = null)
     {
         // Logger.Info($"Creating Command {commandKey}", "Command.Create");

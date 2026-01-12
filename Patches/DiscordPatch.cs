@@ -18,9 +18,6 @@ namespace TOHE.Patches
             var details = $"TOHE v{Main.PluginDisplayVersion}";
             activity.Details = details;
 
-            // Change this if/when link breaks
-            activity.Assets.LargeImage = "https://tohe.weareten.ca/logo.png";
-
             try
             {
                 if (activity.State != "In Menus")
