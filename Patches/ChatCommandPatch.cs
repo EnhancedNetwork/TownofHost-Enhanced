@@ -424,7 +424,7 @@ internal class ChatCommands
             {
                 string name = PlayerControl.LocalPlayer.GetRealName();
 
-                Utils.SendMessage(text.Insert(0, new('\n', name.Count(x => x == '\n'))), title: name, noReplay: true);
+                Utils.SendMessage(text.Insert(0, new('\n', name.Count(x => x == '\n'))), title: name, addtoHistory: false);
 
                 canceled = true;
                 __instance.freeChatField.textArea.Clear();
@@ -1230,10 +1230,10 @@ internal class ChatCommands
 
         }
         // Show role info
-        Utils.SendMessage(Des, playerId, title, noReplay: true);
+        Utils.SendMessage(Des, playerId, title, addtoHistory: false);
 
         // Show role settings
-        Utils.SendMessage("", playerId, Conf.ToString(), noReplay: true);
+        Utils.SendMessage("", playerId, Conf.ToString(), addtoHistory: false);
         return;
     }
     public static void Old_OnReceiveChat(PlayerControl player, string text, out bool canceled)
@@ -2008,14 +2008,14 @@ internal class ChatCommands
         }
         if (Sub.ToString() != string.Empty)
         {
-            var ACleared = Sub.ToString().Remove(0, 2);
+            var ACleared = Sub.ToString()[2..];
             ACleared = ACleared.Length > 1200 ? $"<size={Asize}>" + ACleared.RemoveHtmlTags() + "</size>" : ACleared;
             Sub.Clear().Append(ACleared);
         }
 
-        Utils.SendMessage(Des, player.PlayerId, title, noReplay: true);
-        Utils.SendMessage("", player.PlayerId, Conf.ToString(), noReplay: true);
-        if (Sub.ToString() != string.Empty) Utils.SendMessage(Sub.ToString(), player.PlayerId, SubTitle, noReplay: true);
+        Utils.SendMessage(Des, player.PlayerId, title, addtoHistory: false);
+        Utils.SendMessage("", player.PlayerId, Conf.ToString(), addtoHistory: false);
+        if (Sub.ToString() != string.Empty) Utils.SendMessage(Sub.ToString(), player.PlayerId, SubTitle, addtoHistory: false);
 
         Logger.Info($"Command '/m' should be send message", "OnReceiveChat");
     }
@@ -2920,91 +2920,72 @@ internal class ChatCommands
 [HarmonyPatch(typeof(ChatController), nameof(ChatController.Update))]
 class ChatUpdatePatch
 {
+    public static readonly List<(string Text, byte SendTo, string Title, long SendTimeStamp)> LastMessages = [];
     public static bool DoBlockChat = false;
-    public static ChatController Instance;
+    // public static ChatController Instance;
+
     public static void Postfix(ChatController __instance)
     {
-        if (!AmongUsClient.Instance.AmHost || Main.MessagesToSend.Count == 0 || (Main.MessagesToSend[0].Item2 == byte.MaxValue && Main.MessageWait.Value > __instance.timeSinceLastMessage)) return;
-        if (DoBlockChat) return;
-
-        Instance ??= __instance;
+        var chatBubble = __instance.chatBubblePool.Prefab.CastFast<ChatBubble>();
+        chatBubble.TextArea.overrideColorTags = false;
 
         if (Main.DarkTheme.Value)
         {
-            var chatBubble = __instance.chatBubblePool.Prefab.CastFast<ChatBubble>();
-            chatBubble.TextArea.overrideColorTags = false;
             chatBubble.TextArea.color = Color.white;
-            chatBubble.Background.color = Color.black;
+            chatBubble.Background.color = new(0.1f, 0.1f, 0.1f, 1f);
         }
 
-        var player = PlayerControl.LocalPlayer;
-        if (GameStates.IsInGame || player.Data.IsDead)
-        {
-            player = Main.AllAlivePlayerControls.ToArray().OrderBy(x => x.PlayerId).FirstOrDefault()
-                     ?? Main.AllPlayerControls.ToArray().OrderBy(x => x.PlayerId).FirstOrDefault()
-                     ?? player;
-        }
-        //Logger.Info($"player is null? {player == null}", "ChatUpdatePatch");
-        if (player == null) return;
+        LastMessages.RemoveAll(x => Utils.TimeStamp - x.SendTimeStamp > 10);
+    }
 
-        (string msg, byte sendTo, string title) = Main.MessagesToSend[0];
-        //Logger.Info($"MessagesToSend - sendTo: {sendTo} - title: {title}", "ChatUpdatePatch");
+    internal static bool SendLastMessages(ref CustomRpcSender sender)
+    {
+        PlayerControl player = GameStates.IsLobby ? Main.AllPlayerControls.Without(PlayerControl.LocalPlayer).RandomElement() : Main.AllAlivePlayerControls.MinBy(x => x.PlayerId) ?? Main.AllPlayerControls.MinBy(x => x.PlayerId) ?? PlayerControl.LocalPlayer;
+        if (player == null) return false;
 
-        if (sendTo != byte.MaxValue && GameStates.IsLobby)
-        {
-            var networkedPlayerInfo = Utils.GetPlayerInfoById(sendTo);
-            if (networkedPlayerInfo != null)
-            {
-                if (networkedPlayerInfo.DefaultOutfit.ColorId == -1)
-                {
-                    var delaymessage = Main.MessagesToSend[0];
-                    Main.MessagesToSend.RemoveAt(0);
-                    Main.MessagesToSend.Add(delaymessage);
-                    return;
-                }
-                // green beans color id is -1
-            }
-            // It is impossible to get null player here unless it quits
-        }
-        Main.MessagesToSend.RemoveAt(0);
+        bool wasCleared = false;
 
-        int clientId = sendTo == byte.MaxValue ? -1 : Utils.GetPlayerById(sendTo).GetClientId();
-        var name = player.Data.PlayerName;
+        foreach ((string msg, byte sendTo, string title, _) in LastMessages)
+            wasCleared = SendMessage(player, msg, sendTo, title, ref sender);
 
-        //__instance.freeChatField.textArea.characterLimit = 999;
+        return LastMessages.Count > 0 && !wasCleared;
+    }
 
-        if (clientId == -1)
+    private static bool SendMessage(PlayerControl player, string msg, byte sendTo, string title, ref CustomRpcSender sender)
+    {
+        int clientId = sendTo == byte.MaxValue ? -1 : Utils.GetPlayerById(sendTo).OwnerId;
+
+        string name = player.Data.PlayerName;
+
+        if (clientId == -1 && HudManager.InstanceExists)
         {
             player.SetName(title);
-            DestroyableSingleton<HudManager>.Instance.Chat.AddChat(player, msg, false);
+            HudManager.Instance.Chat.AddChat(player, msg);
             player.SetName(name);
         }
 
-        if (clientId == AmongUsClient.Instance.ClientId || sendTo == PlayerControl.LocalPlayer.PlayerId)
-        {
-            player.SetName(title);
-            DestroyableSingleton<HudManager>.Instance.Chat.AddChat(player, msg, false);
-            player.SetName(name);
-            return;
-        }
-
-        var writer = CustomRpcSender.Create("MessagesToSend", SendOption.None);
-        writer.StartMessage(clientId);
-        writer.StartRpc(player.NetId, (byte)RpcCalls.SetName)
+        sender.AutoStartRpc(player.NetId, RpcCalls.SetName, clientId)
             .Write(player.Data.NetId)
             .Write(title)
             .EndRpc();
-        writer.StartRpc(player.NetId, (byte)RpcCalls.SendChat)
+
+        sender.AutoStartRpc(player.NetId, RpcCalls.SendChat, clientId)
             .Write(msg)
             .EndRpc();
-        writer.StartRpc(player.NetId, (byte)RpcCalls.SetName)
+
+        sender.AutoStartRpc(player.NetId, RpcCalls.SetName, clientId)
             .Write(player.Data.NetId)
             .Write(player.Data.PlayerName)
             .EndRpc();
-        writer.EndMessage();
-        writer.SendMessage();
 
-        __instance.timeSinceLastMessage = 0f;
+        if (sender.stream.Length > 500)
+        {
+            sender.SendMessage();
+            sender = CustomRpcSender.Create(sender.name, sender.sendOption);
+            return true;
+        }
+
+        return false;
     }
 }
 

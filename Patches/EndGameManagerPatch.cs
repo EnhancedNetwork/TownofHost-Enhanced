@@ -1,3 +1,4 @@
+using InnerNet;
 using TMPro;
 using TOHE.Roles.Core.DraftAssign;
 using UnityEngine;
@@ -64,5 +65,29 @@ public class EndGameManagerPatch
             {
                 BeginAutoPlayAgainCountdown(endGameManager, seconds - 1);
             }, 1f, "Begin Auto Play Again Countdown");
+    }
+}
+
+// Credit: EHR
+[HarmonyPatch(typeof(EndGameNavigation), nameof(EndGameNavigation.NextGame))]
+internal static class EndGameNavigationNextGamePatch
+{
+    public static void Postfix()
+    {
+        if (!AmongUsClient.Instance.AmHost) return;
+
+        _ = new LateTask(() =>
+        {
+            foreach (ClientData client in AmongUsClient.Instance.allClients)
+            {
+                if ((!client.IsDisconnected() && client.Character.Data.IsIncomplete) || client.Character.Data.DefaultOutfit.ColorId < 0 || Palette.PlayerColors.Length <= client.Character.Data.DefaultOutfit.ColorId)
+                {
+                    Logger.SendInGame(GetString("Error.InvalidColor") + $" {client.Id}/{client.PlayerName}", Color.yellow);
+                    AmongUsClient.Instance.KickPlayer(client.Id, false);
+                    Logger.Info($"Kicked client {client.Id}/{client.PlayerName} since its PlayerControl was not spawned in time.", "OnPlayerJoinedPatchPostfix");
+                    return;
+                }
+            }
+        }, 5f, "Kick Fortegreen Beans After Play-Again");
     }
 }

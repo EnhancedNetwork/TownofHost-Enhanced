@@ -54,15 +54,15 @@ public class Main : BasePlugin
     public static ConfigEntry<string> DebugKeyInput { get; private set; }
 
     public const string PluginGuid = "com.0xdrmoe.townofhostenhanced";
-    public const string PluginVersion = "2026.0105.300.00002"; // YEAR.MMDD.VERSION.CANARYDEV
-    public const string PluginDisplayVersion = "3.0.0 Alpha 2";
+    public const string PluginVersion = "2026.0113.300.00003"; // YEAR.MMDD.VERSION.CANARYDEV
+    public const string PluginDisplayVersion = "3.0.0 Alpha 3";
     public static readonly List<(int year, int month, int day, int revision)> SupportedVersionAU =
     [
         (2025, 11, 18, 0) // 2025.11.18 & 17.1
     ];
 
     /******************* Change one of the three variables to true before making a release. *******************/
-    public static readonly bool devRelease = true; // Latest: v3.0.0 Alpha 1
+    public static readonly bool devRelease = true; // Latest: v3.0.0 Alpha 3
     public static readonly bool canaryRelease = false; // Latest: V2.4.0 Beta 6
     public static readonly bool fullRelease = false; // Latest: V2.4.1
 
@@ -164,7 +164,7 @@ public class Main : BasePlugin
     public static readonly HashSet<byte> winnerList = [];
     public static readonly HashSet<string> winnerNameList = [];
     public static readonly HashSet<int> clientIdList = [];
-    public static readonly List<(string, byte, string)> MessagesToSend = [];
+    // public static readonly List<(string, byte, string)> MessagesToSend = [];
     public static readonly Dictionary<string, int> PlayerQuitTimes = [];
     public static bool isChatCommand = false;
     public static bool MeetingIsStarted = false;
@@ -213,8 +213,8 @@ public class Main : BasePlugin
         get
         {
             DateTime utcNow = DateTime.UtcNow;
-            DateTime t = new DateTime(utcNow.Year, 4, 1, 7, 0, 0, 0, DateTimeKind.Utc);
-            DateTime t2 = new DateTime(utcNow.Year, 4, 8, 7, 0, 0, 0, DateTimeKind.Utc);
+            DateTime t = new(utcNow.Year, 4, 1, 7, 0, 0, 0, DateTimeKind.Utc);
+            DateTime t2 = new(utcNow.Year, 4, 8, 7, 0, 0, 0, DateTimeKind.Utc);
             return utcNow >= t && utcNow <= t2;
         }
     }

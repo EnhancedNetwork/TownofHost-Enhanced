@@ -891,10 +891,10 @@ public static class DraftAssign
 
         }
         // Show role info
-        Utils.SendMessage(Des, playerId, title, noReplay: true);
+        Utils.SendMessage(Des, playerId, title, addtoHistory: false);
 
         // Show role settings
-        Utils.SendMessage("", playerId, Conf.ToString(), noReplay: true);
+        Utils.SendMessage("", playerId, Conf.ToString(), addtoHistory: false);
     }
 
     public static void SendDeckList(this PlayerControl player)
@@ -909,7 +909,7 @@ public static class DraftAssign
         var slots = deck.Select(x => x.ToColoredString()).ToList();
         var slotsFormatted = string.Join("\n- ", slots);
 
-        Utils.SendMessage(string.Format(template, slotsFormatted), player.PlayerId, title, noReplay: true);
+        Utils.SendMessage(string.Format(template, slotsFormatted), player.PlayerId, title, addtoHistory: false);
     }
 
     private static readonly Dictionary<string, string> PremadeDecks = new()
