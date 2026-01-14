@@ -29,7 +29,7 @@ public static class DraftAssign
     public static List<CustomRoles>[] PoolLookup = [];
 
     public static bool DraftActive => AssignedSlots.Any();
-    public static bool CanStartWithDraft => Main.AllAlivePlayerControls.All(x => PoolLookup[x.PlayerId] != null && PoolLookup[x.PlayerId].Any());
+    public static bool CanStartWithDraft => PoolLookup.Length >= Main.AllAlivePlayerControls.Length && Main.AllAlivePlayerControls.All(x => x.PlayerId < PoolLookup.Length && PoolLookup[x.PlayerId] != null && PoolLookup[x.PlayerId].Any());
 
     private static Dictionary<byte, CustomRoles> RoleResult => RoleAssign.RoleResult;
 
@@ -48,6 +48,7 @@ public static class DraftAssign
             int chance = role.GetMode();
 
             if (role.IsVanilla() || chance == 0 || role.IsAdditionRole() || role.IsGhostRole()) continue;
+            if (role.UsesCNOs() && GameStates.IsVanillaServer) continue;
             switch (role)
             {
                 case CustomRoles.Stalker when GameStates.FungleIsActive:
@@ -837,6 +838,14 @@ public static class DraftAssign
         return sb.ToString();
     }
 
+    public static void ResendDraftPoolMsg()
+    {
+        foreach (var pc in Main.AllPlayerControls)
+        {
+            Utils.SendMessage(string.Format(GetString("DraftPoolMessage"), pc.GetFormattedDraftPool()), pc.PlayerId);
+        }
+    }
+
     [Obfuscation(Exclude = true)]
     public enum DraftCmdResult
     {
@@ -891,10 +900,10 @@ public static class DraftAssign
 
         }
         // Show role info
-        Utils.SendMessage(Des, playerId, title, noReplay: true);
+        Utils.SendMessage(Des, playerId, title, addtoHistory: false);
 
         // Show role settings
-        Utils.SendMessage("", playerId, Conf.ToString(), noReplay: true);
+        Utils.SendMessage("", playerId, Conf.ToString(), addtoHistory: false);
     }
 
     public static void SendDeckList(this PlayerControl player)
@@ -909,7 +918,7 @@ public static class DraftAssign
         var slots = deck.Select(x => x.ToColoredString()).ToList();
         var slotsFormatted = string.Join("\n- ", slots);
 
-        Utils.SendMessage(string.Format(template, slotsFormatted), player.PlayerId, title, noReplay: true);
+        Utils.SendMessage(string.Format(template, slotsFormatted), player.PlayerId, title, addtoHistory: false);
     }
 
     private static readonly Dictionary<string, string> PremadeDecks = new()

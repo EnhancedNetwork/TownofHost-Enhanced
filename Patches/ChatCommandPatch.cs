@@ -123,7 +123,7 @@ internal class Command(string commandKey, string arguments, string description, 
             case UsageLevels.HostOrBanPerm when !pc.IsHost() && !AmongUsClient.Instance.AmHost && !Utils.IsPlayerModerator(pc.FriendCode) 
                 && !pc.FriendCode.GetDevUser().IsDev && permLvl < 4:
 
-            case UsageLevels.RoleSpecific when RequiredRole == null || !RequiredRole.Contains(pc.GetCustomRole()) || !RequiredRole.Any(x => pc.GetCustomSubRoles().Contains(x)):
+            case UsageLevels.RoleSpecific when RequiredRole == null || !RequiredRole.Contains(pc.GetCustomRole()) && !RequiredRole.Any(x => pc.GetCustomSubRoles().Contains(x)):
 
             case UsageLevels.MiniGames when !Options.CanPlayMiniGames.GetBool():
 
@@ -192,6 +192,12 @@ internal class Command(string commandKey, string arguments, string description, 
                 if (argsDescriptions[i].StartsWith("CommandArgs."))
                     argsDescriptions[i] = GetString(argsDescriptions[i]);
             }
+    }
+
+    public string ToHelpString()
+    {
+        var names = GetString(CommandKey).Split("|");
+        return $"\n  ○ /{names[0]} {Description}";
     }
 
     public static Command Create(string commandKey, string arguments, string description, UsageLevels usageLevel, UsageTimes usageTime, Action<PlayerControl, string, string, string[]> action, bool isCanceled, bool alwaysHidden, string[] argsDescriptions = null, CustomRoles[] requiredRole = null)
@@ -418,7 +424,7 @@ internal class ChatCommands
             {
                 string name = PlayerControl.LocalPlayer.GetRealName();
 
-                Utils.SendMessage(text.Insert(0, new('\n', name.Count(x => x == '\n'))), title: name, noReplay: true);
+                Utils.SendMessage(text.Insert(0, new('\n', name.Count(x => x == '\n'))), title: name, addtoHistory: false, noSplit: true);
 
                 canceled = true;
                 __instance.freeChatField.textArea.Clear();
@@ -1037,7 +1043,7 @@ internal class ChatCommands
     {
         role = new();
 
-        if (name == "" || name == string.Empty) return false;
+        if (name.IsNullOrWhiteSpace()) return false;
 
         if ((TranslationController.InstanceExists ? TranslationController.Instance.currentLanguage.languageID : SupportedLangs.SChinese) == SupportedLangs.SChinese)
         {
@@ -1054,6 +1060,8 @@ internal class ChatCommands
         else name = name.Trim().ToLower();
 
         string nameWithoutId = Regex.Replace(name.Replace(" ", ""), @"^\d+", "");
+
+        // Logger.Info($"found role name {nameWithoutId}", "GetRoleByName");
 
         if (Options.CrossLanguageGetRole.GetBool())
         {
@@ -1222,10 +1230,10 @@ internal class ChatCommands
 
         }
         // Show role info
-        Utils.SendMessage(Des, playerId, title, noReplay: true);
+        Utils.SendMessage(Des, playerId, title, addtoHistory: false);
 
         // Show role settings
-        Utils.SendMessage("", playerId, Conf.ToString(), noReplay: true);
+        Utils.SendMessage("", playerId, Conf.ToString(), addtoHistory: false);
         return;
     }
     public static void Old_OnReceiveChat(PlayerControl player, string text, out bool canceled)
@@ -1721,7 +1729,7 @@ internal class ChatCommands
             saveFileName = string.Join(" ", args[1..]);
 
         string saveFile = OptionCopier.Save(fileName: saveFileName);
-        Utils.SendMessage(string.Format(GetString("PresetSaved"), saveFile), PlayerControl.LocalPlayer.PlayerId);
+        Utils.SendMessage(string.Format(GetString("PresetSaved"), saveFile), player.PlayerId);
     }
 
     private static void LoadCommand(PlayerControl player, string commandKey, string text, string[] args)
@@ -1731,7 +1739,7 @@ internal class ChatCommands
             loadFileName = string.Join(" ", args[1..]);
 
         string loadFile = OptionCopier.Load(fileName: loadFileName);
-        Utils.SendMessage(string.Format(GetString("PresetLoaded"), loadFile), PlayerControl.LocalPlayer.PlayerId);
+        Utils.SendMessage(string.Format(GetString("PresetLoaded"), loadFile), player.PlayerId);
     }
 
     private static void DocsCommand(PlayerControl player, string commandKey, string text, string[] args)
@@ -1809,7 +1817,7 @@ internal class ChatCommands
             RequestCommandProcessingFromHost(text, commandKey);
             return;
         }
-        Utils.SendMessage(GetString("Message.GhostRoleInfo"), PlayerControl.LocalPlayer.PlayerId);
+        Utils.SendMessage(GetString("Message.GhostRoleInfo"), player.PlayerId);
     }
 
     private static void ApocInfoCommand(PlayerControl player, string commandKey, string text, string[] args)
@@ -1819,7 +1827,7 @@ internal class ChatCommands
             RequestCommandProcessingFromHost(text, commandKey);
             return;
         }
-        Utils.SendMessage(GetString("Message.ApocalypseInfo"), PlayerControl.LocalPlayer.PlayerId, Utils.ColorString(Utils.GetRoleColor(CustomRoles.Apocalypse), GetString("ApocalypseInfoTitle")));
+        Utils.SendMessage(GetString("Message.ApocalypseInfo"), player.PlayerId, Utils.ColorString(Utils.GetRoleColor(CustomRoles.Apocalypse), GetString("ApocalypseInfoTitle")));
     }
 
     private static void CovenInfoCommand(PlayerControl player, string commandKey, string text, string[] args)
@@ -1829,7 +1837,7 @@ internal class ChatCommands
             RequestCommandProcessingFromHost(text, commandKey);
             return;
         }
-        Utils.SendMessage(GetString("Message.CovenInfo"), PlayerControl.LocalPlayer.PlayerId, Utils.ColorString(Utils.GetRoleColor(CustomRoles.Coven), GetString("CovenInfoTitle")));
+        Utils.SendMessage(GetString("Message.CovenInfo"), player.PlayerId, Utils.ColorString(Utils.GetRoleColor(CustomRoles.Coven), GetString("CovenInfoTitle")));
     }
 
     private static void RenameCommand(PlayerControl player, string commandKey, string text, string[] args)
@@ -2000,14 +2008,14 @@ internal class ChatCommands
         }
         if (Sub.ToString() != string.Empty)
         {
-            var ACleared = Sub.ToString().Remove(0, 2);
+            var ACleared = Sub.ToString()[2..];
             ACleared = ACleared.Length > 1200 ? $"<size={Asize}>" + ACleared.RemoveHtmlTags() + "</size>" : ACleared;
             Sub.Clear().Append(ACleared);
         }
 
-        Utils.SendMessage(Des, player.PlayerId, title, noReplay: true);
-        Utils.SendMessage("", player.PlayerId, Conf.ToString(), noReplay: true);
-        if (Sub.ToString() != string.Empty) Utils.SendMessage(Sub.ToString(), player.PlayerId, SubTitle, noReplay: true);
+        Utils.SendMessage(Des, player.PlayerId, title, addtoHistory: false);
+        Utils.SendMessage("", player.PlayerId, Conf.ToString(), addtoHistory: false);
+        if (Sub.ToString() != string.Empty) Utils.SendMessage(Sub.ToString(), player.PlayerId, SubTitle, addtoHistory: false);
 
         Logger.Info($"Command '/m' should be send message", "OnReceiveChat");
     }
@@ -2086,10 +2094,10 @@ internal class ChatCommands
 
         if (!Options.PlayerCanUseTP.GetBool())
         {
-            Utils.SendMessage(GetString("DisableUseCommand"), PlayerControl.LocalPlayer.PlayerId);
+            Utils.SendMessage(GetString("DisableUseCommand"), player.PlayerId);
             return;
         }
-        PlayerControl.LocalPlayer.RpcTeleport(new Vector2(-0.2f, 1.3f));
+        player.RpcTeleport(new Vector2(-0.2f, 1.3f));
     }
     private static void KCountCommand(PlayerControl player, string commandKey, string text, string[] args)
     {
@@ -2101,7 +2109,7 @@ internal class ChatCommands
 
         if (!Options.EnableKillerLeftCommand.GetBool())
         {
-            Utils.SendMessage(GetString("DisableUseCommand"), PlayerControl.LocalPlayer.PlayerId);
+            Utils.SendMessage(GetString("DisableUseCommand"), player.PlayerId);
             return;
         }
 
@@ -2140,7 +2148,7 @@ internal class ChatCommands
                 break;
         }
 
-        Utils.SendMessage(sub.ToString(), PlayerControl.LocalPlayer.PlayerId);
+        Utils.SendMessage(sub.ToString(), player.PlayerId);
     }
 
     private static void TemplateCommand(PlayerControl player, string commandKey, string text, string[] args)
@@ -2230,7 +2238,7 @@ internal class ChatCommands
         {
             if (player.IsHost()) 
             {
-                Utils.SendMessage(args.Skip(1).Join(delimiter: " "), title: $"<color=#ff0000>{GetString("MessageFromTheHost")} ~ <size=1.25>{PlayerControl.LocalPlayer.GetRealName(clientData: true)}</size></color>");
+                Utils.SendMessage(args.Skip(1).Join(delimiter: " "), title: $"<color=#ff0000>{GetString("MessageFromTheHost")} ~ <size=1.25>{player.GetRealName(clientData: true)}</size></color>");
             }
             else if (player.FriendCode.GetDevUser().IsDev)
             {
@@ -2395,12 +2403,6 @@ internal class ChatCommands
         if (!AmongUsClient.Instance.AmHost)
         {
             RequestCommandProcessingFromHost(text, commandKey);
-            return;
-        }
-
-        if (!TagManager.CanUseExecuteCommand(player.FriendCode))
-        {
-            Utils.SendMessage(GetString("ExecuteCommandNoAccess"), player.PlayerId);
             return;
         }
 
@@ -2605,7 +2607,7 @@ internal class ChatCommands
                 }
             }
         }
-        Utils.SendMessage(GetString("Command.icons"), PlayerControl.LocalPlayer.PlayerId, GetString("IconsTitle"));
+        Utils.SendMessage(GetString("Command.icons"), player.PlayerId, GetString("IconsTitle"));
     }
 
     private static void MeCommand(PlayerControl player, string commandKey, string text, string[] args)
@@ -2620,37 +2622,37 @@ internal class ChatCommands
         const string no = "<#e31010><b>〤</b></color>";
 
         var subArgs = text.Length == 3 ? string.Empty : text[3..];
-        string Devbox = PlayerControl.LocalPlayer.FriendCode.GetDevUser().DeBug ? yes : no;
-        string ColorBox = PlayerControl.LocalPlayer.FriendCode.GetDevUser().ColorCmd ? yes : no;
+        string Devbox = player.FriendCode.GetDevUser().DeBug ? yes : no;
+        string ColorBox = player.FriendCode.GetDevUser().ColorCmd ? yes : no;
 
         if (string.IsNullOrEmpty(subArgs))
         {
-            HudManager.Instance.Chat.AddChat(PlayerControl.LocalPlayer, (PlayerControl.LocalPlayer.FriendCode.GetDevUser().HasTag() ? "\n" : string.Empty) + $"{string.Format(GetString("Message.MeCommandInfo"), PlayerControl.LocalPlayer.PlayerId, PlayerControl.LocalPlayer.GetRealName(clientData: true), PlayerControl.LocalPlayer.GetClient().FriendCode, PlayerControl.LocalPlayer.GetClient().GetHashedPuid(), PlayerControl.LocalPlayer.FriendCode.GetDevUser().GetUserType(), Devbox, "", ColorBox)}");
+            HudManager.Instance.Chat.AddChat(player, (player.FriendCode.GetDevUser().HasTag() ? "\n" : string.Empty) + $"{string.Format(GetString("Message.MeCommandInfo"), player.PlayerId, player.GetRealName(clientData: true), player.GetClient().FriendCode, player.GetClient().GetHashedPuid(), player.FriendCode.GetDevUser().GetUserType(), Devbox, "", ColorBox)}");
         }
         else
         {
             if (byte.TryParse(subArgs, out byte meid))
             {
-                if (meid != PlayerControl.LocalPlayer.PlayerId)
+                if (meid != player.PlayerId)
                 {
                     var targetplayer = Utils.GetPlayerById(meid);
                     if (targetplayer != null && targetplayer.GetClient() != null)
                     {
-                        HudManager.Instance.Chat.AddChat(PlayerControl.LocalPlayer, (PlayerControl.LocalPlayer.FriendCode.GetDevUser().HasTag() ? "\n" : string.Empty) + $"{string.Format(GetString("Message.MeCommandTargetInfo"), targetplayer.PlayerId, targetplayer.GetRealName(clientData: true), targetplayer.GetClient().FriendCode, targetplayer.GetClient().GetHashedPuid(), targetplayer.FriendCode.GetDevUser().GetUserType())}");
+                        HudManager.Instance.Chat.AddChat(player, (player.FriendCode.GetDevUser().HasTag() ? "\n" : string.Empty) + $"{string.Format(GetString("Message.MeCommandTargetInfo"), targetplayer.PlayerId, targetplayer.GetRealName(clientData: true), targetplayer.GetClient().FriendCode, targetplayer.GetClient().GetHashedPuid(), targetplayer.FriendCode.GetDevUser().GetUserType())}");
                     }
                     else
                     {
-                        HudManager.Instance.Chat.AddChat(PlayerControl.LocalPlayer, (PlayerControl.LocalPlayer.FriendCode.GetDevUser().HasTag() ? "\n" : string.Empty) + $"{GetString("Message.MeCommandInvalidID")}");
+                        HudManager.Instance.Chat.AddChat(player, (player.FriendCode.GetDevUser().HasTag() ? "\n" : string.Empty) + $"{GetString("Message.MeCommandInvalidID")}");
                     }
                 }
                 else
                 {
-                    HudManager.Instance.Chat.AddChat(PlayerControl.LocalPlayer, (PlayerControl.LocalPlayer.FriendCode.GetDevUser().HasTag() ? "\n" : string.Empty) + $"{string.Format(GetString("Message.MeCommandInfo"), PlayerControl.LocalPlayer.PlayerId, PlayerControl.LocalPlayer.GetRealName(clientData: true), PlayerControl.LocalPlayer.GetClient().FriendCode, PlayerControl.LocalPlayer.GetClient().GetHashedPuid(), PlayerControl.LocalPlayer.FriendCode.GetDevUser().GetUserType(), Devbox, "", ColorBox)}");
+                    HudManager.Instance.Chat.AddChat(player, (player.FriendCode.GetDevUser().HasTag() ? "\n" : string.Empty) + $"{string.Format(GetString("Message.MeCommandInfo"), player.PlayerId, player.GetRealName(clientData: true), player.GetClient().FriendCode, player.GetClient().GetHashedPuid(), player.FriendCode.GetDevUser().GetUserType(), Devbox, "", ColorBox)}");
                 }
             }
             else
             {
-                HudManager.Instance.Chat.AddChat(PlayerControl.LocalPlayer, (PlayerControl.LocalPlayer.FriendCode.GetDevUser().HasTag() ? "\n" : string.Empty) + $"{GetString("Message.MeCommandInvalidID")}");
+                HudManager.Instance.Chat.AddChat(player, (player.FriendCode.GetDevUser().HasTag() ? "\n" : string.Empty) + $"{GetString("Message.MeCommandInvalidID")}");
             }
         }
     }
@@ -2817,11 +2819,13 @@ internal class ChatCommands
 
         if (args.Length < 2 || args[1] == "start")
         {
+            if (!player.IsHost() && !AmongUsClient.Instance.AmHost && !Utils.IsPlayerModerator(player.FriendCode)&& !player.FriendCode.GetDevUser().IsDev) return;
+
             var startResult = DraftAssign.StartDraft();
 
             if (startResult == DraftAssign.DraftCmdResult.NoCurrentDraft)
             {
-                Utils.SendMessage(GetString("StartDraftWrongGameMode"), PlayerControl.LocalPlayer.PlayerId);
+                Utils.SendMessage(GetString("StartDraftWrongGameMode"), player.PlayerId);
             }
             else
             {
@@ -2839,11 +2843,13 @@ internal class ChatCommands
         }
         else if (args[1] == "add")
         {
+            if (!player.IsHost() && !AmongUsClient.Instance.AmHost && !Utils.IsPlayerModerator(player.FriendCode)&& !player.FriendCode.GetDevUser().IsDev) return;
+
             var addResult = DraftAssign.DraftActive;
 
             if (!addResult)
             {
-                Utils.SendMessage(GetString("NoCurrentDraft"), PlayerControl.LocalPlayer.PlayerId);
+                Utils.SendMessage(GetString("NoCurrentDraft"), player.PlayerId);
             }
             else
             {
@@ -2855,6 +2861,8 @@ internal class ChatCommands
         }
         else if (args[1] == "reset")
         {
+            if (!player.IsHost() && !AmongUsClient.Instance.AmHost && !Utils.IsPlayerModerator(player.FriendCode)&& !player.FriendCode.GetDevUser().IsDev) return;
+
             DraftAssign.Reset();
         }
         else
@@ -2863,28 +2871,28 @@ internal class ChatCommands
             DraftAssign.DraftCmdResult cmdResult;
             if (int.TryParse(args[1], out int index))
             {
-                (cmdResult, draftedRole) = PlayerControl.LocalPlayer.DraftRole(index);
-                PlayerControl.LocalPlayer.SendDraftDescription(index);
+                (cmdResult, draftedRole) = player.DraftRole(index);
+                player.SendDraftDescription(index);
             }
             else
             {
-                Utils.SendMessage(GetString("InvalidDraftSelection"), PlayerControl.LocalPlayer.PlayerId);
+                Utils.SendMessage(GetString("InvalidDraftSelection"), player.PlayerId);
                 return;
             }
 
             if (cmdResult == DraftAssign.DraftCmdResult.NoCurrentDraft)
             {
-                Utils.SendMessage(GetString("NoCurrentDraft"), PlayerControl.LocalPlayer.PlayerId);
+                Utils.SendMessage(GetString("NoCurrentDraft"), player.PlayerId);
                 return;
             }
             else if (cmdResult == DraftAssign.DraftCmdResult.DraftRemoved)
             {
-                Utils.SendMessage(GetString("DraftSelectionCleared"), PlayerControl.LocalPlayer.PlayerId);
+                Utils.SendMessage(GetString("DraftSelectionCleared"), player.PlayerId);
                 return;
             }
             else
             {
-                Utils.SendMessage(string.Format(GetString("DraftSelection"), draftedRole.ToColoredString()), PlayerControl.LocalPlayer.PlayerId);
+                Utils.SendMessage(string.Format(GetString("DraftSelection"), draftedRole.ToColoredString()), player.PlayerId);
             }
         }
     }
@@ -2897,9 +2905,9 @@ internal class ChatCommands
             return;
         }
 
-        if (int.TryParse(args[1], out int index2))
+        if (int.TryParse(args[1], out int index))
         {
-            player.SendDraftDescription(index2);
+            player.SendDraftDescription(index);
         }
         else
         {
@@ -2912,91 +2920,72 @@ internal class ChatCommands
 [HarmonyPatch(typeof(ChatController), nameof(ChatController.Update))]
 class ChatUpdatePatch
 {
+    public static readonly List<(string Text, byte SendTo, string Title, long SendTimeStamp)> LastMessages = [];
     public static bool DoBlockChat = false;
-    public static ChatController Instance;
+    // public static ChatController Instance;
+
     public static void Postfix(ChatController __instance)
     {
-        if (!AmongUsClient.Instance.AmHost || Main.MessagesToSend.Count == 0 || (Main.MessagesToSend[0].Item2 == byte.MaxValue && Main.MessageWait.Value > __instance.timeSinceLastMessage)) return;
-        if (DoBlockChat) return;
-
-        Instance ??= __instance;
+        var chatBubble = __instance.chatBubblePool.Prefab.CastFast<ChatBubble>();
+        chatBubble.TextArea.overrideColorTags = false;
 
         if (Main.DarkTheme.Value)
         {
-            var chatBubble = __instance.chatBubblePool.Prefab.CastFast<ChatBubble>();
-            chatBubble.TextArea.overrideColorTags = false;
             chatBubble.TextArea.color = Color.white;
-            chatBubble.Background.color = Color.black;
+            chatBubble.Background.color = new(0.1f, 0.1f, 0.1f, 1f);
         }
 
-        var player = PlayerControl.LocalPlayer;
-        if (GameStates.IsInGame || player.Data.IsDead)
-        {
-            player = Main.AllAlivePlayerControls.ToArray().OrderBy(x => x.PlayerId).FirstOrDefault()
-                     ?? Main.AllPlayerControls.ToArray().OrderBy(x => x.PlayerId).FirstOrDefault()
-                     ?? player;
-        }
-        //Logger.Info($"player is null? {player == null}", "ChatUpdatePatch");
-        if (player == null) return;
+        LastMessages.RemoveAll(x => Utils.TimeStamp - x.SendTimeStamp > 10);
+    }
 
-        (string msg, byte sendTo, string title) = Main.MessagesToSend[0];
-        //Logger.Info($"MessagesToSend - sendTo: {sendTo} - title: {title}", "ChatUpdatePatch");
+    internal static bool SendLastMessages(ref CustomRpcSender sender)
+    {
+        PlayerControl player = GameStates.IsLobby ? Main.AllPlayerControls.Without(PlayerControl.LocalPlayer).RandomElement() : Main.AllAlivePlayerControls.MinBy(x => x.PlayerId) ?? Main.AllPlayerControls.MinBy(x => x.PlayerId) ?? PlayerControl.LocalPlayer;
+        if (player == null) return false;
 
-        if (sendTo != byte.MaxValue && GameStates.IsLobby)
-        {
-            var networkedPlayerInfo = Utils.GetPlayerInfoById(sendTo);
-            if (networkedPlayerInfo != null)
-            {
-                if (networkedPlayerInfo.DefaultOutfit.ColorId == -1)
-                {
-                    var delaymessage = Main.MessagesToSend[0];
-                    Main.MessagesToSend.RemoveAt(0);
-                    Main.MessagesToSend.Add(delaymessage);
-                    return;
-                }
-                // green beans color id is -1
-            }
-            // It is impossible to get null player here unless it quits
-        }
-        Main.MessagesToSend.RemoveAt(0);
+        bool wasCleared = false;
 
-        int clientId = sendTo == byte.MaxValue ? -1 : Utils.GetPlayerById(sendTo).GetClientId();
-        var name = player.Data.PlayerName;
+        foreach ((string msg, byte sendTo, string title, _) in LastMessages)
+            wasCleared = SendMessage(player, msg, sendTo, title, ref sender);
 
-        //__instance.freeChatField.textArea.characterLimit = 999;
+        return LastMessages.Count > 0 && !wasCleared;
+    }
 
-        if (clientId == -1)
+    private static bool SendMessage(PlayerControl player, string msg, byte sendTo, string title, ref CustomRpcSender sender)
+    {
+        int clientId = sendTo == byte.MaxValue ? -1 : Utils.GetPlayerById(sendTo).OwnerId;
+
+        string name = player.Data.PlayerName;
+
+        if (clientId == -1 && HudManager.InstanceExists)
         {
             player.SetName(title);
-            DestroyableSingleton<HudManager>.Instance.Chat.AddChat(player, msg, false);
+            HudManager.Instance.Chat.AddChat(player, msg);
             player.SetName(name);
         }
 
-        if (clientId == AmongUsClient.Instance.ClientId || sendTo == PlayerControl.LocalPlayer.PlayerId)
-        {
-            player.SetName(title);
-            DestroyableSingleton<HudManager>.Instance.Chat.AddChat(player, msg, false);
-            player.SetName(name);
-            return;
-        }
-
-        var writer = CustomRpcSender.Create("MessagesToSend", SendOption.None);
-        writer.StartMessage(clientId);
-        writer.StartRpc(player.NetId, (byte)RpcCalls.SetName)
+        sender.AutoStartRpc(player.NetId, RpcCalls.SetName, clientId)
             .Write(player.Data.NetId)
             .Write(title)
             .EndRpc();
-        writer.StartRpc(player.NetId, (byte)RpcCalls.SendChat)
+
+        sender.AutoStartRpc(player.NetId, RpcCalls.SendChat, clientId)
             .Write(msg)
             .EndRpc();
-        writer.StartRpc(player.NetId, (byte)RpcCalls.SetName)
+
+        sender.AutoStartRpc(player.NetId, RpcCalls.SetName, clientId)
             .Write(player.Data.NetId)
             .Write(player.Data.PlayerName)
             .EndRpc();
-        writer.EndMessage();
-        writer.SendMessage();
 
-        __instance.timeSinceLastMessage = 0f;
+        if (sender.stream.Length > 500)
+        {
+            sender.SendMessage();
+            sender = CustomRpcSender.Create(sender.name, sender.sendOption);
+            return true;
+        }
+
+        return false;
     }
 }
 

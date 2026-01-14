@@ -284,6 +284,7 @@ public static class Options
     public static OptionItem DontUpdateDeadPlayers;
     public static OptionItem DeepLowLoad;
     //public static OptionItem DisableAntiBlackoutProtects;
+    public static OptionItem MessageRpcSizeLimit;
 
     public static OptionItem RoleAssigningAlgorithm;
     public static OptionItem KickNotJoinedPlayersRegularly;
@@ -1383,6 +1384,9 @@ public static class Options
         /* DisableAntiBlackoutProtects = BooleanOptionItem.Create(60384, "DisableAntiBlackoutProtects", false, TabGroup.SystemSettings, false)
              .SetGameMode(CustomGameMode.Standard)
              .SetColor(Color.red);*/
+
+        MessageRpcSizeLimit = IntegerOptionItem.Create(60296, "MessageRpcSizeLimit", new(500, 100000, 100), 1400, TabGroup.SystemSettings)
+            .SetHeader(true);
 
         KickNotJoinedPlayersRegularly = BooleanOptionItem.Create(60295, "KickNotJoinedPlayersRegularly", true, TabGroup.SystemSettings)
             .SetColor(Color.yellow);

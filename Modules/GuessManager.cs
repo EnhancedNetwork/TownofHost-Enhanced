@@ -551,9 +551,11 @@ public static class GuessManager
             result += mc[i];//匹配结果是完整的数字，此处可以不做拼接的
         }
 
-        if (byte.TryParse(result, out byte num))
+        Logger.Info($"result: {result}", "MsgToPlayerAndRole");
+
+        if (int.TryParse(result, out int num))
         {
-            id = num;
+            id = Convert.ToByte(num);
         }
         else
         {
@@ -575,6 +577,9 @@ public static class GuessManager
             role = new();
             return false;
         }
+
+        if (msg.Split(" ").Length > 2)
+            msg = string.Join(" ", msg.Split(" ")[2..]);
 
         if (!ChatCommands.GetRoleByName(msg, out role))
         {

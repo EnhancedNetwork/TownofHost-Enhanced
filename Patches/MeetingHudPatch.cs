@@ -1230,7 +1230,7 @@ class MeetingHudStartPatch
         {
             _ = new LateTask(() =>
             {
-                SendMessage(GetString("Warning.AntiBlackoutProtectionMsg"), 255, ColorString(Color.blue, GetString("AntiBlackoutProtectionTitle")), noReplay: true);
+                SendMessage(GetString("Warning.AntiBlackoutProtectionMsg"), 255, ColorString(Color.blue, GetString("AntiBlackoutProtectionTitle")), addtoHistory: false);
 
             }, 5f, "Warning BlackOut Is Active");
         }
@@ -1243,7 +1243,7 @@ class MeetingHudStartPatch
                 AntiBlackout.StoreExiledMessage = GetString("Warning.ShowAntiBlackExiledPlayer") + AntiBlackout.StoreExiledMessage;
                 _ = new LateTask(() =>
                 {
-                    SendMessage(AntiBlackout.StoreExiledMessage, 255, ColorString(Color.red, GetString("DefaultSystemMessageTitle")), noReplay: true);
+                    SendMessage(AntiBlackout.StoreExiledMessage, 255, ColorString(Color.red, GetString("DefaultSystemMessageTitle")), addtoHistory: false);
                     AntiBlackout.StoreExiledMessage = "";
                 }, 5.5f, "AntiBlackout.StoreExiledMessage");
             }

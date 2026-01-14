@@ -313,7 +313,7 @@ public abstract class OptionItem
     {
         if (
             Main.AllPlayerControls.Length <= 1 ||
-            AmongUsClient.Instance.AmHost == false ||
+            !AmongUsClient.Instance.AmHost ||
             PlayerControl.LocalPlayer == null
         ) return;
 

@@ -18,6 +18,7 @@ internal class Summoner : CovenManager
     public override CustomRoles Role => CustomRoles.Summoner;
     private const int Id = 32700;
     public override bool IsDesyncRole => true;
+    public override bool IsExperimental => true;
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.CovenPower;
     //================================================================\\
@@ -527,8 +528,6 @@ internal class Summoner : CovenManager
 
     public override void AfterMeetingTasks()
     {
-        base.AfterMeetingTasks();
-
         // Reset the summoning flag for the next meeting
         HasSummonedThisMeeting[_Player.PlayerId] = false;
 

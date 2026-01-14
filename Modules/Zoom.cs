@@ -5,11 +5,11 @@ namespace TOHE;
 
 // Credit：https://github.com/tugaru1975/TownOfPlus/TOPmods/Zoom.cs 
 // Credit：https://github.com/Yumenopai/TownOfHost_Y
-// [HarmonyPatch(typeof(HudManager), nameof(HudManager.Update))]
+[HarmonyPatch(typeof(HudManager), nameof(HudManager.Update))]
 public static class Zoom
 {
     private static bool ResetButtons = false;
-    public static void DoZoom()
+    public static void Prefix()
     {
         //if (PlayerControl.LocalPlayer.Is(RoleType.Impostor) && Options.OperateVisibilityImpostor.GetBool()) return;
         if (GameStates.IsShip && !GameStates.IsMeeting && GameStates.IsCanMove && PlayerControl.LocalPlayer.Data.IsDead || GameStates.IsLobby && GameStates.IsCanMove)

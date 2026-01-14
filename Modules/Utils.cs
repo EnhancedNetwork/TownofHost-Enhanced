@@ -6,6 +6,7 @@ using Il2CppInterop.Generator.Extensions;
 using Il2CppInterop.Runtime.InteropTypes.Arrays;
 using InnerNet;
 using System;
+using System.Collections;
 using System.Data;
 using System.Diagnostics;
 using System.IO;
@@ -935,11 +936,11 @@ public static class Utils
         covenb.Sort();
         addonsb.Sort();
 
-        SendMessage(string.Join("\n", impsb), PlayerId, ColorString(GetRoleColor(CustomRoles.Impostor), GetString("ImpostorRoles")), ShouldSplit: true);
-        SendMessage(string.Join("\n", crewsb), PlayerId, ColorString(GetRoleColor(CustomRoles.Crewmate), GetString("CrewmateRoles")), ShouldSplit: true);
-        SendMessage(string.Join("\n", neutralsb), PlayerId, ColorString(new Color32(127, 140, 141, byte.MaxValue), GetString("NeutralRoles")), ShouldSplit: true);
-        SendMessage(string.Join("\n", covenb), PlayerId, ColorString(GetRoleColor(CustomRoles.Coven), GetString("CovenRoles")), ShouldSplit: true);
-        SendMessage(string.Join("\n", addonsb), PlayerId, ColorString(new Color32(255, 154, 206, byte.MaxValue), GetString("AddonRoles")), ShouldSplit: true);
+        SendMessage(string.Join("\n", impsb), PlayerId, ColorString(GetRoleColor(CustomRoles.Impostor), GetString("ImpostorRoles")));
+        SendMessage(string.Join("\n", crewsb), PlayerId, ColorString(GetRoleColor(CustomRoles.Crewmate), GetString("CrewmateRoles")));
+        SendMessage(string.Join("\n", neutralsb), PlayerId, ColorString(new Color32(127, 140, 141, byte.MaxValue), GetString("NeutralRoles")));
+        SendMessage(string.Join("\n", covenb), PlayerId, ColorString(GetRoleColor(CustomRoles.Coven), GetString("CovenRoles")));
+        SendMessage(string.Join("\n", addonsb), PlayerId, ColorString(new Color32(255, 154, 206, byte.MaxValue), GetString("AddonRoles")));
     }
     public static void ShowChildrenSettings(OptionItem option, ref StringBuilder sb, int deep = 0, bool command = false)
     {
@@ -1236,53 +1237,42 @@ public static class Utils
         return !isHost && color == 18 ? byte.MaxValue : color is < 0 or > 18 ? byte.MaxValue : Convert.ToByte(color);
     }
 
-    public static void ShowHelpToClient(byte ID)
+    public static StringBuilder AppendGetString(this StringBuilder builder, string key)
     {
-        SendMessage(
-            GetString("CommandList")
-            + $"\n  ○ /n {GetString("Command.now")}"
-            + $"\n  ○ /r {GetString("Command.roles")}"
-            + $"\n  ○ /m {GetString("Command.myrole")}"
-            + $"\n  ○ /xf {GetString("Command.solvecover")}"
-            + $"\n  ○ /l {GetString("Command.lastresult")}"
-            + $"\n  ○ /win {GetString("Command.winner")}"
-            + "\n\n" + GetString("CommandOtherList")
-            + $"\n  ○ /color {GetString("Command.color")}"
-            + $"\n  ○ /qt {GetString("Command.quit")}"
-            + $"\n ○ /death {GetString("Command.death")}"
-            + $"\n ○ /icons {GetString("Command.iconinfo")}"
-            , ID);
+        return builder.Append(GetString(key));
     }
+
+    private static Command.UsageLevels currentBlock = Command.UsageLevels.Everyone;
+    private static void BuildHelp(Command command)
+    {
+        if (command.UsageLevel != currentBlock)
+        {
+            currentBlock = command.UsageLevel;
+            helpString.Append("\n\n");
+            helpString.AppendGetString($"CommandList.{currentBlock}");
+        }
+    
+        helpString.Append(command.ToHelpString());
+    }
+    private static readonly StringBuilder helpString = new();
     public static void ShowHelp(byte ID)
     {
-        SendMessage(
-            GetString("CommandList")
-            + $"\n  ○ /n {GetString("Command.now")}"
-            + $"\n  ○ /r {GetString("Command.roles")}"
-            + $"\n  ○ /m {GetString("Command.myrole")}"
-            + $"\n  ○ /l {GetString("Command.lastresult")}"
-            + $"\n  ○ /win {GetString("Command.winner")}"
-            + "\n\n" + GetString("CommandOtherList")
-            + $"\n  ○ /color {GetString("Command.color")}"
-            + $"\n  ○ /rn {GetString("Command.rename")}"
-            + $"\n  ○ /qt {GetString("Command.quit")}"
-            + $"\n  ○ /icons {GetString("Command.iconinfo")}"
-            + $"\n  ○ /death {GetString("Command.death")}"
-            + "\n\n" + GetString("CommandHostList")
-            + $"\n  ○ /s {GetString("Command.say")}"
-            + $"\n  ○ /rn {GetString("Command.rename")}"
-            + $"\n  ○ /poll {GetString("Command.Poll")}"
-            + $"\n  ○ /xf {GetString("Command.solvecover")}"
-            + $"\n  ○ /mw {GetString("Command.mw")}"
-            + $"\n  ○ /kill {GetString("Command.kill")}"
-            + $"\n  ○ /exe {GetString("Command.exe")}"
-            + $"\n  ○ /level {GetString("Command.level")}"
-            + $"\n  ○ /id {GetString("Command.idlist")}"
-            + $"\n  ○ /qq {GetString("Command.qq")}"
-            + $"\n  ○ /dump {GetString("Command.dump")}"
-            + $"\n  ○ /start {GetString("Command.start")}"
-        //    + $"\n  ○ /iconhelp {GetString("Command.iconhelp")}"
-            , ID);
+        PlayerControl pc = ID.GetPlayer();
+        if (pc == null) return;
+
+        List<Command> commands = [.. Command.AllCommands.Values.OrderBy(x => x.UsageLevel).ThenBy(x => x.UsageTime)];
+
+        helpString.Clear();
+        helpString.Append("CommandList");
+
+        foreach (Command command in commands)
+        {
+            if (!command.CanUseCommand(pc, checkTime: false)) continue;
+
+            BuildHelp(command);
+        }
+
+        SendMessage(helpString.ToString(), ID);
     }
     public static string[] SplitMessage(this string LongMsg)
     {
@@ -1338,46 +1328,298 @@ public static class Utils
             if (text.IndexOf("\n") <= 4) text = text[(text.IndexOf("\n") + 1)..text.Length];
             SendMessage(text, sendTo, title);
         }
-
-
     }
-    public static void SendMessage(string text, byte sendTo = byte.MaxValue, string title = "", bool logforChatManager = false, bool noReplay = false, bool ShouldSplit = false)
+
+    public static void SendMultipleMessages(this IEnumerable<Message> messages, SendOption sendOption = SendOption.Reliable)
     {
-        if (!AmongUsClient.Instance.AmHost) return;
-        if (title.IsNullOrWhiteSpace()) title = "<color=#aaaaff>" + GetString("DefaultSystemMessageTitle") + "</color>";
-        if (title.Count(x => x == '\u2605') == 2 && !title.Contains('\n'))
-        {
-            if (title.Contains('<') && title.Contains('>') && title.Contains('#'))
-                title = $"{title[..(title.IndexOf('>') + 1)]}\u27a1{title.Replace("\u2605", "")[..(title.LastIndexOf('<') - 2)]}\u2b05";
-            else title = "\u27a1" + title.Replace("\u2605", "") + "\u2b05";
-        }
+        var sender = CustomRpcSender.Create("Utils.SendMultipleMessages", sendOption);
+        sender = messages.Aggregate(sender, (current, message) => SendMessage(message.Text, message.SendTo, message.Title, writer: current, multiple: true, sendOption: sendOption));
+        sender.SendMessage(dispose: sender.stream.Length <= 3);
+    }
 
-        text = text.Replace("color=", string.Empty);
-
+    public static CustomRpcSender SendMessage(string text, byte sendTo = byte.MaxValue, string title = "", bool noSplit = false, CustomRpcSender writer = null, bool final = false, bool multiple = false, SendOption sendOption = SendOption.Reliable, bool addtoHistory = true)
+    {
         try
         {
-            if (ShouldSplit && text.Length > 1200)
+            PlayerControl receiver = GetPlayerById(sendTo, false);
+            if (sendTo != byte.MaxValue && receiver == null || title.RemoveHtmlTags().Trim().Length == 0 && text.RemoveHtmlTags().Trim().Length == 0) return writer;
+
+            if (!AmongUsClient.Instance.AmHost)
             {
-                text.SplitMessage().Do(x => SendMessage(x, sendTo, title, logforChatManager, noReplay, false));
-                return;
+                if (sendTo == PlayerControl.LocalPlayer.PlayerId && !multiple)
+                {
+                    MessageWriter w = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.RequestSendMessage, SendOption.Reliable, AmongUsClient.Instance.HostId);
+                    w.Write(text);
+                    w.Write(sendTo);
+                    w.Write(title);
+                    w.Write(noSplit);
+                    AmongUsClient.Instance.FinishRpcImmediately(w);
+                }
+
+                return writer;
             }
-            //else if (text.Length > 1200 && (!GetPlayerById(sendTo).IsModClient()))
-            //{
-            //    text = text.RemoveHtmlTagsIfNeccessary();
-            //}
+
+            if (title == "") title = GetString("DefaultSystemMessageTitle");
+
+            if (title.Count(x => x == '\u2605') == 2 && !title.Contains('\n'))
+            {
+                if (title.Contains('<') && title.Contains('>') && title.Contains('#'))
+                    title = $"{title[..(title.IndexOf('>') + 1)]}\u27a1{title.Replace("\u2605", "")[..(title.LastIndexOf('<') - 2)]}\u2b05";
+                else
+                    title = "\u27a1" + title.Replace("\u2605", "") + "\u2b05";
+            }
+
+            text = text.Replace("color=", string.Empty);
+            title = title.Replace("color=", string.Empty);
+
+            PlayerControl sender = !addtoHistory ? PlayerControl.LocalPlayer : Main.AllAlivePlayerControls.MinBy(x => x.PlayerId) ?? Main.AllPlayerControls.MinBy(x => x.PlayerId) ?? PlayerControl.LocalPlayer;
+
+            if (sendTo != byte.MaxValue && receiver.AmOwner)
+            {
+                if (HudManager.InstanceExists)
+                {
+                    string name = sender.Data.PlayerName;
+                    sender.SetName(title);
+                    HudManager.Instance.Chat.AddChat(sender, text);
+                    sender.SetName(name);
+                }
+
+                try
+                {
+                    string pureText = text.RemoveHtmlTags();
+                    string pureTitle = title.RemoveHtmlTags();
+                    Logger.Info($" Message: {pureText[..(pureText.Length <= 300 ? pureText.Length : 300)]} - To: {GetPlayerById(sendTo)?.GetRealName()} - Title: {pureTitle[..(pureTitle.Length <= 300 ? pureTitle.Length : 300)]}", "SendMessage");
+                }
+                catch { Logger.Info(" Message sent", "SendMessage"); }
+
+                if (addtoHistory) ChatUpdatePatch.LastMessages.Add((text, sendTo, title, TimeStamp));
+                return writer;
+            }
+
+            int targetClientId = sendTo == byte.MaxValue ? -1 : receiver.OwnerId;
+
+            if (writer == null || writer.CurrentState == CustomRpcSender.State.Finished)
+                writer = CustomRpcSender.Create("Utils.SendMessage(1)", sendOption);
+
+            int fullRpcSizeLimit = Options.MessageRpcSizeLimit.GetInt();
+            int textRpcSize = text.Length * 2;
+            int titleRpcSize = title.Length * 2 + 4;
+            int resetNameRpcSize = sender.Data.PlayerName.Length * 2 + 4;
+            int fullRpcSize = textRpcSize + titleRpcSize + resetNameRpcSize;
+
+            if (!noSplit)
+            {
+                int titleRpcSizeLimit = fullRpcSizeLimit - textRpcSize - resetNameRpcSize;
+
+                if ((fullRpcSize <= fullRpcSizeLimit && titleRpcSizeLimit <= titleRpcSize) || title.Length <= 100)
+                {
+                    writer.AutoStartRpc(sender.NetId, RpcCalls.SetName, targetClientId)
+                        .Write(sender.Data.NetId)
+                        .Write(title)
+                        .EndRpc();
+                }
+                else
+                {
+                    titleRpcSizeLimit = (fullRpcSizeLimit - 8 - resetNameRpcSize) * 2;
+
+                    if (titleRpcSizeLimit - 4 < 1)
+                    {
+                        Logger.SendInGame(GetString("MessageTooLong"));
+                        if (!multiple) writer.SendMessage(dispose: true);
+                        return writer;
+                    }
+
+                    string[] lines = title.Split('\n');
+                    var shortenedTitle = string.Empty;
+
+                    foreach (string line in lines)
+                    {
+                        if (shortenedTitle.Length * 2 + line.Length * 2 + 4 < titleRpcSizeLimit)
+                        {
+                            shortenedTitle += line + "\n";
+                            continue;
+                        }
+
+                        if (shortenedTitle.Length * 2 >= titleRpcSizeLimit - 4)
+                        {
+                            foreach (char[] chars in shortenedTitle.Chunk(titleRpcSizeLimit - 4))
+                                writer = SendTempTitleMessage(new string(chars));
+                        }
+                        else
+                            writer = SendTempTitleMessage(shortenedTitle);
+
+                        string sentText = shortenedTitle;
+                        shortenedTitle = line + "\n";
+
+                        if (Regex.Matches(sentText, "<size").Count > Regex.Matches(sentText, "</size>").Count)
+                        {
+                            string sizeTag = Regex.Matches(sentText, @"<size=\d+\.?\d*%?>")[^1].Value;
+                            shortenedTitle = sizeTag + shortenedTitle;
+                        }
+                    }
+
+                    if (shortenedTitle.Length > 0 && !shortenedTitle.IsNullOrWhiteSpace())
+                        writer = SendTempTitleMessage(shortenedTitle);
+
+                    if (text == "\n") return writer;
+
+                    title = "‎";
+
+                    if (writer.CurrentState == CustomRpcSender.State.Finished)
+                        writer = CustomRpcSender.Create("Utils.SendMessage(2)", sendOption);
+
+                    writer.AutoStartRpc(sender.NetId, RpcCalls.SetName, targetClientId)
+                        .Write(sender.Data.NetId)
+                        .Write(title)
+                        .EndRpc();
+
+                    CustomRpcSender SendTempTitleMessage(string tempTitle)
+                    {
+                        if (writer.CurrentState == CustomRpcSender.State.Finished)
+                            writer = CustomRpcSender.Create("Utils.SendMessage.SendTempTitleMessage", sendOption);
+
+                        writer.AutoStartRpc(sender.NetId, RpcCalls.SetName, targetClientId)
+                            .Write(sender.Data.NetId)
+                            .Write(tempTitle)
+                            .EndRpc();
+
+                        writer.AutoStartRpc(sender.NetId, RpcCalls.SendChat, targetClientId)
+                            .Write("\n")
+                            .EndRpc();
+
+                        writer.AutoStartRpc(sender.NetId, RpcCalls.SetName, targetClientId)
+                            .Write(sender.Data.NetId)
+                            .Write(Main.AllPlayerNames.GetValueOrDefault(sender.PlayerId, string.Empty))
+                            .EndRpc();
+
+                        writer.SendMessage();
+
+                        try
+                        {
+                            string pureTitle = tempTitle.RemoveHtmlTags();
+                            Logger.Info($" Message: \\n - To: {(sendTo == byte.MaxValue ? "Everyone" : $"{GetPlayerById(sendTo)?.GetRealName()}")} - Title: {pureTitle[..(pureTitle.Length <= 300 ? pureTitle.Length : 300)]}", "SendMessage");
+                        }
+                        catch { Logger.Info(" Message sent", "SendMessage"); }
+
+                        if (addtoHistory) ChatUpdatePatch.LastMessages.Add(("\n", sendTo, tempTitle, TimeStamp));
+                        return writer;
+                    }
+                }
+            }
+
+            titleRpcSize = title.Length * 2 + 4;
+            int textRpcSizeLimit = fullRpcSizeLimit - titleRpcSize - resetNameRpcSize;
+
+            if (textRpcSizeLimit < 1 && textRpcSize >= textRpcSizeLimit && !noSplit)
+            {
+                Logger.SendInGame(GetString("MessageTooLong"));
+                if (!multiple) writer.SendMessage(dispose: true);
+                return writer;
+            }
+
+            if (textRpcSize >= textRpcSizeLimit && !noSplit)
+            {
+                string[] lines = text.Split('\n');
+                var shortenedText = string.Empty;
+
+                foreach (string line in lines)
+                {
+                    if (shortenedText.Length * 2 + line.Length * 2 + 4 < textRpcSizeLimit)
+                    {
+                        shortenedText += line + "\n";
+                        continue;
+                    }
+
+                    writer = shortenedText.Length * 2 >= textRpcSizeLimit
+                        ? shortenedText.Chunk(textRpcSizeLimit).Aggregate(writer, (current, chunk) => SendMessage(new(chunk), sendTo, title, true, current, sendOption: sendOption))
+                        : SendMessage(shortenedText, sendTo, title, true, writer, sendOption: sendOption);
+
+                    string sentText = shortenedText;
+                    shortenedText = line + "\n";
+
+                    if (Regex.Matches(sentText, "<size").Count > Regex.Matches(sentText, "</size>").Count)
+                    {
+                        string sizeTag = Regex.Matches(sentText, @"<size=\d+\.?\d*%?>")[^1].Value;
+                        shortenedText = sizeTag + shortenedText;
+                    }
+                }
+
+                if (shortenedText.Length > 0 && !shortenedText.IsNullOrWhiteSpace()) writer = SendMessage(shortenedText, sendTo, title, true, writer, true, sendOption: sendOption);
+                else
+                {
+                    writer.AutoStartRpc(sender.NetId, RpcCalls.SetName, targetClientId)
+                        .Write(sender.Data.NetId)
+                        .Write(Main.AllPlayerNames.GetValueOrDefault(sender.PlayerId, string.Empty))
+                        .EndRpc();
+
+                    if (!multiple) writer.SendMessage();
+                    else RestartMessageIfTooLong();
+                }
+
+                return writer;
+            }
+
+            try
+            {
+                string pureText = text.RemoveHtmlTags();
+                string pureTitle = title.RemoveHtmlTags();
+                Logger.Info($" Message: {pureText[..(pureText.Length <= 300 ? pureText.Length : 300)]} - To: {(sendTo == byte.MaxValue ? "Everyone" : $"{GetPlayerById(sendTo)?.GetRealName()}")} - Title: {pureTitle[..(pureTitle.Length <= 300 ? pureTitle.Length : 300)]}", "SendMessage");
+            }
+            catch { Logger.Info(" Message sent", "SendMessage"); }
+
+            if (noSplit)
+            {
+                text = text.TrimStart('\n');
+                if (!text.EndsWith('\n')) text += "\n";
+                text += "‎";
+            }
+
+            if (writer.CurrentState == CustomRpcSender.State.Ready)
+            {
+                writer.AutoStartRpc(sender.NetId, RpcCalls.SetName, targetClientId)
+                    .Write(sender.Data.NetId)
+                    .Write(title)
+                    .EndRpc();
+            }
+
+            writer.AutoStartRpc(sender.NetId, RpcCalls.SendChat, targetClientId)
+                .Write(text)
+                .EndRpc();
+
+            if (sendTo == byte.MaxValue && HudManager.InstanceExists)
+            {
+                string name = sender.Data.PlayerName;
+                sender.SetName(title);
+                HudManager.Instance.Chat.AddChat(sender, text);
+                sender.SetName(name);
+            }
+
+            if ((noSplit && final) || !noSplit)
+            {
+                writer.AutoStartRpc(sender.NetId, RpcCalls.SetName, targetClientId)
+                    .Write(sender.Data.NetId)
+                    .Write(Main.AllPlayerNames.GetValueOrDefault(sender.PlayerId, string.Empty))
+                    .EndRpc();
+
+                if (!multiple) writer.SendMessage();
+                else RestartMessageIfTooLong();
+            }
+            else
+                RestartMessageIfTooLong();
         }
-        catch (Exception exx)
+        catch (Exception e) { ThrowException(e); }
+
+        if (addtoHistory) ChatUpdatePatch.LastMessages.Add((text, sendTo, title, TimeStamp));
+        return writer;
+
+        void RestartMessageIfTooLong()
         {
-            Logger.Warn($"Error after try split the msg {text} at: {exx}", "Utils.SendMessage.SplitMessage");
+            if (writer.stream.Length > 500)
+            {
+                writer.SendMessage();
+                writer = CustomRpcSender.Create("Utils.SendMessage", sendOption);
+            }
         }
-
-        // set noReplay to false when you want to send previous sys msg or do not want to add a sys msg in the history
-        if (!noReplay && GameStates.IsInGame) ChatManager.AddSystemChatHistory(sendTo, text);
-
-        if (!logforChatManager)
-            ChatManager.AddToHostMessage(text.RemoveHtmlTagsTemplate());
-
-        Main.MessagesToSend.Add((text.RemoveHtmlTagsTemplate(), sendTo, title));
     }
     public static bool IsPlayerModerator(string friendCode)
     {
@@ -1831,27 +2073,46 @@ public static class Utils
     private static readonly StringBuilder TargetDeathReason = new();
     private static readonly StringBuilder TargetSuffix = new();
     private static readonly StringBuilder TargetMark = new(20);
-    public static async void NotifyRoles(PlayerControl SpecifySeer = null, PlayerControl SpecifyTarget = null, bool isForMeeting = false, bool NoCache = false, bool ForceLoop = true, bool CamouflageIsForMeeting = false, bool MushroomMixupIsActive = false)
+    public static void NotifyRoles(PlayerControl SpecifySeer = null, PlayerControl SpecifyTarget = null, bool isForMeeting = false, bool NoCache = false, bool ForceLoop = true, bool CamouflageIsForMeeting = false, bool MushroomMixupIsActive = false, bool GuesserIsForMeeting = false, SendOption SendOption = SendOption.Reliable)
     {
-        if (!AmongUsClient.Instance.AmHost || GameStates.IsHideNSeek || Main.AllPlayerControls == null || SetUpRoleTextPatch.IsInIntro) return;
-        if (MeetingHud.Instance)
+        try
         {
-            // When the meeting window is active and game is not ended
-            if (!GameEndCheckerForNormal.GameIsEnded) return;
-        }
-        else
-        {
-            // When some one press report button but NotifyRoles is not for meeting
-            if (Main.MeetingIsStarted && !isForMeeting) return;
-        }
+            if (!AmongUsClient.Instance.AmHost) return;
+            if (!SetUpRoleTextPatch.IsInIntro && ((SpecifySeer != null && SpecifySeer.IsModded() && (Options.CurrentGameMode == CustomGameMode.Standard || SpecifySeer.IsHost())) || (GameStates.IsMeeting && !isForMeeting) || GameStates.IsLobby)) return;
 
-        //var caller = new System.Diagnostics.StackFrame(1, false);
-        //var callerMethod = caller.GetMethod();
-        //string callerMethodName = callerMethod.Name;
-        //string callerClassName = callerMethod.DeclaringType.FullName;
-        //Logger.Info($" Was called from: {callerClassName}.{callerMethodName}", "NotifyRoles");
+            PlayerControl[] apc = Main.AllPlayerControls;
+            PlayerControl[] seerList = SpecifySeer != null ? [SpecifySeer] : apc;
+            PlayerControl[] targetList = SpecifyTarget != null ? [SpecifyTarget] : apc;
 
-        await DoNotifyRoles(SpecifySeer, SpecifyTarget, isForMeeting, NoCache, ForceLoop, CamouflageIsForMeeting, MushroomMixupIsActive);
+            var sender = CustomRpcSender.Create("NotifyRoles", SendOption, log: false);
+            var hasValue = false;
+
+            foreach (PlayerControl seer in seerList)
+            {
+                hasValue |= WriteSetNameRpcsToSender(ref sender, isForMeeting, NoCache, ForceLoop, CamouflageIsForMeeting, GuesserIsForMeeting, MushroomMixupIsActive, seer, seerList, targetList, out bool senderWasCleared, SendOption);
+                if (senderWasCleared) hasValue = false;
+
+                if (sender.stream.Length > 500)
+                {
+                    sender.SendMessage();
+                    sender = CustomRpcSender.Create("NotifyRoles", SendOption, log: false);
+                    hasValue = false;
+                }
+            }
+
+            sender.SendMessage(!hasValue || sender.stream.Length <= 3);
+
+            if (Options.CurrentGameMode != CustomGameMode.Standard) return;
+
+            string seers = seerList.Length == apc.Length ? "Everyone" : string.Join(", ", seerList.Select(x => x.GetRealName()));
+            string targets = targetList.Length == apc.Length ? "Everyone" : string.Join(", ", targetList.Select(x => x.GetRealName()));
+
+            if (seers.Length == 0) seers = "\u2205";
+            if (targets.Length == 0) targets = "\u2205";
+
+            Logger.Info($" Seers: {seers} ---- Targets: {targets}", "NR");
+        }
+        catch (Exception e) { ThrowException(e); }
     }
     public static Task DoNotifyRoles(PlayerControl SpecifySeer = null, PlayerControl SpecifyTarget = null, bool isForMeeting = false, bool NoCache = false, bool ForceLoop = true, bool CamouflageIsForMeeting = false, bool MushroomMixupIsActive = false, SendOption SendOption = SendOption.Reliable)
     {
@@ -2720,6 +2981,7 @@ public static class Utils
             return rso is PlayerState.DeathReason.Overtired
                 or PlayerState.DeathReason.etc
                 or PlayerState.DeathReason.AFK
+                or PlayerState.DeathReason.Disconnected
                 or PlayerState.DeathReason.Vote
                 or PlayerState.DeathReason.Gambled
                 or PlayerState.DeathReason.Armageddon;
@@ -3217,4 +3479,11 @@ public static class Utils
     public static bool IsAllAlive => Main.PlayerStates.Values.All(state => state.countTypes == CountTypes.OutOfGame || !state.IsDead);
     public static int PlayersCount(CountTypes countTypes) => Main.PlayerStates.Values.Count(state => state.countTypes == countTypes);
     public static int AlivePlayersCount(CountTypes countTypes) => Main.AllAlivePlayerControls.Count(pc => pc.Is(countTypes));
+}
+
+public class Message(string text, byte sendTo = byte.MaxValue, string title = "")
+{
+    public string Text { get; } = text;
+    public byte SendTo { get; } = sendTo;
+    public string Title { get; } = title;
 }

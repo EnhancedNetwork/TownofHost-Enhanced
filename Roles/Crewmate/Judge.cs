@@ -300,26 +300,6 @@ internal class Judge : RoleBase
         error = string.Empty;
         return true;
     }
-    public static bool CheckCommond(ref string msg, string command, bool exact = true)
-    {
-        var comList = command.Split('|');
-        foreach (var comm in comList)
-        {
-            if (exact)
-            {
-                if (msg == "/" + comm) return true;
-            }
-            else
-            {
-                if (msg.StartsWith("/" + comm))
-                {
-                    msg = msg.Replace("/" + comm, string.Empty);
-                    return true;
-                }
-            }
-        }
-        return false;
-    }
 
     private static void SendRPC(byte targetId)
     {

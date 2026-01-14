@@ -19,7 +19,7 @@ public abstract class RoleBase
     public bool HasVoted = false;
     public virtual bool IsExperimental => false;
     public virtual bool IsDesyncRole => false;
-    public virtual bool IsSideKick => false;
+    public virtual bool UsesCNOs => false;
 
     public void OnInit() // CustomRoleManager.RoleClass executes this
     {
