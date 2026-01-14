@@ -79,6 +79,7 @@ public static class CustomRolesHelper
         CustomRoles.EvilSpirit;
 
     }
+    public static bool UsesCNOs(this CustomRoles role) => role.GetStaticRoleClass().UsesCNOs;
     public static bool IsBucketableRole(this CustomRoles role)
         => !role.IsGhostRole() && !role.IsVanilla() && !(role is CustomRoles.GM
                     or CustomRoles.SpeedBooster

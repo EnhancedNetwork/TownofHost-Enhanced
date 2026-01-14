@@ -24,14 +24,14 @@ public static class CustomRoleManager
         if (!role.IsVanilla() && !role.IsAdditionRole()
             && role is not CustomRoles.Apocalypse and not CustomRoles.Mini and not CustomRoles.NotAssigned and not CustomRoles.SpeedBooster and not CustomRoles.Killer and not CustomRoles.GM)
         {
-            if (RoleClass.Where(x => x.Value.Role == role).Count() > 1)
+            if (RoleClass.Count(x => x.Value.Role == role) > 1)
                 Logger.Error($"RoleClass for {role} is not unique.", "GetStaticRoleClass");
             if (roleClass == null)
                 Logger.Error($"RoleClass for {role} is null.", "GetStaticRoleClass");
         }
         return roleClass ?? new DefaultSetup();
     }
-    public static List<RoleBase> AllEnabledRoles => Main.PlayerStates.Values.Select(x => x.RoleClass).ToList(); //Since there are classes which use object attributes and playerstate is not removed.
+    public static List<RoleBase> AllEnabledRoles => [.. Main.PlayerStates.Values.Select(x => x.RoleClass)]; //Since there are classes which use object attributes and playerstate is not removed.
     public static bool HasEnabled(this CustomRoles role) => role.GetStaticRoleClass().IsEnable;
 
     public static bool OtherCollectionsSet = false;
@@ -40,7 +40,7 @@ public static class CustomRoleManager
         List<RoleBase> roles = [];
         foreach (var role in RoleClass.Values)
         {
-            if (IsOptBlackListed(role.GetType()) || role.IsExperimental) continue;
+            if (IsOptBlackListed(role.GetType()) || role.IsExperimental || (role.UsesCNOs && GameStates.IsVanillaServer)) continue;
 
             if (role.ThisRoleType == type)
             {
@@ -55,19 +55,19 @@ public static class CustomRoleManager
         switch (team)
         {
             case Custom_Team.Crewmate:
-                roles = RoleClass.Where(r => r.Value.IsExperimental && r.Key.IsCrewmate()).Select(r => r.Value).ToList();
+                roles = [.. RoleClass.Where(r => r.Value.IsExperimental && r.Key.IsCrewmate() && !(r.Value.UsesCNOs && GameStates.IsVanillaServer)).Select(r => r.Value)];
                 break;
 
             case Custom_Team.Impostor:
-                roles = RoleClass.Where(r => r.Value.IsExperimental && r.Key.IsImpostorTeam()).Select(r => r.Value).ToList();
+                roles = [.. RoleClass.Where(r => r.Value.IsExperimental && r.Key.IsImpostorTeam() && !(r.Value.UsesCNOs && GameStates.IsVanillaServer)).Select(r => r.Value)];
                 break;
 
             case Custom_Team.Neutral:
-                roles = RoleClass.Where(r => r.Value.IsExperimental && r.Key.IsNeutralTeamV2()).Select(r => r.Value).ToList();
+                roles = [.. RoleClass.Where(r => r.Value.IsExperimental && r.Key.IsNeutralTeamV2() && !(r.Value.UsesCNOs && GameStates.IsVanillaServer)).Select(r => r.Value)];
                 break;
 
             case Custom_Team.Coven:
-                roles = RoleClass.Where(r => r.Value.IsExperimental && r.Key.IsCoven()).Select(r => r.Value).ToList();
+                roles = [.. RoleClass.Where(r => r.Value.IsExperimental && r.Key.IsCoven() && !(r.Value.UsesCNOs && GameStates.IsVanillaServer)).Select(r => r.Value)];
                 break;
 
             default:

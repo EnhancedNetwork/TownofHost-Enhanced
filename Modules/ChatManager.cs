@@ -137,7 +137,7 @@ namespace TOHE.Modules.ChatManager
             {
                 if (GameStates.IsExilling)
                 {
-                    if (Options.HideExileChat.GetBool())
+                    if (HideExileChat.GetBool())
                     {
                         Logger.Info($"Message sent in exiling screen, spamming the chat", "ChatManager");
                         _ = new LateTask(SendPreviousMessagesToAll, 0.3f, "Spamming the chat");

@@ -29,7 +29,7 @@ public static class DraftAssign
     public static List<CustomRoles>[] PoolLookup = [];
 
     public static bool DraftActive => AssignedSlots.Any();
-    public static bool CanStartWithDraft => PoolLookup.Length >= Main.AllAlivePlayerControls.Count() && Main.AllAlivePlayerControls.All(x => x.PlayerId < PoolLookup.Length && PoolLookup[x.PlayerId] != null && PoolLookup[x.PlayerId].Any());
+    public static bool CanStartWithDraft => PoolLookup.Length >= Main.AllAlivePlayerControls.Length && Main.AllAlivePlayerControls.All(x => x.PlayerId < PoolLookup.Length && PoolLookup[x.PlayerId] != null && PoolLookup[x.PlayerId].Any());
 
     private static Dictionary<byte, CustomRoles> RoleResult => RoleAssign.RoleResult;
 
@@ -48,6 +48,7 @@ public static class DraftAssign
             int chance = role.GetMode();
 
             if (role.IsVanilla() || chance == 0 || role.IsAdditionRole() || role.IsGhostRole()) continue;
+            if (role.UsesCNOs() && GameStates.IsVanillaServer) continue;
             switch (role)
             {
                 case CustomRoles.Stalker when GameStates.FungleIsActive:
@@ -835,6 +836,14 @@ public static class DraftAssign
         }
 
         return sb.ToString();
+    }
+
+    public static void ResendDraftPoolMsg()
+    {
+        foreach (var pc in Main.AllPlayerControls)
+        {
+            Utils.SendMessage(string.Format(GetString("DraftPoolMessage"), pc.GetFormattedDraftPool()), pc.PlayerId);
+        }
     }
 
     [Obfuscation(Exclude = true)]

@@ -19,7 +19,7 @@ namespace TOHE;
 
 
 [Obfuscation(Exclude = true)]
-public enum CustomRPC : byte // 178/255 USED
+public enum CustomRPC : byte // 182/255 USED
 {
     // RpcCalls can increase with each AU version
     // On version 2024.6.18 the last id in RpcCalls: 65
