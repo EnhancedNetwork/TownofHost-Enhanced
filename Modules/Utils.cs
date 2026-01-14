@@ -1328,9 +1328,15 @@ public static class Utils
             if (text.IndexOf("\n") <= 4) text = text[(text.IndexOf("\n") + 1)..text.Length];
             SendMessage(text, sendTo, title);
         }
-
-
     }
+
+    public static void SendMultipleMessages(this IEnumerable<Message> messages, SendOption sendOption = SendOption.Reliable)
+    {
+        var sender = CustomRpcSender.Create("Utils.SendMultipleMessages", sendOption);
+        sender = messages.Aggregate(sender, (current, message) => SendMessage(message.Text, message.SendTo, message.Title, writer: current, multiple: true, sendOption: sendOption));
+        sender.SendMessage(dispose: sender.stream.Length <= 3);
+    }
+
     public static CustomRpcSender SendMessage(string text, byte sendTo = byte.MaxValue, string title = "", bool noSplit = false, CustomRpcSender writer = null, bool final = false, bool multiple = false, SendOption sendOption = SendOption.Reliable, bool addtoHistory = true)
     {
         try
@@ -3473,4 +3479,11 @@ public static class Utils
     public static bool IsAllAlive => Main.PlayerStates.Values.All(state => state.countTypes == CountTypes.OutOfGame || !state.IsDead);
     public static int PlayersCount(CountTypes countTypes) => Main.PlayerStates.Values.Count(state => state.countTypes == countTypes);
     public static int AlivePlayersCount(CountTypes countTypes) => Main.AllAlivePlayerControls.Count(pc => pc.Is(countTypes));
+}
+
+public class Message(string text, byte sendTo = byte.MaxValue, string title = "")
+{
+    public string Text { get; } = text;
+    public byte SendTo { get; } = sendTo;
+    public string Title { get; } = title;
 }

@@ -235,12 +235,6 @@ public static class OnPlayerJoinedPatch
                     return;
                 }
 
-                if (!Main.playerVersion.ContainsKey(client.Character.PlayerId))
-                {
-                    MessageWriter retry = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.RequestRetryVersionCheck, SendOption.None, client.Id);
-                    AmongUsClient.Instance.FinishRpcImmediately(retry);
-                }
-
                 if (client.Character != null && client.Character.Data != null && (client.Character.Data.DefaultOutfit.ColorId < 0 || Palette.PlayerColors.Length <= client.Character.Data.DefaultOutfit.ColorId) && Main.AllPlayerControls.Length >= 17)
                     Rainbow.ChangeColor(client.Character);
             }
@@ -682,16 +676,8 @@ class InnerNetClientSpawnPatch
                 if (Main.OverrideWelcomeMsg != "")
                     Utils.SendMessage(Main.OverrideWelcomeMsg, client.Character.PlayerId, sendOption: SendOption.None);
                 else
-                    TemplateManager.SendTemplate("welcome", client.Character.PlayerId, true);
+                    TemplateManager.SendTemplate("welcome", client.Character.PlayerId, true, sendOption: SendOption.None);
             }, 3f, "Welcome Message");
-
-            LateTask.New(() =>
-            {
-                if (client.Character == null) return;
-
-                MessageWriter sender = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.RequestRetryVersionCheck, SendOption.Reliable, client.Character.OwnerId);
-                AmongUsClient.Instance.FinishRpcImmediately(sender);
-            }, 3f, "RPC Request Retry Version Check");
 
             if (GameStates.IsOnlineGame && !client.Character.IsHost())
             {
@@ -702,9 +688,7 @@ class InnerNetClientSpawnPatch
                         // Only for vanilla
                         if (!client.Character.IsModded())
                         {
-                            // Idk why, but this was causing host to get kicked
-
-                            // MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(LobbyBehaviour.Instance.NetId, (byte)RpcCalls.LobbyTimeExpiring, SendOption.None, client.Id);
+                            // MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(LobbyBehaviour.Instance.NetId, (byte)RpcCalls.LobbyTimeExpiring, SendOption.Reliable, client.Id);
                             // writer.WritePacked((int)GameStartManagerPatch.timer);
                             // writer.Write(false);
                             // AmongUsClient.Instance.FinishRpcImmediately(writer);

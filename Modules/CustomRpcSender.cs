@@ -14,6 +14,7 @@ namespace TOHE;
 
 public class CustomRpcSender
 {
+    private int messages;
     public MessageWriter stream;
     public readonly string name;
     public readonly SendOption sendOption;
@@ -55,7 +56,7 @@ public class CustomRpcSender
         onSendDelegate = () => {if(this.shouldLog) Logger.Info($"{this.name}'s onSendDelegate =>", "CustomRpcSender");};
 
         currentState = State.Ready;
-        // rootMessageCount = 0;
+        messages = 0;
         if (this.shouldLog)
             Logger.Info($"\"{name}\" is ready", "CustomRpcSender");
     }
@@ -82,6 +83,7 @@ public class CustomRpcSender
         {
             doneStreams.Add(stream);
             stream = MessageWriter.Get(sendOption);
+            messages = 0;
         }
 
         if (targetClientId < 0)
@@ -145,6 +147,14 @@ public class CustomRpcSender
                 throw new InvalidOperationException(errorMsg);
         }
 
+        if (messages >= 10)
+        {
+            EndMessage(startNew: true);
+            StartMessage(currentRpcTarget);
+        }
+
+        messages++;
+
         stream.StartMessage(2);
         stream.WritePacked(targetNetId);
         stream.Write(callId);
@@ -189,7 +199,13 @@ public class CustomRpcSender
         if (currentRpcTarget != targetClientId)
         {
             //StartMessage処理
-            if (currentState == State.InRootMessage) this.EndMessage();
+            if (currentState == State.InRootMessage) this.EndMessage(startNew: true);
+            else if (messages > 0) // state is Ready
+            {
+                doneStreams.Add(stream);
+                stream = MessageWriter.Get(sendOption);
+                messages = 0;
+            }
             this.StartMessage(targetClientId);
         }
         this.StartRpc(targetNetId, callId);
@@ -210,7 +226,7 @@ public class CustomRpcSender
                 throw new InvalidOperationException(errorMsg);
         }
 
-        if (stream.Length >= 1500 && sendOption == SendOption.Reliable && !dispose) Logger.Warn($"Large reliable packet \"{name}\" is sending ({stream.Length} bytes)", "CustomRpcSender");
+        if (stream.Length >= 1400 && sendOption == SendOption.Reliable && !dispose) Logger.Warn($"Large reliable packet \"{name}\" is sending ({stream.Length} bytes)", "CustomRpcSender");
         else if (stream.Length > 3) Logger.Info($"\"{name}\" is finished (Length: {stream.Length}, dispose: {dispose}, sendOption: {sendOption})", "CustomRpcSender");
 
         if (!dispose)
@@ -221,7 +237,7 @@ public class CustomRpcSender
 
                 doneStreams.ForEach(x =>
                 {
-                    if (x.Length >= 1500 && sendOption == SendOption.Reliable) Logger.Warn($"Large reliable packet \"{name}\" is sending ({x.Length} bytes)", "CustomRpcSender");
+                    if (x.Length >= 1400 && sendOption == SendOption.Reliable) Logger.Warn($"Large reliable packet \"{name}\" is sending ({x.Length} bytes)", "CustomRpcSender");
                     else if (x.Length > 3) sb.Append($" | {x.Length}");
 
                     AmongUsClient.Instance.SendOrDisconnect(x);

@@ -1,5 +1,6 @@
 using AmongUs.GameOptions;
 using BepInEx.Unity.IL2CPP.Utils.Collections;
+using Hazel;
 using System.Collections;
 using TOHE.Modules;
 using TOHE.Modules.Rpc;
@@ -85,7 +86,7 @@ class GameEndCheckerForNormal
             NameNotifyManager.Reset();
 
             // Reset Camouflage
-            Main.AllPlayerControls.Do(pc => Camouflage.RpcSetSkin(pc, ForceRevert: true, RevertToDefault: true, GameEnd: true));
+            // Main.AllPlayerControls.Do(pc => Camouflage.RpcSetSkin(pc, ForceRevert: true, RevertToDefault: true, GameEnd: true));
 
             // Show all roles
             GameIsEnded = true;
@@ -555,15 +556,25 @@ class GameEndCheckerForNormal
         }
         return false;
     }
+
     public static void StartEndGame(GameOverReason reason)
     {
+        string msg = GetString("NotifyGameEnding");
+
+        Main.AllPlayerControls
+            .Where(x => x.GetClient() != null && !x.Data.Disconnected)
+            .Select(x => new Message("\n", x.PlayerId, msg))
+            .SendMultipleMessages();
+
         // Sync of CustomWinnerHolder info
-        var msg = new RpcEndGame(PlayerControl.LocalPlayer.NetId, WinnerTeam, AdditionalWinnerTeams, WinnerRoles, WinnerIds);
-        RpcUtils.LateBroadcastReliableMessage(msg);
+        var rpc = new RpcEndGame(PlayerControl.LocalPlayer.NetId, WinnerTeam, AdditionalWinnerTeams, WinnerRoles, WinnerIds);
+        RpcUtils.LateBroadcastReliableMessage(rpc);
 
-
-        AmongUsClient.Instance.StartCoroutine(CoEndGame(AmongUsClient.Instance, reason).WrapToIl2Cpp());
+        SetEverythingUpPatch.LastWinsReason = WinnerTeam is CustomWinner.Crewmate or CustomWinner.Impostor ? GetString($"GameOverReason.{reason}") : string.Empty;
+        var self = AmongUsClient.Instance;
+        self.StartCoroutine(CoEndGame(self, reason).WrapToIl2Cpp());
     }
+    
     public static bool ForEndGame = false;
     private static IEnumerator CoEndGame(AmongUsClient self, GameOverReason reason)
     {
@@ -602,14 +613,12 @@ class GameEndCheckerForNormal
                     Logger.Info($"{pc.GetNameWithRole().RemoveHtmlTags()}: changed to CrewmateGhost", "ResetRoleAndEndGame");
                     pc.RpcSetRole(RoleTypes.CrewmateGhost);
                 }
-                // Put it back on so it can't be auto-muted during the delay until resuscitation ~~ TOH comment
-                pc.Data.IsDead = isDead;
             }
         }
 
         // Remember true win to display in chat
         SetEverythingUpPatch.LastWinsReason = winner is CustomWinner.Crewmate or CustomWinner.Impostor ? GetString($"GameOverReason.{reason}") : "";
-        Utils.NotifyGameEnding();
+        // Utils.NotifyGameEnding();
 
         // Delay to ensure that resuscitation is delivered after the ghost roll setting
         yield return new WaitForSeconds(0.2f);
@@ -617,15 +626,16 @@ class GameEndCheckerForNormal
         if (ReviveRequiredPlayerIds.Count > 0)
         {
             // Resuscitation Resuscitate one person per transmission to prevent the packet from swelling up and dying
-            for (int i = 0; i < ReviveRequiredPlayerIds.Count; i++)
+            foreach (byte playerId in ReviveRequiredPlayerIds)
             {
-                var playerId = ReviveRequiredPlayerIds[i];
-                var playerInfo = GameData.Instance.GetPlayerById(playerId);
-                // revive player
+                NetworkedPlayerInfo playerInfo = GameData.Instance.GetPlayerById(playerId);
+                // resuscitation
                 playerInfo.IsDead = false;
+                // transmission
+                playerInfo.SetDirtyBit(0b_1u << playerId);
+                Logger.Info($"Revived {playerId.GetPlayerName()}", "ResetRoleAndEndGame");
+                self.SendAllStreamedObjects();
             }
-            // sync game data
-            Utils.SendGameData();
             // Delay to ensure that the end of the game is delivered at the end of the game
             yield return new WaitForSeconds(0.3f);
         }
@@ -640,7 +650,11 @@ class GameEndCheckerForNormal
         }
 
         // Start End Game
-        GameManager.Instance.RpcEndGame(reason, false);
+        GameManager.Instance.ShouldCheckForGameEnd = false;
+        MessageWriter msg = self.StartEndGame();
+        msg.Write((byte)reason);
+        msg.Write(false);
+        self.FinishEndGame(msg);
     }
 
     public static void SetPredicateToNormal() => predicate = new NormalGameEndPredicate();
