@@ -305,7 +305,7 @@ internal class Summoner : CovenManager
 
     public static void RevivePlayer(PlayerControl summoner, PlayerControl targetPlayer)
     {
-        if (targetPlayer == null || targetPlayer.Data == null || !targetPlayer.Data.IsDead)
+        if (targetPlayer == null || targetPlayer.Data == null || !targetPlayer.Data.IsDead || targetPlayer.IsAlive())
         {
             Logger.Warn($"RevivePlayer: Invalid target or player is not dead.", "Summoner");
             return;
@@ -597,7 +597,7 @@ internal class Summoned : RoleBase
 
     public override void OnFixedUpdate(PlayerControl player, bool lowLoad, long nowTime, int timerLowLoad)
     {
-        if ((lowLoad || GameStates.IsMeeting) || player.Data.IsDead) return; // Skip if low-load or during meetings
+        if (lowLoad || GameStates.IsMeeting || player.Data.IsDead || !player.IsAlive()) return; // Skip if low-load or during meetings
 
         var playerId = player.PlayerId;
 

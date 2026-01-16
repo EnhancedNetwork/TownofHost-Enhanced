@@ -291,7 +291,7 @@ internal class Judge : RoleBase
         }
 
         PlayerControl target = GetPlayerById(id);
-        if (target == null || target.Data.IsDead)
+        if (target == null || target.Data.IsDead || !target.IsAlive())
         {
             error = GetString("Judge_TrialNull");
             return false;

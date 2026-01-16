@@ -201,7 +201,7 @@ public static class PhantomRoleUseAbilityPatch
     {
         if (!AmongUsClient.Instance.AmHost) return true;
 
-        if (__instance.Player.AmOwner && !__instance.Player.Data.IsDead && __instance.Player.moveable && !Minigame.Instance && !__instance.IsCoolingDown && !__instance.fading)
+        if (__instance.Player.AmOwner && !__instance.Player.Data.IsDead && __instance.Player.IsAlive() && __instance.Player.moveable && !Minigame.Instance && !__instance.IsCoolingDown && !__instance.fading)
         {
             System.Func<RoleEffectAnimation, bool> roleEffectAnimation = x => x.effectType == RoleEffectAnimation.EffectType.Vanish_Charge;
             if (!__instance.Player.currentRoleAnimations.Find(roleEffectAnimation) && !__instance.Player.walkingToVent && !__instance.Player.inMovingPlat)

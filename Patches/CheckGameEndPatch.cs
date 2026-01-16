@@ -86,7 +86,7 @@ class GameEndCheckerForNormal
             NameNotifyManager.Reset();
 
             // Reset Camouflage
-            // Main.AllPlayerControls.Do(pc => Camouflage.RpcSetSkin(pc, ForceRevert: true, RevertToDefault: true, GameEnd: true));
+            Main.AllPlayerControls.Do(pc => Camouflage.RpcSetSkin(pc, ForceRevert: true, RevertToDefault: true, GameEnd: true));
 
             // Show all roles
             GameIsEnded = true;
@@ -409,11 +409,6 @@ class GameEndCheckerForNormal
                                 WinnerIds.Add(pc.PlayerId);
                                 AdditionalWinnerTeams.Add(AdditionalWinners.Shaman);
                                 break;
-                            // Changed to Pariah
-                            // case CustomRoles.Taskinator when pc.IsAlive() && WinnerTeam != CustomWinner.Crewmate:
-                            //     WinnerIds.Add(pc.PlayerId);
-                            //     AdditionalWinnerTeams.Add(AdditionalWinners.Taskinator);
-                            //     break;
                             case CustomRoles.Pursuer when pc.IsAlive() && WinnerTeam is not CustomWinner.Jester and not CustomWinner.Lovers and not CustomWinner.Terrorist and not CustomWinner.Executioner and not CustomWinner.Collector and not CustomWinner.Innocent and not CustomWinner.Youtuber:
                                 WinnerIds.Add(pc.PlayerId);
                                 AdditionalWinnerTeams.Add(AdditionalWinners.Pursuer);
@@ -489,26 +484,9 @@ class GameEndCheckerForNormal
                     if (WinnerTeam is not CustomWinner.Lovers)
                     {
                         Lovers.CheckAdditionalWin();
-                        // var loverArray = Main.AllPlayerControls.Where(x => x.Is(CustomRoles.Lovers)).ToArray();
-
-                        // foreach (var lover in loverArray)
-                        // {
-                        //     if (WinnerIds.Any(x => Utils.GetPlayerById(x).Is(CustomRoles.Lovers)) && !WinnerIds.Contains(lover.PlayerId))
-                        //     {
-                        //         WinnerIds.Add(lover.PlayerId);
-                        //         AdditionalWinnerTeams.Add(AdditionalWinners.Lovers);
-                        //     }
-                        // }
                     }
 
                     Cupid.CheckAdditionalWin();
-
-                    // if (WinnerTeam == CustomWinner.Lovers || AdditionalWinnerTeams.Contains(AdditionalWinners.Lovers))
-                    // {
-                    //     Main.AllPlayerControls
-                    //         .Where(p => p.Is(CustomRoles.Lovers) && !WinnerIds.Contains(p.PlayerId))
-                    //         .Do(p => WinnerIds.Add(p.PlayerId));
-                    // }
 
                     PariahManager.CheckAdditionalWin();
 
@@ -600,8 +578,7 @@ class GameEndCheckerForNormal
 
             void SetGhostRole(bool ToGhostImpostor)
             {
-                var isDead = pc.Data.IsDead;
-                if (!isDead) ReviveRequiredPlayerIds.Add(pc.PlayerId);
+                if (pc.IsAlive()) ReviveRequiredPlayerIds.Add(pc.PlayerId);
 
                 if (ToGhostImpostor)
                 {

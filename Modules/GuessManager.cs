@@ -571,7 +571,7 @@ public static class GuessManager
 
         //判断选择的玩家是否合理
         PlayerControl target = Utils.GetPlayerById(id);
-        if (target == null || target.Data.IsDead)
+        if (target == null || !target.IsAlive())
         {
             error = GetString("GuessNull");
             role = new();

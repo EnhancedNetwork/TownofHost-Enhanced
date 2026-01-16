@@ -236,7 +236,7 @@ internal class Ritualist : CovenManager
         }
 
         PlayerControl target = GetPlayerById(id);
-        if (target == null || target.Data.IsDead)
+        if (target == null || target.Data.IsDead || !target.IsAlive())
         {
             error = GetString("GuessNull");
             role = new();

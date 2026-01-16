@@ -2,6 +2,7 @@ using AmongUs.InnerNet.GameDataMessages;
 using Assets.CoreScripts;
 using Hazel;
 using System;
+using System.Collections;
 using System.IO;
 using System.Runtime.CompilerServices;
 using System.Text;
@@ -244,6 +245,7 @@ internal class ChatCommands
     public static readonly List<string> ChatHistory = [];
     public static readonly Dictionary<byte, long> LastSentCommand = [];
     
+    private static bool WaitingToSend;
 
     public static void LoadCommands()
     {
@@ -424,7 +426,7 @@ internal class ChatCommands
             {
                 string name = PlayerControl.LocalPlayer.GetRealName();
 
-                Utils.SendMessage(text.Insert(0, new('\n', name.Count(x => x == '\n'))), title: name, addtoHistory: false, noSplit: true);
+                Utils.SendMessage(text.Insert(0, new('\n', name.Count(x => x == '\n'))), title: name, addToHistory: false, noSplit: true);
 
                 canceled = true;
                 __instance.freeChatField.textArea.Clear();
@@ -432,6 +434,22 @@ internal class ChatCommands
             }
 
             ChatManager.SendMessage(PlayerControl.LocalPlayer, text);
+        }
+
+        if (!canceled && AmongUsClient.Instance.AmHost && Utils.TempReviveHostRunning)
+        {
+            if (!WaitingToSend) Main.Instance.StartCoroutine(Wait());
+            return false;
+            
+            IEnumerator Wait()
+            {
+                WaitingToSend = true;
+                while (Utils.TempReviveHostRunning && AmongUsClient.Instance.AmHost) yield return null;
+                yield return new WaitForSeconds(0.5f);
+                if (GameStates.IsEnded || GameStates.IsLobby) yield break;
+                WaitingToSend = false;
+                if (HudManager.InstanceExists) HudManager.Instance.Chat.SendChat();
+            }
         }
 
         return !canceled;
@@ -1230,10 +1248,10 @@ internal class ChatCommands
 
         }
         // Show role info
-        Utils.SendMessage(Des, playerId, title, addtoHistory: false);
+        Utils.SendMessage(Des, playerId, title, addToHistory: false);
 
         // Show role settings
-        Utils.SendMessage("", playerId, Conf.ToString(), addtoHistory: false);
+        Utils.SendMessage("", playerId, Conf.ToString(), addToHistory: false);
         return;
     }
     public static void Old_OnReceiveChat(PlayerControl player, string text, out bool canceled)
@@ -2013,9 +2031,9 @@ internal class ChatCommands
             Sub.Clear().Append(ACleared);
         }
 
-        Utils.SendMessage(Des, player.PlayerId, title, addtoHistory: false);
-        Utils.SendMessage("", player.PlayerId, Conf.ToString(), addtoHistory: false);
-        if (Sub.ToString() != string.Empty) Utils.SendMessage(Sub.ToString(), player.PlayerId, SubTitle, addtoHistory: false);
+        Utils.SendMessage(Des, player.PlayerId, title, addToHistory: false);
+        Utils.SendMessage("", player.PlayerId, Conf.ToString(), addToHistory: false);
+        if (Sub.ToString() != string.Empty) Utils.SendMessage(Sub.ToString(), player.PlayerId, SubTitle, addToHistory: false);
 
         Logger.Info($"Command '/m' should be send message", "OnReceiveChat");
     }

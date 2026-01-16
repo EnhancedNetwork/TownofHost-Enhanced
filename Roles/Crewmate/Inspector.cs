@@ -323,7 +323,7 @@ internal class Inspector : RoleBase
 
         PlayerControl target1 = GetPlayerById(id1);
         PlayerControl target2 = GetPlayerById(id2);
-        if (target1 == null || target1.Data.IsDead || target2 == null || target2.Data.IsDead)
+        if (target1 == null || target1.Data.IsDead || !target1.IsAlive() || target2 == null || target2.Data.IsDead || !target2.IsAlive())
         {
             error = GetString("InspectCheckNull");
             return false;

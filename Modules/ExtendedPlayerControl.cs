@@ -197,7 +197,7 @@ static class ExtendedPlayerControl
 
                 if (target.IsAlive() || !target.Data.IsDead && !target.Data.Disconnected)
                 {
-                    var message = new RpcSetRoleMessage(target.NetId, (target.HasImpKillButton() ? RoleTypes.Scientist : (target.GetCustomRole().GetVNRole() is CustomRoles.Noisemaker ? RoleTypes.Noisemaker : RoleTypes.Crewmate)), true);
+                    var message = new RpcSetRoleMessage(target.NetId, target.HasImpKillButton() ? RoleTypes.Scientist : (target.GetCustomRole().GetVNRole() is CustomRoles.Noisemaker ? RoleTypes.Noisemaker : RoleTypes.Crewmate), true);
                     RpcUtils.LateSpecificSendMessage(message, playerClientId, SendOption.Reliable);
 
                     if (target.AmOwner)
@@ -1402,22 +1402,34 @@ static class ExtendedPlayerControl
     public static bool IsMurderedThisRound(this PlayerControl player) => player.PlayerId.IsMurderedThisRound();
     public static bool IsMurderedThisRound(this byte playerId) => Main.MurderedThisRound.Contains(playerId);
 
+    public static void SendGameData(this NetworkedPlayerInfo playerInfo)
+    {
+        MessageWriter writer = MessageWriter.Get(SendOption.Reliable);
+        writer.StartMessage(5);
+        writer.Write(AmongUsClient.Instance.GameId);
+        writer.StartMessage(1);
+        writer.WritePacked(playerInfo.NetId);
+        playerInfo.Serialize(writer, false);
+        writer.EndMessage();
+        writer.EndMessage();
+        AmongUsClient.Instance.SendOrDisconnect(writer);
+        writer.Recycle();
+    }
 
     public static bool KnowDeathReason(this PlayerControl seer, PlayerControl target)
         => (Options.EveryoneCanSeeDeathReason.GetBool()
         || seer.Is(CustomRoles.Doctor) || seer.Is(CustomRoles.Autopsy)
-        || (seer.Data.IsDead && Options.GhostCanSeeDeathReason.GetBool()))
-        && target.Data.IsDead || target.Is(CustomRoles.Gravestone) && target.Data.IsDead;
+        || (!seer.IsAlive() && Options.GhostCanSeeDeathReason.GetBool()))
+        && !target.IsAlive() || target.Is(CustomRoles.Gravestone) && !target.IsAlive();
 
     public static bool KnowDeadTeam(this PlayerControl seer, PlayerControl target)
         => (seer.Is(CustomRoles.Necroview))
-        && target.Data.IsDead;
+        && !target.IsAlive();
 
     public static bool KnowLivingTeam(this PlayerControl seer, PlayerControl target)
         => (seer.Is(CustomRoles.Visionary))
-        && !target.Data.IsDead;
+        && !target.IsAlive();
 
-    private readonly static LogHandler logger = Logger.Handler("KnowRoleTarget");
     public static bool KnowRoleTarget(PlayerControl seer, PlayerControl target)
     {
         if (Options.CurrentGameMode == CustomGameMode.FFA || GameEndCheckerForNormal.GameIsEnded) return true;

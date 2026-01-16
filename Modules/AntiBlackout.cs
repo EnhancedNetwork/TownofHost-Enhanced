@@ -189,7 +189,7 @@ public static class AntiBlackout
         var hasValue = false;
         foreach (var player in Main.AllPlayerControls)
         {
-            if (player.Data.IsDead && !player.Data.Disconnected)
+            if (!player.IsAlive() && !player.Data.Disconnected)
             {
                 sender.AutoStartRpc(player.NetId, (byte)RpcCalls.Exiled);
                 sender.EndRpc();
@@ -317,7 +317,7 @@ public static class AntiBlackout
             if (seer == null || target == null) continue;
 
             var isSelf = seerId == targetId;
-            var isDead = target.Data.IsDead;
+            var isDead = !target.IsAlive();
             var changedRoleType = roletype;
 
             if (isDead)

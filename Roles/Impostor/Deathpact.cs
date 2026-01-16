@@ -184,7 +184,7 @@ internal class Deathpact : RoleBase
     {
         if (!PlayersInDeathpact.TryGetValue(deathpact.PlayerId, out var playerList)) return false;
 
-        if (playerList.Any(a => a.Data.Disconnected || a.Data.IsDead))
+        if (playerList.Any(a => a.Data.Disconnected || a.Data.IsDead || !a.IsAlive()))
         {
             ClearDeathpact(deathpact.PlayerId);
             deathpact.Notify(GetString("DeathpactAverted"));

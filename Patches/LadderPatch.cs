@@ -32,7 +32,7 @@ public class FallFromLadder
         {
             if (Utils.GetDistance(TargetLadderData[player.PlayerId], player.transform.position) < 0.5f)
             {
-                if (player.Data.IsDead) return;
+                if (player.Data.IsDead || !player.IsAlive()) return;
                 // To put in LateTask, put in a death decision first
                 player.Data.IsDead = true;
                 _ = new LateTask(() =>

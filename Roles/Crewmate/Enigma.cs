@@ -434,7 +434,7 @@ internal class Enigma : RoleBase
                 return GetString("EnigmaClueStatus1");
             if (killer.onLadder)
                 return GetString("EnigmaClueStatus2");
-            if (killer.Data.IsDead)
+            if (killer.Data.IsDead || !killer.IsAlive())
                 return GetString("EnigmaClueStatus3");
             return GetString("EnigmaClueStatus4");
         }
