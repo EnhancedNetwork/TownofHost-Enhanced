@@ -1258,8 +1258,11 @@ class MeetingHudStartPatch
         //    }, 6f, "Message: Warning Broken Vents In Dleks");
         //}
 
-        if (MeetingStates.FirstMeeting) TemplateManager.SendTemplate("OnFirstMeeting", noErr: true);
-        TemplateManager.SendTemplate("OnMeeting", noErr: true);
+        LateTask.New(() =>
+        {
+            TemplateManager.SendTemplate("OnMeeting", noErr: true, sendOption: SendOption.None);
+            if (MeetingStates.FirstMeeting) TemplateManager.SendTemplate("OnFirstMeeting", noErr: true, sendOption: SendOption.None);
+        }, 6f, shoudLog: false);
 
         try
         {

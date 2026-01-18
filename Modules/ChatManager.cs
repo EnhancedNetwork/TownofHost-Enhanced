@@ -172,7 +172,27 @@ namespace TOHE.Modules.ChatManager
             PlayerControl[] aapc = Main.AllAlivePlayerControls;
             if (aapc.Length == 0) return;
 
-            string[] filtered = chatHistory.Where(a => Utils.GetPlayerById(a.Item1).IsAlive()).Select(b => b.Item2).ToArray();
+            if (GameStates.IsVanillaServer)
+            {
+                ClearChat();
+
+                StringBuilder sb = new();
+                chatHistory.ForEach(x =>
+                {
+                    byte id = x.Item1;
+                    string msg = x.Item2.Trim();
+                    sb.Append(id.GetPlayerName());
+                    sb.Append(':');
+                    sb.Append(' ');
+                    sb.AppendLine(msg);
+                });
+                LateTask.New(() => Utils.SendMessage("\n", title: sb.ToString().Trim()), 0.2f);
+                
+                return;
+            }
+
+
+            string[] filtered = [.. chatHistory.Where(a => Utils.GetPlayerById(a.Item1).IsAlive()).Select(b => b.Item2)];
             ChatController chat = HudManager.Instance.Chat;
             var writer = CustomRpcSender.Create("SendPreviousMessagesToAll", SendOption.Reliable);
             var hasValue = false;
@@ -207,8 +227,8 @@ namespace TOHE.Modules.ChatManager
 
         private static void SendRPC(CustomRpcSender writer, PlayerControl senderPlayer, string senderMessage, int targetClientId = -1)
         {
-            if (GameStates.IsLobby && senderPlayer.IsHost())
-                senderMessage = senderMessage.Insert(0, new('\n', senderPlayer.GetRealName().Count(x => x == '\n')));
+            if (GameStates.IsLobby && senderPlayer.AmOwner)
+                senderMessage = senderMessage.Insert(0, new('\n', PlayerControl.LocalPlayer.name.Count(x => x == '\n')));
 
             writer.AutoStartRpc(senderPlayer.NetId, RpcCalls.SendChat, targetClientId)
                 .Write(senderMessage)
@@ -219,8 +239,18 @@ namespace TOHE.Modules.ChatManager
         public static void ClearChat(params PlayerControl[] targets)
         {
             if (!AmongUsClient.Instance.AmHost) return;
-            PlayerControl player = Main.AllAlivePlayerControls.MinBy(x => x.PlayerId) ?? Main.AllPlayerControls.MinBy(x => x.PlayerId) ?? PlayerControl.LocalPlayer;
+            PlayerControl player = GameStates.IsVanillaServer ? PlayerControl.LocalPlayer : Main.AllAlivePlayerControls.MinBy(x => x.PlayerId) ?? Main.AllPlayerControls.MinBy(x => x.PlayerId) ?? PlayerControl.LocalPlayer;
             if (player == null) return;
+
+            if (GameStates.IsVanillaServer)
+            {
+                if (targets.Length <= 1 || targets.Length >= Main.AllAlivePlayerControls.Length)
+                    Loop.Times(30, _ => Utils.SendMessage(string.Empty, targets.Length == 1 ? targets[0].PlayerId : byte.MaxValue, "", force: true, sendOption: SendOption.None));
+                else
+                    targets.Do(x => Loop.Times(30, _ => Utils.SendMessage(string.Empty, x.PlayerId, "", force: true, sendOption: SendOption.None)));
+                
+                return;
+            }
 
             if (targets.Length == 0 || targets.Length == PlayerControl.AllPlayerControls.Count) SendEmptyMessage(null);
             else targets.Do(SendEmptyMessage);

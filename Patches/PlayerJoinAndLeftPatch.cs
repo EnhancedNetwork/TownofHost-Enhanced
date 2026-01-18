@@ -679,6 +679,18 @@ class InnerNetClientSpawnPatch
                     TemplateManager.SendTemplate("welcome", client.Character.PlayerId, true, sendOption: SendOption.None);
             }, 3f, "Welcome Message");
 
+            LateTask.New(() =>
+            {
+                if (client == null || client.Character == null)
+                {
+                    Logger.Warn("client is null", "Spawn.RPCRequestRetryVersionCheck");
+                    return;
+                }
+
+                var message = new RpcRequestRetryVersionCheck(PlayerControl.LocalPlayer.NetId);
+                RpcUtils.LateSpecificSendMessage(message, client.Id);
+            }, 3f, "RPC Request Retry Version Check");
+
             if (GameStates.IsOnlineGame && !client.Character.IsHost())
             {
                 LateTask.New(() =>

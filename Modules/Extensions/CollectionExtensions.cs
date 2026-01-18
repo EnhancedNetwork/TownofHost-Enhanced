@@ -269,3 +269,11 @@ public static class CollectionExtensions
 
     #endregion
 }
+
+public static class Loop
+{
+    public static void Times(int count, Action<int> action)
+    {
+        for (var i = 0; i < count; i++) action(i);
+    }
+}

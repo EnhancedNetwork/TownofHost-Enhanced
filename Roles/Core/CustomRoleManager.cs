@@ -40,7 +40,7 @@ public static class CustomRoleManager
         List<RoleBase> roles = [];
         foreach (var role in RoleClass.Values)
         {
-            if (IsOptBlackListed(role.GetType()) || role.IsExperimental || (role.UsesCNOs && GameStates.IsVanillaServer)) continue;
+            if (IsOptBlackListed(role.GetType()) || role.IsExperimental) continue;
 
             if (role.ThisRoleType == type)
             {
@@ -55,19 +55,19 @@ public static class CustomRoleManager
         switch (team)
         {
             case Custom_Team.Crewmate:
-                roles = [.. RoleClass.Where(r => r.Value.IsExperimental && r.Key.IsCrewmate() && !(r.Value.UsesCNOs && GameStates.IsVanillaServer)).Select(r => r.Value)];
+                roles = [.. RoleClass.Where(r => r.Value.IsExperimental && r.Key.IsCrewmate()).Select(r => r.Value)];
                 break;
 
             case Custom_Team.Impostor:
-                roles = [.. RoleClass.Where(r => r.Value.IsExperimental && r.Key.IsImpostorTeam() && !(r.Value.UsesCNOs && GameStates.IsVanillaServer)).Select(r => r.Value)];
+                roles = [.. RoleClass.Where(r => r.Value.IsExperimental && r.Key.IsImpostorTeam()).Select(r => r.Value)];
                 break;
 
             case Custom_Team.Neutral:
-                roles = [.. RoleClass.Where(r => r.Value.IsExperimental && r.Key.IsNeutralTeamV2() && !(r.Value.UsesCNOs && GameStates.IsVanillaServer)).Select(r => r.Value)];
+                roles = [.. RoleClass.Where(r => r.Value.IsExperimental && r.Key.IsNeutralTeamV2()).Select(r => r.Value)];
                 break;
 
             case Custom_Team.Coven:
-                roles = [.. RoleClass.Where(r => r.Value.IsExperimental && r.Key.IsCoven() && !(r.Value.UsesCNOs && GameStates.IsVanillaServer)).Select(r => r.Value)];
+                roles = [.. RoleClass.Where(r => r.Value.IsExperimental && r.Key.IsCoven()).Select(r => r.Value)];
                 break;
 
             default:

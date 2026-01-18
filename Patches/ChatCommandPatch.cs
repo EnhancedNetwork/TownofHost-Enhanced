@@ -445,7 +445,7 @@ internal class ChatCommands
             {
                 WaitingToSend = true;
                 while (Utils.TempReviveHostRunning && AmongUsClient.Instance.AmHost) yield return null;
-                yield return new WaitForSeconds(0.5f);
+                yield return new WaitForSecondsRealtime(0.5f);
                 if (GameStates.IsEnded || GameStates.IsLobby) yield break;
                 WaitingToSend = false;
                 if (HudManager.InstanceExists) HudManager.Instance.Chat.SendChat();
@@ -2958,7 +2958,7 @@ class ChatUpdatePatch
 
     internal static bool SendLastMessages(ref CustomRpcSender sender)
     {
-        PlayerControl player = GameStates.IsLobby ? Main.AllPlayerControls.Without(PlayerControl.LocalPlayer).RandomElement() : Main.AllAlivePlayerControls.MinBy(x => x.PlayerId) ?? Main.AllPlayerControls.MinBy(x => x.PlayerId) ?? PlayerControl.LocalPlayer;
+        PlayerControl player = GameStates.IsVanillaServer ? PlayerControl.LocalPlayer : GameStates.IsLobby ? Main.AllPlayerControls.Without(PlayerControl.LocalPlayer).RandomElement() : Main.AllAlivePlayerControls.MinBy(x => x.PlayerId) ?? Main.AllPlayerControls.MinBy(x => x.PlayerId) ?? PlayerControl.LocalPlayer;
         if (player == null) return false;
 
         bool wasCleared = false;

@@ -160,21 +160,21 @@ public static class PhantomRolePatch
         phantom?.RpcSetRoleDesync(RoleTypes.Scientist, seer.GetClientId());
 
         // Return Phantom in meeting
-        yield return new WaitForSeconds(1f);
+        yield return new WaitForSecondsRealtime(1f);
         {
             if (InValid(phantom, seer)) yield break;
 
             phantom?.RpcSetRoleDesync(RoleTypes.Phantom, seer.GetClientId());
         }
         // Revert invis for phantom
-        yield return new WaitForSeconds(1f);
+        yield return new WaitForSecondsRealtime(1f);
         {
             if (InValid(phantom, seer)) yield break;
 
             phantom?.RpcStartAppearDesync(false, seer);
         }
         // Set Scientist back
-        yield return new WaitForSeconds(4f);
+        yield return new WaitForSecondsRealtime(4f);
         {
             if (InValid(phantom, seer)) yield break;
 

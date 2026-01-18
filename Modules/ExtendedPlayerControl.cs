@@ -76,11 +76,11 @@ static class ExtendedPlayerControl
             addOnList.Remove(removeAddOns);
         }
     }
-    private static System.Collections.IEnumerator RemoveIncompatibleAddOnsAsync(this PlayerControl player)
+    private static IEnumerator RemoveIncompatibleAddOnsAsync(this PlayerControl player)
     {
         var currentAddOns = player.GetCustomSubRoles().Where(x => !x.IsAddonAssignedMidGame()).ToArray();
 
-        yield return new WaitForSeconds(0.1f);
+        yield return new WaitForSecondsRealtime(0.1f);
 
         foreach (var addon in currentAddOns)
         {
@@ -89,16 +89,16 @@ static class ExtendedPlayerControl
                 Main.PlayerStates[player.PlayerId].RemoveSubRole(addon);
                 Logger.Msg($"{player.GetNameWithRole()} had incompatible addon {addon}, removing addon", $"RemoveIncompatibleAddOnsAsync: {player.GetCustomRole()}");
             }
-            yield return new WaitForSeconds(0.2f);
+            yield return new WaitForSecondsRealtime(0.2f);
         }
     }
-    private static System.Collections.IEnumerator CheckAndAssignAddOnAsync(this PlayerControl player, CustomRoles newAddOn)
+    private static IEnumerator CheckAndAssignAddOnAsync(this PlayerControl player, CustomRoles newAddOn)
     {
         var currentAddOns = player.GetCustomSubRoles().Where(x => !x.IsAddonAssignedMidGame()).ToArray();
 
         Main.PlayerStates[player.PlayerId].SetSubRole(newAddOn, pc: player);
 
-        yield return new WaitForSeconds(0.1f);
+        yield return new WaitForSecondsRealtime(0.1f);
 
         foreach (var addOn in currentAddOns)
         {
@@ -107,7 +107,7 @@ static class ExtendedPlayerControl
                 Main.PlayerStates[player.PlayerId].RemoveSubRole(addOn);
                 Logger.Msg($"{player.GetNameWithRole()} had incompatible addon {addOn}, removing addon", $"CheckAndAssignAddOnAsync: {player.GetCustomRole()}");
             }
-            yield return new WaitForSeconds(0.2f);
+            yield return new WaitForSecondsRealtime(0.2f);
         }
 
     }
@@ -1752,7 +1752,7 @@ static class ExtendedPlayerControl
                     yield break;
                 }
 
-                yield return new WaitForSeconds(pc.IsAlive() ? 1f : 3f);
+                yield return new WaitForSecondsRealtime(pc.IsAlive() ? 1f : 3f);
 
                 if (!GameStates.InGame || GameStates.IsEnded)
                 {
