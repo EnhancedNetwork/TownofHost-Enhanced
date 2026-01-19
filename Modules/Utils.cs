@@ -218,7 +218,7 @@ public static class Utils
 
     public static void TargetDies(PlayerControl killer, PlayerControl target)
     {
-        if (!target.IsAlive() || GameStates.IsMeeting) return;
+        if (target.IsAlive() || GameStates.IsMeeting) return;
 
         foreach (var seer in Main.AllPlayerControls)
         {
