@@ -2126,6 +2126,10 @@ public static class PlayerControlDiePatch
     {
         if (!AmongUsClient.Instance.AmHost || __instance == null) return;
 
+        __instance.RpcRemovePet();
+
+        if (Main.NormalOptions?.MapId != 7) return;
+
         LateTask.New(() =>
         {
             if (Main.PlayerStates.TryGetValue(__instance.PlayerId, out var state) && !state.IsDead)
@@ -2135,7 +2139,7 @@ public static class PlayerControlDiePatch
                 var hasValue = sender.SyncGeneralOptions(__instance);
                 sender.SendMessage(dispose: !hasValue);
             }
-        }, 0.2f);
+        }, 0.2f, "PlayerControlDiePatch");
     }
 }
 

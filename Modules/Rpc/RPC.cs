@@ -545,9 +545,6 @@ internal class RPCHandlerPatch
                 byte killerId = reader.ReadByte();
                 RPC.SetRealKiller(tarid, killerId);
                 break;
-            //case CustomRPC.SetTrackerTarget:
-            //    Tracker.ReceiveRPC(reader);
-            //    break;
             case CustomRPC.SyncJailerData:
                 Jailer.ReceiveRPC(reader);
                 break;
