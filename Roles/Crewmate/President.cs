@@ -59,39 +59,6 @@ internal class President : RoleBase
 
     public static bool CheckReveal(byte targetId) => CheckPresidentReveal.TryGetValue(targetId, out var canBeReveal) && canBeReveal;
 
-    public static void TryHideMsgForPresident()
-    {
-        ChatUpdatePatch.DoBlockChat = true;
-
-        if (ChatManager.quickChatSpamMode != QuickChatSpamMode.QuickChatSpam_Disabled)
-        {
-            ChatManager.SendQuickChatSpam();
-            ChatUpdatePatch.DoBlockChat = false;
-            return;
-        }
-
-        var rd = IRandom.Instance;
-        string msg;
-        for (int i = 0; i < 20; i++)
-        {
-            msg = "/";
-            if (rd.Next(100) < 20)
-                msg += "finish";
-            else
-                msg += "reveal";
-            var player = Main.AllAlivePlayerControls.RandomElement();
-            DestroyableSingleton<HudManager>.Instance.Chat.AddChat(player, msg);
-            var writer = CustomRpcSender.Create("MessagesToSend", SendOption.None);
-            writer.StartMessage(-1);
-            writer.StartRpc(player.NetId, (byte)RpcCalls.SendChat)
-                .Write(msg)
-                .EndRpc();
-            writer.EndMessage();
-            writer.SendMessage();
-        }
-        ChatUpdatePatch.DoBlockChat = false;
-    }
-
     public static void FinishCommand(PlayerControl player, string commandKey, string text, string[] args)
     {
         if (!AmongUsClient.Instance.AmHost)
@@ -104,13 +71,6 @@ internal class President : RoleBase
 
         if (!GameStates.IsMeeting || player == null || GameStates.IsExilling) return;
         if (!player.Is(CustomRoles.President)) return;
-
-        if (HidePresidentEndCommand.GetBool())
-        {
-            TryHideMsgForPresident();
-            ChatManager.SendPreviousMessagesToAll();
-        }
-        else if (player.AmOwner) Utils.SendMessage(originMsg, 255, player.GetRealName());
 
         if (player.GetAbilityUseLimit() < 1)
         {
@@ -143,13 +103,6 @@ internal class President : RoleBase
 
         if (!GameStates.IsMeeting || player == null || GameStates.IsExilling) return;
         if (!player.Is(CustomRoles.President)) return;
-
-        if (HidePresidentEndCommand.GetBool())
-        {
-            TryHideMsgForPresident();
-            ChatManager.SendPreviousMessagesToAll();
-        }
-        else if (player.AmOwner) Utils.SendMessage(originMsg, 255, player.GetRealName());
 
         if (RevealLimit[player.PlayerId] < 1)
         {

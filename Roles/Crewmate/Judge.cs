@@ -25,7 +25,6 @@ internal class Judge : RoleBase
 
     public static OptionItem TrialLimitPerMeeting;
     private static OptionItem TrialLimitPerGame;
-    private static OptionItem TryHideMsg;
     private static OptionItem CanTrialMadmate;
     private static OptionItem CanTrialCharmed;
     private static OptionItem CanTrialSidekick;
@@ -67,8 +66,6 @@ internal class Judge : RoleBase
         CanTrialNeutralA = BooleanOptionItem.Create(Id + 22, "JudgeCanTrialNeutralA", true, TabGroup.CrewmateRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Judge]);
         CanTrialCoven = BooleanOptionItem.Create(Id + 23, "JudgeCanTrialCoven", true, TabGroup.CrewmateRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Judge]);
         CanTrialAdmired = BooleanOptionItem.Create(Id + 26, "JudgeCanTrialAdmired", true, TabGroup.CrewmateRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Judge]);
-        TryHideMsg = BooleanOptionItem.Create(Id + 11, "JudgeTryHideMsg", true, TabGroup.CrewmateRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Judge])
-            .SetColor(Color.green);
     }
     public override void Init()
     {
@@ -136,13 +133,6 @@ internal class Judge : RoleBase
             pc.ShowInfoMessage(isUI, GetString("JudgeDead"));
             return true;
         }
-
-        if (TryHideMsg.GetBool())
-        {
-            GuessManager.TryHideMsg();
-            ChatManager.SendPreviousMessagesToAll();
-        }
-        else if (pc.AmOwner) SendMessage(originMsg, 255, pc.GetRealName());
 
         if (!MsgToPlayerAndRole(msg, out byte targetId, out string error))
         {

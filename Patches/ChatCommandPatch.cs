@@ -355,6 +355,11 @@ internal class ChatCommands
         __instance.timeSinceLastMessage = 3f;
 
         string text = __instance.freeChatField.textArea.text.Trim();
+        if (text.StartsWith("/cmd ")) 
+        {
+            text = text[5..];
+            if (!text.StartsWith("/")) text = "/" + text;
+        }
         var cancelVal = string.Empty;
 
         if (Blackmailer.CheckBlackmaile(PlayerControl.LocalPlayer) && PlayerControl.LocalPlayer.IsAlive())
@@ -470,7 +475,7 @@ internal class ChatCommands
         var cancelVal = "";
         Main.isChatCommand = true;
         Logger.Info(text, "SendChat");
-        if ((Options.NewHideMsg.GetBool() || Blackmailer.HasEnabled) && AmongUsClient.Instance.AmHost) // Blackmailer.ForBlackmailer.Contains(PlayerControl.LocalPlayer.PlayerId)) && PlayerControl.LocalPlayer.IsAlive())
+        if (Blackmailer.HasEnabled && AmongUsClient.Instance.AmHost) // Blackmailer.ForBlackmailer.Contains(PlayerControl.LocalPlayer.PlayerId)) && PlayerControl.LocalPlayer.IsAlive())
         {
             ChatManager.SendMessage(PlayerControl.LocalPlayer, text);
         }
@@ -943,11 +948,11 @@ internal class ChatCommands
                     Utils.SendMessage("<align=\"center\"><size=150%>" + str + "</align></size>", PlayerControl.LocalPlayer.PlayerId, Utils.ColorString(Utils.GetRoleColor(CustomRoles.Medium), GetString("8BallTitle")));
                     break;
                 
-                case "/spam":
-                    canceled = true;
-                    ChatManager.SendQuickChatSpam();
-                    ChatManager.SendPreviousMessagesToAll();
-                    break;
+                // case "/spam":
+                //     canceled = true;
+                //     ChatManager.SendQuickChatSpam();
+                //     ChatManager.SendPreviousMessagesToAll();
+                //     break;
                 
                 default:
                     Main.isChatCommand = false;
@@ -1003,6 +1008,12 @@ internal class ChatCommands
             canceled = true;
             return;
         }
+        
+        if (text.StartsWith("/cmd ")) 
+        {
+            text = text[5..];
+            if (!text.StartsWith("/")) text = "/" + text;
+        }
 
         if (text.StartsWith("\n")) text = text[1..];
 
@@ -1025,7 +1036,7 @@ internal class ChatCommands
                     break;
                 }
 
-                if (command.AlwaysHidden) ChatManager.SendPreviousMessagesToAll();
+                // if (command.AlwaysHidden) ChatManager.SendPreviousMessagesToAll();
                 command.Action(player, key, text, args);
                 if (command.IsCanceled) canceled = command.AlwaysHidden /*|| !Options.HostSeesCommandsEnteredByOthers.GetBool()*/;
                 break;

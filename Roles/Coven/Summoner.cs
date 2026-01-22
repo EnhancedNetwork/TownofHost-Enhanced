@@ -149,9 +149,6 @@ internal class Summoner : CovenManager
         if (!GameStates.IsMeeting || pc == null || GameStates.IsExilling) return; // Only during meetings
         if (!pc.Is(CustomRoles.Summoner)) return;
 
-        HideSummonCommand();
-        ChatManager.SendPreviousMessagesToAll();
-
         if (!pc.IsAlive())
         {
             Logger.Warn("Summoner is dead and cannot use commands.", "Summoner");
@@ -265,42 +262,6 @@ internal class Summoner : CovenManager
         }
 
         Logger.Info($"Summoner {pc.PlayerId} has summoned player {targetPlayer.PlayerId}. System message sent: {summonMessage}", "Summoner");
-    }
-
-    private static void HideSummonCommand()
-    {
-        ChatUpdatePatch.DoBlockChat = true;
-        if (ChatManager.quickChatSpamMode != QuickChatSpamMode.QuickChatSpam_Disabled)
-        {
-            ChatManager.SendQuickChatSpam();
-            ChatUpdatePatch.DoBlockChat = false;
-            return;
-        }
-
-        string[] decoyCommands = GetString("Command.Summon").Split("|");
-        var random = IRandom.Instance;
-
-        for (int i = 0; i < 20; i++)
-        {
-            string decoyMessage = "/" + decoyCommands[random.Next(0, decoyCommands.Length)];
-
-
-            var randomPlayer = Main.AllAlivePlayerControls.RandomElement();
-
-            // Add the decoy message to the chat
-            DestroyableSingleton<HudManager>.Instance.Chat.AddChat(randomPlayer, decoyMessage);
-
-
-            var writer = CustomRpcSender.Create("MessagesToSend", SendOption.None);
-            writer.StartMessage(-1);
-            writer.StartRpc(randomPlayer.NetId, (byte)RpcCalls.SendChat)
-                .Write(decoyMessage)
-                .EndRpc();
-            writer.EndMessage();
-            writer.SendMessage();
-        }
-
-        ChatUpdatePatch.DoBlockChat = false;
     }
 
     public static void RevivePlayer(PlayerControl summoner, PlayerControl targetPlayer)

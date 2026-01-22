@@ -17,7 +17,6 @@ namespace TOHE.Modules.ChatManager
         private static readonly Dictionary<byte, List<string>> LastSystemChatMsgs = [];
         private const int maxHistorySize = 20;
         public static List<string> ChatSentBySystem = [];
-        public static QuickChatSpamMode quickChatSpamMode => (QuickChatSpamMode)UseQuickChatSpamCheat.GetInt();
         public static void ResetHistory()
         {
             chatHistory.Clear();
@@ -90,13 +89,6 @@ namespace TOHE.Modules.ChatManager
             return string.Concat(sha256Hash.AsSpan(0, 5), sha256Hash.AsSpan(sha256Hash.Length - 4));
         }
 
-        public static void AddToHostMessage(string text)
-        {
-            if (text != "")
-            {
-                ChatSentBySystem.Add(GetTextHash(text));
-            }
-        }
         public static void SendMessage(PlayerControl player, string message)
         {
             int operate = 0; // 1:ID 2:猜测

@@ -26,7 +26,6 @@ internal class Exorcist : RoleBase
     private static OptionItem ExorcismSacrificesToDispel;
     private static OptionItem ExorcismLimitMeeting;
     private static OptionItem ExorcismEndOnKill;
-    private static OptionItem TryHideMsg;
 
     private static readonly Dictionary<byte, int> ExorcismLimitPerMeeting = [];
     private static readonly Dictionary<byte, bool> Dispelled = [];
@@ -52,9 +51,6 @@ internal class Exorcist : RoleBase
             .SetParent(Options.CustomRoleSpawnChances[CustomRoles.Exorcist]);
         ExorcismEndOnKill = BooleanOptionItem.Create(Id + 16, "ExorcismEndOnKill", true, TabGroup.ImpostorRoles, false)
             .SetParent(Options.CustomRoleSpawnChances[CustomRoles.Exorcist]);
-        TryHideMsg = BooleanOptionItem.Create(Id + 17, "ExorcistTryHideMsg", true, TabGroup.ImpostorRoles, false)
-            .SetParent(Options.CustomRoleSpawnChances[CustomRoles.Exorcist])
-            .SetColor(Color.green);
     }
     public override void Init()
     {
@@ -99,22 +95,16 @@ internal class Exorcist : RoleBase
 
         if (player.PlayerId.GetAbilityUseLimit() <= 0 || !ExorcismLimitPerMeeting.ContainsKey(player.PlayerId) || ExorcismLimitPerMeeting[player.PlayerId] <= 0)
         {
-            if (TryHideMsg.GetBool() && !player.Data.IsHost())
-                GuessManager.TryHideMsg();
             player.ShowInfoMessage(isUI, GetString("ExorcistOutOfUsages"));
             return;
         }
         if (!Dispelled.ContainsKey(player.PlayerId) || Dispelled[player.PlayerId])
         {
-            if (TryHideMsg.GetBool() && !player.Data.IsHost())
-                GuessManager.TryHideMsg();
             player.ShowInfoMessage(isUI, GetString("ExorcistDispelled"));
             return;
         }
         if (IsExorcismActive || IsDelayActive)
         {
-            if (TryHideMsg.GetBool() && !player.Data.IsHost())
-                GuessManager.TryHideMsg();
             player.ShowInfoMessage(isUI, GetString("ExorcistActive"));
             return;
         }
@@ -149,8 +139,6 @@ internal class Exorcist : RoleBase
         player.RPCPlayCustomSound("Line");
         player.RpcRemoveAbilityUse();
 
-        if (TryHideMsg.GetBool())
-            GuessManager.TryHideMsg();
         ExorcistPlayer = player;
         IsDelayActive = true;
         if (ExorcismDelay.GetFloat() > 0)

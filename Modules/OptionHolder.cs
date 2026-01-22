@@ -256,7 +256,6 @@ public static class Options
 
     public static OptionItem CheatResponses;
     public static OptionItem CrossLanguageGetRole;
-    public static OptionItem NewHideMsg;
 
     public static OptionItem AutoDisplayKillLog;
     public static OptionItem AutoDisplayLastRoles;
@@ -564,7 +563,6 @@ public static class Options
     public static OptionItem CrewCanGuessCrew;
     public static OptionItem ApocCanGuessApoc;
     public static OptionItem CovenCanGuessCoven;
-    public static OptionItem HideGuesserCommands;
     public static OptionItem ShowOnlyEnabledRolesInGuesserUI;
     public static OptionItem CanOnlyGuessEnabled;
     public static OptionItem CanGuessCrewInvestigative;
@@ -1524,9 +1522,6 @@ public static class Options
             .SetParent(CovenCanGuess);
         CanGuessAddons = BooleanOptionItem.Create(60685, "CanGuessAddons", true, TabGroup.ModSettings, false)
             .SetParent(GuesserMode);
-        HideGuesserCommands = BooleanOptionItem.Create(60688, "GuesserTryHideMsg", true, TabGroup.ModSettings, false)
-            .SetParent(GuesserMode)
-            .SetColor(Color.green);
 
         ShowOnlyEnabledRolesInGuesserUI = BooleanOptionItem.Create(60689, "ShowOnlyEnabledRolesInGuesserUI", true, TabGroup.ModSettings, false)
             .SetHeader(true)
@@ -1568,11 +1563,6 @@ public static class Options
         UseMoreRandomMapSelection = BooleanOptionItem.Create(60456, "UseMoreRandomMapSelection", false, TabGroup.ModSettings, false)
             .SetParent(RandomMapsMode)
             .SetValueFormat(OptionFormat.Percent);
-
-        NewHideMsg = BooleanOptionItem.Create(60460, "NewHideMsg", true, TabGroup.ModSettings, false)
-            .SetHidden(true)
-            .SetGameMode(CustomGameMode.Standard)
-            .SetColor(new Color32(193, 255, 209, byte.MaxValue));
 
         // Random Spawn
         RandomSpawn.SetupCustomOption();

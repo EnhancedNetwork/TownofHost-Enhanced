@@ -26,7 +26,6 @@ internal class Councillor : RoleBase
     private static OptionItem MurderLimitPerMeeting;
     private static OptionItem MurderLimitPerGame;
     private static OptionItem MakeEvilJudgeClear;
-    private static OptionItem TryHideMsg;
     private static OptionItem CanMurderMadmate;
     private static OptionItem CanMurderImpostor;
     private static OptionItem SuicideOnJudgeImpTeam;
@@ -50,8 +49,6 @@ internal class Councillor : RoleBase
         CanMurderImpostor = BooleanOptionItem.Create(Id + 14, "CouncillorCanMurderImpostor", true, TabGroup.ImpostorRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Councillor]);
         CanMurderTaskDoneSnitch = BooleanOptionItem.Create(Id + 16, "CouncillorCanMurderTaskDoneSnitch", true, TabGroup.ImpostorRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Councillor]);
         SuicideOnJudgeImpTeam = BooleanOptionItem.Create(Id + 17, "CouncillorSuicideOnJudgeImpTeam", true, TabGroup.ImpostorRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Councillor]);
-        TryHideMsg = BooleanOptionItem.Create(Id + 15, "CouncillorTryHideMsg", true, TabGroup.ImpostorRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Councillor])
-            .SetColor(Color.green);
     }
 
     public override void Init()
@@ -92,13 +89,6 @@ internal class Councillor : RoleBase
             Utils.SendMessage(GetString("CouncillorDead"), pc.PlayerId);
             return true;
         }
-
-        if (TryHideMsg.GetBool())
-        {
-            GuessManager.TryHideMsg();
-            ChatManager.SendPreviousMessagesToAll();
-        }
-        else if (pc.AmOwner) Utils.SendMessage(originMsg, 255, pc.GetRealName());
 
         if (!MsgToPlayerAndRole(msg, out byte targetId, out string error))
         {

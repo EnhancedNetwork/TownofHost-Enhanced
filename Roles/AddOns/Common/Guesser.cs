@@ -15,7 +15,6 @@ public class Guesser : IAddon
     public static OptionItem CovenCanBeGuesser;
     public static OptionItem GCanGuessAdt;
     public static OptionItem GCanGuessTaskDoneSnitch;
-    public static OptionItem GTryHideMsg;
 
     public void SetupCustomOption()
     {
@@ -26,8 +25,6 @@ public class Guesser : IAddon
         CovenCanBeGuesser = BooleanOptionItem.Create(Id + 16, "CovenCanBeGuesser", true, TabGroup.Addons, false).SetParent(CustomRoleSpawnChances[CustomRoles.Guesser]);
         GCanGuessAdt = BooleanOptionItem.Create(Id + 13, "GCanGuessAdt", false, TabGroup.Addons, false).SetParent(CustomRoleSpawnChances[CustomRoles.Guesser]);
         GCanGuessTaskDoneSnitch = BooleanOptionItem.Create(Id + 14, "GCanGuessTaskDoneSnitch", true, TabGroup.Addons, false).SetParent(CustomRoleSpawnChances[CustomRoles.Guesser]);
-        GTryHideMsg = BooleanOptionItem.Create(Id + 15, "GuesserTryHideMsg", true, TabGroup.Addons, false).SetParent(CustomRoleSpawnChances[CustomRoles.Guesser])
-            .SetColor(Color.green);
     }
     public void Init()
     { }

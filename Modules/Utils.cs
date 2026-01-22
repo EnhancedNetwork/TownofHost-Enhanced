@@ -2520,14 +2520,6 @@ public static class Utils
                             TargetRoleText = $"<size={fontSize}>{BlankRT}</size>\r\n";
                         }
 
-                        // if (seer.IsAlive() && Lich.IsCursed(target) && Lich.IsDeceived(seer, target))
-                        // {
-                        //     BlankRT = ColorString(GetRoleColor(CustomRoles.Lich), GetString(CustomRoles.Lich.GetActualRoleName()));
-                        //     TargetRoleText = $"<size={fontSize}>{BlankRT}</size>\r\n";
-                            
-                        //     TargetRoleText = KnowRoleTarget ? TargetRoleText : "";
-                        // }
-
                         // ====== Target player name ======
 
                         string TargetPlayerName = target.GetRealName(isForMeeting);

@@ -24,14 +24,12 @@ internal class Starspawn : PariahManager
     private static readonly Dictionary<byte, HashSet<CustomRoles>> VisiterList = [];
 
     private static OptionItem IsolateCooldown;
-    private static OptionItem TryHideMsg;
 
     public override void SetupCustomOption()
     {
         SetupRoleOptions(Id, TabGroup.NeutralRoles, CustomRoles.Starspawn);
         IsolateCooldown = FloatOptionItem.Create(Id + 10, "Starspawn.IsolateCooldown", new(0f, 180f, 2.5f), 30f, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Starspawn])
             .SetValueFormat(OptionFormat.Seconds);
-        TryHideMsg = BooleanOptionItem.Create(Id + 11, "Starspawn.TryHideMsg", true, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Starspawn]);
     }
 
     // "db|daybreak"
@@ -51,13 +49,6 @@ internal class Starspawn : PariahManager
             pc.ShowInfoMessage(false, GetString("DaybreakDead"));
             return;
         }
-
-        if (TryHideMsg.GetBool())
-        {
-            GuessManager.TryHideMsg();
-            ChatManager.SendPreviousMessagesToAll();
-        }
-        else if (pc.AmOwner) SendMessage(msg, 255, pc.GetRealName());
 
         if (!HasDaybreak[pc.PlayerId] && !Main.Daybreak)
         {
