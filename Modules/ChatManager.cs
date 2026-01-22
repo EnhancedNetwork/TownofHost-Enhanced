@@ -165,7 +165,7 @@ namespace TOHE.Modules.ChatManager
         }
         public static void SendPreviousMessagesToAll()
         {
-            if (!AmongUsClient.Instance.AmHost || !GameStates.IsModHost) return;
+            if (!AmongUsClient.Instance.AmHost || !GameStates.IsModHost || !HudManager.InstanceExists) return;
             //This should never function for non host
             Logger.Info(" Sending Previous Messages To Everyone", "ChatManager");
 
@@ -245,9 +245,9 @@ namespace TOHE.Modules.ChatManager
             if (GameStates.IsVanillaServer)
             {
                 if (targets.Length <= 1 || targets.Length >= Main.AllAlivePlayerControls.Length)
-                    Loop.Times(30, _ => Utils.SendMessage(string.Empty, targets.Length == 1 ? targets[0].PlayerId : byte.MaxValue, "", force: true, sendOption: SendOption.None));
+                    Loop.Times(30, _ => Utils.SendMessage(string.Empty, targets.Length == 1 ? targets[0].PlayerId : byte.MaxValue, "\u200b", force: true, sendOption: SendOption.None));
                 else
-                    targets.Do(x => Loop.Times(30, _ => Utils.SendMessage(string.Empty, x.PlayerId, "", force: true, sendOption: SendOption.None)));
+                    targets.Do(x => Loop.Times(30, _ => Utils.SendMessage(string.Empty, x.PlayerId, "\u200b", force: true, sendOption: SendOption.None)));
                 
                 return;
             }
