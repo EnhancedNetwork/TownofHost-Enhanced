@@ -220,10 +220,10 @@ class CheckForEndVotingPatch
                 var player = GetPlayerById(ps.TargetPlayerId);
                 var playerRoleClass = player.GetRoleClass();
 
-                //Hides vote
+                // Hides vote
                 if (playerRoleClass.HideVote(ps)) continue;
 
-                // Assing Madmate Slef Vote
+                // Assing Madmate Self Vote
                 if (ps.TargetPlayerId == ps.VotedFor && Madmate.MadmateSpawnMode.GetInt() == 2) continue;
 
                 statesList.Add(new MeetingHud.VoterState()
@@ -796,7 +796,7 @@ class CastVotePatch
             }
 
 
-            if (!voter.GetRoleClass().HasVoted && !Main.Daybreak && voter.GetRoleClass().CheckVote(voter, target) == false)
+            if (!voter.GetRoleClass().HasVoted && !Main.Daybreak && !voter.GetRoleClass().CheckVote(voter, target))
             {
                 Logger.Info($"Canceling {voter.GetRealName()}'s vote because of {voter.GetCustomRole()}", "CastVotePatch.RoleBase.CheckVote");
                 voter.GetRoleClass().HasVoted = true;

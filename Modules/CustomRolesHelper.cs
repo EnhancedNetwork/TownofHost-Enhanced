@@ -428,7 +428,7 @@ public static class CustomRolesHelper
         => (role.IsBetrayalAddon() && role is not CustomRoles.Rascal)
             || role is CustomRoles.Admired;
 
-    // Exactly,this is not only used to check if an add-on is assigned mid-game
+    // This is not only used to check if an add-on is assigned mid-game
     // It can also be used to check if an add-on should never be removed
     public static bool IsAddonAssignedMidGame(this CustomRoles role)
         => role.IsBetrayalAddonV2()

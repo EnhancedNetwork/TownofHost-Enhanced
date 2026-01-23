@@ -6,6 +6,7 @@ using Il2CppInterop.Runtime.InteropTypes.Arrays;
 using InnerNet;
 using System;
 using System.Collections;
+using System.Runtime.CompilerServices;
 using System.Text;
 using TOHE.Modules;
 using TOHE.Modules.Rpc;
@@ -1430,53 +1431,60 @@ static class ExtendedPlayerControl
         => (seer.Is(CustomRoles.Visionary))
         && !target.IsAlive();
 
+    public static bool LogKnowRole(bool know, [CallerLineNumber] int line = 0)
+    {
+        Logger.Info($"{know} from line {line}", "KnowRoleTarget");
+        return know;
+    }
+
     public static bool KnowRoleTarget(PlayerControl seer, PlayerControl target)
     {
-        if (Options.CurrentGameMode == CustomGameMode.FFA || GameEndCheckerForNormal.GameIsEnded) return true;
-        else if (seer.Is(CustomRoles.GM) || target.Is(CustomRoles.GM) || (seer.AmOwner && Main.GodMode.Value)) return true;
-        else if (Options.SeeEjectedRolesInMeeting.GetBool() && Main.PlayerStates[target.PlayerId].deathReason == PlayerState.DeathReason.Vote) return true;
-        else if (Altruist.HasEnabled && seer.IsMurderedThisRound()) return false;
-        else if (seer.GetCustomRole() == target.GetCustomRole() && seer.GetCustomRole().IsNK()) return true;
-        else if (Lovers.LoverKnowRoles.GetBool() && seer.IsLoverWith(target)) return true;
-        else if (Cupid.LoversKnowCupid.GetBool() && Cupid.IsCupidLover(target, seer)) return true;
-        else if (Options.ImpsCanSeeEachOthersRoles.GetBool() && seer.CheckImpCanSeeAllies(CheckAsSeer: true) && target.CheckImpCanSeeAllies(CheckAsTarget: true)) return true;
-        else if (Madmate.MadmateKnowWhosImp.GetBool() && seer.Is(CustomRoles.Madmate) && target.CheckImpCanSeeAllies(CheckAsTarget: true)) return true;
-        else if (Madmate.ImpKnowWhosMadmate.GetBool() && target.Is(CustomRoles.Madmate) && seer.CheckImpCanSeeAllies(CheckAsSeer: true)) return true;
-        else if (seer.CheckImpCanSeeAllies(CheckAsSeer: true) && target.GetCustomRole().IsGhostRole() && target.GetCustomRole().IsImpostor() && !Main.PlayerStates[target.PlayerId].IsNecromancer) return true;
-        else if (seer.IsNeutralApocalypse() && target.IsNeutralApocalypse() && !Main.PlayerStates[seer.PlayerId].IsFalseRole && !Main.PlayerStates[target.PlayerId].IsFalseRole) return true;
-        else if (Ritualist.EnchantedKnowsCoven.GetBool() && seer.Is(CustomRoles.Enchanted) && ( target.Is(Custom_Team.Coven) || (Summoner.KnowSummonedRoles.GetBool() && target.Is(CustomRoles.Summoned))) && !Main.PlayerStates[target.PlayerId].IsRandomizer) return true;
-        else if (target.Is(CustomRoles.Enchanted) && (seer.Is(Custom_Team.Coven) || (Summoner.KnowSummonedRoles.GetBool() && seer.Is(CustomRoles.Summoned))) && !Main.PlayerStates[seer.PlayerId].IsRandomizer) return true;
-        else if ((target.Is(Custom_Team.Coven) || (Summoner.KnowSummonedRoles.GetBool() && target.Is(CustomRoles.Summoned))) && (seer.Is(Custom_Team.Coven) || (Summoner.KnowSummonedRoles.GetBool() && seer.Is(CustomRoles.Summoned))) && !Main.PlayerStates[seer.PlayerId].IsRandomizer && !Main.PlayerStates[target.PlayerId].IsRandomizer) return true;
-        else if (target.GetRoleClass().KnowRoleTarget(seer, target)) return true;
-        else if (seer.GetRoleClass().KnowRoleTarget(seer, target)) return true;
-        else if (PotionMaster.CovenKnowRoleTarget(seer, target)) return true;
-        else if (Consigliere.ImpKnowRoleTarget(seer, target)) return true;
-        else if (Baker.ApocKnowRoleTarget(seer, target)) return true;
-        else if (Solsticer.OtherKnowSolsticer(target)) return true;
-        else if (Overseer.IsRevealedPlayer(seer, target)) return true;
-        else if (Gravestone.EveryoneKnowRole(target)) return true;
-        else if (Mimic.CanSeeDeadRoles(seer, target)) return true;
-        else if (Workaholic.OthersKnowWorka(target)) return true;
-        else if (Jackal.JackalKnowRole(seer, target)) return true;
-        else if (Cultist.KnowRole(seer, target)) return true;
-        else if (Infectious.KnowRole(seer, target)) return true;
-        else if (Virus.KnowRole(seer, target)) return true;
-        else if (Admirer.CheckKnowRoleTarget(seer, target)) return true;
-        else if (NarcManager.KnowRoleOfTarget(seer, target)) return true;
+        Logger.Info($"{seer.GetRealName()} => {target.GetRealName()}", "KnowRoleTarget");
+        if (Options.CurrentGameMode == CustomGameMode.FFA || GameEndCheckerForNormal.GameIsEnded) return LogKnowRole(true);
+        else if (seer.Is(CustomRoles.GM) || target.Is(CustomRoles.GM) || (seer.AmOwner && Main.GodMode.Value)) return LogKnowRole(true);
+        else if (Options.SeeEjectedRolesInMeeting.GetBool() && Main.PlayerStates[target.PlayerId].deathReason == PlayerState.DeathReason.Vote) return LogKnowRole(true);
+        else if (Altruist.HasEnabled && seer.IsMurderedThisRound()) return LogKnowRole(false);
+        else if (seer.GetCustomRole() == target.GetCustomRole() && seer.GetCustomRole().IsNK()) return LogKnowRole(true);
+        else if (Lovers.LoverKnowRoles.GetBool() && seer.IsLoverWith(target)) return LogKnowRole(true);
+        else if (Cupid.LoversKnowCupid.GetBool() && Cupid.IsCupidLover(target, seer)) return LogKnowRole(true);
+        else if (Options.ImpsCanSeeEachOthersRoles.GetBool() && seer.CheckImpCanSeeAllies(CheckAsSeer: true) && target.CheckImpCanSeeAllies(CheckAsTarget: true)) return LogKnowRole(true);
+        else if (Madmate.MadmateKnowWhosImp.GetBool() && seer.Is(CustomRoles.Madmate) && target.CheckImpCanSeeAllies(CheckAsTarget: true)) return LogKnowRole(true);
+        else if (Madmate.ImpKnowWhosMadmate.GetBool() && target.Is(CustomRoles.Madmate) && seer.CheckImpCanSeeAllies(CheckAsSeer: true)) return LogKnowRole(true);
+        else if (seer.CheckImpCanSeeAllies(CheckAsSeer: true) && target.GetCustomRole().IsGhostRole() && target.GetCustomRole().IsImpostor() && !Main.PlayerStates[target.PlayerId].IsNecromancer) return LogKnowRole(true);
+        else if (seer.IsNeutralApocalypse() && target.IsNeutralApocalypse() && !Main.PlayerStates[seer.PlayerId].IsFalseRole && !Main.PlayerStates[target.PlayerId].IsFalseRole) return LogKnowRole(true);
+        else if (Ritualist.EnchantedKnowsCoven.GetBool() && seer.Is(CustomRoles.Enchanted) && ( target.Is(Custom_Team.Coven) || (Summoner.KnowSummonedRoles.GetBool() && target.Is(CustomRoles.Summoned))) && !Main.PlayerStates[target.PlayerId].IsRandomizer) return LogKnowRole(true);
+        else if (target.Is(CustomRoles.Enchanted) && (seer.Is(Custom_Team.Coven) || (Summoner.KnowSummonedRoles.GetBool() && seer.Is(CustomRoles.Summoned))) && !Main.PlayerStates[seer.PlayerId].IsRandomizer) return LogKnowRole(true);
+        else if ((target.Is(Custom_Team.Coven) || (Summoner.KnowSummonedRoles.GetBool() && target.Is(CustomRoles.Summoned))) && (seer.Is(Custom_Team.Coven) || (Summoner.KnowSummonedRoles.GetBool() && seer.Is(CustomRoles.Summoned))) && !Main.PlayerStates[seer.PlayerId].IsRandomizer && !Main.PlayerStates[target.PlayerId].IsRandomizer) return LogKnowRole(true);
+        else if (target.GetRoleClass().KnowRoleTarget(seer, target)) return LogKnowRole(true);
+        else if (seer.GetRoleClass().KnowRoleTarget(seer, target)) return LogKnowRole(true);
+        else if (PotionMaster.CovenKnowRoleTarget(seer, target)) return LogKnowRole(true);
+        else if (Consigliere.ImpKnowRoleTarget(seer, target)) return LogKnowRole(true);
+        else if (Baker.ApocKnowRoleTarget(seer, target)) return LogKnowRole(true);
+        else if (Solsticer.OtherKnowSolsticer(target)) return LogKnowRole(true);
+        else if (Overseer.IsRevealedPlayer(seer, target)) return LogKnowRole(true);
+        else if (Gravestone.EveryoneKnowRole(target)) return LogKnowRole(true);
+        else if (Mimic.CanSeeDeadRoles(seer, target)) return LogKnowRole(true);
+        else if (Workaholic.OthersKnowWorka(target)) return LogKnowRole(true);
+        else if (Jackal.JackalKnowRole(seer, target)) return LogKnowRole(true);
+        else if (Cultist.KnowRole(seer, target)) return LogKnowRole(true);
+        else if (Infectious.KnowRole(seer, target)) return LogKnowRole(true);
+        else if (Virus.KnowRole(seer, target)) return LogKnowRole(true);
+        else if (Admirer.CheckKnowRoleTarget(seer, target)) return LogKnowRole(true);
+        else if (NarcManager.KnowRoleOfTarget(seer, target)) return LogKnowRole(true);
         else if (Main.VisibleTasksCount && !seer.IsAlive())
         {
-            if (Nemesis.PreventKnowRole(seer)) return false;
-            if (Retributionist.PreventKnowRole(seer)) return false;
-            if (Doppelganger.PreventKnowRole(seer)) return false;
+            if (Nemesis.PreventKnowRole(seer)) return LogKnowRole(false);
+            if (Retributionist.PreventKnowRole(seer)) return LogKnowRole(false);
+            if (Doppelganger.PreventKnowRole(seer)) return LogKnowRole(false);
 
             if (!Options.GhostCanSeeOtherRoles.GetBool())
-                return false;
+                return LogKnowRole(false);
             else if (Options.PreventSeeRolesImmediatelyAfterDeath.GetBool() && !Main.DeadPassedMeetingPlayers.Contains(seer.PlayerId))
-                return false;
-            return true;
+                return LogKnowRole(false);
+            return LogKnowRole(true);
         }
 
-        else return false;
+        else return LogKnowRole(false);
     }
     public static bool ShowSubRoleTarget(this PlayerControl seer, PlayerControl target, CustomRoles subRole = CustomRoles.NotAssigned)
     {
