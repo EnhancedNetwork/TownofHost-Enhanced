@@ -458,7 +458,7 @@ class MurderPlayerPatch
         if (!AmongUsClient.Instance.AmHost) return;
         if (!target.Data.IsDead || target.IsAlive()) 
         {
-            Logger.Info($"Canceled because target was not dead or was alive. not dead: {!target.Data.IsDead}, alive: {target.IsAlive()}", "MurderPlayerPatch.Postfix");
+            Logger.Info($"Canceled because target was not dead or was alive. not dead: {!target.Data.IsDead}, alive: {target.IsAlive()}, is lobby: {GameStates.IsLobby}, has playerState: {Main.PlayerStates.ContainsKey(target.PlayerId)}", "MurderPlayerPatch.Postfix"); // IsAlive = !IsDead unless IsLobby or not PlayerStates
             return;
         }
 

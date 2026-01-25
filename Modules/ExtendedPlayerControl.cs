@@ -547,6 +547,7 @@ static class ExtendedPlayerControl
             }
             else
             {
+                player.SyncSettings();
                 player.RpcGuardAndKill(target, fromSetKCD: true);
             }
         }
@@ -565,7 +566,7 @@ static class ExtendedPlayerControl
                 Observer.ActivateGuardAnimation(target.PlayerId, target);
             }
         }
-        // player.ResetKillCooldown();
+        player.ResetKillCooldown();
     }
     public static void SetKillCooldownV2(this PlayerControl player, float time = -1f)
     {
