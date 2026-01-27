@@ -165,14 +165,6 @@ internal class Command(string commandKey, string arguments, string description, 
                 {
                     CommandForms.Add(name);
                 }
-                // if (!AllAliases.Contains(name))
-                // {
-                //     AllAliases.Add(name);
-                // }
-                // else
-                // {
-                //     Logger.Error($"Overlapping command alias: {name} for {commandKey}", "Command.GetCrossLangAliases");
-                // }
             }
         }
         // Logger.Info($"Found {CommandForms.Count} aliases for {commandKey}", "Command.GetCrossLangAliases");
@@ -336,7 +328,6 @@ internal class ChatCommands
             /rand
             /8ball
 
-            /spam
             /pv
             /poll
 
@@ -2829,6 +2820,7 @@ internal class ChatCommands
 
     private static void DeckCommand(PlayerControl player, string commandKey, string text, string[] args)
     {
+        return;
         if (!AmongUsClient.Instance.AmHost)
         {
             RequestCommandProcessingFromHost(text, commandKey);
@@ -2840,6 +2832,7 @@ internal class ChatCommands
 
     private static void DraftCommand(PlayerControl player, string commandKey, string text, string[] args)
     {
+        return;
         if (!AmongUsClient.Instance.AmHost)
         {
             RequestCommandProcessingFromHost(text, commandKey);
