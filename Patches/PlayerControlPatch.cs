@@ -455,7 +455,8 @@ class MurderPlayerPatch
         }
         if (GameStates.IsHideNSeek) return;
         if (target.AmOwner) RemoveDisableDevicesPatch.UpdateDisableDevices();
-        if (!target.Data.IsDead || !AmongUsClient.Instance.AmHost) return;
+        if (!AmongUsClient.Instance.AmHost) return;
+        if (!target.Data.IsDead) return;
 
         if (Main.OverDeadPlayerList.Contains(target.PlayerId)) return;
 
@@ -769,7 +770,7 @@ class ReportDeadBodyPatch
         try
         {
             // If the player is dead, the meeting is canceled
-            if (__instance.Data.IsDead) return false;
+            if (__instance.Data.IsDead || !__instance.IsAlive()) return false;
 
             //=============================================
             //Below, check if this meeting is allowed
@@ -1501,14 +1502,6 @@ class FixedUpdateInNormalGamePatch
                         Mark.Append(CustomRoles.Cyber.GetColoredTextByRole("★"));
 
                     Mark.Append(Lovers.GetMarkOthers(localPlayer, player));
-                    // if (player.Is(CustomRoles.Lovers) && localPlayer.Is(CustomRoles.Lovers))
-                    // {
-                    //     Mark.Append(CustomRoles.Lovers.GetColoredTextByRole("♥"));
-                    // }
-                    // else if (player.Is(CustomRoles.Lovers) && localPlayer.Data.IsDead)
-                    // {
-                    //     Mark.Append(CustomRoles.Lovers.GetColoredTextByRole("♥"));
-                    // }
                     break;
             }
 
@@ -1537,7 +1530,7 @@ class FixedUpdateInNormalGamePatch
                 oldRealName = RealName;
                 RealName.Clear().Append($"<size=0%>{oldRealName}</size> ");
             }
-            DeathReason.Clear().Append(localPlayer.Data.IsDead && localPlayer.KnowDeathReason(player)
+            DeathReason.Clear().Append(localPlayer.Data.IsDead && !localPlayer.IsAlive() && localPlayer.KnowDeathReason(player)
                 ? $"\n<size=1.7>『{CustomRoles.Doctor.GetColoredTextByRole(Utils.GetVitalText(playerId))}』</size>" : string.Empty);
 
             // code from EHR (Endless Host Roles by: Gurge44)
@@ -2109,7 +2102,7 @@ public static class PlayerControlCheckUseZiplinePatch
 [HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.Die))]
 public static class PlayerControlDiePatch
 {
-    public static void Postfix(PlayerControl __instance, DeathReason reason)
+    public static void Old_Postfix(PlayerControl __instance, DeathReason reason)
     {
         if (!AmongUsClient.Instance.AmHost || __instance == null) return;
         var playerId = __instance.PlayerId;
@@ -2129,7 +2122,50 @@ public static class PlayerControlDiePatch
 
         __instance.RpcRemovePet();
     }
+
+    public static void Postfix(PlayerControl __instance)
+    {
+        if (!AmongUsClient.Instance.AmHost || __instance == null) return;
+
+        __instance.RpcRemovePet();
+
+        if (Main.NormalOptions?.MapId != 7) return;
+
+        LateTask.New(() =>
+        {
+            if (Main.PlayerStates.TryGetValue(__instance.PlayerId, out var state) && !state.IsDead)
+            {
+                state.IsDead = true;
+                var sender = CustomRpcSender.Create($"LIDeathSync:{__instance.GetRealName()}", SendOption.Reliable);
+                var hasValue = sender.SyncGeneralOptions(__instance);
+                sender.SendMessage(dispose: !hasValue);
+            }
+        }, 0.2f, "PlayerControlDiePatch");
+    }
 }
+
+[HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.Revive))]
+static class PlayerControlRevivePatch
+{
+    public static void Postfix(PlayerControl __instance)
+    {
+        if (!AmongUsClient.Instance.AmHost || __instance == null) return;
+
+        LateTask.New(() =>
+        {
+            if (Main.PlayerStates.TryGetValue(__instance.PlayerId, out var state) && state.IsDead)
+            {
+                state.IsDead = false;
+                var sender = CustomRpcSender.Create($"LIReviveSync:{__instance.GetRealName()}", SendOption.Reliable);
+                var hasValue = sender.SyncGeneralOptions(__instance);
+                sender.SendMessage(dispose: !hasValue);
+                Vector2 pos = __instance.GetCustomPosition();
+                __instance.RpcTeleport(Main.AllAlivePlayerControls.Without(__instance).Select(x => x.GetCustomPosition()).Concat(ShipStatus.Instance.AllVents.Select(x => new Vector2(x.transform.position.x, x.transform.position.y + 0.3636f))).MinBy(x => Vector2.Distance(pos, x)));
+            }
+        }, 0.2f);
+    }
+}
+
 [HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.RpcSetRole))]
 class PlayerControlSetRolePatch
 {

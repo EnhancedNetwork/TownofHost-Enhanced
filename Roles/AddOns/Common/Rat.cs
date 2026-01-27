@@ -50,7 +50,7 @@ public class Rat : IAddon
 
         int n = ratRoleCount.GetInt();
         int i = 0;
-        List<CustomRoles> listOfRoles = [.. CustomRolesHelper.AllRoles.Where(role => !role.IsGhostRole() && role.IsEnable() && !role.RoleExist(countDead: true) && ((role.IsCrewmate()&&canFindCrew.GetBool())||(role.IsImpostor()&&canFindImp.GetBool())||(role.IsNeutral()&&canFindNeutral.GetBool())||(role.IsCoven()&&canFindCoven.GetBool())||(role.IsAdditionRole()&&canFindAddons.GetBool()))).Shuffle()];
+        List<CustomRoles> listOfRoles = [.. CustomRolesHelper.AllRoles.Where(role => !role.IsGhostRole() && role.IsEnable() && !role.RoleExist(countDead: true) && ((role.IsCrewmate()&&canFindCrew.GetBool())||(role.IsImpostor()&&canFindImp.GetBool())||(role.IsNeutral()&&canFindNeutral.GetBool())||(role.IsCoven()&&canFindCoven.GetBool())||(role.IsAdditionRole()&&canFindAddons.GetBool() && !role.IsAddonAssignedMidGame()))).Shuffle()];
         string separator = TranslationController.Instance.currentLanguage.languageID is SupportedLangs.English or SupportedLangs.Russian ? "], [" : "】, 【";
         if (n > listOfRoles.Count) n = listOfRoles.Count;
 

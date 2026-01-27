@@ -168,6 +168,7 @@ public class RoleAssign
         {
             int chance = role.GetMode();
             if (role.IsVanilla() || chance == 0 || role.IsAdditionRole() || role.IsGhostRole()) continue;
+            if (role.UsesCNOs() && GameStates.IsVanillaServer) continue;
             switch (role)
             {
                 case CustomRoles.Stalker when GameStates.FungleIsActive:

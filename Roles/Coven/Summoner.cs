@@ -18,6 +18,7 @@ internal class Summoner : CovenManager
     public override CustomRoles Role => CustomRoles.Summoner;
     private const int Id = 32700;
     public override bool IsDesyncRole => true;
+    public override bool IsExperimental => true;
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.CovenPower;
     //================================================================\\
@@ -148,9 +149,6 @@ internal class Summoner : CovenManager
         if (!GameStates.IsMeeting || pc == null || GameStates.IsExilling) return; // Only during meetings
         if (!pc.Is(CustomRoles.Summoner)) return;
 
-        HideSummonCommand();
-        ChatManager.SendPreviousMessagesToAll();
-
         if (!pc.IsAlive())
         {
             Logger.Warn("Summoner is dead and cannot use commands.", "Summoner");
@@ -266,45 +264,9 @@ internal class Summoner : CovenManager
         Logger.Info($"Summoner {pc.PlayerId} has summoned player {targetPlayer.PlayerId}. System message sent: {summonMessage}", "Summoner");
     }
 
-    private static void HideSummonCommand()
-    {
-        ChatUpdatePatch.DoBlockChat = true;
-        if (ChatManager.quickChatSpamMode != QuickChatSpamMode.QuickChatSpam_Disabled)
-        {
-            ChatManager.SendQuickChatSpam();
-            ChatUpdatePatch.DoBlockChat = false;
-            return;
-        }
-
-        string[] decoyCommands = GetString("Command.Summon").Split("|");
-        var random = IRandom.Instance;
-
-        for (int i = 0; i < 20; i++)
-        {
-            string decoyMessage = "/" + decoyCommands[random.Next(0, decoyCommands.Length)];
-
-
-            var randomPlayer = Main.AllAlivePlayerControls.RandomElement();
-
-            // Add the decoy message to the chat
-            DestroyableSingleton<HudManager>.Instance.Chat.AddChat(randomPlayer, decoyMessage);
-
-
-            var writer = CustomRpcSender.Create("MessagesToSend", SendOption.None);
-            writer.StartMessage(-1);
-            writer.StartRpc(randomPlayer.NetId, (byte)RpcCalls.SendChat)
-                .Write(decoyMessage)
-                .EndRpc();
-            writer.EndMessage();
-            writer.SendMessage();
-        }
-
-        ChatUpdatePatch.DoBlockChat = false;
-    }
-
     public static void RevivePlayer(PlayerControl summoner, PlayerControl targetPlayer)
     {
-        if (targetPlayer == null || targetPlayer.Data == null || !targetPlayer.Data.IsDead)
+        if (targetPlayer == null || targetPlayer.Data == null || !targetPlayer.Data.IsDead || targetPlayer.IsAlive())
         {
             Logger.Warn($"RevivePlayer: Invalid target or player is not dead.", "Summoner");
             return;
@@ -527,8 +489,6 @@ internal class Summoner : CovenManager
 
     public override void AfterMeetingTasks()
     {
-        base.AfterMeetingTasks();
-
         // Reset the summoning flag for the next meeting
         HasSummonedThisMeeting[_Player.PlayerId] = false;
 
@@ -598,7 +558,7 @@ internal class Summoned : RoleBase
 
     public override void OnFixedUpdate(PlayerControl player, bool lowLoad, long nowTime, int timerLowLoad)
     {
-        if ((lowLoad || GameStates.IsMeeting) || player.Data.IsDead) return; // Skip if low-load or during meetings
+        if (lowLoad || GameStates.IsMeeting || player.Data.IsDead || !player.IsAlive()) return; // Skip if low-load or during meetings
 
         var playerId = player.PlayerId;
 

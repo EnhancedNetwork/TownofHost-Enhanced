@@ -169,7 +169,7 @@ internal class Lich : RoleBase
         bool seerHasState = Main.PlayerStates.TryGetValue(seer.PlayerId, out var seerState);
 
         if (seer.IsNeutralApocalypse()) return false;
-        if (target.GetCustomRole().IsRevealingRole(seer) || target.IsAnySubRole(role => role.IsRevealingRole(seer))) return false;
+        if (target.GetCustomRole().IsRevealingRole(target) || target.IsAnySubRole(role => role.IsRevealingRole(target))) return false;
 
         // Imposter Team
         if (seer.CheckImpCanSeeAllies(CheckAsSeer: true) && target.CheckImpCanSeeAllies(CheckAsTarget: true)) return false;

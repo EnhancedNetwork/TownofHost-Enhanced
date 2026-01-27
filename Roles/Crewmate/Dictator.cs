@@ -27,7 +27,7 @@ internal class Dictator : RoleBase
     }
 
     public static bool CheckVotingForTarget(PlayerControl pc, PlayerVoteArea pva)
-        => pc.Is(CustomRoles.Dictator) && pva.DidVote && pc.PlayerId != pva.VotedFor && pva.VotedFor < 253 && !pc.Data.IsDead;
+        => pc.Is(CustomRoles.Dictator) && pva.DidVote && pc.PlayerId != pva.VotedFor && pva.VotedFor < 253 && !pc.Data.IsDead && pc.IsAlive();
 
     public static void ExpelCommand(PlayerControl pc, string commandKey, string msg, string[] args)
     {
@@ -50,8 +50,6 @@ internal class Dictator : RoleBase
         if (args.Length < 2 || !int.TryParse(args[1], out int targetid))
         {
             pc.ShowInfoMessage(isUI, GetString("Dictator.InvalidTarget"));
-            GuessManager.TryHideMsg();
-            ChatManager.SendPreviousMessagesToAll();
             return;
         }
 
@@ -59,14 +57,10 @@ internal class Dictator : RoleBase
         if (target == pc)
         {
             pc.ShowInfoMessage(isUI, GetString("DictatorExpelSelf"));
-            GuessManager.TryHideMsg();
-            ChatManager.SendPreviousMessagesToAll();
             return;
         }
         if (!target.IsAlive())
         {
-            GuessManager.TryHideMsg();
-            ChatManager.SendPreviousMessagesToAll();
             return;
         }
 
@@ -74,8 +68,6 @@ internal class Dictator : RoleBase
         {
             pc.ShowInfoMessage(isUI, GetString("ExpelSolsticer"));
             MeetingHud.Instance.RpcClearVoteDelay(pc.GetClientId());
-            GuessManager.TryHideMsg();
-            ChatManager.SendPreviousMessagesToAll();
             return;
         }
 

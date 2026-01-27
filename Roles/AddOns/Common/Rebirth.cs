@@ -63,6 +63,7 @@ public class Rebirth : IAddon
             && !x.Is(CustomRoles.Infectious)
             && !x.Is(CustomRoles.Virus)
             && !x.Is(CustomRoles.Jackal)
+            && !x.Is(CustomRoles.ChiefOfPolice)
             && !x.Is(CustomRoles.Sidekick)
             && !x.Is(CustomRoles.Admirer)
             && !x.GetCustomRole().IsCoven()
@@ -70,7 +71,6 @@ public class Rebirth : IAddon
             && !x.Is(CustomRoles.Lovers) 
             && !x.Is(CustomRoles.Romantic) 
             && !x.Is(CustomRoles.Doppelganger) 
-            && !x.GetCustomRole().IsImpostor() 
             && !x.Is(CustomRoles.Solsticer) 
             && !x.Is(CustomRoles.NiceMini);
     }

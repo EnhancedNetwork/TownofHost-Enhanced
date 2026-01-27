@@ -51,7 +51,7 @@ class CheckForEndVotingPatch
                 PlayerControl pc = GetPlayerById(pva.TargetPlayerId);
                 if (pc == null) continue;
 
-                if (pva.DidVote && pc.PlayerId == pva.VotedFor && pva.VotedFor < 253 && !pc.Data.IsDead)
+                if (pva.DidVote && pc.PlayerId == pva.VotedFor && pva.VotedFor < 253 && pc.IsAlive())
                 {
                     if (Madmate.MadmateSpawnMode.GetInt() == 2 && Main.MadmateNum < CustomRoles.Madmate.GetCount() && pc.CanBeMadmate())
                     {
@@ -175,7 +175,7 @@ class CheckForEndVotingPatch
                 if (voter == null || voter.Data == null || voter.Data.Disconnected) continue;
                 if (Options.VoteMode.GetBool())
                 {
-                    if (ps.VotedFor == 253 && !voter.Data.IsDead &&
+                    if (ps.VotedFor == 253 && voter.IsAlive() &&
                         !(Options.WhenSkipVoteIgnoreFirstMeeting.GetBool() && MeetingStates.FirstMeeting) && // Ignore First Meeting
                         !(Options.WhenSkipVoteIgnoreNoDeadBody.GetBool() && !MeetingStates.IsExistDeadBody) && // No Dead Body
                         !(Options.WhenSkipVoteIgnoreEmergency.GetBool() && MeetingStates.IsEmergencyMeeting) // Ignore Emergency Meeting
@@ -195,7 +195,7 @@ class CheckForEndVotingPatch
                                 break;
                         }
                     }
-                    if (ps.VotedFor == 254 && !voter.Data.IsDead)
+                    if (ps.VotedFor == 254 && voter.IsAlive())
                     {
                         switch (Options.GetWhenNonVote())
                         {
@@ -220,10 +220,10 @@ class CheckForEndVotingPatch
                 var player = GetPlayerById(ps.TargetPlayerId);
                 var playerRoleClass = player.GetRoleClass();
 
-                //Hides vote
+                // Hides vote
                 if (playerRoleClass.HideVote(ps)) continue;
 
-                // Assing Madmate Slef Vote
+                // Assing Madmate Self Vote
                 if (ps.TargetPlayerId == ps.VotedFor && Madmate.MadmateSpawnMode.GetInt() == 2) continue;
 
                 statesList.Add(new MeetingHud.VoterState()
@@ -796,7 +796,7 @@ class CastVotePatch
             }
 
 
-            if (!voter.GetRoleClass().HasVoted && !Main.Daybreak && voter.GetRoleClass().CheckVote(voter, target) == false)
+            if (!voter.GetRoleClass().HasVoted && !Main.Daybreak && !voter.GetRoleClass().CheckVote(voter, target))
             {
                 Logger.Info($"Canceling {voter.GetRealName()}'s vote because of {voter.GetCustomRole()}", "CastVotePatch.RoleBase.CheckVote");
                 voter.GetRoleClass().HasVoted = true;
@@ -1230,7 +1230,7 @@ class MeetingHudStartPatch
         {
             _ = new LateTask(() =>
             {
-                SendMessage(GetString("Warning.AntiBlackoutProtectionMsg"), 255, ColorString(Color.blue, GetString("AntiBlackoutProtectionTitle")), noReplay: true);
+                SendMessage(GetString("Warning.AntiBlackoutProtectionMsg"), 255, ColorString(Color.blue, GetString("AntiBlackoutProtectionTitle")), addToHistory: false);
 
             }, 5f, "Warning BlackOut Is Active");
         }
@@ -1243,7 +1243,7 @@ class MeetingHudStartPatch
                 AntiBlackout.StoreExiledMessage = GetString("Warning.ShowAntiBlackExiledPlayer") + AntiBlackout.StoreExiledMessage;
                 _ = new LateTask(() =>
                 {
-                    SendMessage(AntiBlackout.StoreExiledMessage, 255, ColorString(Color.red, GetString("DefaultSystemMessageTitle")), noReplay: true);
+                    SendMessage(AntiBlackout.StoreExiledMessage, 255, ColorString(Color.red, GetString("DefaultSystemMessageTitle")), addToHistory: false);
                     AntiBlackout.StoreExiledMessage = "";
                 }, 5.5f, "AntiBlackout.StoreExiledMessage");
             }
@@ -1258,8 +1258,11 @@ class MeetingHudStartPatch
         //    }, 6f, "Message: Warning Broken Vents In Dleks");
         //}
 
-        if (MeetingStates.FirstMeeting) TemplateManager.SendTemplate("OnFirstMeeting", noErr: true);
-        TemplateManager.SendTemplate("OnMeeting", noErr: true);
+        LateTask.New(() =>
+        {
+            TemplateManager.SendTemplate("OnMeeting", noErr: true, sendOption: SendOption.None);
+            if (MeetingStates.FirstMeeting) TemplateManager.SendTemplate("OnFirstMeeting", noErr: true, sendOption: SendOption.None);
+        }, 6f, shoudLog: false);
 
         try
         {
@@ -1336,11 +1339,6 @@ class MeetingHudStartPatch
                 switch (TargetSubRole)
                 {
                     case CustomRoles.Lovers:
-                        // if (seer.Is(CustomRoles.Lovers) || seer.Data.IsDead)
-                        // {
-                        //     sb.Append(CustomRoles.Lovers.GetColoredTextByRole("♥"));
-                        //     //isLover = true;
-                        // }
                         sb.Append(Lovers.GetMarkOthers(seer, target));
                         break;
                     case CustomRoles.Cyber when Cyber.CyberKnown.GetBool():
@@ -1405,7 +1403,7 @@ class MeetingHudUpdatePatch
             __instance.playerStates.DoIf(x => x.HighlightedFX.enabled, x =>
             {
                 var player = GetPlayerById(x.TargetPlayerId);
-                if (player != null && !player.Data.IsDead)
+                if (player != null && player.IsAlive())
                 {
                     player.SetDeathReason(PlayerState.DeathReason.Execution);
                     player.SetRealKiller(PlayerControl.LocalPlayer);

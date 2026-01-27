@@ -20,6 +20,10 @@ class LateTask
         }
         return false;
     }
+
+    // Added this to make copying coded from EHR easier
+    public static LateTask New(Action action, float time, string name = "No Name Task", bool shoudLog = true, [CallerMemberName] string callerMethodName = "") => new(action, time, name, shoudLog, callerMethodName);
+    
     public LateTask(Action action, float time, string name = "No Name Task", bool shoudLog = true, [CallerMemberName] string callerMethodName = "")
     {
         this.action = action;

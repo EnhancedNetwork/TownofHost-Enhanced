@@ -14,8 +14,6 @@ internal class EvilGuesser : RoleBase
     private static OptionItem EGCanGuessTime;
     private static OptionItem EGCanGuessImp;
     private static OptionItem EGCanGuessAdt;
-    //private static OptionItem EGCanGuessTaskDoneSnitch; Not used
-    private static OptionItem EGTryHideMsg;
 
     public override void SetupCustomOption()
     {
@@ -27,14 +25,7 @@ internal class EvilGuesser : RoleBase
             .SetParent(Options.CustomRoleSpawnChances[CustomRoles.EvilGuesser]);
         EGCanGuessAdt = BooleanOptionItem.Create(Id + 4, "GCanGuessAdt", false, TabGroup.ImpostorRoles, false)
             .SetParent(Options.CustomRoleSpawnChances[CustomRoles.EvilGuesser]);
-        //EGCanGuessTaskDoneSnitch = BooleanOptionItem.Create(Id + 5, "EGCanGuessTaskDoneSnitch", true, TabGroup.ImpostorRoles, false)
-        //    .SetParent(Options.CustomRoleSpawnChances[CustomRoles.EvilGuesser]);
-        EGTryHideMsg = BooleanOptionItem.Create(Id + 6, "GuesserTryHideMsg", true, TabGroup.ImpostorRoles, false)
-            .SetParent(Options.CustomRoleSpawnChances[CustomRoles.EvilGuesser])
-            .SetColor(Color.green);
     }
-
-    public static bool NeedHideMsg(PlayerControl pc) => pc.Is(CustomRoles.EvilGuesser) && EGTryHideMsg.GetBool();
 
     public static bool HideTabInGuesserUI(int TabId)
     {

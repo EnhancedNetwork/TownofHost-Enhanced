@@ -13,6 +13,7 @@ internal class Randomizer : RoleBase
     public static readonly HashSet<byte> playerIdList = [];
     private static readonly Dictionary<byte, List<CustomRoles>> KeptAddons = [];
     public override bool IsDesyncRole => true;
+    public override bool IsExperimental => true;
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor; // Base role remains Neutral
     public override Custom_RoleType ThisRoleType => Custom_RoleType.NeutralChaos;
     public override CustomRoles Role => CustomRoles.Randomizer;

@@ -4,6 +4,8 @@ using System.IO;
 using System.Net.Http;
 using System.Runtime.CompilerServices;
 using TOHE.Modules;
+using TOHE.Patches;
+using UnityEngine;
 using LogLevel = BepInEx.Logging.LogLevel;
 
 namespace TOHE;
@@ -43,10 +45,30 @@ class Logger
         else SendToGameList.Remove(tag);
     }
     public static void Disable(string tag) { if (!DisableList.Contains(tag)) DisableList.Add(tag); }
-    public static void SendInGame(string text)
+    // public static void SendInGame(string text)
+    // {
+    //     if (!IsEnable) return;
+    //     if (DestroyableSingleton<HudManager>._instance) DestroyableSingleton<HudManager>.Instance.Notifier.AddDisconnectMessage(text);
+    // }
+    public static void SendInGame(string text, Color? textColor = null)
     {
         if (!IsEnable) return;
-        if (DestroyableSingleton<HudManager>._instance) DestroyableSingleton<HudManager>.Instance.Notifier.AddDisconnectMessage(text);
+
+        NotificationPopper np = NotificationPopperPatch.Instance;
+
+        if (np != null)
+        {
+            Warn(text, "SendInGame");
+
+            LobbyNotificationMessage newMessage = UnityEngine.Object.Instantiate(np.notificationMessageOrigin, Vector3.zero, Quaternion.identity, np.transform);
+            newMessage.transform.localPosition = new(0f, 0f, -2f);
+            text = "<font=\"Barlow-Black SDF\" material=\"Barlow-Black Outline\">" + text + "</font>";
+            newMessage.SetUp(text, np.settingsChangeSprite, textColor ?? np.settingsChangeColor, (Action)(() => np.OnMessageDestroy(newMessage)));
+            np.ShiftMessages();
+            np.AddMessageToQueue(newMessage);
+
+            SoundManager.Instance.PlaySoundImmediate(np.settingsChangeSound, false);
+        }
     }
     private static void SendToFile(string text, LogLevel level = LogLevel.Info, string tag = "", bool escapeCRLF = true, int lineNumber = 0, string fileName = "", bool multiLine = false)
     {

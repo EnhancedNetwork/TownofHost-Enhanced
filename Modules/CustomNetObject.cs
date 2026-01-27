@@ -177,7 +177,7 @@ namespace TOHE.Modules
                     System.Collections.IEnumerator CoRoutine()
                     {
                         while (GameStates.InGame && !GameStates.IsEnded && !Main.IntroDestroyed) yield return null;
-                        yield return new WaitForSeconds(3f);
+                        yield return new WaitForSecondsRealtime(3f);
                         if (!GameStates.InGame || GameStates.IsEnded) yield break;
                         CreateNetObject(sprite, position);
                     }

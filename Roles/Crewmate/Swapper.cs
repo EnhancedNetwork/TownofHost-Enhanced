@@ -27,13 +27,12 @@ internal class Swapper : RoleBase
     private static OptionItem SwapMax;
     private static OptionItem CanSwapSelf;
     private static OptionItem OptCanStartMeeting;
-    private static OptionItem TryHideMsg;
 
     private static readonly HashSet<byte> ResultSent = [];
     private static readonly Dictionary<byte, byte> Vote = [];
     private static readonly Dictionary<byte, byte> VoteTwo = [];
 
-    private static List<byte> PlayerIdList => Main.PlayerStates.Values.Where(x => x.MainRole == CustomRoles.Swapper).Select(p => p.PlayerId).ToList();
+    private static List<byte> PlayerIdList => [.. Main.PlayerStates.Values.Where(x => x.MainRole == CustomRoles.Swapper).Select(p => p.PlayerId)];
 
     public override void SetupCustomOption()
     {
@@ -42,7 +41,6 @@ internal class Swapper : RoleBase
             .SetValueFormat(OptionFormat.Times);
         CanSwapSelf = BooleanOptionItem.Create(Id + 2, "CanSwapSelfVotes", true, TabGroup.CrewmateRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Swapper]);
         OptCanStartMeeting = BooleanOptionItem.Create(Id + 4, GeneralOption.CanUseMeetingButton, false, TabGroup.CrewmateRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Swapper]);
-        TryHideMsg = BooleanOptionItem.Create(Id + 5, "SwapperTryHideMsg", true, TabGroup.CrewmateRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Swapper]);
     }
     public override void Init()
     {
@@ -76,13 +74,6 @@ internal class Swapper : RoleBase
             pc.ShowInfoMessage(isUI, GetString("SwapDead"));
             return;
         }
-
-        if (TryHideMsg.GetBool())
-        {
-            GuessManager.TryHideMsg();
-            ChatManager.SendPreviousMessagesToAll();
-        }
-        else if (pc.AmOwner && !isUI) SendMessage(msg, 255, pc.GetRealName());
 
         if (!GetIdFromCommand(msg, out byte targetId, out string error) && targetId != 253)
         {

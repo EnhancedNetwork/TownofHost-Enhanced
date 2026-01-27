@@ -140,7 +140,7 @@ internal class DoubleAgent : RoleBase
             CurrentBombedTime = -1;
             CurrentBombedPlayers.Add(target.PlayerId);
             BombIsActive = true;
-            SendMessage(GetString("VoteHasReturned"), voter.PlayerId, title: ColorString(GetRoleColor(CustomRoles.DoubleAgent), string.Format(GetString("VoteAbilityUsed"), GetString("DoubleAgent"))), noReplay: true);
+            SendMessage(GetString("VoteHasReturned"), voter.PlayerId, title: ColorString(GetRoleColor(CustomRoles.DoubleAgent), string.Format(GetString("VoteAbilityUsed"), GetString("DoubleAgent"))), addToHistory: false);
             return false;
         }
         return true;

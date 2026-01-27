@@ -44,6 +44,26 @@ public class Rainbow : IAddon
         if (!playerList.Any())
             IsEnabled = false;
     }
+    public static void ChangeColor(PlayerControl pc)
+    {
+        int colorId = IRandom.Instance.Next(0, 18);
+
+        pc.SetColor(colorId);
+
+        if (!GameStates.IsVanillaServer)
+            pc.RpcSetColor((byte)colorId);
+        else
+        {
+            var sender = CustomRpcSender.Create($"Rainbow.ChangeColor({pc.Data.PlayerName})");
+
+            sender.AutoStartRpc(pc.NetId, RpcCalls.SetColor)
+                .Write(pc.Data.NetId)
+                .Write((byte)colorId)
+                .EndRpc();
+
+            sender.SendMessage();
+        }
+    }
     public static void OnFixedUpdate()
     {
         if (Camouflage.IsCamouflage && !ChangeInCamouflage.GetBool()) return;
@@ -59,11 +79,7 @@ public class Rainbow : IAddon
     {
         foreach (var player in Main.AllPlayerControls.Where(x => x.Is(CustomRoles.Rainbow) && x.IsAlive() && !x.inMovingPlat && !x.inVent && !x.walkingToVent && !x.onLadder))
         {
-            int color = PickRandomColor();
-            player.SetColor(color);
-
-            var message = new RpcSetColorMessage(player.NetId, player.Data.NetId, (byte)color);
-            RpcUtils.LateBroadcastReliableMessage(message);
+            ChangeColor(player);
         }
     }
     private static int PickRandomColor()

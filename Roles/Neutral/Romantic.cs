@@ -345,7 +345,7 @@ internal class VengefulRomantic : RoleBase
         VengefulTarget.Add(playerId, Romantic.VengefulTargetId);
     }
 
-    public override bool CanUseKillButton(PlayerControl player) => !player.Data.IsDead && !hasKilledKiller;
+    public override bool CanUseKillButton(PlayerControl player) => !player.Data.IsDead && player.IsAlive() && !hasKilledKiller;
 
     public override bool OnCheckMurderAsKiller(PlayerControl killer, PlayerControl target)
     {

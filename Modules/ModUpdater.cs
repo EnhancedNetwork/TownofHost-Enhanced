@@ -210,7 +210,7 @@ public class ModUpdater
         request.chunkedTransfer = false;
 
         yield return request.SendWebRequest();
-        yield return new WaitForSeconds(0.5f);
+        yield return new WaitForSecondsRealtime(0.5f);
 
         if (request.result != UnityWebRequest.Result.Success)
         {
@@ -333,9 +333,9 @@ public class ModUpdater
     public static IEnumerator DeleteFilesAfterCancel()
     {
         ShowPopupAsync(GetString("deletingFiles"), StringNames.None, false);
-        yield return new WaitForSeconds(2f);
+        yield return new WaitForSecondsRealtime(2f);
         InfoPopup.Close();
-        yield return new WaitForSeconds(0.3f);
+        yield return new WaitForSecondsRealtime(0.3f);
         DeleteOldFiles();
         yield break;
     }

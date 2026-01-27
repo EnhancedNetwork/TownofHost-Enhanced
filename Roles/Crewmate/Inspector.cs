@@ -25,7 +25,6 @@ internal class Inspector : RoleBase
     public override Custom_RoleType ThisRoleType => Custom_RoleType.CrewmateSupport;
     //==================================================================\\
 
-    private static OptionItem TryHideMsg;
     private static OptionItem InspectCheckLimitMax;
     private static OptionItem InspectCheckLimitPerMeeting;
     private static OptionItem InspectCheckTargetKnow;
@@ -38,8 +37,6 @@ internal class Inspector : RoleBase
     public override void SetupCustomOption()
     {
         SetupRoleOptions(Id, TabGroup.CrewmateRoles, CustomRoles.Inspector);
-        TryHideMsg = BooleanOptionItem.Create(Id + 10, "InspectorTryHideMsg", true, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Inspector])
-            .SetColor(Color.green);
         InspectCheckLimitMax = IntegerOptionItem.Create(Id + 11, "MaxInspectCheckLimit", new(0, 20, 1), 5, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Inspector])
             .SetValueFormat(OptionFormat.Times);
         InspectCheckLimitPerMeeting = IntegerOptionItem.Create(Id + 12, "InspectCheckLimitPerMeeting", new(1, 20, 1), 1, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Inspector])
@@ -108,13 +105,6 @@ internal class Inspector : RoleBase
             SendMessage(GetString("InspectorDead"), player.PlayerId);
             return;
         }
-
-        if (TryHideMsg.GetBool())
-        {
-            TryHideMsgForCompare();
-            ChatManager.SendPreviousMessagesToAll();
-        }
-        else if (player.AmOwner) SendMessage(originMsg, 255, player.GetRealName());
 
         if (!GetIdsFromCommand(text, out byte targetId1, out byte targetId2, out string error))
         {
@@ -323,7 +313,7 @@ internal class Inspector : RoleBase
 
         PlayerControl target1 = GetPlayerById(id1);
         PlayerControl target2 = GetPlayerById(id2);
-        if (target1 == null || target1.Data.IsDead || target2 == null || target2.Data.IsDead)
+        if (target1 == null || target1.Data.IsDead || !target1.IsAlive() || target2 == null || target2.Data.IsDead || !target2.IsAlive())
         {
             error = GetString("InspectCheckNull");
             return false;
@@ -331,48 +321,6 @@ internal class Inspector : RoleBase
 
         error = string.Empty;
         return true;
-    }
-
-    private static void TryHideMsgForCompare()
-    {
-        ChatUpdatePatch.DoBlockChat = true;
-        if (ChatManager.quickChatSpamMode != QuickChatSpamMode.QuickChatSpam_Disabled)
-        {
-            ChatManager.SendQuickChatSpam();
-            ChatUpdatePatch.DoBlockChat = false;
-            return;
-        }
-        List<CustomRoles> roles = CustomRolesHelper.AllRoles.Where(x => x is not CustomRoles.NotAssigned).ToList();
-        var rd = IRandom.Instance;
-        string msg;
-        string[] command = ["cmp", "compare", "比较"];
-        for (int i = 0; i < 20; i++)
-        {
-            msg = "/";
-            if (rd.Next(100) < 20)
-            {
-                msg += "id";
-            }
-            else
-            {
-                msg += command[rd.Next(0, command.Length - 1)];
-                msg += " ";
-                msg += rd.Next(16).ToString();
-                msg += " ";
-                msg += rd.Next(16).ToString();
-
-            }
-            var player = Main.AllAlivePlayerControls.RandomElement();
-            DestroyableSingleton<HudManager>.Instance.Chat.AddChat(player, msg);
-            var writer = CustomRpcSender.Create("MessagesToSend", SendOption.None);
-            writer.StartMessage(-1);
-            writer.StartRpc(player.NetId, (byte)RpcCalls.SendChat)
-                .Write(msg)
-                .EndRpc();
-            writer.EndMessage();
-            writer.SendMessage();
-        }
-        ChatUpdatePatch.DoBlockChat = false;
     }
 
     public override string NotifyPlayerName(PlayerControl seer, PlayerControl target, string TargetPlayerName = "", bool IsForMeeting = false)

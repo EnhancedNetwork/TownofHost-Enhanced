@@ -19,7 +19,7 @@ namespace TOHE;
 
 
 [Obfuscation(Exclude = true)]
-public enum CustomRPC : byte // 178/255 USED
+public enum CustomRPC : byte // 182/255 USED
 {
     // RpcCalls can increase with each AU version
     // On version 2024.6.18 the last id in RpcCalls: 65
@@ -28,10 +28,10 @@ public enum CustomRPC : byte // 178/255 USED
     // Sync Role Skill can be used under most cases so you should not make a new rpc unless it's necessary
     // NOTE: Set RPC's that are spammed to "ExtendedPlayerControl.RpcSendOption" to prevent kick due innersloth anti-cheat
 
-    VersionCheck = 80,
-    RequestRetryVersionCheck = 81,
-    SyncCustomSettings = 100, // AUM use 101 rpc
-    SetDeathReason = 102,
+    VersionCheck = 102,
+    RequestRetryVersionCheck,
+    SyncCustomSettings,
+    SetDeathReason,
     EndGame,
     PlaySound,
     SetCustomRole,
@@ -47,10 +47,10 @@ public enum CustomRPC : byte // 178/255 USED
     KillFlash,
     DumpLog,
     SetNameColorData,
+    KNChat = 119, // Kill network chat, may conflicts with judge and guess calls
     GuessKill,
     Judge,
     Guess,
-    KNChat = 119, // Kill network chat, may conflicts with judge and guess calls
     CouncillorJudge,
     NemesisRevenge,
     RetributionistRevenge,
@@ -81,12 +81,13 @@ public enum CustomRPC : byte // 178/255 USED
     SniperSync,
     // SetLoversPlayers,
     SetLoverPairs,
+    
+    // BetterAmongUs (BAU) RPC, This is sent to allow other BAU users know who's using BAU!
+    BetterCheck = 150,
+
     SendFireworkerState,
     SetCurrentDousingTarget,
     SetEvilTrackerTarget,
-
-    // BetterAmongUs (BAU) RPC, This is sent to allow other BAU users know who's using BAU!
-    BetterCheck = 150,
 
     SetDrawPlayer,
     SetCrewpostorTasksDone,
@@ -113,6 +114,7 @@ public enum CustomRPC : byte // 178/255 USED
     DictatorRPC,
     Necronomicon,
     ExorcistExorcise,
+    RequestSendMessage,
 
     //FFA
     SyncFFAPlayer,
@@ -166,7 +168,8 @@ internal class RPCHandlerPatch
         or CustomRPC.DumpLog
         or CustomRPC.SetFriendCode
         or CustomRPC.BetterCheck
-        or CustomRPC.DictatorRPC;
+        or CustomRPC.DictatorRPC
+        or CustomRPC.RequestSendMessage;
     public static bool Prefix(PlayerControl __instance, [HarmonyArgument(0)] byte callId, [HarmonyArgument(1)] MessageReader reader)
     {
         var rpcType = (RpcCalls)callId;
@@ -366,16 +369,18 @@ internal class RPCHandlerPatch
                 RPC.PlaySound(playerID, sound);
                 break;
             case CustomRPC.ShowPopUp:
-                seerId = reader.ReadPackedInt32();
-                if (seerId != PlayerControl.LocalPlayer.PlayerId) break;
-                string message = reader.ReadString();
-                string title = reader.ReadString();
+                {
+                    seerId = reader.ReadPackedInt32();
+                    if (seerId != PlayerControl.LocalPlayer.PlayerId) break;
+                    string message = reader.ReadString();
+                    string title = reader.ReadString();
 
-                // add title
-                if (title != "")
-                    message = $"{title}\n{message}";
+                    // add title
+                    if (title != "")
+                        message = $"{title}\n{message}";
 
-                HudManager.Instance.ShowPopUp(message);
+                    HudManager.Instance.ShowPopUp(message);
+                }
                 break;
             case CustomRPC.SetCustomRole:
                 byte CustomRoleTargetId = reader.ReadByte();
@@ -396,6 +401,17 @@ internal class RPCHandlerPatch
                     else LocateArrow.ReceiveRPC(reader);
                 }
                 break;
+            case CustomRPC.RequestSendMessage:
+                {
+                    if (!AmongUsClient.Instance.AmHost) break;
+
+                    string text = reader.ReadString();
+                    byte sendTo = reader.ReadByte();
+                    string title = reader.ReadString();
+                    bool noSplit = reader.ReadBoolean();
+                    Utils.SendMessage(text, sendTo, title, noSplit);
+                    break;
+                }
             case CustomRPC.NotificationPopper:
                 {
                     var item = reader.ReadPackedInt32();
@@ -529,9 +545,6 @@ internal class RPCHandlerPatch
                 byte killerId = reader.ReadByte();
                 RPC.SetRealKiller(tarid, killerId);
                 break;
-            //case CustomRPC.SetTrackerTarget:
-            //    Tracker.ReceiveRPC(reader);
-            //    break;
             case CustomRPC.SyncJailerData:
                 Jailer.ReceiveRPC(reader);
                 break;
@@ -776,70 +789,45 @@ internal static class RPC
     {
         if (targetId != -1)
         {
-            var client = Utils.GetClientById(targetId);
-            if (client == null || client.Character == null || !Main.playerVersion.ContainsKey(client.Id))
-            {
-                return;
-            }
-        }
-        else if (!Main.AllPlayerControls.Any(pc => pc.IsNonHostModdedClient()))
-        {
-            return;
+            ClientData client = Utils.GetClientById(targetId);
+            if (client == null || client.Character == null || !Main.playerVersion.ContainsKey(client.Character.PlayerId)) return;
         }
 
-        if (!AmongUsClient.Instance.AmHost || PlayerControl.AllPlayerControls.Count <= 1 || AmongUsClient.Instance.AmHost == false && PlayerControl.LocalPlayer == null)
-        {
-            return;
-        }
+        if (!AmongUsClient.Instance.AmHost || PlayerControl.AllPlayerControls.Count <= 1) return;
 
-        var amount = OptionItem.AllOptions.Count;
+        int amount = OptionItem.AllOptions.Count;
         int divideBy = amount / 10;
-
-        for (var i = 0; i <= 10; i++)
-        {
-            SyncOptionsBetween(i * divideBy, (i + 1) * divideBy, amount, targetId);
-        }
+        for (var i = 0; i <= 10; i++) SyncOptionsBetween(i * divideBy, (i + 1) * divideBy, targetId);
     }
 
-    static void SyncOptionsBetween(int startAmount, int lastAmount, int amountAllOptions, int targetId = -1)
+    static void SyncOptionsBetween(int startAmount, int lastAmount, int targetId = -1)
     {
         if (targetId != -1)
         {
-            var client = Utils.GetClientById(targetId);
-            if (client == null || client.Character == null || !Main.playerVersion.ContainsKey(client.Id))
-            {
-                return;
-            }
-        }
-        else if (!Main.AllPlayerControls.Any(pc => pc.IsNonHostModdedClient()))
-        {
-            return;
+            ClientData client = Utils.GetClientById(targetId);
+            if (client == null || client.Character == null || !Main.playerVersion.ContainsKey(client.Character.PlayerId)) return;
         }
 
-        if (!AmongUsClient.Instance.AmHost || PlayerControl.AllPlayerControls.Count <= 1 || AmongUsClient.Instance.AmHost == false && PlayerControl.LocalPlayer == null)
-        {
-            return;
-        }
+        if (!AmongUsClient.Instance.AmHost || PlayerControl.AllPlayerControls.Count <= 1) return;
 
-        if (amountAllOptions != OptionItem.AllOptions.Count)
-        {
-            amountAllOptions = OptionItem.AllOptions.Count;
-        }
+        int amountAllOptions = OptionItem.AllOptions.Count;
+
+        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncCustomSettings, SendOption.Reliable, targetId);
+        writer.Write(startAmount);
+        writer.Write(lastAmount);
+
         List<OptionItem> listOptions = [];
-        List<OptionItem> allOptionsList = [.. OptionItem.FastOptions.OrderBy(kv => kv.Key).Select(kv => kv.Value)];
 
         // Add Options
-        for (var option = startAmount; option < amountAllOptions && option <= lastAmount; option++)
-        {
-            listOptions.Add(allOptionsList[option]);
-        }
-        var countListOptions = listOptions.Count;
-        
-        Logger.Msg($"Sending StartAmount/LastAmount: {startAmount}/{lastAmount} :--: ListOptionsCount/AllOptions: {countListOptions}/{amountAllOptions}", "SyncOptionsBetween");
+        for (int option = startAmount; option < amountAllOptions && option <= lastAmount; option++) listOptions.Add(OptionItem.AllOptions[option]);
+
+        int countListOptions = listOptions.Count;
+        Logger.Info($"StartAmount: {startAmount} - LastAmount: {lastAmount} ({startAmount}/{lastAmount}) :--: ListOptionsCount: {countListOptions} - AllOptions: {amountAllOptions} ({countListOptions}/{amountAllOptions})", "SyncCustomSettings");
 
         // Sync Settings
-        var msg = new RpcSyncCustomSettings(PlayerControl.LocalPlayer.NetId, startAmount, lastAmount, listOptions);
-        RpcUtils.LateBroadcastReliableMessage(msg);
+        foreach (OptionItem option in listOptions) writer.WritePacked(option.GetValue());
+
+        AmongUsClient.Instance.FinishRpcImmediately(writer);
     }
 
     public static void PlaySoundRPC(Sounds sound, byte PlayerID = byte.MaxValue)

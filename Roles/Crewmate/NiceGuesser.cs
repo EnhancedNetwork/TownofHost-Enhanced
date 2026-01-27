@@ -15,7 +15,6 @@ internal class NiceGuesser : RoleBase
     private static OptionItem GGCanGuessTime;
     private static OptionItem GGCanGuessCrew;
     private static OptionItem GGCanGuessAdt;
-    private static OptionItem GGTryHideMsg;
 
     public override void SetupCustomOption()
     {
@@ -24,11 +23,7 @@ internal class NiceGuesser : RoleBase
             .SetValueFormat(OptionFormat.Times);
         GGCanGuessCrew = BooleanOptionItem.Create(Id + 11, "GGCanGuessCrew", true, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.NiceGuesser]);
         GGCanGuessAdt = BooleanOptionItem.Create(Id + 12, "GCanGuessAdt", false, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.NiceGuesser]);
-        GGTryHideMsg = BooleanOptionItem.Create(Id + 13, "GuesserTryHideMsg", true, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.NiceGuesser])
-            .SetColor(Color.green);
     }
-
-    public static bool NeedHideMsg(PlayerControl pc) => pc.Is(CustomRoles.NiceGuesser) && GGTryHideMsg.GetBool();
 
     public static bool HideTabInGuesserUI(int TabId)
     {

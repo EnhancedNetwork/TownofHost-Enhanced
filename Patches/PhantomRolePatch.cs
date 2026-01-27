@@ -160,21 +160,21 @@ public static class PhantomRolePatch
         phantom?.RpcSetRoleDesync(RoleTypes.Scientist, seer.GetClientId());
 
         // Return Phantom in meeting
-        yield return new WaitForSeconds(1f);
+        yield return new WaitForSecondsRealtime(1f);
         {
             if (InValid(phantom, seer)) yield break;
 
             phantom?.RpcSetRoleDesync(RoleTypes.Phantom, seer.GetClientId());
         }
         // Revert invis for phantom
-        yield return new WaitForSeconds(1f);
+        yield return new WaitForSecondsRealtime(1f);
         {
             if (InValid(phantom, seer)) yield break;
 
             phantom?.RpcStartAppearDesync(false, seer);
         }
         // Set Scientist back
-        yield return new WaitForSeconds(4f);
+        yield return new WaitForSecondsRealtime(4f);
         {
             if (InValid(phantom, seer)) yield break;
 
@@ -201,7 +201,7 @@ public static class PhantomRoleUseAbilityPatch
     {
         if (!AmongUsClient.Instance.AmHost) return true;
 
-        if (__instance.Player.AmOwner && !__instance.Player.Data.IsDead && __instance.Player.moveable && !Minigame.Instance && !__instance.IsCoolingDown && !__instance.fading)
+        if (__instance.Player.AmOwner && !__instance.Player.Data.IsDead && __instance.Player.IsAlive() && __instance.Player.moveable && !Minigame.Instance && !__instance.IsCoolingDown && !__instance.fading)
         {
             System.Func<RoleEffectAnimation, bool> roleEffectAnimation = x => x.effectType == RoleEffectAnimation.EffectType.Vanish_Charge;
             if (!__instance.Player.currentRoleAnimations.Find(roleEffectAnimation) && !__instance.Player.walkingToVent && !__instance.Player.inMovingPlat)

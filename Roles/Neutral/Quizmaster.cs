@@ -568,7 +568,7 @@ class DeathReasonQuestion : QuizQuestionBase
         {
             if (QuizmasterQuestionType == QuizmasterQuestionType.PlrDeathReasonQuestion)
             {
-                if (plr.Data.IsDead && !PossibleAnswers.Contains(Main.PlayerStates[chosenPlayer.PlayerId].deathReason.ToString()))
+                if (plr.Data.IsDead && !plr.IsAlive() && !PossibleAnswers.Contains(Main.PlayerStates[chosenPlayer.PlayerId].deathReason.ToString()))
                     PossibleAnswers.Add(Main.PlayerStates[chosenPlayer.PlayerId].deathReason.ToString());
             }
         }
@@ -582,7 +582,7 @@ class DeathReasonQuestion : QuizQuestionBase
 
         Answer = QuizmasterQuestionType switch
         {
-            QuizmasterQuestionType.PlrDeathReasonQuestion => chosenPlayer.Data.IsDead ? Main.PlayerStates[chosenPlayer.PlayerId].deathReason.ToString() : "None",
+            QuizmasterQuestionType.PlrDeathReasonQuestion => chosenPlayer.Data.IsDead && !chosenPlayer.IsAlive() ? Main.PlayerStates[chosenPlayer.PlayerId].deathReason.ToString() : "None",
             QuizmasterQuestionType.PlrDeathMethodQuestion => chosenPlayer.Data.Disconnected ? GetString("Disconnected") : (Main.PlayerStates[chosenPlayer.PlayerId].deathReason == PlayerState.DeathReason.Vote ? GetString("DeathReason.Vote") : GetString("DeathReason.Kill")),
             QuizmasterQuestionType.PlrDeathKillerFactionQuestion => CustomRolesHelper.GetCustomRoleTeam(chosenPlayer.GetRealKiller().GetCustomRole()).ToString(),
             _ => "None"

@@ -157,19 +157,6 @@ public static class GuessManager
             return true;
         }
 
-        if (
-        NiceGuesser.NeedHideMsg(pc) ||
-        EvilGuesser.NeedHideMsg(pc) ||
-        Doomsayer.NeedHideMsg(pc) ||
-        (pc.Is(CustomRoles.Guesser) && Guesser.GTryHideMsg.GetBool()) ||
-        (Options.GuesserMode.GetBool() && Options.HideGuesserCommands.GetBool())
-        )
-        {
-            TryHideMsg();
-            ChatManager.SendPreviousMessagesToAll();
-        }
-        else if (pc.AmOwner && !isUI) Utils.SendMessage(originMsg, 255, pc.GetRealName());
-
         if (!MsgToPlayerAndRole(msg, out byte targetId, out CustomRoles role, out string error))
         {
             pc.ShowInfoMessage(isUI, error);
@@ -551,9 +538,11 @@ public static class GuessManager
             result += mc[i];//匹配结果是完整的数字，此处可以不做拼接的
         }
 
-        if (byte.TryParse(result, out byte num))
+        Logger.Info($"result: {result}", "MsgToPlayerAndRole");
+
+        if (int.TryParse(result, out int num))
         {
-            id = num;
+            id = Convert.ToByte(num);
         }
         else
         {
@@ -569,12 +558,15 @@ public static class GuessManager
 
         //判断选择的玩家是否合理
         PlayerControl target = Utils.GetPlayerById(id);
-        if (target == null || target.Data.IsDead)
+        if (target == null || !target.IsAlive())
         {
             error = GetString("GuessNull");
             role = new();
             return false;
         }
+
+        if (msg.Split(" ").Length > 2)
+            msg = string.Join(" ", msg.Split(" ")[2..]);
 
         if (!ChatCommands.GetRoleByName(msg, out role))
         {
@@ -584,51 +576,6 @@ public static class GuessManager
 
         error = string.Empty;
         return true;
-    }
-
-    public static void TryHideMsg()
-    {
-        ChatUpdatePatch.DoBlockChat = true;
-
-        if (ChatManager.quickChatSpamMode != Options.QuickChatSpamMode.QuickChatSpam_Disabled)
-        {
-            ChatManager.SendQuickChatSpam();
-        }
-        else
-        {
-            var roles = CustomRolesHelper.AllRoles.Where(x => x is not CustomRoles.NotAssigned).ToArray();
-            var rd = IRandom.Instance;
-            string msg;
-            string[] command = ["bet", "bt", "guess", "gs", "shoot", "st", "赌", "猜", "审判", "tl", "判", "审"];
-            for (int i = 0; i < 20; i++)
-            {
-                msg = "/";
-                if (rd.Next(100) < 20)
-                {
-                    msg += "id";
-                }
-                else
-                {
-                    msg += command[rd.Next(0, command.Length - 1)];
-                    msg += rd.Next(100) < 50 ? string.Empty : " ";
-                    msg += rd.Next(0, 15).ToString();
-                    msg += rd.Next(100) < 50 ? string.Empty : " ";
-                    CustomRoles role = roles.RandomElement();
-                    msg += rd.Next(100) < 50 ? string.Empty : " ";
-                    msg += Utils.GetRoleName(role);
-                }
-                var player = Main.AllAlivePlayerControls.RandomElement();
-                DestroyableSingleton<HudManager>.Instance.Chat.AddChat(player, msg);
-                var writer = CustomRpcSender.Create("MessagesToSend", SendOption.None);
-                writer.StartMessage(-1);
-                writer.StartRpc(player.NetId, (byte)RpcCalls.SendChat)
-                    .Write(msg)
-                    .EndRpc();
-                writer.EndMessage();
-                writer.SendMessage();
-            }
-        }
-        ChatUpdatePatch.DoBlockChat = false;
     }
 
     [HarmonyPatch(typeof(MeetingHud), nameof(MeetingHud.Start))]
