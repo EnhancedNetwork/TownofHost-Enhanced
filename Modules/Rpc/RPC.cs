@@ -162,6 +162,7 @@ internal class RPCHandlerPatch
         or CustomRPC.NemesisRevenge
         or CustomRPC.RetributionistRevenge
         or CustomRPC.Guess
+        or CustomRPC.GuessKill
         or CustomRPC.PresidentEnd
         or CustomRPC.SetSwapperVotes
         or CustomRPC.DumpLog
@@ -699,6 +700,7 @@ internal class RPCHandlerPatch
 
     private static void VersionCheck(PlayerControl __instance, MessageReader reader)
     {
+        Logger.Info($"Starting version check", "VersionCheck");
         try
         {
             Version version = Version.Parse(reader.ReadString());
