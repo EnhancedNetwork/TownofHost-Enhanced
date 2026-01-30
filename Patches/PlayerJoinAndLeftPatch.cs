@@ -140,10 +140,10 @@ internal static class OnGameJoinedPatch
                 var client = AmongUsClient.Instance.GetClientFromCharacter(PlayerControl.LocalPlayer);
                 var host = AmongUsClient.Instance.GetHost();
 
-                if (!GameStates.IsVanillaServer)
-                {
-                    RPC.RpcSetFriendCode(EOSManager.Instance.FriendCode);
-                }
+                // if (!GameStates.IsVanillaServer)
+                // {
+                //     RPC.RpcSetFriendCode(EOSManager.Instance.FriendCode);
+                // }
 
                 Logger.Info($"{client.PlayerName.RemoveHtmlTags()}(ClientID:{client.Id}/FriendCode:{client.FriendCode}/HashPuid:{client.GetHashedPuid()}/Platform:{client.PlatformData.Platform}) finished join room", "Session: OnGameJoined");
                 Logger.Info($"{host.PlayerName.RemoveHtmlTags()}(ClientID:{host.Id}/FriendCode:{host.FriendCode}/HashPuid:{host.GetHashedPuid()}/Platform:{host.PlatformData.Platform}) is the host", "Session: OnGameJoined");
@@ -556,7 +556,7 @@ class OnPlayerLeftPatch
                             {
                                 CustomWinnerHolder.ResetAndSetWinner(CustomWinner.Error);
                                 GameManager.Instance.enabled = false;
-                                Utils.NotifyGameEnding();
+                                // Utils.NotifyGameEnding();
                                 GameManager.Instance.RpcEndGame(GameOverReason.ImpostorDisconnect, false);
                             }, 3f, "Disconnect Error Auto-end");
                         }
