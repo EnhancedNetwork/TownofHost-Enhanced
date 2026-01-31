@@ -28,7 +28,7 @@ public enum CustomRPC : byte // 182/255 USED
     // Sync Role Skill can be used under most cases so you should not make a new rpc unless it's necessary
     // NOTE: Set RPC's that are spammed to "ExtendedPlayerControl.RpcSendOption" to prevent kick due innersloth anti-cheat
 
-    VersionCheck = 102,
+    VersionCheck = 80,
     RequestRetryVersionCheck,
     SyncCustomSettings,
     SetDeathReason,
