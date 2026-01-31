@@ -346,7 +346,7 @@ public static class CustomRpcSenderExtensions
                 break;
         }
 
-        Logger.Info($"Set name of {player.GetRealName()} for seer {saw}", "RpcSetName");
+        Logger.Info($"Set name for {player.GetRealName()} for seer {saw} to {name.RemoveHtmlTags()}", "RpcSetName");
 
         sender.AutoStartRpc(player.NetId, (byte)RpcCalls.SetName, targetClientId)
             .Write(player.Data.NetId)
