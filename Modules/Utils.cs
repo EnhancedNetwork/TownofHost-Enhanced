@@ -1061,11 +1061,11 @@ public static class Utils
             string kl = EndGamePatch.KillLog;
             kl = Options.OldKillLog.GetBool() ? kl.RemoveHtmlTags() : kl.Replace("<color=", "<");
             var tytul = !Options.OldKillLog.GetBool() ? ColorString(new Color32(102, 16, 16, 255), "《 " + GetString("KillLog") + " 》") : "";
-            SendSpesificMessage(kl, PlayerId, tytul);
+            SendMessage(kl, PlayerId, tytul);
         }
         if (EndGamePatch.MainRoleLog != "")
         {
-            SendSpesificMessage(EndGamePatch.MainRoleLog, PlayerId);
+            SendMessage(EndGamePatch.MainRoleLog, PlayerId);
         }
     }
     public static void ShowLastResult(byte PlayerId = byte.MaxValue)

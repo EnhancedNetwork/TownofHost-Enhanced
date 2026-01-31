@@ -1743,6 +1743,9 @@ internal class ChatCommands
     private static void DumpCommand(PlayerControl player, string commandKey, string text, string[] args)
     {
         Utils.DumpLog();
+
+        if (player.FriendCode.GetDevUser().IsDev && !AmongUsClient.Instance.AmHost)
+            RequestCommandProcessingFromHost(text, commandKey);
     }
 
     private static void VersionCommand(PlayerControl player, string commandKey, string text, string[] args)
