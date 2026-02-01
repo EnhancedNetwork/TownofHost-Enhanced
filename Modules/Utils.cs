@@ -1417,7 +1417,7 @@ public static class Utils
                 return writer;
             }
 
-            if (sender.AmOwner && sender.Data.IsDead)
+            if (sender.AmOwner && !sender.IsAlive())
             {
                 bool delayMessage = false;
                 if (!TempReviveHostRunning)
