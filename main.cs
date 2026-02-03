@@ -1,4 +1,5 @@
 using AmongUs.GameOptions;
+using AmongUs.Matchmaking;
 using BepInEx;
 using BepInEx.Configuration;
 using BepInEx.Unity.IL2CPP;
@@ -54,6 +55,7 @@ public class Main : BasePlugin
     public static ConfigEntry<string> DebugKeyInput { get; private set; }
 
     public const string PluginGuid = "com.0xdrmoe.townofhostenhanced";
+    public const string PluginGuid4 = "90759289-1d0d-494b-b36c-839f93ae0df1"; // for matchmaking token
     public const string PluginVersion = "2026.0202.300.00019"; // YEAR.MMDD.VERSION.CANARYDEV
     public const string PluginDisplayVersion = "3.0.0 Alpha 19";
     public static readonly List<(int year, int month, int day, int revision)> SupportedVersionAU =
