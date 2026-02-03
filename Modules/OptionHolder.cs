@@ -620,20 +620,7 @@ public static class Options
     public static OptionItem NoLimitAddonsNumMax;
     public static OptionItem RemoveIncompatibleAddOnsMidGame;
 
-    // Add-Ons settings 
-    public static OptionItem LoverSpawnChances;
-    public static OptionItem LoverKnowRoles;
-    public static OptionItem LoverSuicide;
-    public static OptionItem ImpCanBeInLove;
-    public static OptionItem CrewCanBeInLove;
-    public static OptionItem NeutralCanBeInLove;
-    public static OptionItem CovenCanBeInLove;
-
-    // Experimental Roles
-
-    //public static OptionItem SpeedBoosterUpSpeed;
-    //public static OptionItem SpeedBoosterTimes;
-
+    public static OptionItem DumpLogAfterGameEnd;
 
     public static VoteMode GetWhenSkipVote() => (VoteMode)WhenSkipVote.GetValue();
     public static VoteMode GetWhenNonVote() => (VoteMode)WhenNonVote.GetValue();
@@ -1323,6 +1310,8 @@ public static class Options
         LowLoadMode = BooleanOptionItem.Create(60230, "LowLoadMode", true, TabGroup.SystemSettings, false)
             .SetHeader(true)
             .SetColor(Color.green);
+        DumpLogAfterGameEnd = BooleanOptionItem.Create(19327, "DumpLogAfterGameEnd", true, TabGroup.SystemSettings)
+            .SetColor(Color.yellow);
         EndWhenPlayerBug = BooleanOptionItem.Create(60240, "EndWhenPlayerBug", true, TabGroup.SystemSettings, false)
             .SetColor(Color.blue);
         HideExileChat = BooleanOptionItem.Create(60292, "HideExileChat", true, TabGroup.SystemSettings, false)
@@ -2222,51 +2211,6 @@ public static class Options
         {
             CustomGhostRoleCounts.Add(role, countOption);
         }
-
-        CustomRoleSpawnChances.Add(role, spawnOption);
-        CustomRoleCounts.Add(role, countOption);
-    }
-    private static void SetupLoversRoleOptionsToggle(int id, CustomGameMode customGameMode = CustomGameMode.Standard)
-    {
-        var role = CustomRoles.Lovers;
-        var spawnOption = StringOptionItem.Create(id, role.ToString(), EnumHelper.GetAllNames<RatesZeroOne>(), 0, TabGroup.Addons, false).SetColor(Utils.GetRoleColor(role))
-            .SetHeader(true)
-            .SetGameMode(customGameMode) as StringOptionItem;
-
-        LoverSpawnChances = IntegerOptionItem.Create(id + 2, "LoverSpawnChances", new(0, 100, 5), 50, TabGroup.Addons, false)
-        .SetParent(spawnOption)
-            .SetValueFormat(OptionFormat.Percent)
-            .SetGameMode(customGameMode);
-
-        LoverKnowRoles = BooleanOptionItem.Create(id + 4, "LoverKnowRoles", true, TabGroup.Addons, false)
-        .SetParent(spawnOption)
-            .SetGameMode(customGameMode);
-
-        LoverSuicide = BooleanOptionItem.Create(id + 3, "LoverSuicide", true, TabGroup.Addons, false)
-        .SetParent(spawnOption)
-            .SetGameMode(customGameMode);
-
-        ImpCanBeInLove = BooleanOptionItem.Create(id + 5, "ImpCanBeInLove", true, TabGroup.Addons, false)
-        .SetParent(spawnOption)
-            .SetGameMode(customGameMode);
-
-        CrewCanBeInLove = BooleanOptionItem.Create(id + 6, "CrewCanBeInLove", true, TabGroup.Addons, false)
-        .SetParent(spawnOption)
-            .SetGameMode(customGameMode);
-
-        NeutralCanBeInLove = BooleanOptionItem.Create(id + 7, "NeutralCanBeInLove", true, TabGroup.Addons, false)
-        .SetParent(spawnOption)
-            .SetGameMode(customGameMode);
-
-        CovenCanBeInLove = BooleanOptionItem.Create(id + 8, "CovenCanBeInLove", true, TabGroup.Addons, false)
-        .SetParent(spawnOption)
-            .SetGameMode(customGameMode);
-
-
-        var countOption = IntegerOptionItem.Create(id + 1, "NumberOfLovers", new(2, 2, 1), 2, TabGroup.Addons, false)
-            .SetParent(spawnOption)
-            .SetHidden(true)
-            .SetGameMode(customGameMode);
 
         CustomRoleSpawnChances.Add(role, spawnOption);
         CustomRoleCounts.Add(role, countOption);

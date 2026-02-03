@@ -1065,7 +1065,11 @@ internal class ChatCommands
     public static string FixRoleNameInput(string text)
     {
         text = text.Replace("着", "者").Trim().ToLower();
-        return text;
+        return text switch
+        {
+            "Schrödinger's Cat" or "cat" => "schrodingerscat",
+            _ => text
+        };
     }
 
     public static bool GetRoleByName(string name, out CustomRoles role)

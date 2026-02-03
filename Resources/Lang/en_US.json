@@ -2383,6 +2383,9 @@
   "AirshipReactorTimeLimit": "<color=#ed0007>Airship</color> Reactor Time Limit",
   "FungleReactorTimeLimit": "<color=#ffa646>The Fungle</color> Reactor Time Limit",
   "FungleMushroomMixupDuration": "<color=#ffa646>The Fungle</color> Mushroom Mixup Duration",
+
+  "DumpLogAfterGameEnd": "Dump Log After Each Game End (Recommended)",
+  
   "CommandList": "★ Command list:",
   "Command.now": "→ Display active Settings",
   "Command.roles": "[RoleName] → Display Role description",

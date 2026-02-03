@@ -3441,14 +3441,20 @@ public static class Utils
         foreach (char c in t) bc += Encoding.GetEncoding("UTF-8").GetByteCount(c.ToString()) == 1 ? 1 : 2;
         return t?.PadRight(Mathf.Max(num - (bc - t.Length), 0));
     }
-    public static void DumpLog()
+    public static void DumpLog(bool open = true)
     {
-        string f = $"{Environment.GetFolderPath(Environment.SpecialFolder.DesktopDirectory)}/TOHE-logs/";
+#if ANDROID
+        var f = $"{Main.DataPath}/TOHE-logs/";
+#else
+        var f = $"{Environment.GetFolderPath(Environment.SpecialFolder.DesktopDirectory)}/TOHE-logs/";
+#endif
         string t = DateTime.Now.ToString("yyyy-MM-dd_HH.mm.ss");
         string filename = $"{f}TOHE-v{Main.PluginVersion}-{t}.log";
         if (!Directory.Exists(f)) Directory.CreateDirectory(f);
         FileInfo file = new(@$"{Environment.CurrentDirectory}/BepInEx/LogOutput.log");
         file.CopyTo(@filename);
+
+        if (!open) return;
 
         if (PlayerControl.LocalPlayer != null)
             HudManager.Instance?.Chat?.AddChat(PlayerControl.LocalPlayer, string.Format(GetString("Message.DumpfileSaved"), $"TOHE - v{Main.PluginVersion}-{t}.log"));

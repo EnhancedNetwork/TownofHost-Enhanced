@@ -54,15 +54,15 @@ public class Main : BasePlugin
     public static ConfigEntry<string> DebugKeyInput { get; private set; }
 
     public const string PluginGuid = "com.0xdrmoe.townofhostenhanced";
-    public const string PluginVersion = "2026.0131.300.00018"; // YEAR.MMDD.VERSION.CANARYDEV
-    public const string PluginDisplayVersion = "3.0.0 Alpha 18";
+    public const string PluginVersion = "2026.0202.300.00019"; // YEAR.MMDD.VERSION.CANARYDEV
+    public const string PluginDisplayVersion = "3.0.0 Alpha 19";
     public static readonly List<(int year, int month, int day, int revision)> SupportedVersionAU =
     [
         (2025, 11, 18, 0) // 2025.11.18 & 17.1
     ];
 
     /******************* Change one of the three variables to true before making a release. *******************/
-    public static readonly bool devRelease = true; // Latest: v3.0.0 Alpha 18
+    public static readonly bool devRelease = true; // Latest: v3.0.0 Alpha 19
     public static readonly bool canaryRelease = false; // Latest: V2.4.2 Beta 1
     public static readonly bool fullRelease = false; // Latest: V2.4.1
 
@@ -155,6 +155,12 @@ public class Main : BasePlugin
     public static readonly string LANGUAGE_FOLDER_NAME = Path.Combine(UnityEngine.Application.persistentDataPath, "TOHE-DATA", "Language");
 #else
     public const string LANGUAGE_FOLDER_NAME = "TOHE-DATA/Language";
+#endif
+
+#if ANDROID
+    public static readonly string DataPath = Application.persistentDataPath;
+#else
+    public const string DataPath = ".";
 #endif
 
     public static bool IsFixedCooldown => CustomRoles.Vampire.IsEnable() || CustomRoles.Poisoner.IsEnable();
