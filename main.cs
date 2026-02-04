@@ -56,15 +56,15 @@ public class Main : BasePlugin
 
     public const string PluginGuid = "com.0xdrmoe.townofhostenhanced";
     public const string PluginGuid4 = "90759289-1d0d-494b-b36c-839f93ae0df1"; // for matchmaking token
-    public const string PluginVersion = "2026.0202.300.00019"; // YEAR.MMDD.VERSION.CANARYDEV
-    public const string PluginDisplayVersion = "3.0.0 Alpha 19";
+    public const string PluginVersion = "2026.0202.300.00020"; // YEAR.MMDD.VERSION.CANARYDEV
+    public const string PluginDisplayVersion = "3.0.0 Alpha 20";
     public static readonly List<(int year, int month, int day, int revision)> SupportedVersionAU =
     [
         (2025, 11, 18, 0) // 2025.11.18 & 17.1
     ];
 
     /******************* Change one of the three variables to true before making a release. *******************/
-    public static readonly bool devRelease = true; // Latest: v3.0.0 Alpha 19
+    public static readonly bool devRelease = true; // Latest: v3.0.0 Alpha 20
     public static readonly bool canaryRelease = false; // Latest: V2.4.2 Beta 1
     public static readonly bool fullRelease = false; // Latest: V2.4.1
 
@@ -592,13 +592,13 @@ public class Main : BasePlugin
         TOHE.Logger.Disable("SwitchSystem");
         TOHE.Logger.Disable("ModNews");
         TOHE.Logger.Disable("RpcSetNamePrivate");
-        // TOHE.Logger.Disable("KnowRoleTarget");
+        // TOHE.Logger.Disable("SendRPC");
+        TOHE.Logger.Disable("KnowRoleTarget");
         if (!DebugModeManager.AmDebugger)
         {
             TOHE.Logger.Disable("2018k");
             TOHE.Logger.Disable("Github");
             //TOHE.Logger.Disable("ReceiveRPC");
-            TOHE.Logger.Disable("SendRPC");
             TOHE.Logger.Disable("SetRole");
             TOHE.Logger.Disable("Info.Role");
             TOHE.Logger.Disable("TaskState.Init");
@@ -614,7 +614,7 @@ public class Main : BasePlugin
             TOHE.Logger.Disable("NR");
             TOHE.Logger.Disable("RpcSetName");
             TOHE.Logger.Disable("CustomRpcSender");
-            TOHE.Logger.Disable("KnowRoleTarget");
+            // TOHE.Logger.Disable("KnowRoleTarget");
         }
         //TOHE.Logger.isDetail = true;
 

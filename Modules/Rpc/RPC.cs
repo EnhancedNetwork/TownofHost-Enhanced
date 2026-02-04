@@ -200,7 +200,7 @@ internal class RPCHandlerPatch
                     break;
                 case RpcCalls.SendChat: // Free chat
                     var text = subReader.ReadString();
-                    Logger.Info($"{__instance.GetNameWithRole().RemoveHtmlTags()}:{text.RemoveHtmlTags()}", "ReceiveChat");
+                    Logger.Info($"{__instance.GetNameWithRole().RemoveHtmlTags()}:{text}", "ReceiveChat");
                     ChatCommands.OnReceiveChat(__instance, text, out var canceled);
                     if (canceled) return false;
                     break;

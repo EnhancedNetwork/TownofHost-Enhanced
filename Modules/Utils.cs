@@ -1417,7 +1417,8 @@ public static class Utils
                 return writer;
             }
 
-            if (sender.AmOwner && !sender.IsAlive())
+            Logger.Info($"sender owner: {sender.AmOwner}; sender dead: {sender.Data.IsDead}; sender alive: {sender.IsAlive()}", "SendMessage CheckTempReviveHost");
+            if (sender.AmOwner && sender.Data.IsDead)
             {
                 bool delayMessage = false;
                 if (!TempReviveHostRunning)
