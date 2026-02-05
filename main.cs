@@ -55,17 +55,29 @@ public class Main : BasePlugin
     public static ConfigEntry<string> DebugKeyInput { get; private set; }
 
     public const string PluginGuid = "com.0xdrmoe.townofhostenhanced";
-    public const string PluginVersion = "2026.0127.242.00100"; // YEAR.MMDD.VERSION.CANARYDEV
-    public const string PluginDisplayVersion = "2.4.2 Beta 1";
+    public const string PluginGuid4 = "90759289-1d0d-494b-b36c-839f93ae0df1"; // for matchmaking token
+    public const string PluginVersion = "2026.0205.300.00021"; // YEAR.MMDD.VERSION.CANARYDEV
+    public const string PluginDisplayVersion = "3.0.0 Alpha 21";
     public static readonly List<(int year, int month, int day, int revision)> SupportedVersionAU =
     [
         (2025, 11, 18, 0) // 2025.11.18 & 17.1
     ];
 
-    /******************* Change one of the three variables to true before making a release. *******************/
-    public static readonly bool devRelease = false; // Latest: v3.0.0 Alpha 13
-    public static readonly bool canaryRelease = true; // Latest: V2.4.2 Beta 1
-    public static readonly bool fullRelease = false; // Latest: V2.4.1
+    // Change this to change alpha/beta/full release
+    public static readonly Release RELEASE = Release.ALPHA;
+
+#pragma warning disable IDE1006 // Naming Styles
+    public static bool devRelease => RELEASE == Release.ALPHA; // Latest: v3.0.0 Alpha 21
+    public static bool canaryRelease => RELEASE == Release.BETA; // Latest: V2.4.2 Beta 2
+    public static bool fullRelease => RELEASE == Release.RELEASE; // Latest: V2.4.1 hotfix 1
+#pragma warning restore IDE1006 // Naming Styles
+
+    public enum Release
+    {
+        ALPHA,
+        BETA,
+        RELEASE
+    }
 
     public static bool hasAccess = true;
 

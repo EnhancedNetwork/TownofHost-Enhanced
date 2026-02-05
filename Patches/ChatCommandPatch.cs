@@ -2827,7 +2827,6 @@ internal class ChatCommands
 
     private static void DeckCommand(PlayerControl player, string commandKey, string text, string[] args)
     {
-        return;
         if (!AmongUsClient.Instance.AmHost)
         {
             RequestCommandProcessingFromHost(text, commandKey);
@@ -2839,16 +2838,21 @@ internal class ChatCommands
 
     private static void DraftCommand(PlayerControl player, string commandKey, string text, string[] args)
     {
-        return;
         if (!AmongUsClient.Instance.AmHost)
         {
             RequestCommandProcessingFromHost(text, commandKey);
             return;
         }
 
+        if (!Options.DraftMode.GetBool())
+        {
+            Utils.SendMessage(GetString("DraftModeDisabled"), player.PlayerId);
+            return;
+        }
+
         if (args.Length < 2 || args[1] == "start")
         {
-            if (!player.IsHost() && !AmongUsClient.Instance.AmHost && !Utils.IsPlayerModerator(player.FriendCode)&& !player.FriendCode.GetDevUser().IsDev) return;
+            if (!player.IsHost() && !Utils.IsPlayerModerator(player.FriendCode)&& !player.FriendCode.GetDevUser().IsDev) return;
 
             var startResult = DraftAssign.StartDraft();
 
