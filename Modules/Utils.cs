@@ -1061,11 +1061,11 @@ public static class Utils
             string kl = EndGamePatch.KillLog;
             kl = Options.OldKillLog.GetBool() ? kl.RemoveHtmlTags() : kl.Replace("<color=", "<");
             var tytul = !Options.OldKillLog.GetBool() ? ColorString(new Color32(102, 16, 16, 255), "《 " + GetString("KillLog") + " 》") : "";
-            SendSpesificMessage(kl, PlayerId, tytul);
+            SendMessage(kl, PlayerId, tytul);
         }
         if (EndGamePatch.MainRoleLog != "")
         {
-            SendSpesificMessage(EndGamePatch.MainRoleLog, PlayerId);
+            SendMessage(EndGamePatch.MainRoleLog, PlayerId);
         }
     }
     public static void ShowLastResult(byte PlayerId = byte.MaxValue)
@@ -1349,6 +1349,22 @@ public static class Utils
     public static bool TempReviveHostRunning;
     private static Stopwatch TempReviveHostRevertStopwatch = new();
     private static Stopwatch TempReviveHostTimeSinceRevivalStopwatch = new();
+    private static string[] CachedLetterOnlyHexColors = [];
+    private static readonly Regex ColorTagRegex = new(@"<\s*(?:color\s*=\s*)?#([0-9a-fA-F]{6}(?:[0-9a-fA-F]{2})?)\s*>", RegexOptions.Compiled);
+    private static readonly Dictionary<(int R, int G, int B), string> CachedColorReplacements = [];
+    private static readonly char[] HexLetters = ['a', 'b', 'c', 'd', 'e', 'f'];
+    static readonly Dictionary<string, (int r, int g, int b)> NamedColors = new()
+    {
+        { "red",    (255,   0,   0) },
+        { "orange", (255, 165,   0) },
+        { "yellow", (255, 255,   0) },
+        { "green",  (  0, 255,   0) },
+        { "blue",   (  0,   0, 255) },
+        { "purple", (128,   0, 128) },
+        { "white",  (255, 255, 255) },
+        { "grey",   (128, 128, 128) },
+        { "black",  (  0,   0,   0) }
+    };
 
     public static void SendMultipleMessages(this IEnumerable<Message> messages, SendOption sendOption = SendOption.Reliable)
     {
@@ -1361,28 +1377,18 @@ public static class Utils
         {
             Logger.Info($"SendMessage called from {callerFilePath.Split('\\')[^1]} at line {callerLineNumber}", "SendMessage");
 
-            if (GameStates.IsVanillaServer)
-                text = text.RemoveHtmlTags();
-
             PlayerControl receiver = GetPlayerById(sendTo, false);
             if (sendTo != byte.MaxValue && receiver == null || !force && title.RemoveHtmlTags().Trim().Length == 0 && text.RemoveHtmlTags().Trim().Length == 0) return writer;
 
             if (!AmongUsClient.Instance.AmHost)
             {
                 if (sendTo == PlayerControl.LocalPlayer.PlayerId && !multiple)
-                {
-                    MessageWriter w = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.RequestSendMessage, SendOption.Reliable, AmongUsClient.Instance.HostId);
-                    w.Write(text);
-                    w.Write(sendTo);
-                    w.Write(title);
-                    w.Write(noSplit);
-                    AmongUsClient.Instance.FinishRpcImmediately(w);
-                }
+                    SendLocally(PlayerControl.LocalPlayer);
 
                 return writer;
             }
 
-            if (title == "") title = GetString("DefaultSystemMessageTitle");
+            if (title == string.Empty) title = GetString("DefaultSystemMessageTitle");
 
             if (title.Count(x => x == '\u2605') == 2 && !title.Contains('\n'))
             {
@@ -1392,33 +1398,26 @@ public static class Utils
                     title = "\u27a1" + title.Replace("\u2605", "") + "\u2b05";
             }
 
-            text = text.Replace("color=", string.Empty);
+            text = text.Replace("color=#", "#");
             title = title.Replace("color=", string.Empty);
+
+            if (GameStates.IsVanillaServer)
+            {
+                text = ReplaceHexColorsWithSafeColors(text);
+                text = ReplaceDigitsOutsideRichText(text);
+            }
 
             PlayerControl sender = !addToHistory ? PlayerControl.LocalPlayer : Main.AllAlivePlayerControls.MinBy(x => x.PlayerId) ?? Main.AllPlayerControls.MinBy(x => x.PlayerId) ?? PlayerControl.LocalPlayer;
 
             if (sendTo != byte.MaxValue && receiver.AmOwner)
             {
-                if (HudManager.InstanceExists)
-                {
-                    string name = sender.Data.PlayerName;
-                    sender.SetName(title);
-                    HudManager.Instance.Chat.AddChat(sender, text);
-                    sender.SetName(name);
-                }
-
-                try
-                {
-                    string pureText = text.RemoveHtmlTags();
-                    string pureTitle = title.RemoveHtmlTags();
-                    Logger.Info($" Message: {pureText[..(pureText.Length <= 300 ? pureText.Length : 300)]} - To: {GetPlayerById(sendTo)?.GetRealName()} - Title: {pureTitle[..(pureTitle.Length <= 300 ? pureTitle.Length : 300)]}", "SendMessage");
-                }
-                catch { Logger.Info(" Message sent", "SendMessage"); }
+                SendLocally(sender);
 
                 if (addToHistory) ChatUpdatePatch.LastMessages.Add((text, sendTo, title, TimeStamp));
                 return writer;
             }
 
+            Logger.Info($"sender owner: {sender.AmOwner}; sender dead: {sender.Data.IsDead}; sender alive: {sender.IsAlive()}", "SendMessage CheckTempReviveHost");
             if (sender.AmOwner && sender.Data.IsDead)
             {
                 bool delayMessage = false;
@@ -1452,7 +1451,7 @@ public static class Utils
                     TempReviveHostRunning = true;
                     TempReviveHostRevertStopwatch = Stopwatch.StartNew();
                     TempReviveHostTimeSinceRevivalStopwatch = Stopwatch.StartNew();
-
+                    
                     Logger.Msg("Temporarily reviving host to send message....", "TempReviveHost");
 
                     sender.Data.IsDead = false;
@@ -1460,9 +1459,9 @@ public static class Utils
                     
                     while (TempReviveHostRevertStopwatch.ElapsedMilliseconds < 1000)
                         yield return null;
-
+                    
                     Logger.Msg("Re-killing host after message sent.", "TempReviveHost");
-
+                    
                     TempReviveHostTimeSinceRevivalStopwatch.Reset();
                     
                     if (!AmongUsClient.Instance.AmHost || GameStates.IsEnded || GameStates.IsLobby)
@@ -1470,7 +1469,7 @@ public static class Utils
                         TempReviveHostRunning = false;
                         yield break;
                     }
-                    
+
                     sender.Data.IsDead = true;
                     sender.Data.SendGameData();
                     
@@ -1480,7 +1479,7 @@ public static class Utils
 
             if (GameStates.IsVanillaServer && !noSplit && !noNumberSplit)
             {
-                var parts = SplitByNumberLimit();
+                var parts = SplitByNumberLimit(text);
 
                 if (parts.Count > 1)
                 {
@@ -1517,7 +1516,7 @@ public static class Utils
 
                     if (titleRpcSizeLimit - 4 < 1)
                     {
-                        Logger.SendInGame(GetString("MessageTooLong"));
+                        Logger.SendInGame(GetString("MessageTooLong"), Color.red);
                         if (!multiple) writer.SendMessage(dispose: true);
                         return writer;
                     }
@@ -1556,7 +1555,7 @@ public static class Utils
 
                     if (text == "\n") return writer;
 
-                    title = "‎";
+                    title = "\u200e";
 
                     if (writer.CurrentState == CustomRpcSender.State.Finished)
                         writer = CustomRpcSender.Create("Utils.SendMessage(2)", sendOption);
@@ -1605,7 +1604,7 @@ public static class Utils
 
             if (textRpcSizeLimit < 1 && textRpcSize >= textRpcSizeLimit && !noSplit)
             {
-                Logger.SendInGame(GetString("MessageTooLong"));
+                Logger.SendInGame(GetString("MessageTooLong"), Color.red);
                 if (!multiple) writer.SendMessage(dispose: true);
                 return writer;
             }
@@ -1664,7 +1663,7 @@ public static class Utils
             {
                 text = text.TrimStart('\n');
                 if (!text.EndsWith('\n')) text += "\n";
-                text += "‎";
+                text += "\u200e";
             }
 
             if (writer.CurrentState == CustomRpcSender.State.Ready)
@@ -1714,7 +1713,7 @@ public static class Utils
             }
         }
 
-        List<string> SplitByNumberLimit()
+        static List<string> SplitByNumberLimit(string text)
         {
             List<string> result = [];
             StringBuilder sb = new();
@@ -1723,36 +1722,172 @@ public static class Utils
 
             foreach (char c in text)
             {
-                if (char.IsDigit(c))
+                if (c is >= '0' and <= '9' && digitCount == 5)
                 {
-                    digitCount++;
+                    int lastNewline = sb.ToString().LastIndexOf('\n');
 
-                    if (digitCount > 5)
+                    if (lastNewline >= 0)
                     {
-                        int lastNewline = sb.ToString().LastIndexOf('\n');
-
-                        if (lastNewline >= 0)
-                        {
-                            result.Add(sb.ToString(0, lastNewline + 1));
-                            sb.Remove(0, lastNewline + 1);
-                        }
-                        else
-                        {
-                            result.Add(sb.ToString());
-                            sb.Clear();
-                        }
-
-                        digitCount = 1;
+                        result.Add(sb.ToString(0, lastNewline + 1));
+                        sb.Remove(0, lastNewline + 1);
                     }
+                    else
+                    {
+                        result.Add(sb.ToString());
+                        sb.Clear();
+                    }
+
+                    digitCount = 0;
+                    foreach (char r in sb.ToString())
+                        if (char.IsDigit(r))
+                            digitCount++;
                 }
 
                 sb.Append(c);
+
+                if (char.IsDigit(c))
+                    digitCount++;
             }
 
             if (sb.Length > 0)
                 result.Add(sb.ToString());
 
             return result;
+        }
+
+        void SendLocally(PlayerControl sender)
+        {
+            if (HudManager.InstanceExists)
+            {
+                string name = sender.Data.PlayerName;
+                sender.SetName(title);
+                HudManager.Instance.Chat.AddChat(sender, text);
+                sender.SetName(name);
+            }
+
+            try
+            {
+                string pureText = text.RemoveHtmlTags();
+                string pureTitle = title.RemoveHtmlTags();
+                Logger.Info($" Message: {pureText[..(pureText.Length <= 300 ? pureText.Length : 300)]} - To: {PlayerControl.LocalPlayer.GetRealName()} - Title: {pureTitle[..(pureTitle.Length <= 300 ? pureTitle.Length : 300)]}", "SendMessage");
+            }
+            catch { Logger.Info(" Message sent", "SendMessage"); }
+        }
+
+        static string ReplaceHexColorsWithSafeColors(string text) => ColorTagRegex.Replace(text, match =>
+        {
+            string hex = match.Groups[1].Value.ToLowerInvariant();
+            
+            string a = hex.Length == 8 ? hex[6..8] : string.Empty;
+            if (!string.IsNullOrEmpty(a)) hex = hex[..6];
+            
+            if (hex.Length != 6 || !hex.Any(char.IsDigit)) return match.Value;
+
+            int r = Convert.ToInt32(hex[..2], 16);
+            int g = Convert.ToInt32(hex.Substring(2, 2), 16);
+            int b = Convert.ToInt32(hex.Substring(4, 2), 16);
+
+            var best = FindClosestSafeColor(r, g, b);
+
+            return NamedColors.ContainsKey(best)
+                ? $"<color={best}>"
+                : $"<#{best}{a}>";
+        });
+        static string FindClosestSafeColor(int r, int g, int b)
+        {
+            if (CachedColorReplacements.TryGetValue((r, g, b), out string cache)) return cache;
+            
+            double bestDist = double.MaxValue;
+            string bestValue = "white";
+
+            foreach (var kvp in NamedColors)
+            {
+                (int cr, int cg, int cb) = kvp.Value;
+                double d = ColorDistance(r, g, b, cr, cg, cb);
+
+                if (d < bestDist)
+                {
+                    bestDist = d;
+                    bestValue = kvp.Key;
+                }
+            }
+
+            foreach (var hex in GenerateLetterOnlyHexColors())
+            {
+                int cr = Convert.ToInt32(hex[..2], 16);
+                int cg = Convert.ToInt32(hex.Substring(2, 2), 16);
+                int cb = Convert.ToInt32(hex.Substring(4, 2), 16);
+
+                double d = ColorDistance(r, g, b, cr, cg, cb);
+
+                if (d < bestDist)
+                {
+                    bestDist = d;
+                    bestValue = hex;
+                }
+            }
+
+            CachedColorReplacements[(r, g, b)] = bestValue;
+            if (CachedColorReplacements.Count > 4096) CachedColorReplacements.Clear();
+            return bestValue;
+        }
+
+        static double ColorDistance(int r1, int g1, int b1, int r2, int g2, int b2)
+        {
+            int dr = r1 - r2;
+            int dg = g1 - g2;
+            int db = b1 - b2;
+            return dr * dr + dg * dg + db * db;
+        }
+
+        static string[] GenerateLetterOnlyHexColors()
+        {
+            if (CachedLetterOnlyHexColors.Length > 0)
+                return CachedLetterOnlyHexColors;
+
+            CachedLetterOnlyHexColors = new string[46656];
+            int i = 0;
+
+            foreach (char r1 in HexLetters)
+                foreach (char r2 in HexLetters)
+                    foreach (char g1 in HexLetters)
+                        foreach (char g2 in HexLetters)
+                            foreach (char b1 in HexLetters)
+                                foreach (char b2 in HexLetters)
+                                    CachedLetterOnlyHexColors[i++] = $"{r1}{r2}{g1}{g2}{b1}{b2}";
+
+            return CachedLetterOnlyHexColors;
+        }
+        
+        static string ReplaceDigitsOutsideRichText(string text)
+        {
+            if (string.IsNullOrWhiteSpace(text)) return text;
+
+            StringBuilder sb = new(text.Length);
+            bool insideTag = false;
+
+            foreach (char c in text)
+            {
+                switch (c)
+                {
+                    case '<':
+                        insideTag = true;
+                        sb.Append(c);
+                        continue;
+                    case '>':
+                        insideTag = false;
+                        sb.Append(c);
+                        continue;
+                    case >= '0' and <= '9' when !insideTag:
+                        sb.Append((char)('０' + (c - '0')));
+                        break;
+                    default:
+                        sb.Append(c);
+                        break;
+                }
+            }
+
+            return sb.ToString();
         }
     }
     public static bool IsPlayerModerator(string friendCode)
@@ -2140,8 +2275,8 @@ public static class Utils
         //Get role info font size based on the length of the role info
         static int GetInfoSize(string RoleInfo)
         {
-            RoleInfo = Regex.Replace(RoleInfo, "<[^>]*>", "");
-            RoleInfo = Regex.Replace(RoleInfo, "{[^}]*}", "");
+            RoleInfo = Regex.Replace(RoleInfo, "<[^>]*>", string.Empty);
+            RoleInfo = Regex.Replace(RoleInfo, "{[^}]*}", string.Empty);
 
             var BaseFontSize = 200;
             int BaseFontSizeMin = 100;
@@ -3307,14 +3442,20 @@ public static class Utils
         foreach (char c in t) bc += Encoding.GetEncoding("UTF-8").GetByteCount(c.ToString()) == 1 ? 1 : 2;
         return t?.PadRight(Mathf.Max(num - (bc - t.Length), 0));
     }
-    public static void DumpLog()
+    public static void DumpLog(bool open = true)
     {
-        string f = $"{Environment.GetFolderPath(Environment.SpecialFolder.DesktopDirectory)}/TOHE-logs/";
+#if ANDROID
+        var f = $"{Main.DataPath}/TOHE-logs/";
+#else
+        var f = $"{Environment.GetFolderPath(Environment.SpecialFolder.DesktopDirectory)}/TOHE-logs/";
+#endif
         string t = DateTime.Now.ToString("yyyy-MM-dd_HH.mm.ss");
         string filename = $"{f}TOHE-v{Main.PluginVersion}-{t}.log";
         if (!Directory.Exists(f)) Directory.CreateDirectory(f);
         FileInfo file = new(@$"{Environment.CurrentDirectory}/BepInEx/LogOutput.log");
         file.CopyTo(@filename);
+
+        if (!open) return;
 
         if (PlayerControl.LocalPlayer != null)
             HudManager.Instance?.Chat?.AddChat(PlayerControl.LocalPlayer, string.Format(GetString("Message.DumpfileSaved"), $"TOHE - v{Main.PluginVersion}-{t}.log"));

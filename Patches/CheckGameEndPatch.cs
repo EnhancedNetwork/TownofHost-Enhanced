@@ -537,12 +537,12 @@ class GameEndCheckerForNormal
 
     public static void StartEndGame(GameOverReason reason)
     {
-        string msg = GetString("NotifyGameEnding");
+        // string msg = GetString("NotifyGameEnding");
 
-        Main.AllPlayerControls
-            .Where(x => x.GetClient() != null && !x.Data.Disconnected)
-            .Select(x => new Message("\n", x.PlayerId, msg))
-            .SendMultipleMessages();
+        // Main.AllPlayerControls
+        //     .Where(x => x.GetClient() != null && !x.Data.Disconnected)
+        //     .Select(x => new Message("\n", x.PlayerId, msg))
+        //     .SendMultipleMessages();
 
         // Sync of CustomWinnerHolder info
         var rpc = new RpcEndGame(PlayerControl.LocalPlayer.NetId, WinnerTeam, AdditionalWinnerTeams, WinnerRoles, WinnerIds);

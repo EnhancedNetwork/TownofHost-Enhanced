@@ -265,11 +265,11 @@ public static class EnterCodeManagerPatch
     [HarmonyPostfix]
     public static void FindGameResult_Postfix(HttpMatchmakerManager.FindGameByCodeResponse response)
     {
-        if (response == null)
+        if (response == null || response.Game == null)
         {
             return;
         }
-        foreach (var error in response.Errors.ToArray())
+        foreach (var error in response.Errors?.ToArray())
         {
             Logger.Error($"{error.Reason}", "FindGameResult");
         }

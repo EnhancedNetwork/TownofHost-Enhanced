@@ -129,7 +129,7 @@ internal class Command(string commandKey, string arguments, string description, 
             case UsageLevels.MiniGames when !Options.CanPlayMiniGames.GetBool():
 
             case UsageLevels.Debug when !DebugModeManager.AmDebugger || GameStates.IsOnlineGame && !pc.FriendCode.GetDevUser().DeBug:
-
+                Logger.Info($"Blocked {pc.GetRealName()} from using command {commandKey} because required permission level was {UsageLevel}", "Command.CanUseCommand");
                 if (sendErrorMessage) Utils.SendMessage("\n", pc.PlayerId, GetString($"Commands.NoAccess.Level.{UsageLevel}"));
                 return false;
         }
@@ -1056,7 +1056,11 @@ internal class ChatCommands
     public static string FixRoleNameInput(string text)
     {
         text = text.Replace("着", "者").Trim().ToLower();
-        return text;
+        return text switch
+        {
+            "Schrödinger's Cat" or "cat" => "schrodingerscat",
+            _ => text
+        };
     }
 
     public static bool GetRoleByName(string name, out CustomRoles role)
@@ -1734,6 +1738,9 @@ internal class ChatCommands
     private static void DumpCommand(PlayerControl player, string commandKey, string text, string[] args)
     {
         Utils.DumpLog();
+
+        if (player.FriendCode.GetDevUser().IsDev && !AmongUsClient.Instance.AmHost)
+            RequestCommandProcessingFromHost(text, commandKey);
     }
 
     private static void VersionCommand(PlayerControl player, string commandKey, string text, string[] args)
@@ -1950,13 +1957,13 @@ internal class ChatCommands
         {
             case var _ when CheckArg("CommandArgs.Disconnect.Crew", subArgs): // ["crew", "tripulante", "船员"]
                 GameManager.Instance.enabled = false;
-                Utils.NotifyGameEnding();
+                // Utils.NotifyGameEnding();
                 GameManager.Instance.RpcEndGame(GameOverReason.CrewmateDisconnect, false);
                 break;
             
             case var _ when CheckArg("CommandArgs.Disconnect.Imp", subArgs): // ["imp", "impostor", "内鬼", "伪装者"]
                 GameManager.Instance.enabled = false;
-                Utils.NotifyGameEnding();
+                // Utils.NotifyGameEnding();
                 GameManager.Instance.RpcEndGame(GameOverReason.ImpostorDisconnect, false);
                 break;
 

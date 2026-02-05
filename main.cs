@@ -1,4 +1,5 @@
 using AmongUs.GameOptions;
+using AmongUs.Matchmaking;
 using BepInEx;
 using BepInEx.Configuration;
 using BepInEx.Unity.IL2CPP;
@@ -155,6 +156,12 @@ public class Main : BasePlugin
     public static readonly string LANGUAGE_FOLDER_NAME = Path.Combine(UnityEngine.Application.persistentDataPath, "TOHE-DATA", "Language");
 #else
     public const string LANGUAGE_FOLDER_NAME = "TOHE-DATA/Language";
+#endif
+
+#if ANDROID
+    public static readonly string DataPath = Application.persistentDataPath;
+#else
+    public const string DataPath = ".";
 #endif
 
     public static bool IsFixedCooldown => CustomRoles.Vampire.IsEnable() || CustomRoles.Poisoner.IsEnable();
@@ -584,13 +591,13 @@ public class Main : BasePlugin
         TOHE.Logger.Disable("SwitchSystem");
         TOHE.Logger.Disable("ModNews");
         TOHE.Logger.Disable("RpcSetNamePrivate");
-        // TOHE.Logger.Disable("KnowRoleTarget");
+        // TOHE.Logger.Disable("SendRPC");
+        TOHE.Logger.Disable("KnowRoleTarget");
         if (!DebugModeManager.AmDebugger)
         {
             TOHE.Logger.Disable("2018k");
             TOHE.Logger.Disable("Github");
             //TOHE.Logger.Disable("ReceiveRPC");
-            TOHE.Logger.Disable("SendRPC");
             TOHE.Logger.Disable("SetRole");
             TOHE.Logger.Disable("Info.Role");
             TOHE.Logger.Disable("TaskState.Init");
@@ -603,9 +610,10 @@ public class Main : BasePlugin
             //TOHE.Logger.Disable("CheckMurder");
             TOHE.Logger.Disable("PlayerControl.RpcSetRole");
             TOHE.Logger.Disable("SyncCustomSettings");
-            //TOHE.Logger.Disable("DoNotifyRoles");
+            TOHE.Logger.Disable("NR");
+            TOHE.Logger.Disable("RpcSetName");
             TOHE.Logger.Disable("CustomRpcSender");
-            TOHE.Logger.Disable("KnowRoleTarget");
+            // TOHE.Logger.Disable("KnowRoleTarget");
         }
         //TOHE.Logger.isDetail = true;
 

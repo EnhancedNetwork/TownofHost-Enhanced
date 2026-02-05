@@ -147,7 +147,7 @@ public class CustomRpcSender
                 throw new InvalidOperationException(errorMsg);
         }
 
-        if (messages >= 10)
+        if (messages >= AmongUsClient.Instance.GetMaxMessagePackingLimit())
         {
             EndMessage(startNew: true);
             StartMessage(currentRpcTarget);
@@ -330,10 +330,13 @@ public static class CustomRpcSenderExtensions
 
         name = name.Replace("color=", string.Empty);
 
+        var saw = seerIsNull ? "Everyone" : seer.GetRealName(); // Ternary operators can't be used inside of $ strings
+
         switch (seerIsNull)
         {
             case true when Main.LastNotifyNames.Where(x => x.Key.Item1 == player.PlayerId).All(x => x.Value == name):
             case false when Main.LastNotifyNames[(player.PlayerId, seer.PlayerId)] == name:
+                Logger.Info($"Skipped setting name of {player.GetRealName()} for seer {saw} because it was the same as previous", "RpcSetName");
                 return;
             case true:
                 Main.AllPlayerControls.Do(x => Main.LastNotifyNames[(player.PlayerId, x.PlayerId)] = name);
@@ -342,6 +345,8 @@ public static class CustomRpcSenderExtensions
                 Main.LastNotifyNames[(player.PlayerId, seer.PlayerId)] = name;
                 break;
         }
+
+        Logger.Info($"Set name for {player.GetRealName()} for seer {saw} to {name.RemoveHtmlTags()}", "RpcSetName");
 
         sender.AutoStartRpc(player.NetId, (byte)RpcCalls.SetName, targetClientId)
             .Write(player.Data.NetId)

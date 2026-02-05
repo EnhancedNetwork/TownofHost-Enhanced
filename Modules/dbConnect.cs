@@ -14,7 +14,7 @@ public class dbConnect
     private static Dictionary<string, string> UserType = [];
 
     private const string ApiUrl = "https://api.weareten.ca";
-    private const string FallBackUrl = "https://tohe.niko233.me"; // Mirror of Enhanced Api
+    private const string FallBackUrl = "https://tohe.niko233.top"; // Mirror of Enhanced Api
 
     public static IEnumerator Init()
     {
