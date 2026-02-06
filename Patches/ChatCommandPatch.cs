@@ -295,6 +295,7 @@ internal class ChatCommands
             Command.Create("Command.Deck", "", "CommandDescription.Deck", Command.UsageLevels.Everyone, Command.UsageTimes.InLobby, DeckCommand, true, false), // ["deck"]
             Command.Create("Command.Draft", "[start|desc|add|reset|number]", "CommandDescription.Draft", Command.UsageLevels.Everyone, Command.UsageTimes.InLobby, DraftCommand, true, false, ["CommandArgs.Draft.Arg1"]), // ["draft"]
             Command.Create("Command.DraftDesc", "{number}", "CommandDescription.DraftDesc", Command.UsageLevels.Everyone, Command.UsageTimes.InLobby, DraftDescCommand, false, false, ["CommandArgs.DraftDesc.Number"]), //["dd", "draftdescription"]
+            Command.Create("Command.Whisper", "{id} {message}", "CommandDescription.Whisper", Command.UsageLevels.Everyone, Command.UsageTimes.Always, WhisperCommand, true, true, ["CommandArgs.Whisper.Id", "CommandArgs.Whisper.Message"]),
 
             // Commands with methods in other classes (mostly role commands)
             Command.Create("Command.Guess", "{id} {role}", GetString("CommandDescription.Guess"), Command.UsageLevels.Everyone, Command.UsageTimes.InMeeting, GuessManager.GuessCommand, false, false, [GetString("CommandArgs.Guess.Id"), GetString("CommandArgs.Guess.Role")]), // ["shoot", "guess", "bet", "st", "gs", "bt", "猜", "赌", "賭"]
@@ -2946,6 +2947,26 @@ internal class ChatCommands
         {
             Utils.SendMessage(GetString("InvalidDraftSelection"), player.PlayerId);
         }
+    }
+
+    private static void WhisperCommand(PlayerControl player, string commandKey, string text, string[] args)
+    {
+        if (!AmongUsClient.Instance.AmHost)
+        {
+            RequestCommandProcessingFromHost(text, commandKey);
+            return;
+        }
+
+        if (args.Length < 2 || !int.TryParse(args[1], out int id2)) return;
+        var target = Utils.GetPlayerById(id2);
+        if (player.IsAlive() != target.IsAlive())
+        {
+            Utils.SendMessage(GetString("Whisper.ErrorDead"), player.PlayerId);
+            return;
+        }
+
+        var msg = args.Length < 3 ? string.Empty : args[2..].Join(delimiter: " ");
+        Utils.SendMessage(msg, (byte)id2, $"Whisper from {player.GetRealName()}");
     }
 
 #endregion

@@ -55,6 +55,12 @@ public abstract class RoleBase
         {
             Main.DesyncPlayerList.Add(playerid);
         }
+
+        if (Options.CustomRoleSpawnChances.ContainsKey(Role))
+        {
+            if (!Options.CustomRoleSpawnChances[Role].GetBool())
+                Options.CustomRoleSpawnChances[Role].SetValue(-1, true);
+        }
     }
     public void OnRemove(byte playerId)
     {
