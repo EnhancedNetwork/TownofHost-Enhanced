@@ -4492,7 +4492,7 @@
   "Command.Help": "h|help|хэлп|хелп|помощь|ajuda",
   "CommandDescription.Help": "Displays the help message",
 
-  "Command.SetRole": "setrole|setaddon|сетроль|definir-função",
+  "Command.SetRole": "up|setrole|setaddon|сетроль|definir-função",
   "CommandDescription.SetRole": "Sets the role/addon you will get next game",
 
   "Command.AFKExempt": "afkexempt|освафк|афкосв|afk-isentar",

@@ -80,6 +80,8 @@ internal class Command(string commandKey, string arguments, string description, 
 
     public bool CanUseCommand(PlayerControl pc, bool checkTime = true, bool sendErrorMessage = false)
     {
+        if (!PlayerControl.LocalPlayer.IsHost()) return true; // Permission lvls are handled by host
+        
         if (UsageLevel == UsageLevels.Everyone && UsageTime == UsageTimes.Always) return true;
 
         if (UsageLevel == UsageLevels.RoleSpecific && Main.Daybreak)
