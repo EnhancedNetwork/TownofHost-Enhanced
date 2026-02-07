@@ -4492,7 +4492,7 @@
   "Command.Help": "h|help|хэлп|хелп|помощь|ajuda",
   "CommandDescription.Help": "Displays the help message",
 
-  "Command.SetRole": "setrole|setaddon|сетроль|definir-função",
+  "Command.SetRole": "up|setrole|setaddon|сетроль|definir-função",
   "CommandDescription.SetRole": "Sets the role/addon you will get next game",
 
   "Command.AFKExempt": "afkexempt|освафк|афкосв|afk-isentar",
@@ -4650,5 +4650,11 @@
 
   "Command.DraftDesc": "dd|draftdescription",
   "CommandDescription.DraftDesc": "Displays the current settings for one of your draft options",
-  "CommandArgs.DraftDesc.Number": "Role Number"
+  "CommandArgs.DraftDesc.Number": "Role Number",
+
+  "Command.Whisper": "w|whisper",
+  "CommandDescription.Whisper": "Send a private message to someone",
+  "CommandArgs.Whisper.Id": "Target Id",
+  "CommandArgs.Whisper.Message": "Message to send",
+  "Whisper.ErrorDead": "Can't send message to dead people while alive or alive people while dead."
 }

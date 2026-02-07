@@ -605,7 +605,7 @@ static class ExtendedPlayerControl
                 Observer.ActivateGuardAnimation(target.PlayerId, target);
             }
         }
-        // player.ResetKillCooldown();
+        player.ResetKillCooldown();
     }
 
     public static void RpcShowGuardAndKill(this PlayerControl seer, PlayerControl target)

@@ -1407,7 +1407,7 @@ public static class Utils
                 text = ReplaceDigitsOutsideRichText(text);
             }
 
-            PlayerControl sender = !addToHistory ? PlayerControl.LocalPlayer : Main.AllAlivePlayerControls.MinBy(x => x.PlayerId) ?? Main.AllPlayerControls.MinBy(x => x.PlayerId) ?? PlayerControl.LocalPlayer;
+            PlayerControl sender = !addToHistory || GameStates.IsVanillaServer ? PlayerControl.LocalPlayer : Main.AllAlivePlayerControls.MinBy(x => x.PlayerId) ?? Main.AllPlayerControls.MinBy(x => x.PlayerId) ?? PlayerControl.LocalPlayer;
 
             if (sendTo != byte.MaxValue && receiver.AmOwner)
             {
@@ -1505,6 +1505,7 @@ public static class Utils
 
                 if ((fullRpcSize <= fullRpcSizeLimit && titleRpcSizeLimit <= titleRpcSize) || title.Length <= 100)
                 {
+                    Logger.Info($"Set sender name to {title}; Split", "SendMessage");
                     writer.AutoStartRpc(sender.NetId, RpcCalls.SetName, targetClientId)
                         .Write(sender.Data.NetId)
                         .Write(title)
@@ -1560,6 +1561,7 @@ public static class Utils
                     if (writer.CurrentState == CustomRpcSender.State.Finished)
                         writer = CustomRpcSender.Create("Utils.SendMessage(2)", sendOption);
 
+                    Logger.Info($"Set sender name to {title}", "SendMessage");
                     writer.AutoStartRpc(sender.NetId, RpcCalls.SetName, targetClientId)
                         .Write(sender.Data.NetId)
                         .Write(title)
@@ -1570,6 +1572,7 @@ public static class Utils
                         if (writer.CurrentState == CustomRpcSender.State.Finished)
                             writer = CustomRpcSender.Create("Utils.SendMessage.SendTempTitleMessage", sendOption);
 
+                        Logger.Info($"Set sender name to {tempTitle}; TempTitle", "SendMessage");
                         writer.AutoStartRpc(sender.NetId, RpcCalls.SetName, targetClientId)
                             .Write(sender.Data.NetId)
                             .Write(tempTitle)
@@ -1579,6 +1582,7 @@ public static class Utils
                             .Write("\n")
                             .EndRpc();
 
+                        Logger.Info($"Set sender name to {sender.GetRealName()}; TempTitle2", "SendMessage");
                         writer.AutoStartRpc(sender.NetId, RpcCalls.SetName, targetClientId)
                             .Write(sender.Data.NetId)
                             .Write(Main.AllPlayerNames.GetValueOrDefault(sender.PlayerId, string.Empty))
@@ -1639,6 +1643,7 @@ public static class Utils
                 if (shortenedText.Length > 0 && !shortenedText.IsNullOrWhiteSpace()) writer = SendMessage(shortenedText, sendTo, title, true, writer, true, sendOption: sendOption);
                 else
                 {
+                    Logger.Info($"Set sender name to {sender.GetRealName()}; Shortened", "SendMessage");
                     writer.AutoStartRpc(sender.NetId, RpcCalls.SetName, targetClientId)
                         .Write(sender.Data.NetId)
                         .Write(Main.AllPlayerNames.GetValueOrDefault(sender.PlayerId, string.Empty))
@@ -1668,6 +1673,7 @@ public static class Utils
 
             if (writer.CurrentState == CustomRpcSender.State.Ready)
             {
+                Logger.Info($"Set sender name to {title}; Ready", "SendMessage");
                 writer.AutoStartRpc(sender.NetId, RpcCalls.SetName, targetClientId)
                     .Write(sender.Data.NetId)
                     .Write(title)
@@ -1688,6 +1694,7 @@ public static class Utils
 
             if ((noSplit && final) || (!noSplit && (!noNumberSplit || numberSplitFinal)))
             {
+                Logger.Info($"Set sender name to {sender.GetRealName()}; Final", "SendMessage");
                 writer.AutoStartRpc(sender.NetId, RpcCalls.SetName, targetClientId)
                     .Write(sender.Data.NetId)
                     .Write(Main.AllPlayerNames.GetValueOrDefault(sender.PlayerId, string.Empty))

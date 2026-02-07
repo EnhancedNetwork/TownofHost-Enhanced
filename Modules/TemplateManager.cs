@@ -192,18 +192,18 @@ public static class TemplateManager
             else Utils.SendMessage(string.Format(GetString("Message.TemplateNotFoundClient"), str), playerId, addToHistory: false, noSplit: true, sendOption: sendOption);
         }
         else foreach (string x in sendList.ToArray())
+        {
+            var title = TryGetTitle(x, out var HasTitle);
+            var rmv = x;
+            if (HasTitle)
             {
-                var title = TryGetTitle(x, out var HasTitle);
-                var rmv = x;
-                if (HasTitle)
-                {
-                    rmv = title != "" ? x.Remove(x.IndexOf("<title>"), x.IndexOf("</title>")) : "";
-                    rmv = rmv.Replace("<title>", "");
-                    rmv = rmv.Replace("</title>", "");
-                }
-
-                Utils.SendMessage(ApplyReplaceDictionary(rmv), playerId, title, addToHistory: false, noSplit: true, sendOption: sendOption);
+                rmv = title != "" ? x.Remove(x.IndexOf("<title>"), x.IndexOf("</title>")) : "";
+                rmv = rmv.Replace("<title>", "");
+                rmv = rmv.Replace("</title>", "");
             }
+
+            Utils.SendMessage(ApplyReplaceDictionary(rmv), playerId, title, addToHistory: false, sendOption: sendOption);
+        }
     }
 
     private static string ApplyReplaceDictionary(string text)

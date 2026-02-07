@@ -103,17 +103,6 @@ public static class CustomRolesHelper
                 or RoleTypes.Shapeshifter
                 or RoleTypes.Phantom or RoleTypes.Viper);
 
-    /*
-    public static bool IsExperimental(this CustomRoles role)
-    {
-        return role is
-            CustomRoles.Disperser or
-            CustomRoles.Doppelganger or
-            CustomRoles.God or
-            CustomRoles.Quizmaster;
-    }
-    */
-
     // Add-ons
     public static bool IsAdditionRole(this CustomRoles role) => role > CustomRoles.NotAssigned;
 
