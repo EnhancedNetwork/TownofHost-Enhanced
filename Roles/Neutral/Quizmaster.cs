@@ -384,7 +384,7 @@ internal class Quizmaster : RoleBase
     {
         if (Player == null || target == null) return;
         lastReportedColor = thisReportedColor;
-        foreach (var plr in Main.AllPlayerControls)
+        foreach (var plr in Main.EnumeratePlayerControls())
         {
             if (plr.PlayerId != Player.PlayerId && target.PlayerId != plr.PlayerId)
             {
@@ -401,7 +401,7 @@ internal class Quizmaster : RoleBase
         if (Player == null) return;
         lastReportedColor = thisReportedColor;
         KillPlayer(target);
-        foreach (var plr in Main.AllPlayerControls)
+        foreach (var plr in Main.EnumeratePlayerControls())
         {
             if (plr.PlayerId != Player.PlayerId && target.PlayerId != plr.PlayerId)
             {
@@ -491,7 +491,7 @@ class PlrColorQuestion : QuizQuestionBase
     {
         Answers = [];
 
-        foreach (PlayerControl plr in Main.AllPlayerControls)
+        foreach (PlayerControl plr in Main.EnumeratePlayerControls())
         {
             if (!PossibleAnswers.Contains(plr.Data.GetPlayerColorString()))
                 PossibleAnswers.Add(plr.Data.GetPlayerColorString());
@@ -561,10 +561,10 @@ class DeathReasonQuestion : QuizQuestionBase
             PossibleAnswers.Add(GetString("QuizmasterAnswers.Coven"));
         }
 
-        chosenPlayer = Main.AllPlayerControls[rnd.Next(Main.AllPlayerControls.Length)];
+        chosenPlayer = Main.AllPlayerControls[rnd.Next(Main.AllPlayerControls.Count)];
 
 
-        foreach (PlayerControl plr in Main.AllPlayerControls)
+        foreach (PlayerControl plr in Main.EnumeratePlayerControls())
         {
             if (QuizmasterQuestionType == QuizmasterQuestionType.PlrDeathReasonQuestion)
             {

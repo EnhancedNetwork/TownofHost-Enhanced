@@ -53,7 +53,7 @@ public static class PhantomRolePatch
         var phantom = __instance;
         Logger.Info($"Player: {phantom.GetRealName()}", "CheckVanish");
 
-        foreach (var target in Main.AllPlayerControls)
+        foreach (var target in Main.EnumeratePlayerControls())
         {
             if (!target.IsAlive() || phantom == target || target.AmOwner || !(target.HasDesyncRole() || Main.PlayerStates[target.PlayerId].IsFalseRole || phantom.HasDesyncRole())) continue;
 
@@ -91,7 +91,7 @@ public static class PhantomRolePatch
             phantom.MyPhysics.RpcBootFromVent(Main.LastEnteredVent[phantom.PlayerId].Id);
         }
 
-        foreach (var target in Main.AllPlayerControls)
+        foreach (var target in Main.EnumeratePlayerControls())
         {
             if (!target.IsAlive() || phantom == target || target.AmOwner || !(target.HasDesyncRole() || Main.PlayerStates[target.PlayerId].IsFalseRole || phantom.HasDesyncRole())) continue;
 

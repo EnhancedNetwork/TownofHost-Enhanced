@@ -142,7 +142,7 @@ internal class Medusa : CovenManager
     public static void SetStoned(PlayerControl player, IGameOptions opt)
     {
         if (StonedPlayers.Any(a => a.Value.Contains(player.PlayerId) &&
-           Main.AllAlivePlayerControls.Any(b => b.PlayerId == a.Key)) && isStoning)
+           Main.EnumerateAlivePlayerControls().Any(b => b.PlayerId == a.Key)) && isStoning)
         {
             opt.SetVision(false);
             opt.SetFloat(FloatOptionNames.CrewLightMod, StoneVision.GetFloat());

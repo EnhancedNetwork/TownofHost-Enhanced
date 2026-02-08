@@ -7,6 +7,7 @@ using BepInEx.Unity.IL2CPP.Utils.Collections;
 using Il2CppInterop.Runtime.Injection;
 using MonoMod.Utils;
 using System;
+using System.Collections;
 using System.IO;
 using System.Security.Cryptography;
 using System.Text;
@@ -164,17 +165,13 @@ public class Main : BasePlugin
     public static readonly Dictionary<byte, PlayerState.DeathReason> AfterMeetingDeathPlayers = [];
     public static readonly Dictionary<CustomRoles, string> roleColors = [];
 
-#if ANDROID
-    public static readonly string LANGUAGE_FOLDER_NAME = Path.Combine(UnityEngine.Application.persistentDataPath, "TOHE-DATA", "Language");
-#else
-    public const string LANGUAGE_FOLDER_NAME = "TOHE-DATA/Language";
-#endif
+    public static readonly string LANGUAGE_FOLDER_NAME = OperatingSystem.IsAndroid() ? Path.Combine(UnityEngine.Application.persistentDataPath, "TOHE-DATA", "Language") : "TOHE-DATA/Language";
 
-#if ANDROID
-    public static readonly string DataPath = Application.persistentDataPath;
-#else
-    public const string DataPath = ".";
-#endif
+    public static readonly string DataPath = OperatingSystem.IsAndroid() ? Application.persistentDataPath : ".";
+
+    // Cache
+    public static readonly Type[] AllTypes = Assembly.GetExecutingAssembly().GetTypes();
+    public static readonly CustomRoles[] CustomRoleValues = Enum.GetValues<CustomRoles>();
 
     public static bool IsFixedCooldown => CustomRoles.Vampire.IsEnable() || CustomRoles.Poisoner.IsEnable();
     public static float RefixCooldownDelay = 0f;
@@ -244,46 +241,26 @@ public class Main : BasePlugin
     public static int MeetingsPassed = 0;
     public static long LastMeetingEnded = Utils.GetTimeStamp();
     public static bool Daybreak;
+    
+    public static IReadOnlyList<PlayerControl> AllPlayerControls => [.. EnumeratePlayerControls()];
+    public static IReadOnlyList<PlayerControl> AllAlivePlayerControls => [.. EnumerateAlivePlayerControls()];
 
-
-    public static PlayerControl[] AllPlayerControls
+    public static IEnumerable<PlayerControl> EnumeratePlayerControls()
     {
-        get
+        foreach (var pc in PlayerControl.AllPlayerControls)
         {
-            int count = PlayerControl.AllPlayerControls.Count;
-            var result = new PlayerControl[count];
-            int i = 0;
-            foreach (var pc in PlayerControl.AllPlayerControls)
-            {
-                if (pc == null || pc.PlayerId == 255 || pc.notRealPlayer) continue;
-                result[i++] = pc;
-            }
-
-            if (i == 0) return [];
-
-            Array.Resize(ref result, i);
-            return result;
+            if (pc == null || pc.PlayerId >= 254) continue;
+            yield return pc;
         }
     }
 
-    public static PlayerControl[] AllAlivePlayerControls
+    public static IEnumerable<PlayerControl> EnumerateAlivePlayerControls()
     {
-        get
-        {
-            int count = PlayerControl.AllPlayerControls.Count;
-            var result = new PlayerControl[count];
-            int i = 0;
-            foreach (var pc in PlayerControl.AllPlayerControls)
-            {
-                if (pc == null || pc.PlayerId == 255 || pc.notRealPlayer || !pc.IsAlive() || pc.Data == null || pc.Data.Disconnected || Pelican.IsEaten(pc.PlayerId)) continue;
-                result[i++] = pc;
-            }
-
-            if (i == 0) return [];
-
-            Array.Resize(ref result, i);
-            return result;
-        }
+        return EnumeratePlayerControls()
+            .Where(pc => pc.IsAlive()
+                        && pc.Data != null
+                        && (!pc.Data.Disconnected || !IntroDestroyed)
+                        && !Pelican.IsEaten(pc.PlayerId));
     }
 
     public static Main Instance;
@@ -348,22 +325,25 @@ public class Main : BasePlugin
         }
     }
 
-    public void StartCoroutine(System.Collections.IEnumerator coroutine)
+    public Coroutine StartCoroutine(IEnumerator coroutine)
     {
-        if (coroutine == null)
-        {
-            return;
-        }
-        coroutines.StartCoroutine(coroutine.WrapToIl2Cpp());
+        if (coroutine == null) return null;
+        return coroutines.StartCoroutine(coroutine.WrapToIl2Cpp());
     }
 
-    public void StopCoroutine(System.Collections.IEnumerator coroutine)
+    public void StopCoroutine(IEnumerator coroutine)
     {
         if (coroutine == null)
         {
             return;
         }
         coroutines.StopCoroutine(coroutine.WrapToIl2Cpp());
+    }
+
+    public void StopCoroutine(Coroutine coroutine)
+    {
+        if (coroutine == null) return;
+        coroutines.StopCoroutine(coroutine);
     }
 
     public void StopAllCoroutines()
@@ -405,7 +385,7 @@ public class Main : BasePlugin
                 }
             }
 
-            foreach (var role in EnumHelper.GetAllValues<CustomRoles>())
+            foreach (var role in CustomRoleValues)
             {
                 switch (role.GetCustomRoleTeam())
                 {
@@ -695,14 +675,16 @@ public class Main : BasePlugin
         HideNSeekGameOptionsV10.MinPlayers = Enumerable.Repeat(4, 128).ToArray();
         DisconnectPopup.ErrorMessages[DisconnectReasons.Hacking] = StringNames.ErrorHacking;
 
-        Harmony.PatchAll();
+        Harmony.PatchAll(Assembly.GetExecutingAssembly());
 
-        // ConsoleManager.DetachConsole();
-#if !ANDROID
-        if (DebugModeManager.AmDebugger) ConsoleManager.CreateConsole();
-#endif
+        if (!OperatingSystem.IsAndroid())
+        {
+            if (DebugModeManager.AmDebugger) ConsoleManager.CreateConsole();
+            else ConsoleManager.DetachConsole();
+            
+            Harmony.PatchAll(typeof(TextBoxPatch));
+        }
 
-        // InitializeFileHash();
         FileHash = "drafting_2025_09_09";
         TOHE.Logger.Msg("========= TOHE loaded! =========", "Plugin Load");
     }

@@ -47,7 +47,7 @@ internal class AntiAdminer : RoleBase
         Count--; if (Count > 0) return; Count = 3;
 
         bool Admin = false, Camera = false, DoorLog = false, Vital = false;
-        foreach (PlayerControl pc in Main.AllAlivePlayerControls)
+        foreach (PlayerControl pc in Main.EnumerateAlivePlayerControls())
         {
             if (pc.inVent || pc.GetCustomRole().IsImpostor()) continue;
 

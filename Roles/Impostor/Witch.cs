@@ -164,7 +164,7 @@ internal class Witch : RoleBase
                 SpelledPlayer[id].Clear();
         }
         var spelledIdList = new List<byte>();
-        foreach (var pc in Main.AllAlivePlayerControls)
+        foreach (var pc in Main.EnumerateAlivePlayerControls())
         {
             var dic = SpelledPlayer.Where(x => x.Value.Contains(pc.PlayerId));
             if (!dic.Any()) continue;

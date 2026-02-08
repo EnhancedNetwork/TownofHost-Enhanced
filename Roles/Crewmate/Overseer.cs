@@ -93,7 +93,7 @@ internal class Overseer : RoleBase
     }
     public override void Add(byte playerId)
     {
-        foreach (var ar in Main.AllPlayerControls)
+        foreach (var ar in Main.EnumeratePlayerControls())
         {
             IsRevealed.Add((playerId, ar.PlayerId), false);
         }

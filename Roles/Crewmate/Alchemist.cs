@@ -178,7 +178,7 @@ internal class Alchemist : RoleBase
             Vector2 bloodthirstPos = player.transform.position;
             Dictionary<byte, float> targetDistance = [];
             float dis;
-            foreach (var target in Main.AllAlivePlayerControls)
+            foreach (var target in Main.EnumerateAlivePlayerControls())
             {
                 if (target.PlayerId != player.PlayerId && !target.IsTransformedNeutralApocalypse())
                 {
@@ -297,7 +297,7 @@ internal class Alchemist : RoleBase
             case 3: // TP to random player
                 _ = new LateTask(() =>
                 {
-                    List<PlayerControl> AllAlivePlayer = [.. Main.AllAlivePlayerControls.Where(x => x.CanBeTeleported() && x.PlayerId != player.PlayerId).ToArray()];
+                    List<PlayerControl> AllAlivePlayer = [.. Main.EnumerateAlivePlayerControls().Where(x => x.CanBeTeleported() && x.PlayerId != player.PlayerId).ToArray()];
                     var target = AllAlivePlayer.RandomElement();
                     player.RpcTeleport(target.GetCustomPosition());
                     player.RPCPlayCustomSound("Teleport");

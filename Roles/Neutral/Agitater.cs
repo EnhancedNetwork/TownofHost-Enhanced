@@ -143,7 +143,7 @@ internal class Agitater : RoleBase
             Dictionary<byte, float> targetDistance = [];
             float dis;
 
-            foreach (var target in Main.AllAlivePlayerControls)
+            foreach (var target in Main.EnumerateAlivePlayerControls())
             {
                 if (target.PlayerId != player.PlayerId && target.PlayerId != LastBombedPlayer)
                 {

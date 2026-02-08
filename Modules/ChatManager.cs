@@ -161,7 +161,7 @@ namespace TOHE.Modules.ChatManager
             //This should never function for non host
             Logger.Info(" Sending Previous Messages To Everyone", "ChatManager");
 
-            PlayerControl[] aapc = Main.AllAlivePlayerControls;
+            PlayerControl[] aapc = [.. Main.AllAlivePlayerControls];
             if (aapc.Length == 0) return;
 
             if (GameStates.IsVanillaServer)
@@ -231,12 +231,12 @@ namespace TOHE.Modules.ChatManager
         public static void ClearChat(params PlayerControl[] targets)
         {
             if (!AmongUsClient.Instance.AmHost) return;
-            PlayerControl player = GameStates.IsVanillaServer ? PlayerControl.LocalPlayer : Main.AllAlivePlayerControls.MinBy(x => x.PlayerId) ?? Main.AllPlayerControls.MinBy(x => x.PlayerId) ?? PlayerControl.LocalPlayer;
+            PlayerControl player = GameStates.IsVanillaServer ? PlayerControl.LocalPlayer : Main.EnumerateAlivePlayerControls().MinBy(x => x.PlayerId) ?? Main.EnumeratePlayerControls().MinBy(x => x.PlayerId) ?? PlayerControl.LocalPlayer;
             if (player == null) return;
 
             if (GameStates.IsVanillaServer)
             {
-                if (targets.Length <= 1 || targets.Length >= Main.AllAlivePlayerControls.Length)
+                if (targets.Length <= 1 || targets.Length >= Main.AllAlivePlayerControls.Count)
                     Loop.Times(30, _ => Utils.SendMessage(string.Empty, targets.Length == 1 ? targets[0].PlayerId : byte.MaxValue, "\u200b", force: true, sendOption: SendOption.None));
                 else
                     targets.Do(x => Loop.Times(30, _ => Utils.SendMessage(string.Empty, x.PlayerId, "\u200b", force: true, sendOption: SendOption.None)));

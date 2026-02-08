@@ -1458,7 +1458,7 @@ public static class CustomRolesHelper
     {
         return role.GetStaticRoleClass().ThisRoleType;
     }
-    public static bool RoleExist(this CustomRoles role, bool countDead = false) => Main.AllPlayerControls.Any(x => x.Is(role) && (x.IsAlive() || countDead));
+    public static bool RoleExist(this CustomRoles role, bool countDead = false) => Main.EnumeratePlayerControls().Any(x => x.Is(role) && (x.IsAlive() || countDead));
     public static int GetCount(this CustomRoles role)
     {
         if (role.IsVanilla())

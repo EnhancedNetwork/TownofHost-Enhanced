@@ -129,7 +129,7 @@ public static class FixedUpdatePatch
     {
         try
         {
-            if (GameStates.IsLocalGame || !GameStates.IsLobby || !Options.KickNotJoinedPlayersRegularly.GetBool() || Main.AllPlayerControls.Length < 7) return;
+            if (GameStates.IsLocalGame || !GameStates.IsLobby || !Options.KickNotJoinedPlayersRegularly.GetBool() || Main.AllPlayerControls.Count < 7) return;
 
             Timer += Time.fixedDeltaTime;
             if (Timer < 25f) return;
@@ -177,7 +177,7 @@ public static class FixedUpdatePatch
             var ventilationSystem = instance.Systems[SystemTypes.Ventilation].CastFast<VentilationSystem>();
             if (ventilationSystem == null) return;
 
-            foreach (PlayerControl pc in Main.AllAlivePlayerControls)
+            foreach (PlayerControl pc in Main.EnumerateAlivePlayerControls())
             {
                 try
                 {

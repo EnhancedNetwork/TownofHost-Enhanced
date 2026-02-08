@@ -112,7 +112,7 @@ internal class President : RoleBase
 
         RevealLimit[player.PlayerId]--;
         CheckPresidentReveal[player.PlayerId] = true;
-        foreach (var tar in Main.AllAlivePlayerControls)
+        foreach (var tar in Main.EnumerateAlivePlayerControls())
         {
             if (!MadmatesSeePresident.GetBool() && tar.Is(CustomRoles.Madmate) && tar != player) continue;
             if (!NeutralsSeePresident.GetBool() && tar.GetCustomRole().IsNeutral() && !tar.GetCustomRole().IsMadmate()) continue;

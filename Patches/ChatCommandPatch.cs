@@ -575,7 +575,7 @@ internal class ChatCommands
 
                             yield break;
                         }
-                        bool playervoted = (Main.AllPlayerControls.Length - 1) > Pollvotes.Values.Sum();
+                        bool playervoted = (Main.AllPlayerControls.Count - 1) > Pollvotes.Values.Sum();
 
 
                         while (playervoted && Polltimer > 0f)
@@ -588,7 +588,7 @@ internal class ChatCommands
 
                                 yield break;
                             }
-                            playervoted = (Main.AllPlayerControls.Length - 1) > Pollvotes.Values.Sum();
+                            playervoted = (Main.AllPlayerControls.Count - 1) > Pollvotes.Values.Sum();
                             Polltimer -= Time.deltaTime;
                             yield return null;
                         }
@@ -652,7 +652,7 @@ internal class ChatCommands
                     }
 
 
-                    if (Main.AllPlayerControls.Length < 3)
+                    if (Main.AllPlayerControls.Count < 3)
                     {
                         Utils.SendMessage(GetString("Poll.MissingPlayers"), PlayerControl.LocalPlayer.PlayerId);
                         break;
@@ -1720,7 +1720,7 @@ internal class ChatCommands
 
         pc.FixBlackScreen();
 
-        if (Main.AllPlayerControls.All(x => x.IsAlive()))
+        if (Main.EnumeratePlayerControls().All(x => x.IsAlive()))
             Logger.SendInGame(GetString("FixBlackScreenWaitForDead"));
     }
 
@@ -2148,7 +2148,7 @@ internal class ChatCommands
         switch (Options.CurrentGameMode)
         {
             case CustomGameMode.Standard:
-                var allAlivePlayers = Main.AllAlivePlayerControls;
+                var allAlivePlayers = Main.EnumerateAlivePlayerControls();
                 int impnum = allAlivePlayers.Count(pc => pc.Is(Custom_Team.Impostor) && !Main.PlayerStates[pc.PlayerId].IsRandomizer && !pc.Is(CustomRoles.Narc));
                 int madnum = allAlivePlayers.Count(pc => ((pc.GetCustomRole().IsMadmate() && !pc.Is(CustomRoles.Narc)) || pc.Is(CustomRoles.Madmate)) && !Main.PlayerStates[pc.PlayerId].IsRandomizer);
                 int neutralnum = allAlivePlayers.Count(pc => pc.GetCustomRole().IsNK());
@@ -2591,7 +2591,7 @@ internal class ChatCommands
             && !Options.EnableVoteCommand.GetBool()) return;
 
         string msgText = GetString("PlayerIdList");
-        foreach (var pc in Main.AllPlayerControls)
+        foreach (var pc in Main.EnumeratePlayerControls())
         {
             if (pc == null) continue;
             msgText += "\n" + pc.PlayerId.ToString() + " → " + pc.GetRealName().RemoveHtmlTags();
@@ -2784,7 +2784,7 @@ internal class ChatCommands
             return;
         }
 
-        foreach (var pc in Main.AllPlayerControls)
+        foreach (var pc in Main.EnumeratePlayerControls())
         {
             if (pc.IsAlive()) continue;
 
@@ -2867,7 +2867,7 @@ internal class ChatCommands
             }
             else
             {
-                foreach (var pc in Main.AllPlayerControls)
+                foreach (var pc in Main.EnumeratePlayerControls())
                 {
                     Utils.SendMessage(string.Format(GetString("DraftPoolMessage"), pc.GetFormattedDraftPool()), pc.PlayerId);
                 }
@@ -2891,7 +2891,7 @@ internal class ChatCommands
             }
             else
             {
-                foreach (var pc in Main.AllPlayerControls)
+                foreach (var pc in Main.EnumeratePlayerControls())
                 {
                     Utils.SendMessage(string.Format(GetString("DraftPoolMessage"), pc.GetFormattedDraftPool()), pc.PlayerId);
                 }
@@ -2998,7 +2998,7 @@ class ChatUpdatePatch
 
     internal static bool SendLastMessages(ref CustomRpcSender sender)
     {
-        PlayerControl player = GameStates.IsVanillaServer ? PlayerControl.LocalPlayer : GameStates.IsLobby ? Main.AllPlayerControls.Without(PlayerControl.LocalPlayer).RandomElement() : Main.AllAlivePlayerControls.MinBy(x => x.PlayerId) ?? Main.AllPlayerControls.MinBy(x => x.PlayerId) ?? PlayerControl.LocalPlayer;
+        PlayerControl player = GameStates.IsVanillaServer ? PlayerControl.LocalPlayer : GameStates.IsLobby ? Main.EnumeratePlayerControls().Without(PlayerControl.LocalPlayer).RandomElement() : Main.EnumerateAlivePlayerControls().MinBy(x => x.PlayerId) ?? Main.EnumeratePlayerControls().MinBy(x => x.PlayerId) ?? PlayerControl.LocalPlayer;
         if (player == null) return false;
 
         bool wasCleared = false;

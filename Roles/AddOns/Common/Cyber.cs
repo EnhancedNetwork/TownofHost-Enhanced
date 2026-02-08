@@ -44,7 +44,7 @@ public class Cyber : IAddon
     {
         if (target.IsDisconnected()) return;
 
-        foreach (var pc in Main.AllPlayerControls)
+        foreach (var pc in Main.EnumeratePlayerControls())
         {
             if (!ImpKnowCyberDead.GetBool() && pc.GetCustomRole().IsImpostor()) continue;
             if (!NeutralKnowCyberDead.GetBool() && pc.GetCustomRole().IsNeutral()) continue;

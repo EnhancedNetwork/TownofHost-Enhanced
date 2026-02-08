@@ -339,7 +339,7 @@ public static class CustomRpcSenderExtensions
                 Logger.Info($"Skipped setting name of {player.GetRealName()} for seer {saw} because it was the same as previous", "RpcSetName");
                 return;
             case true:
-                Main.AllPlayerControls.Do(x => Main.LastNotifyNames[(player.PlayerId, x.PlayerId)] = name);
+                Main.EnumeratePlayerControls().Do(x => Main.LastNotifyNames[(player.PlayerId, x.PlayerId)] = name);
                 break;
             default:
                 Main.LastNotifyNames[(player.PlayerId, seer.PlayerId)] = name;

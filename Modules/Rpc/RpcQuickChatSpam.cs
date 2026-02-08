@@ -257,7 +257,7 @@ namespace TOHE.Modules.Rpc
 
         public override void SerializeCustomValues(MessageWriter writer)
         {
-            var firstAlivePlayer = Main.AllAlivePlayerControls.OrderBy(x => x.PlayerId).FirstOrDefault() ?? PlayerControl.LocalPlayer;
+            var firstAlivePlayer = Main.EnumerateAlivePlayerControls().OrderBy(x => x.PlayerId).FirstOrDefault() ?? PlayerControl.LocalPlayer;
             var title = "<color=#aaaaff>" + GetString("DefaultSystemMessageTitle") + "</color>";
             var name = firstAlivePlayer?.Data?.PlayerName ?? "Error";
 

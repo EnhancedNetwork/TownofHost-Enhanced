@@ -140,7 +140,7 @@ internal class Sniper : RoleBase
 
         snipePos -= dir;
 
-        foreach (var target in Main.AllAlivePlayerControls)
+        foreach (var target in Main.EnumerateAlivePlayerControls())
         {
             if (target.PlayerId == sniper.PlayerId) continue;
             var target_pos = target.transform.position - snipePos;

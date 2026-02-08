@@ -67,7 +67,7 @@ internal class Stealth : RoleBase
         var roomArea = room.roomArea;
         var roomName = room.RoomId;
         RpcDarken(roomName);
-        return Main.AllAlivePlayerControls.Where(player => player != _Player && player.Collider.IsTouching(roomArea)).ToArray();
+        return [.. Main.EnumerateAlivePlayerControls().Where(player => player != _Player && player.Collider.IsTouching(roomArea))];
     }
     /// <summary>Give the given player zero visibility for <see cref="darkenDuration"/> seconds.</summary>
     private void DarkenPlayers(PlayerControl[] playersToDarken)

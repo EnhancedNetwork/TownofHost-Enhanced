@@ -107,7 +107,7 @@ internal class Altruist : RoleBase
 
             if (ImpostorsCanGetsAlert.GetBool() || NeutralKillersCanGetsAlert.GetBool())
             {
-                foreach (var pc in Main.AllAlivePlayerControls)
+                foreach (var pc in Main.EnumerateAlivePlayerControls())
                 {
                     if (pc.GetCustomRole().IsCrewmate()) continue;
 
@@ -189,7 +189,7 @@ internal class Altruist : RoleBase
     {
         if (!(ImpostorsCanGetsArrow.GetBool() || NeutralKillersCanGetsArrow.GetBool() || CovenCanGetsArrow.GetBool()) || RevivedPlayerId == byte.MaxValue) return;
 
-        foreach (var pc in Main.AllAlivePlayerControls)
+        foreach (var pc in Main.EnumerateAlivePlayerControls())
         {
             if (ImpostorsCanGetsArrow.GetBool() && pc.Is(Custom_Team.Impostor))
             {

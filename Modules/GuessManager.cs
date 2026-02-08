@@ -23,7 +23,7 @@ public static class GuessManager
     public static string GetFormatString()
     {
         string text = GetString("PlayerIdList");
-        foreach (var pc in Main.AllAlivePlayerControls.OrderBy(x => x.GetVisiblePlayerId()))
+        foreach (var pc in Main.EnumerateAlivePlayerControls().OrderBy(x => x.GetVisiblePlayerId()))
         {
             string id = pc.GetVisiblePlayerId().ToString();
             string name = pc.GetRealName();

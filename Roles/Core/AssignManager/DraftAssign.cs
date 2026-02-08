@@ -29,7 +29,7 @@ public static class DraftAssign
     public static List<CustomRoles>[] PoolLookup = [];
 
     public static bool DraftActive => AssignedSlots.Any();
-    public static bool CanStartWithDraft => PoolLookup.Length >= Main.AllAlivePlayerControls.Length && Main.AllAlivePlayerControls.All(x => x.PlayerId < PoolLookup.Length && PoolLookup[x.PlayerId] != null && PoolLookup[x.PlayerId].Any());
+    public static bool CanStartWithDraft => PoolLookup.Length >= Main.AllAlivePlayerControls.Count && Main.EnumerateAlivePlayerControls().All(x => x.PlayerId < PoolLookup.Length && PoolLookup[x.PlayerId] != null && PoolLookup[x.PlayerId].Any());
 
     private static Dictionary<byte, CustomRoles> RoleResult => RoleAssign.RoleResult;
 
@@ -40,9 +40,9 @@ public static class DraftAssign
         Reset();
 
         var rd = IRandom.Instance;
-        int playerCount = Main.AllAlivePlayerControls.Length;
+        int playerCount = Main.AllAlivePlayerControls.Count;
 
-        foreach (var role in EnumHelper.GetAllValues<CustomRoles>())
+        foreach (var role in Main.CustomRoleValues)
         {
             // Logger.Info(role.ToString(), "LoadDraftRoles");
             int chance = role.GetMode();
@@ -118,7 +118,7 @@ public static class DraftAssign
             AllPlayers.Remove(PlayerControl.LocalPlayer);
         }
 
-        foreach (var player in Main.AllPlayerControls)
+        foreach (var player in Main.EnumeratePlayerControls())
         {
             if (player == null) continue;
 
@@ -353,7 +353,7 @@ public static class DraftAssign
         /// </summary>
         void FixSlotDistribution()
         {
-            var allPlayerIds = Main.AllPlayerControls.Select(x => x.PlayerId).ToList();
+            var allPlayerIds = Main.EnumeratePlayerControls().Select(x => x.PlayerId).ToList();
             var allSlotIds = SlotLookup.Select((value, index) => new { Value = value, Index = index })
                 .Where(item => item.Value != null).Select(item => item.Index).ToList();
 
@@ -691,7 +691,7 @@ public static class DraftAssign
         switch (Options.CurrentGameMode)
         {
             case CustomGameMode.FFA:
-                foreach (PlayerControl pc in Main.AllPlayerControls)
+                foreach (PlayerControl pc in Main.EnumeratePlayerControls())
                 {
                     if (Main.EnableGM.Value && pc.IsHost())
                     {
@@ -709,7 +709,7 @@ public static class DraftAssign
                 return;
 
             case CustomGameMode.SpeedRun:
-                foreach (PlayerControl pc in Main.AllPlayerControls)
+                foreach (PlayerControl pc in Main.EnumeratePlayerControls())
                 {
                     if (Main.EnableGM.Value && pc.IsHost())
                     {
@@ -734,9 +734,7 @@ public static class DraftAssign
         }
         Logger.Info("Started draft assign roles.", "DraftAssign");
         var rd = IRandom.Instance;
-        int playerCount = Main.AllAlivePlayerControls.Length;
-
-        var AllPlayers = Main.AllAlivePlayerControls;
+        int playerCount = Main.AllAlivePlayerControls.Count;
 
         List<CustomRoles> FinalRolesList = [];
 
@@ -752,7 +750,7 @@ public static class DraftAssign
             AssignedSlots.Remove(id);
         }
 
-        foreach (var player in AllPlayers)
+        foreach (var player in Main.EnumerateAlivePlayerControls())
         {
             byte playerId = player.PlayerId;
             // Assign Role if drafted
@@ -840,7 +838,7 @@ public static class DraftAssign
 
     public static void ResendDraftPoolMsg()
     {
-        foreach (var pc in Main.AllPlayerControls)
+        foreach (var pc in Main.EnumeratePlayerControls())
         {
             Utils.SendMessage(string.Format(GetString("DraftPoolMessage"), pc.GetFormattedDraftPool()), pc.PlayerId);
         }

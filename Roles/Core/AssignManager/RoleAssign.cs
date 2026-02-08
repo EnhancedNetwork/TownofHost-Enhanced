@@ -90,7 +90,7 @@ public class RoleAssign
         switch (Options.CurrentGameMode)
         {
             case CustomGameMode.FFA:
-                foreach (PlayerControl pc in Main.AllPlayerControls)
+                foreach (PlayerControl pc in Main.EnumeratePlayerControls())
                 {
                     if (Main.EnableGM.Value && pc.IsHost())
                     {
@@ -108,7 +108,7 @@ public class RoleAssign
                 return;
 
             case CustomGameMode.SpeedRun:
-                foreach (PlayerControl pc in Main.AllPlayerControls)
+                foreach (PlayerControl pc in Main.EnumeratePlayerControls())
                 {
                     if (Main.EnableGM.Value && pc.IsHost())
                     {
@@ -127,7 +127,7 @@ public class RoleAssign
         }
 
         var rd = IRandom.Instance;
-        int playerCount = Main.AllAlivePlayerControls.Length;
+        int playerCount = Main.AllAlivePlayerControls.Count;
         int optImpNum = 0;
         int optNonNeutralKillingNum = 0;
         int optNeutralKillingNum = 0;
@@ -164,7 +164,7 @@ public class RoleAssign
 
         foreach (var id in SetRoles.Keys.Where(id => Utils.GetPlayerById(id) == null).ToArray()) SetRoles.Remove(id);
 
-        foreach (var role in EnumHelper.GetAllValues<CustomRoles>())
+        foreach (var role in Main.CustomRoleValues)
         {
             int chance = role.GetMode();
             if (role.IsVanilla() || chance == 0 || role.IsAdditionRole() || role.IsGhostRole()) continue;
@@ -287,7 +287,7 @@ public class RoleAssign
             AllPlayers.Remove(PlayerControl.LocalPlayer);
         }
 
-        foreach (var player in Main.AllPlayerControls)
+        foreach (var player in Main.EnumeratePlayerControls())
         {
             if (player == null) continue;
 

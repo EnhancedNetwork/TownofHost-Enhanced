@@ -73,7 +73,7 @@ internal class Sorceress : CovenManager
     public static void SetBlinded(PlayerControl player, IGameOptions opt)
     {
         if (Mirages.Any(a => a.Value.TargetId == player.PlayerId && 
-            Main.AllAlivePlayerControls.Any(b => b.PlayerId == a.Key)))
+            Main.EnumerateAlivePlayerControls().Any(b => b.PlayerId == a.Key)))
         {
             opt.SetVision(false);
             opt.SetFloat(FloatOptionNames.CrewLightMod, MirageVision.GetFloat());
@@ -218,8 +218,8 @@ internal class Sorceress : CovenManager
         internal DeathMirage(Vector2 position, List<byte> visibleList)
         {
             if (!AmongUsClient.Instance.AmHost) return;
-            CreateNetObject(position: position, visible: true, pOutfit: Main.AllAlivePlayerControls.RandomElement()?.Data.Outfits[PlayerOutfitType.Default]);
-            Main.AllAlivePlayerControls.ExceptBy(visibleList, x => x.PlayerId).Do(Hide);
+            CreateNetObject(position: position, visible: true, pOutfit: Main.EnumerateAlivePlayerControls().RandomElement()?.Data.Outfits[PlayerOutfitType.Default]);
+            Main.EnumerateAlivePlayerControls().ExceptBy(visibleList, x => x.PlayerId).Do(Hide);
         }
     }
 }

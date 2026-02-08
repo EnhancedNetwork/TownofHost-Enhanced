@@ -101,7 +101,7 @@ internal class AbyssBringer : RoleBase
 
     // public override void UnShapeShiftButton(PlayerControl shapeshifter)
     // {
-    //     if (!Main.AllAlivePlayerControls.Where(x => x.PlayerId != shapeshifter.PlayerId).Any())
+    //     if (!Main.EnumerateAlivePlayerControls().Where(x => x.PlayerId != shapeshifter.PlayerId).Any())
     //     {
     //         return;
     //     }
@@ -124,7 +124,7 @@ internal class AbyssBringer : RoleBase
     {
         if (!shapeshifting) return true;
 
-        if (!Main.AllAlivePlayerControls.Where(x => x.PlayerId != shapeshifter.PlayerId).Any())
+        if (!Main.EnumerateAlivePlayerControls().Any(x => x.PlayerId != shapeshifter.PlayerId))
         {
             return false;
         }
@@ -192,7 +192,7 @@ internal class AbyssBringer : RoleBase
 
         if (MeetingHud.Instance || Main.LastMeetingEnded + 2 > nowTime) return;
 
-        var nearestPlayer = Main.AllAlivePlayerControls.Where(x => x != abyss).MinBy(x => Vector2.Distance(x.GetCustomPosition(), blackHole.Position));
+        var nearestPlayer = Main.EnumerateAlivePlayerControls().Where(x => x != abyss).MinBy(x => Vector2.Distance(x.GetCustomPosition(), blackHole.Position));
         if (nearestPlayer != null)
         {
             var pos = nearestPlayer.GetCustomPosition();

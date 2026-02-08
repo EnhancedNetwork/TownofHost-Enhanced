@@ -67,7 +67,7 @@ internal class Revolutionist : RoleBase
         CustomRoleManager.OnFixedUpdateOthers.Add(OnFixUpdateOthers);
         CustomRoleManager.CheckDeadBodyOthers.Add(CheckDeadBody);
 
-        foreach (var ar in Main.AllPlayerControls)
+        foreach (var ar in Main.EnumeratePlayerControls())
             IsDraw.Add((playerId, ar.PlayerId), false);
     }
     public override void Remove(byte playerId)
@@ -153,12 +153,12 @@ internal class Revolutionist : RoleBase
     {
         int draw = 0;
         int all = RevolutionistDrawCount.GetInt();
-        int max = Main.AllAlivePlayerControls.Length;
+        int max = Main.AllAlivePlayerControls.Count;
         if (!Main.PlayerStates[playerId].IsDead) max--;
         winnerList = [];
         if (all > max) all = max;
 
-        foreach (var pc in Main.AllPlayerControls)
+        foreach (var pc in Main.EnumeratePlayerControls())
         {
             if (IsDraw.TryGetValue((playerId, pc.PlayerId), out var isDraw) && isDraw)
             {

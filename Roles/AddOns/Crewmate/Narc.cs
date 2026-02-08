@@ -94,7 +94,7 @@ public static class NarcManager
     }
 
     public static bool NarcCanUseKillButton(PlayerControl pc)
-        => !Main.AllAlivePlayerControls.Any(x => x.GetCustomRole().IsImpostorTeamV3() && !x.IsPlayerCrewmateTeam()) || ImpsCanKillEachOther.GetBool();
+        => !Main.EnumerateAlivePlayerControls().Any(x => x.GetCustomRole().IsImpostorTeamV3() && !x.IsPlayerCrewmateTeam()) || ImpsCanKillEachOther.GetBool();
     public static bool CantUseSabotage(PlayerControl pc) => pc.Is(CustomRoles.Narc) && !NarcCanUseSabotage.GetBool();
 
     public static bool IsPolice(this PlayerControl player)

@@ -370,7 +370,7 @@ internal class EAC
     public static Dictionary<byte, CustomRoles> OriginalRoles = [];
     public static void LogAllRoles()
     {
-        foreach (var pc in Main.AllPlayerControls.ToArray())
+        foreach (var pc in Main.EnumeratePlayerControls())
         {
             try
             {
@@ -690,7 +690,7 @@ internal class EAC
                 Utils.SendMessage(string.Format(GetString("Message.NoticeByEAC"), pc?.Data?.PlayerName, text), PlayerControl.LocalPlayer.PlayerId, Utils.ColorString(Utils.GetRoleColor(CustomRoles.Impostor), GetString("MessageFromEAC")));
                 break;
             case 3:
-                foreach (var apc in Main.AllPlayerControls.Where(x => x.PlayerId != pc?.Data?.PlayerId).ToArray())
+                foreach (var apc in Main.EnumeratePlayerControls().Where(x => x.PlayerId != pc?.Data?.PlayerId).ToArray())
                     Utils.SendMessage(string.Format(GetString("Message.NoticeByEAC"), pc?.Data?.PlayerName, text), apc.PlayerId, Utils.ColorString(Utils.GetRoleColor(CustomRoles.Impostor), GetString("MessageFromEAC")));
                 break;
             case 4:

@@ -49,7 +49,7 @@ class DisableDevice
 
         if (!DoDisable) return;
 
-        foreach (var pc in Main.AllPlayerControls)
+        foreach (var pc in Main.EnumeratePlayerControls())
         {
             try
             {

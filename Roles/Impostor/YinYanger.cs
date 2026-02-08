@@ -37,8 +37,8 @@ internal class YinYanger : RoleBase
     public override void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = KillCooldown.GetFloat();
     private static bool CheckAvailability()
     {
-        var tocheck = Main.AllAlivePlayerControls.Length - Main.AllAlivePlayerControls.Count(x => x.Is(CustomRoles.YinYanger));
-        var result = Main.AllAlivePlayerControls.Count(x => x.Is(CustomRoles.YinYanger)) * 2;
+        var tocheck = Main.AllAlivePlayerControls.Count - Main.EnumerateAlivePlayerControls().Count(x => x.Is(CustomRoles.YinYanger));
+        var result = Main.EnumerateAlivePlayerControls().Count(x => x.Is(CustomRoles.YinYanger)) * 2;
         return tocheck >= result;
     }
     public override bool OnCheckMurderAsKiller(PlayerControl killer, PlayerControl target)
