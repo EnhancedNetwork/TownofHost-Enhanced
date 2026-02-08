@@ -2475,7 +2475,7 @@ public static class Utils
                 SelfSuffix.Append(Radar.GetPlayerArrow(seer, seer, isForMeeting: isForMeeting));
                 SelfSuffix.Append(Necromancer.NecromancerReminder(seer, seer, isForMeeting: isForMeeting));
                 SelfSuffix.Append(CopyCat.CopycatReminder(seer, seer, isForMeeting: isForMeeting));
-                SelfSuffix.Append(Randomizer.RandomizerReminder(seer, seer, isForMeeting: isForMeeting));
+                // SelfSuffix.Append(Randomizer.RandomizerReminder(seer, seer, isForMeeting: isForMeeting));
                 SelfSuffix.Append(Spurt.GetSuffix(seer, isformeeting: isForMeeting));
 
 
@@ -2627,7 +2627,7 @@ public static class Utils
                         TargetSuffix.Append(CustomRoleManager.GetSuffixOthers(seer, target, isForMeeting: isForMeeting));
                         TargetSuffix.Append(Necromancer.NecromancerReminder(seer, target, isForMeeting: isForMeeting));
                         TargetSuffix.Append(CopyCat.CopycatReminder(seer, target, isForMeeting: isForMeeting));
-                        TargetSuffix.Append(Randomizer.RandomizerReminder(seer, target, isForMeeting: isForMeeting));
+                        // TargetSuffix.Append(Randomizer.RandomizerReminder(seer, target, isForMeeting: isForMeeting));
 
                         // ====== Seer know target role ======
 
@@ -3365,7 +3365,7 @@ public static class Utils
 
             if (CustomRoles.CopyCat.HasEnabled()) CopyCat.UnAfterMeetingTasks(); // All crew have to be before this
             if (CustomRoles.Necromancer.HasEnabled()) Necromancer.UnAfterMeetingTasks();
-            if (CustomRoles.Randomizer.HasEnabled()) Randomizer.UnAfterMeetingTasks();
+            // if (CustomRoles.Randomizer.HasEnabled()) Randomizer.UnAfterMeetingTasks();
         }
         catch (Exception error)
         {
