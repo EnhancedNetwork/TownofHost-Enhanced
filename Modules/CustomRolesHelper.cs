@@ -1203,8 +1203,7 @@ public static class CustomRolesHelper
                 break;
 
             case CustomRoles.Unreportable:
-                if (pc.Is(CustomRoles.Randomizer)
-                    || pc.Is(CustomRoles.Solsticer)
+                if (pc.Is(CustomRoles.Solsticer)
                     || pc.Is(CustomRoles.Bait))
                     return false;
                 break;
