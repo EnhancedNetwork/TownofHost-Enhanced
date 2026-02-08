@@ -2105,7 +2105,7 @@ internal class ChatCommands
 
         if (!GameStates.IsLobby) return;
 
-        if (!!Options.PlayerCanUseTP.GetBool())
+        if (!Options.PlayerCanUseTP.GetBool())
         {
             Utils.SendMessage(GetString("DisableUseCommand"), player.PlayerId);
             return;
