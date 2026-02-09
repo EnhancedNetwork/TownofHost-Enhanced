@@ -8,6 +8,7 @@ namespace TOHE.Patches;
 
 // Originally code by Gurge44. Reference: https://github.com/Gurge44/EndlessHostRoles/blob/main/Patches/TextBoxPatch.cs
 
+// This is patched in main bc it can cause issue on Android
 // [HarmonyPatch(typeof(TextBoxTMP))]
 public static class TextBoxPatch
 {
