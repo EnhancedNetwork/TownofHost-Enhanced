@@ -8,7 +8,7 @@ namespace TOHE.Patches;
 
 // Originally code by Gurge44. Reference: https://github.com/Gurge44/EndlessHostRoles/blob/main/Patches/TextBoxPatch.cs
 
-[HarmonyPatch(typeof(TextBoxTMP))]
+// [HarmonyPatch(typeof(TextBoxTMP))]
 public static class TextBoxPatch
 {
     private static TextMeshPro PlaceHolderText;
