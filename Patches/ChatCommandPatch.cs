@@ -427,7 +427,7 @@ internal class ChatCommands
 
                 Utils.SendMessage(text.Insert(0, new('\n', name.Count(x => x == '\n'))), title: name, addToHistory: false, noSplit: true);
 
-                canceled = true;
+                // canceled = true;
                 __instance.freeChatField.textArea.Clear();
                 __instance.freeChatField.textArea.SetText(string.Empty);
             }
