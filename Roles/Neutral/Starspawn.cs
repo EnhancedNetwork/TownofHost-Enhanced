@@ -183,7 +183,9 @@ internal class Starspawn : PariahManager
 
         string msg = $"{separator[^1]}{string.Join(separator, visiters)}{separator[0]}";
 
-        SendMessage(GetString("Starspawn.VisitersMsg") + msg, sendTo: _Player.PlayerId);
+        SendMessage(GetString("Starspawn.VisitersMsg") + msg, sendTo: _Player.PlayerId, addToHistory: true);
+
+        SendRPC(_Player.PlayerId);
     }
 
     public override void SetAbilityButtonText(HudManager hud, byte id)

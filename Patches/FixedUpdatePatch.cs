@@ -296,6 +296,7 @@ public static class FixedUpdatePatch
                     LowerInfoText.enabled = false;
                 }
 
+                Logger.Info($"Updated kill button visibility: Can Use: {player.CanUseKillButton()}; Alive: {player.IsAlive()}; InTask: {GameStates.IsInTask}", "UpdateHud");
                 if (player.CanUseKillButton())
                 {
                     __instance.KillButton.ToggleVisible(player.IsAlive() && GameStates.IsInTask);
