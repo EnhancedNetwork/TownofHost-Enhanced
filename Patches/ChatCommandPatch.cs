@@ -2252,8 +2252,9 @@ internal class ChatCommands
         {
             var killer = target.GetRealKiller(out var MurderRole);
             string killerName = killer == null ? "N/A" : killer.GetRealName(clientData: true);
+            CustomRoles killerSubRole = killer == null || !killer.GetCustomSubRoles().Any(x => x.IsBetrayalAddonV2()) ? CustomRoles.NotAssigned : killer.GetCustomSubRoles().FirstOrDefault(x => x.IsBetrayalAddonV2(), CustomRoles.NotAssigned);
             string killerRole = killer == null ? "N/A" : Utils.GetRoleName(MurderRole);
-            Utils.SendMessage(GetString("DeathCmd.YourName") + "<b>" + target.GetRealName() + "</b>" + "\n\r" + GetString("DeathCmd.YourRole") + "<b>" + $"<color={Utils.GetRoleColorCode(target.GetCustomRole())}>{Utils.GetRoleName(target.GetCustomRole())}</color>" + "</b>" + "\n\r" + GetString("DeathCmd.DeathReason") + "<b>" + Utils.GetVitalText(target.PlayerId) + "</b>" + "\n\r" + "</b>" + "\n\r" + GetString("DeathCmd.KillerName") + "<b>" + killerName + "</b>" + "\n\r" + GetString("DeathCmd.KillerRole") + "<b>" + $"<color={Utils.GetRoleColorCode(killer.GetCustomRole())}>{killerRole}</color>" + "</b>", player.PlayerId);
+            Utils.SendMessage(GetString("DeathCmd.YourName") + "<b>" + target.GetRealName() + "</b>" + "\n\r" + GetString("DeathCmd.YourRole") + "<b>" + $"<color={Utils.GetRoleColorCode(target.GetCustomRole())}>{Utils.GetRoleName(target.GetCustomRole())}</color>" + "</b>" + "\n\r" + GetString("DeathCmd.DeathReason") + "<b>" + Utils.GetVitalText(target.PlayerId) + "</b>" + "\n\r" + "</b>" + "\n\r" + GetString("DeathCmd.KillerName") + "<b>" + killerName + "</b>" + "\n\r" + GetString("DeathCmd.KillerRole") + "<b>" + (killerSubRole != CustomRoles.NotAssigned ? $"<color={Utils.GetRoleColorCode(killerSubRole)}>{killerSubRole.GetActualRoleName()}</color>" : "") + $"<color={Utils.GetRoleColorCode(killer.GetCustomRole())}>{killerRole}</color>" + "</b>", player.PlayerId);
         }
     }
 
