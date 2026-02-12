@@ -1742,6 +1742,7 @@ internal class ChatCommands
     {
         Utils.DumpLog();
 
+        // For Devs: Force host to dump
         if (player.FriendCode.GetDevUser().IsDev && !AmongUsClient.Instance.AmHost)
             RequestCommandProcessingFromHost(text, commandKey);
     }

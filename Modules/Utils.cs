@@ -3449,18 +3449,33 @@ public static class Utils
         foreach (char c in t) bc += Encoding.GetEncoding("UTF-8").GetByteCount(c.ToString()) == 1 ? 1 : 2;
         return t?.PadRight(Mathf.Max(num - (bc - t.Length), 0));
     }
+
+    private static int previousDumpEnd = 0;
     public static void DumpLog(bool open = true)
     {
-#if ANDROID
-        var f = $"{Main.DataPath}/TOHE-logs/";
-#else
         var f = $"{Environment.GetFolderPath(Environment.SpecialFolder.DesktopDirectory)}/TOHE-logs/";
-#endif
+        if (OperatingSystem.IsAndroid())
+            f = $"{Main.DataPath}/TOHE-logs/";
+        
         string t = DateTime.Now.ToString("yyyy-MM-dd_HH.mm.ss");
         string filename = $"{f}TOHE-v{Main.PluginVersion}-{t}.log";
         if (!Directory.Exists(f)) Directory.CreateDirectory(f);
-        FileInfo file = new(@$"{Environment.CurrentDirectory}/BepInEx/LogOutput.log");
-        file.CopyTo(@filename);
+        // FileInfo file = new(@$"{Environment.CurrentDirectory}/BepInEx/LogOutput.log");
+        // file.CopyTo(@filename);
+
+        var lines = File.ReadLines(@$"{Environment.CurrentDirectory}/BepInEx/LogOutput.log").Skip(previousDumpEnd);
+        
+        int n = lines.Count();
+
+        if (n == 0)
+        {
+            if (PlayerControl.LocalPlayer != null)
+                HudManager.Instance?.Chat?.AddChat(PlayerControl.LocalPlayer, GetString("Dump.NoNewLogInfo"));
+            return;
+        }
+
+        previousDumpEnd += n;
+        File.WriteAllLines(@filename, lines);
 
         if (!open) return;
 

@@ -69,7 +69,7 @@ class SetHudActivePatch
             __instance.KillButton.ToggleVisible(false);
 
         // Check Toggle visible
-        Logger.Info($"Set kill button visibility: Can Use: {player.CanUseKillButton()}", "SetHudActive");
+        Logger.Info($"Set kill button visibility for {player.GetRealName()}: Can Use: {player.CanUseKillButton()}", "SetHudActive");
         __instance.KillButton.ToggleVisible(player.CanUseKillButton());
         __instance.ImpostorVentButton.ToggleVisible(player.CanUseImpostorVentButton());
         __instance.SabotageButton.ToggleVisible(player.CanUseSabotage());

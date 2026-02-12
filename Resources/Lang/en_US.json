@@ -4417,10 +4417,11 @@
   "Commands.NoAccess.Time.InGame": "No Access: In Game Only",
   "Commands.NoAccess.Time.InMeeting": "No Access: In Meeting Only",
   "Commands.NoAccess.Time.AfterDeath": "No Access: Only When Dead",
-  "Commands.NoAccess.Time.AfterDeathOrLobby": "No Access: When Dead or In Lobby",
+  "Commands.NoAccess.Time.AfterDeathOrLobby": "No Access: When Dead or In Lobby Only",
 
   "Command.Dump": "dump|дамп|лог",
   "CommandDescription.Dump": "Dumps the log file",
+  "Dump.NoNewLogInfo": "No New Logging Since Last Dump",
 
   "Command.Version": "v|version|в|версия|versão",
   "CommandDescription.Version": "Sends the current mod version",
