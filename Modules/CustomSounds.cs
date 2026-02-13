@@ -2,44 +2,35 @@ using Hazel;
 using System;
 using System.IO;
 using TOHE.Modules.Rpc;
-
-#if !ANDROID
-using System.Runtime.InteropServices;
-#else
 using UnityEngine;
-#endif
 
 namespace TOHE.Modules;
 
 public static class CustomSoundsManager
 {
-    public static void RPCPlayCustomSound(this PlayerControl pc, string sound, bool force = false)
+    public static void RPCPlayCustomSound(this PlayerControl pc, string sound, float volume = 1f, float pitch = 1f, bool force = false)
     {
-        if (!force) if (!AmongUsClient.Instance.AmHost || !pc.IsModded()) return;
+        if (!force && (!AmongUsClient.Instance.AmHost || !pc.IsModded())) return;
         if (pc == null || PlayerControl.LocalPlayer.PlayerId == pc.PlayerId)
         {
             Play(sound);
             return;
         }
-        RpcUtils.LateSpecificSendMessage(new RpcPlayCustomSound(pc.NetId, sound), pc.GetClientId());
+        RpcUtils.LateSpecificSendMessage(new RpcPlayCustomSound(pc.NetId, sound, volume, pitch), pc.GetClientId());
     }
 
-    public static void RPCPlayCustomSoundAll(string sound)
+    public static void RPCPlayCustomSoundAll(string sound, float volume = 1f, float pitch = 1f)
     {
         if (!AmongUsClient.Instance.AmHost) return;
-        RpcUtils.LateBroadcastReliableMessage(new RpcPlayCustomSound(PlayerControl.LocalPlayer.NetId, sound));
+        RpcUtils.LateBroadcastReliableMessage(new RpcPlayCustomSound(PlayerControl.LocalPlayer.NetId, sound, volume, pitch));
         Play(sound);
     }
 
-    public static void ReceiveRPC(MessageReader reader) => Play(reader.ReadString());
+    public static void ReceiveRPC(MessageReader reader) => Play(reader.ReadString(), reader.ReadSingle(), reader.ReadSingle());
 
-#if ANDROID
-    private static readonly string SOUNDS_PATH = Path.Combine(UnityEngine.Application.persistentDataPath, "TOHE-DATA", "resources");
-#else
-    private static readonly string SOUNDS_PATH = Path.Combine(Environment.CurrentDirectory, "BepInEx", "resources");
-#endif
+    private static readonly string SOUNDS_PATH = OperatingSystem.IsAndroid() ? Path.Combine(UnityEngine.Application.persistentDataPath, "TOHE-DATA", "resources") : Path.Combine(Environment.CurrentDirectory, "BepInEx", "resources");
 
-    public static void Play(string sound)
+    public static void Play(string sound, float volume = 1f, float pitch = 1f)
     {
         if (!Constants.ShouldPlaySfx() || !Main.EnableCustomSoundEffect.Value) return;
 
@@ -65,43 +56,32 @@ public static class CustomSoundsManager
             fs.Close();
         }
 
-        StartPlay(path);
+        StartPlay(path, volume, pitch);
         Logger.Msg($"play sound：{sound}", "CustomSounds");
     }
 
-#if !ANDROID
-    [DllImport("winmm.dll", CharSet = CharSet.Unicode)]
-    private static extern bool PlaySound(string Filename, int Mod, int Flags);
-    
-    private static void StartPlay(string path) => PlaySound(path, 0, 1);
-#else
-    private static void StartPlay(string path)
+    private static readonly Dictionary<string, AudioClip> audioCache = [];
+
+    private static void StartPlay(string path, float volume = 1f, float pitch = 1f)
     {
         try
         {
-            // 在 Android 上使用 Unity 的 AudioSource 播放音频
             var audioClip = LoadAudioClip(path);
             if (audioClip != null)
             {
-                // 创建临时的 AudioSource 来播放音频
-                var gameObject = new GameObject("TempAudioSource");
-                var audioSource = gameObject.AddComponent<AudioSource>();
-                audioSource.clip = audioClip;
-                audioSource.volume = 1.0f;
-                audioSource.Play();
-
-                // 播放完成后销毁对象
-                UnityEngine.Object.Destroy(gameObject, audioClip.length);
+                SoundManager.Instance.PlaySoundImmediate(audioClip, false, volume, pitch);
             }
         }
         catch (Exception ex)
         {
-            Logger.Error($"Failed to play sound on Android: {ex.Message}", "CustomSounds.Android");
+            Logger.Error($"Failed to play sound: {ex.Message}", "CustomSounds");
         }
     }
 
     private static AudioClip LoadAudioClip(string path)
     {
+        if (audioCache.ContainsKey(path)) return audioCache[path];
+
         try
         {
             // 使用 Unity 的 UnityWebRequestMultimedia 加载音频文件
@@ -113,7 +93,8 @@ public static class CustomSoundsManager
 
             if (www.result == UnityEngine.Networking.UnityWebRequest.Result.Success)
             {
-                return UnityEngine.Networking.DownloadHandlerAudioClip.GetContent(www);
+                audioCache[path] = UnityEngine.Networking.DownloadHandlerAudioClip.GetContent(www);
+                return audioCache[path];
             }
             else
             {
@@ -127,5 +108,4 @@ public static class CustomSoundsManager
             return null;
         }
     }
-#endif
 }
