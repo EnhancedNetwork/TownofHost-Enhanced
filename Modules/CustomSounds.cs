@@ -31,7 +31,7 @@ public static class CustomSoundsManager
 
     public static void ReceiveRPC(MessageReader reader) => Play(reader.ReadString(), reader.ReadSingle(), reader.ReadSingle());
 
-    private static readonly string SOUNDS_PATH = OperatingSystem.IsAndroid() ? Path.Combine(UnityEngine.Application.persistentDataPath, "TOHE-DATA", "resources") : Path.Combine(Environment.CurrentDirectory, "BepInEx", "resources");
+    private static readonly string SOUNDS_PATH = OperatingSystem.IsAndroid() ? Path.Combine(Application.persistentDataPath, "TOHE-DATA", "resources") : Path.Combine(Environment.CurrentDirectory, "BepInEx", "resources");
 
     public static void Play(string sound, float volume = 1f, float pitch = 1f)
     {
@@ -75,7 +75,7 @@ public static class CustomSoundsManager
 
         if (clip != null)
         {
-            var source = SoundManager.Instance.PlaySound(clip, false, volume);
+            SoundManager.Instance.PlaySoundImmediate(clip, false, volume);
         }
     }
 
