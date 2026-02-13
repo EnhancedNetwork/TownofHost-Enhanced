@@ -298,6 +298,7 @@ internal class ChatCommands
             Command.Create("Command.Draft", "[start|desc|add|reset|number]", "CommandDescription.Draft", Command.UsageLevels.Everyone, Command.UsageTimes.InLobby, DraftCommand, true, false, ["CommandArgs.Draft.Arg1"]), // ["draft"]
             Command.Create("Command.DraftDesc", "{number}", "CommandDescription.DraftDesc", Command.UsageLevels.Everyone, Command.UsageTimes.InLobby, DraftDescCommand, false, false, ["CommandArgs.DraftDesc.Number"]), //["dd", "draftdescription"]
             Command.Create("Command.Whisper", "{id} {message}", "CommandDescription.Whisper", Command.UsageLevels.Everyone, Command.UsageTimes.Always, WhisperCommand, true, true, ["CommandArgs.Whisper.Id", "CommandArgs.Whisper.Message"]),
+            Command.Create("Command.CustomSound", "{sound}", "CommandDescription.CustomSound", Command.UsageLevels.Everyone, Command.UsageTimes.Always, CustomSoundCommand, true, true, ["CommandArgs.CustomSound.Sound"]),
 
             // Commands with methods in other classes (mostly role commands)
             Command.Create("Command.Guess", "{id} {role}", GetString("CommandDescription.Guess"), Command.UsageLevels.Everyone, Command.UsageTimes.InMeeting, GuessManager.GuessCommand, false, false, [GetString("CommandArgs.Guess.Id"), GetString("CommandArgs.Guess.Role")]), // ["shoot", "guess", "bet", "st", "gs", "bt", "猜", "赌", "賭"]
@@ -530,14 +531,6 @@ internal class ChatCommands
                     }
                     break;
 
-                case "/cs":
-                case "/播放声音":
-                case "/播放音效":
-                    canceled = true;
-                    subArgs = args.Length < 2 ? string.Empty : string.Join(" ", args[1..]);
-                    PlayerControl.LocalPlayer.RPCPlayCustomSound(subArgs.Trim());
-                    break;
-
                 case "/sd":
                 case "/播放音效给":
                 case "/播放声音给":
@@ -565,7 +558,7 @@ internal class ChatCommands
                     PollVoted.Clear();
                     Polltimer = 120f;
 
-                    static System.Collections.IEnumerator StartPollCountdown()
+                    static IEnumerator StartPollCountdown()
                     {
                         if (!Pollvotes.Any() || !GameStates.IsLobby)
                         {
@@ -2973,6 +2966,12 @@ internal class ChatCommands
 
         var msg = args.Length < 3 ? string.Empty : args[2..].Join(delimiter: " ");
         Utils.SendMessage(msg, (byte)id2, $"Whisper from {player.GetRealName()}");
+    }
+
+    private static void CustomSoundCommand(PlayerControl player, string commandKey, string text, string[] args)
+    {
+        var subArgs = args.Length < 2 ? string.Empty : string.Join(" ", args[1..]);
+        PlayerControl.LocalPlayer.RPCPlayCustomSound(subArgs.Trim(), force: true);
     }
 
 #endregion

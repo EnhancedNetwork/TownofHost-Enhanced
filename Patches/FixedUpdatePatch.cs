@@ -208,6 +208,8 @@ public static class FixedUpdatePatch
 
     public static TextMeshPro LowerInfoText;
     public static GameObject TempLowerInfoText;
+
+    private readonly static Dictionary<byte, (bool, bool, bool)> killButtonStateCache = [];
     public static void UpdateHud(HudManager __instance)
     {
         if (!GameStates.IsModHost || __instance == null) return;
@@ -296,7 +298,14 @@ public static class FixedUpdatePatch
                     LowerInfoText.enabled = false;
                 }
 
-                Logger.Info($"Updated kill button visibility for {player.GetRealName()}: Can Use: {player.CanUseKillButton()}; Alive: {player.IsAlive()}; InTask: {GameStates.IsInTask}", "UpdateHud");
+                // Debug logging
+                var state = (player.CanUseKillButton(), player.IsAlive(), GameStates.IsInTask);
+                if (!killButtonStateCache.ContainsKey(player.PlayerId) || killButtonStateCache[player.PlayerId] != state)
+                {
+                    Logger.Info($"Updated kill button visibility for {player.GetRealName()}: Can Use: {player.CanUseKillButton()}; Alive: {player.IsAlive()}; InTask: {GameStates.IsInTask}", "UpdateHud");
+                    killButtonStateCache[player.PlayerId] = state;
+                }
+                
                 if (player.CanUseKillButton())
                 {
                     __instance.KillButton.ToggleVisible(player.IsAlive() && GameStates.IsInTask);

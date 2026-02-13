@@ -4657,5 +4657,9 @@
   "CommandDescription.Whisper": "Send a private message to someone",
   "CommandArgs.Whisper.Id": "Target Id",
   "CommandArgs.Whisper.Message": "Message to send",
-  "Whisper.ErrorDead": "Can't send message to dead people while alive or alive people while dead."
+  "Whisper.ErrorDead": "Can't send message to dead people while alive or alive people while dead.",
+
+  "Command.CustomSound": "cs",
+  "CommandDescription.CustomSound": "Play one of TOHE's custom sounds",
+  "CommandArgs.CustomSound.Sound": "Sound to Play"
 }
