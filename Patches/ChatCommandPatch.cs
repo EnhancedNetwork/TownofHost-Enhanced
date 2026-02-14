@@ -330,10 +330,6 @@ internal class ChatCommands
         Command.Create("Command.Answer", "{letter}", "CommandDescription.Answer", Command.UsageLevels.Everyone, Command.UsageTimes.InMeeting, Quizmaster.AnswerCommand, false, false, ["CommandArgs.Answer.ABC"]); // ["ans", "asw", "answer", "回答"]
         Command.Create("Command.ShowQuestion", "", "CommandDescription.ShowQuestion", Command.UsageLevels.Everyone, Command.UsageTimes.InMeeting, Quizmaster.ShowQuestionCommand, false, false); // ["qmquiz", "提问"]
 #endregion            
-
-            /*
-            /vipcolor
-            */
     }
 
     public static bool Prefix(ChatController __instance)
@@ -345,10 +341,10 @@ internal class ChatCommands
         __instance.timeSinceLastMessage = 3f;
 
         string text = __instance.freeChatField.textArea.text.Trim();
-        if (text.StartsWith("/cmd ")) 
+        if (text.StartsWith("/cmd")) 
         {
-            text = text[5..];
-            if (!text.StartsWith("/")) text = "/" + text;
+            text = "/" + text[4..].TrimStart();
+            // if (!text.StartsWith("/")) text = "/" + text;
         }
         var cancelVal = string.Empty;
 
@@ -481,11 +477,14 @@ internal class ChatCommands
             canceled = true;
             return;
         }
+
+        bool hasCmd = false;
         
-        if (text.StartsWith("/cmd ")) 
+        if (text.StartsWith("/cmd")) 
         {
-            text = text[5..];
-            if (!text.StartsWith("/")) text = "/" + text;
+            hasCmd = true;
+            text = "/" + text[4..].TrimStart();
+            // if (!text.StartsWith("/")) text = "/" + text;
         }
 
         if (text.StartsWith("\n")) text = text[1..];
@@ -503,6 +502,9 @@ internal class ChatCommands
                 Logger.Info($" Recognized command: {text}", "ReceiveChat");
                 commandEntered = true;
 
+                if (command.IsCanceled && !hasCmd)
+                    Utils.SendMessage("\n", player.PlayerId, GetString("NoSpamAnymoreUseCmd"));
+
                 if (!command.CanUseCommand(player, sendErrorMessage: true))
                 {
                     canceled = true;
@@ -510,7 +512,7 @@ internal class ChatCommands
                 }
 
                 command.Action(player, key, text, args);
-                if (command.IsCanceled) canceled = command.AlwaysHidden;
+                canceled = command.IsCanceled;
                 break;
             }
         }
