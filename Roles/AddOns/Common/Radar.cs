@@ -25,9 +25,9 @@ public class Radar : IAddon
     public void OnFixedUpdateLowLoad(PlayerControl seer)
     {
         if (!seer.Is(CustomRoles.Radar) || seer.inVent || !seer.IsAlive() || !GameStates.IsInTask) return;
-        if (Main.AllAlivePlayerControls.Length <= 1) return;
+        if (Main.AllAlivePlayerControls.Count <= 1) return;
 
-        PlayerControl closest = Main.AllAlivePlayerControls.Where(x => x.PlayerId != seer.PlayerId).MinBy(x => Utils.GetDistance(seer.GetCustomPosition(), x.GetCustomPosition()));
+        PlayerControl closest = Main.EnumerateAlivePlayerControls().Where(x => x.PlayerId != seer.PlayerId).MinBy(x => Utils.GetDistance(seer.GetCustomPosition(), x.GetCustomPosition()));
         if (ClosestPlayer.TryGetValue(seer.PlayerId, out var targetId))
         {
             if (targetId != closest.PlayerId)

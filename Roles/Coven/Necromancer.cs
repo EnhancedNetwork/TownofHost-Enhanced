@@ -77,7 +77,7 @@ internal class Necromancer : CovenManager
     public override bool OnCheckMurderAsTarget(PlayerControl killer, PlayerControl target)
     {
         if (IsRevenge) return true;
-        if (killer.GetCustomRole().IsCovenTeam()) return true;
+        if (killer.GetCustomRole().IsCovenTeam() && !(Main.PlayerStates[killer.PlayerId].IsRandomizer || Main.PlayerStates[target.PlayerId].IsRandomizer))
         if (!HasNecronomicon(target)) return true;
         if ((killer.Is(CustomRoles.Retributionist) || killer.Is(CustomRoles.Nemesis)) && !killer.IsAlive()) return true;
 
@@ -134,7 +134,7 @@ internal class Necromancer : CovenManager
             nm.Notify(GetString("NecromancerRevengeInProgress"));
             return;
         }
-        var deadPlayers = Main.AllPlayerControls.Where(x => !x.IsAlive());
+        var deadPlayers = Main.EnumeratePlayerControls().Where(x => !x.IsAlive());
         List<CustomRoles> deadRoles = [];
         foreach (var deadPlayer in deadPlayers)
         {
@@ -262,7 +262,7 @@ internal class Necromancer : CovenManager
     public static void UnAfterMeetingTasks()
     {
         AbilityTimer = 0;
-        foreach (var nm in Main.AllPlayerControls.Where(x => Main.PlayerStates[x.PlayerId].IsNecromancer))
+        foreach (var nm in Main.EnumeratePlayerControls().Where(x => Main.PlayerStates[x.PlayerId].IsNecromancer))
         {
             if (nm.GetCustomRole() != CustomRoles.Necromancer)
             {

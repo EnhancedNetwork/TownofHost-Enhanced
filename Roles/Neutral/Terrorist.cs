@@ -61,7 +61,7 @@ internal class Terrorist : RoleBase
                 CustomWinnerHolder.ResetAndSetWinner(CustomWinner.Terrorist);
                 CustomWinnerHolder.WinnerIds.Add(terrorist.PlayerId);
             }
-            foreach (var pc in Main.AllPlayerControls)
+            foreach (var pc in Main.EnumeratePlayerControls())
             {
                 if (pc.Is(CustomRoles.Terrorist))
                 {

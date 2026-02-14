@@ -11,7 +11,7 @@ internal class Enigma : RoleBase
     public override CustomRoles Role => CustomRoles.Enigma;
     private const int Id = 8100;
     public override CustomRoles ThisRoleBase => CustomRoles.Crewmate;
-    public override Custom_RoleType ThisRoleType => Custom_RoleType.CrewmateSupport;
+    public override Custom_RoleType ThisRoleType => Custom_RoleType.CrewmateInvestigative;
     //==================================================================\\
 
     private static OptionItem EnigmaClueStage1Tasks;
@@ -318,7 +318,7 @@ internal class Enigma : RoleBase
 
         private string GetRandomLetter(PlayerControl killer, string letter)
         {
-            var alivePlayers = Main.AllAlivePlayerControls.Where(a => a.PlayerId != killer.PlayerId).ToList();
+            var alivePlayers = Main.EnumerateAlivePlayerControls().Where(a => a.PlayerId != killer.PlayerId).ToList();
             var rndPlayer = alivePlayers.RandomElement();
             string rndPlayerName = rndPlayer.GetRealName().Replace(letter, "");
             string letter2 = rndPlayerName[rd.Next(0, rndPlayerName.Length)].ToString().ToLower();
@@ -434,7 +434,7 @@ internal class Enigma : RoleBase
                 return GetString("EnigmaClueStatus1");
             if (killer.onLadder)
                 return GetString("EnigmaClueStatus2");
-            if (killer.Data.IsDead)
+            if (killer.Data.IsDead || !killer.IsAlive())
                 return GetString("EnigmaClueStatus3");
             return GetString("EnigmaClueStatus4");
         }

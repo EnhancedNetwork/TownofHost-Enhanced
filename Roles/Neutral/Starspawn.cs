@@ -5,6 +5,7 @@ using static TOHE.Options;
 using static TOHE.Translator;
 using static TOHE.Utils;
 using TOHE.Modules.ChatManager;
+using TOHE.Patches;
 
 namespace TOHE.Roles.Neutral;
 
@@ -23,48 +24,38 @@ internal class Starspawn : PariahManager
     private static readonly Dictionary<byte, HashSet<CustomRoles>> VisiterList = [];
 
     private static OptionItem IsolateCooldown;
-    private static OptionItem TryHideMsg;
 
     public override void SetupCustomOption()
     {
         SetupRoleOptions(Id, TabGroup.NeutralRoles, CustomRoles.Starspawn);
         IsolateCooldown = FloatOptionItem.Create(Id + 10, "Starspawn.IsolateCooldown", new(0f, 180f, 2.5f), 30f, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Starspawn])
             .SetValueFormat(OptionFormat.Seconds);
-        TryHideMsg = BooleanOptionItem.Create(Id + 11, "Starspawn.TryHideMsg", true, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Starspawn]);
     }
 
-    public bool DaybreakMessage(PlayerControl pc, string msg)
+    // "db|daybreak"
+    public static void DaybreakCommand(PlayerControl pc, string commandKey, string msg, string[] args)
     {
-        var originMsg = msg;
+        if (!AmongUsClient.Instance.AmHost)
+        {
+            ChatCommands.RequestCommandProcessingFromHost(msg, commandKey);
+            return;
+        }
 
-        if (!AmongUsClient.Instance.AmHost) return false;
-        if (!GameStates.IsMeeting || _Player == null || GameStates.IsExilling) return false;
-
-        msg = msg.ToLower().TrimStart().TrimEnd();
-
-        if (!CheckCommond(ref msg, "db|daybreak", false)) return false;
+        if (!GameStates.IsMeeting || pc == null || GameStates.IsExilling) return;
+        if (!pc.Is(CustomRoles.Starspawn)) return;
 
         if (!pc.IsAlive())
         {
             pc.ShowInfoMessage(false, GetString("DaybreakDead"));
-            return true;
+            return;
         }
 
-        if (TryHideMsg.GetBool())
-        {
-            GuessManager.TryHideMsg();
-            ChatManager.SendPreviousMessagesToAll();
-        }
-        else if (pc.AmOwner) SendMessage(originMsg, 255, pc.GetRealName());
-
-        if (!HasDaybreak[_Player.PlayerId] && !Main.Daybreak)
+        if (!HasDaybreak[pc.PlayerId] && !Main.Daybreak)
         {
             Main.Daybreak = true;
-            HasDaybreak[_Player.PlayerId] = false;
-            return true;
+            HasDaybreak[pc.PlayerId] = false;
+            return;
         }
-
-        return true;
     }
 
     public override void AfterMeetingTasks()
@@ -93,78 +84,45 @@ internal class Starspawn : PariahManager
         VisiterList.Remove(playerId);
     }
 
-    private void SendRPC()
+    private void SendRPC(byte playerId)
     {
         var writer = MessageWriter.Get(SendOption.Reliable);
 
-        writer.Write(HasDaybreak.Count);
+        writer.Write(playerId);
+        writer.Write(HasDaybreak.ContainsKey(playerId) && HasDaybreak[playerId]);
 
-        foreach (var daybreak in HasDaybreak)
+        writer.Write(Isolated.ContainsKey(playerId) ? Isolated[playerId] ?? byte.MaxValue : byte.MaxValue);
+
+        if (VisiterList.ContainsKey(playerId))
         {
-            writer.Write(daybreak.Key);
-            writer.Write(daybreak.Value);
-        }
-
-        writer.Write(Isolated.Count);
-
-        foreach (var isol in Isolated)
-        {
-            writer.Write(isol.Key);
-            writer.Write(isol.Value ?? byte.MaxValue);
-        }
-
-        writer.Write(VisiterList.Count);
-
-        foreach (var visList in VisiterList)
-        {
-            writer.Write(visList.Key);
-            writer.Write(visList.Value.Count);
-            foreach (var visRole in visList.Value)
+            writer.Write(VisiterList[playerId].Count);
+            foreach (var visRole in VisiterList[playerId])
             {
                 writer.Write((int)visRole);
             }
         }
+        else
+            writer.Write(0);
 
         RpcUtils.LateBroadcastReliableMessage(new RpcSyncRoleSkill(PlayerControl.LocalPlayer.NetId, _Player.NetId, writer));
     }
     public override void ReceiveRPC(MessageReader reader, PlayerControl NaN)
     {
-        HasDaybreak.Clear();
-        Isolated.Clear();
-        VisiterList.Clear();
+        var playerId = reader.ReadByte();
 
-        var daybreakCount = reader.ReadInt16();
+        HasDaybreak[playerId] = reader.ReadBoolean();
 
-        for (int i = 0; i < daybreakCount; i++)
+        var isolate = reader.ReadByte();
+        Isolated[playerId] = isolate != byte.MaxValue ? isolate : null;
+
+        var visiterCount = reader.ReadInt16();
+
+        if (!VisiterList.ContainsKey(playerId))
+            VisiterList[playerId] = [];
+        
+        for (int i = 0; i < visiterCount; i++)
         {
-            var key = reader.ReadByte();
-            var value = reader.ReadBoolean();
-            HasDaybreak[key] = value;
-        }
-
-        var isolatedCount = reader.ReadInt16();
-
-        for (int i = 0; i < isolatedCount; i++)
-        {
-            var key = reader.ReadByte();
-            var value = reader.ReadByte();
-            Isolated[key] = value != byte.MaxValue ? value : null;
-        }
-
-        var visiterListCount = reader.ReadInt16();
-
-        for (int i = 0; i < visiterListCount; i++)
-        {
-            var key = reader.ReadByte();
-            HashSet<CustomRoles> value = [];
-
-            var visListCount = reader.ReadInt16();
-            for (int j = 0; j < visListCount; j++)
-            {
-                value.Add((CustomRoles)reader.ReadInt16());
-            }
-
-            VisiterList[key] = value;
+            VisiterList[playerId].Add((CustomRoles)reader.ReadInt32());
         }
     }
 
@@ -181,9 +139,9 @@ internal class Starspawn : PariahManager
             if (!killer.IsPlayerCrewmateTeam() && !star.GetPlayer().IsPlayerCrewmateTeam()) continue;
 
             VisiterList[star].Add(killer.GetCustomRole());
-        }
 
-        SendRPC();
+            SendRPC(star);
+        }
 
         return false;
     }
@@ -202,7 +160,7 @@ internal class Starspawn : PariahManager
 
             Isolated[killer.PlayerId] = target.PlayerId;
 
-            SendRPC();
+            SendRPC(killer.PlayerId);
         }
 
         return false;
@@ -225,28 +183,9 @@ internal class Starspawn : PariahManager
 
         string msg = $"{separator[^1]}{string.Join(separator, visiters)}{separator[0]}";
 
-        SendMessage(GetString("Starspawn.VisitersMsg") + msg, sendTo: _Player.PlayerId);
-    }
+        SendMessage(GetString("Starspawn.VisitersMsg") + msg, sendTo: _Player.PlayerId, addToHistory: true);
 
-    public static bool CheckCommond(ref string msg, string command, bool exact = true)
-    {
-        var comList = command.Split('|');
-        for (int i = 0; i < comList.Length; i++)
-        {
-            if (exact)
-            {
-                if (msg == "/" + comList[i]) return true;
-            }
-            else
-            {
-                if (msg.StartsWith("/" + comList[i]))
-                {
-                    msg = msg.Replace("/" + comList[i], string.Empty);
-                    return true;
-                }
-            }
-        }
-        return false;
+        SendRPC(_Player.PlayerId);
     }
 
     public override void SetAbilityButtonText(HudManager hud, byte id)

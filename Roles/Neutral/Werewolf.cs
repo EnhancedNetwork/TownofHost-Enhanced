@@ -43,7 +43,7 @@ internal class Werewolf : RoleBase
         Logger.Info("Werewolf Kill", "Mauled");
         _ = new LateTask(() =>
         {
-            foreach (var player in Main.AllAlivePlayerControls)
+            foreach (var player in Main.EnumerateAlivePlayerControls())
             {
                 if (player == killer) continue;
                 if (player == target) continue;

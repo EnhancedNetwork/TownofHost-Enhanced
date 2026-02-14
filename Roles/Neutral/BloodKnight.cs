@@ -90,7 +90,7 @@ internal class BloodKnight : RoleBase
         if (!lowLoad && TimeStamp < nowTime && TimeStamp != 0)
         {
             TimeStamp = 0;
-            player.Notify(GetString("BKProtectOut"), sendInLog: false);
+            player.Notify(GetString("BKProtectOut"), log: false);
         }
     }
     public override string GetLowerText(PlayerControl seer, PlayerControl seen, bool isForMeeting = false, bool isForHud = false)

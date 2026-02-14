@@ -10,28 +10,6 @@ using static TOHE.Translator;
 
 namespace TOHE;
 
-[HarmonyPatch(typeof(ShipStatus), nameof(ShipStatus.FixedUpdate))]
-class ShipFixedUpdatePatch
-{
-    public static void Postfix(/*ShipStatus __instance*/)
-    {
-        //Above here, all of us will execute
-        if (!AmongUsClient.Instance.AmHost) return;
-
-        //Below here, only the host performs
-        if (Main.IsFixedCooldown && Main.RefixCooldownDelay >= 0)
-        {
-            Main.RefixCooldownDelay -= Time.fixedDeltaTime;
-        }
-        else if (!float.IsNaN(Main.RefixCooldownDelay))
-        {
-            Utils.MarkEveryoneDirtySettings();
-            Main.RefixCooldownDelay = float.NaN;
-            Logger.Info("Refix Cooldown", "CoolDown");
-        }
-    }
-}
-
 [HarmonyPatch(typeof(ShipStatus), nameof(ShipStatus.UpdateSystem), typeof(SystemTypes), typeof(PlayerControl), typeof(MessageReader))]
 public static class MessageReaderUpdateSystemPatch
 {
@@ -283,7 +261,7 @@ class ShipStatusBeginPatch
                 max = min;
             }
 
-            var playerIds = Main.AllPlayerControls
+            var playerIds = Main.EnumeratePlayerControls()
                 .Select(pc => pc.PlayerId)
                 .ToList();
 
@@ -401,7 +379,7 @@ class ShipStatusSerializePatch
 
             if (GameStates.IsInGame)
             {
-                foreach (var pc in Main.AllAlivePlayerControls)
+                foreach (var pc in Main.EnumerateAlivePlayerControls())
                 {
                     if (pc.BlockVentInteraction())
                     {

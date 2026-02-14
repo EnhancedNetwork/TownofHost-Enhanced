@@ -108,6 +108,7 @@ internal class Chameleon : RoleBase
         foreach (var chameleonId in _playerIdList)
         {
             var chameleon = GetPlayerById(chameleonId);
+            if (chameleon == null) continue;
             if (!chameleon.IsAlive()) continue;
 
             InvisCooldown.Add(chameleon.PlayerId, GetTimeStamp());
@@ -152,7 +153,7 @@ internal class Chameleon : RoleBase
             else if (remainTime <= 10)
             {
                 if (!chameleon.IsModded())
-                    chameleon.Notify(string.Format(GetString("ChameleonInvisStateCountdown"), remainTime), sendInLog: false);
+                    chameleon.Notify(string.Format(GetString("ChameleonInvisStateCountdown"), remainTime), log: false);
             }
         }
 

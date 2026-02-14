@@ -1,0 +1,193 @@
+name: Build & Release TOHE
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: "Version (e.g. 2.4.1)"
+        required: true
+
+jobs:
+  prepare-build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      # - name: Sync translations from Crowdin
+      #   uses: crowdin/github-action@v2
+      #   with:
+      #     upload_sources: false
+      #     download_translations: true
+      #     push_translations: true
+      #     push_sources: false
+      #     localization_branch_name: main
+      #     crowdin_branch_name: main
+      #     commit_message: "chore: update translations for release ${{ github.event.inputs.version }}"
+      #     create_pull_request: false
+      #     config: crowdin.yml
+      #   env:
+      #     CROWDIN_PERSONAL_TOKEN: ${{ secrets.CROWDIN_PERSONAL_TOKEN }}
+      #     CROWDIN_PROJECT_ID: ${{ secrets.CROWDIN_PROJECT_ID }}
+      #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} 
+
+  # ---------------------------------------------------------
+  # 1) Build TOHE on Linux
+  # ---------------------------------------------------------
+  build-tohe:
+    runs-on: ubuntu-latest
+    needs: [prepare-build]
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 6.0.x
+
+      - name: Build TOHE
+        run: dotnet build TOHE.csproj -c Release -o build/
+
+      - name: Upload TOHE artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: tohe
+          path: build/TOHE.dll
+
+  # ---------------------------------------------------------
+  # 3) Package everything on Linux
+  # ---------------------------------------------------------
+  package:
+    runs-on: ubuntu-latest
+    needs: [build-tohe]
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Download TOHE artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: tohe
+          path: artifacts/tohe
+
+      - name: Prepare release folders
+        run: |
+          mkdir -p epic
+          mkdir -p steam
+
+      - name: Download BepInEx 6 pre-release 735
+        run: |
+          curl -L https://builds.bepinex.dev/projects/bepinex_be/735/BepInEx-Unity.IL2CPP-win-x64-6.0.0-be.735%2B5fef357.zip -o bepinex-x64.zip
+          unzip bepinex-x64.zip -d epic
+          chmod -R u+rwX,go+rX epic
+          curl -L https://builds.bepinex.dev/projects/bepinex_be/735/BepInEx-Unity.IL2CPP-win-x86-6.0.0-be.735%2B5fef357.zip -o bepinex-x86.zip
+          unzip bepinex-x86.zip -d steam
+          chmod -R u+rwX,go+rX steam
+
+      - name: Copy TOHE dll to plugins
+        run: |
+          cp artifacts/tohe/TOHE.dll epic/BepInEx/plugins/
+          cp artifacts/tohe/TOHE.dll steam/BepInEx/plugins/
+
+      - name: Copy configs to BepInEx config
+        run: |
+          mkdir -p epic/BepInEx/config/
+          mkdir -p steam/BepInEx/config/
+          cp packaging/* epic/BepInEx/config/
+          cp packaging/* steam/BepInEx/config/
+
+      - name: Download modded regions DLL to plugins
+        run: |
+          curl -L https://github.com/miniduikboot/Mini.RegionInstall/releases/download/v1.2.0/Mini.RegionInstall.dll -o epic/BepInEx/plugins/Mini.RegionInstall.dll
+          cp epic/BepInEx/plugins/Mini.RegionInstall.dll steam/BepInEx/plugins/Mini.RegionInstall.dll
+
+      - name: Steam App ID
+        run : echo "945360" > steam_appid.txt
+
+      - name: Create Epic/MS Store ZIP
+        run: |
+          cd epic
+          zip -r "../TOHE.v${{ github.event.inputs.version }}_Epic-Games_Microsoft-Store.zip" .
+
+      - name: Create Steam ZIP
+        run: |
+          cd steam
+          zip -r "../TOHE.v${{ github.event.inputs.version }}_Steam.zip" .
+
+      - name: Upload release artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: final-zips
+          path: ./TOHE*.zip
+
+  # ---------------------------------------------------------
+  # 4) Create GitHub Release
+  # ---------------------------------------------------------
+  release:
+    runs-on: ubuntu-latest
+    needs: [package]
+
+    steps:
+      - uses: actions/checkout@v4
+
+      # -----------------------------
+      # Download all artifacts
+      # -----------------------------
+      - name: Download packaged ZIPs
+        uses: actions/download-artifact@v4
+        with:
+          name: final-zips
+          path: release-artifacts/zips
+
+      - name: Download EHR.dll
+        uses: actions/download-artifact@v4
+        with:
+          name: tohe
+          path: release-artifacts/tohe
+
+      - name: Download Control Panel EXE
+        uses: actions/download-artifact@v4
+        with:
+          name: control-panel
+          path: release-artifacts/control-panel
+
+      # -----------------------------
+      # Create GitHub Release
+      # -----------------------------
+      - name: Create Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: "v${{ github.event.inputs.version }}"
+          name: "TOHE v${{ github.event.inputs.version }}"
+          generate_release_notes: true
+          body_path: CHANGELOG.md
+          files: |
+            release-artifacts/zips/*
+            release-artifacts/ehr/EHR.dll
+            release-artifacts/control-panel/*.exe
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      # # -----------------------------
+      # # Send Mod News
+      # # -----------------------------
+      # - name: Set up Python
+      #   uses: actions/setup-python@v4
+      #   with:
+      #     python-version: 3.x
+
+      # - name: Install dependencies
+      #   run: pip install requests markdown
+
+      # - name: Run script and send ModNews
+      #   env:
+      #     MODNEWS_API_URL: ${{ secrets.MODNEWS_API_URL }}
+      #     MODNEWS_API_TOKEN: ${{ secrets.MODNEWS_API_TOKEN }}
+      #   run: python release_to_modnews.py
+      # # -----------------------------
+      # # Ping Release Channel
+      # # -----------------------------
+      # - name: Notify Discord
+      #   run: |
+      #     curl -H "Content-Type: application/json" \
+      #       -X POST \
+      #       -d "{\"content\": \"<@&1170671991343288391>\nTOHE v${{ github.event.inputs.version }}\nhttps://github.com/${{ github.repository }}/releases/tag/v${{ github.event.inputs.version }}\"}" \
+      #       ${{ secrets.DISCORD_RELEASE_WEBHOOK_URL }}

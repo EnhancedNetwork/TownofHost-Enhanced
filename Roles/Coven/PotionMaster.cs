@@ -114,7 +114,7 @@ internal class PotionMaster : CovenManager
         {
             if (HasNecronomicon(killer))
             {
-                if (target.GetCustomRole().IsCovenTeam())
+                if (target.GetCustomRole().IsCovenTeam() && !(Main.PlayerStates[killer.PlayerId].IsRandomizer || Main.PlayerStates[target.PlayerId].IsRandomizer))
                 {
                     killer.Notify(GetString("CovenDontKillOtherCoven"));
                     return false;
@@ -241,7 +241,7 @@ internal class PotionMaster : CovenManager
     }
     public override void AfterMeetingTasks()
     {
-        BarrierList[_Player.PlayerId].Clear();
+        if (BarrierList.TryGetValue(_Player.PlayerId, out var list)) list?.Clear();
     }
     public override void SetAbilityButtonText(HudManager hud, byte playerId)
     {

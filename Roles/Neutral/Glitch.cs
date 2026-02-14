@@ -159,7 +159,7 @@ internal class Glitch : RoleBase
         if (!player.IsModded())
         {
             var Pname = Utils.ColorString(Utils.GetRoleColor(CustomRoles.Glitch), player.GetRealName(isMeeting: true));
-            if (!NameNotifyManager.Notice.TryGetValue(player.PlayerId, out var a) || a.Text != Pname) player.Notify(Pname, 1.1f);
+            if (!NameNotifyManager.Notifies.TryGetValue(player.PlayerId, out var a) || a.All(b => b.Key != Pname)) player.Notify(Pname, 1.1f);
         }
         if (player.IsNonHostModdedClient()) // For mooded non host players, sync kcd per second
         {

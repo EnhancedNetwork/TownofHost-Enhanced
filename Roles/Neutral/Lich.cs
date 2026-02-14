@@ -89,7 +89,7 @@ internal class Lich : RoleBase
     public override string GetMarkOthers(PlayerControl seer, PlayerControl target, bool isForMeeting = false)
     {
         if (_Player == null) return string.Empty;
-        if (TargetId == target.PlayerId && seer.IsNeutralApocalypse() && seer.PlayerId != _Player.PlayerId && !Main.PlayerStates[seer.PlayerId].IsNecromancer)
+        if (TargetId == target.PlayerId && seer.IsNeutralApocalypse() && seer.PlayerId != _Player.PlayerId && !Main.PlayerStates[seer.PlayerId].IsFalseRole)
         {
             return Utils.ColorString(Utils.GetRoleColor(CustomRoles.Lich), "§");
         }
@@ -169,7 +169,7 @@ internal class Lich : RoleBase
         bool seerHasState = Main.PlayerStates.TryGetValue(seer.PlayerId, out var seerState);
 
         if (seer.IsNeutralApocalypse()) return false;
-        if (target.GetCustomRole().IsRevealingRole(seer) || target.IsAnySubRole(role => role.IsRevealingRole(seer))) return false;
+        if (target.GetCustomRole().IsRevealingRole(target) || target.IsAnySubRole(role => role.IsRevealingRole(target))) return false;
 
         // Imposter Team
         if (seer.CheckImpCanSeeAllies(CheckAsSeer: true) && target.CheckImpCanSeeAllies(CheckAsTarget: true)) return false;

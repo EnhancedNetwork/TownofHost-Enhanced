@@ -10,7 +10,7 @@ internal class Spiritualist : RoleBase
     public override CustomRoles Role => CustomRoles.Spiritualist;
     private const int Id = 9600;
     public override CustomRoles ThisRoleBase => CustomRoles.Crewmate;
-    public override Custom_RoleType ThisRoleType => Custom_RoleType.CrewmateSupport;
+    public override Custom_RoleType ThisRoleType => Custom_RoleType.CrewmateInvestigative;
     //==================================================================\\
 
     private static OptionItem ShowGhostArrowEverySeconds;
@@ -80,24 +80,24 @@ internal class Spiritualist : RoleBase
         LastGhostArrowShowTime[player.PlayerId] = 0;
         ShowGhostArrowUntil[player.PlayerId] = 0;
 
-        PlayerControl target = Main.AllPlayerControls.FirstOrDefault(a => a.PlayerId == SpiritualistTarget);
+        PlayerControl target = Main.EnumeratePlayerControls().FirstOrDefault(a => a.PlayerId == SpiritualistTarget);
 
         if (target == null) return;
 
         TargetArrow.Add(player.PlayerId, target.PlayerId);
 
         var writer = CustomRpcSender.Create("SpiritualistSendMessage", SendOption.None);
-        writer.StartMessage(target.GetClientId());
-        writer.StartRpc(target.NetId, (byte)RpcCalls.SetName)
-            .Write(target.Data.NetId)
+        writer.StartMessage(PlayerControl.LocalPlayer.GetClientId());
+        writer.StartRpc(PlayerControl.LocalPlayer.NetId, (byte)RpcCalls.SetName)
+            .Write(PlayerControl.LocalPlayer.Data.NetId)
             .Write(GetString("Spiritualist").ToUpper())
             .EndRpc();
-        writer.StartRpc(target.NetId, (byte)RpcCalls.SendChat)
+        writer.StartRpc(PlayerControl.LocalPlayer.NetId, (byte)RpcCalls.SendChat)
             .Write(GetString("SpiritualistNoticeMessage"))
             .EndRpc();
-        writer.StartRpc(target.NetId, (byte)RpcCalls.SetName)
-            .Write(target.Data.NetId)
-            .Write(target.Data.PlayerName)
+        writer.StartRpc(PlayerControl.LocalPlayer.NetId, (byte)RpcCalls.SetName)
+            .Write(PlayerControl.LocalPlayer.Data.NetId)
+            .Write(PlayerControl.LocalPlayer.Data.PlayerName)
             .EndRpc();
         writer.EndMessage();
         writer.SendMessage();
@@ -120,7 +120,7 @@ internal class Spiritualist : RoleBase
         if (SpiritualistTarget != player) return;
 
         if (AmongUsClient.Instance.AmHost)
-            foreach (var spiritualist in Main.AllPlayerControls.Where(x => x.Is(CustomRoles.Spiritualist)).Select(x => x.PlayerId).ToList())
+            foreach (var spiritualist in Main.EnumeratePlayerControls().Where(x => x.Is(CustomRoles.Spiritualist)).Select(x => x.PlayerId).ToList())
             {
                 TargetArrow.Remove(spiritualist, SpiritualistTarget);
             }

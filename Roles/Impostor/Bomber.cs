@@ -10,7 +10,7 @@ internal class Bomber : RoleBase
     //===========================SETUP================================\\
     public override CustomRoles Role => CustomRoles.Bomber;
     private const int Id = 700;
-
+    public override bool UsesCNOs => true;
     public override CustomRoles ThisRoleBase => CustomRoles.Shapeshifter;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.ImpostorKilling;
     //==================================================================\\
@@ -65,13 +65,13 @@ internal class Bomber : RoleBase
         if (AmongUsClient.Instance.AmHost)
             _ = new Explosion(5f, 0.5f, shapeshifter.GetCustomPosition());
 
-        foreach (var target in Main.AllPlayerControls)
+        foreach (var target in Main.EnumeratePlayerControls())
         {
             if (!target.IsModded()) target.KillFlash();
             if (target.PlayerId == shapeshifter.PlayerId) continue;
             if (target.notRealPlayer) continue;
 
-            if (!target.IsAlive() || Medic.IsProtected(target.PlayerId) || ((target.Is(Custom_Team.Impostor) && !shapeshifter.Is(CustomRoles.Narc)) && ImpostorsSurviveBombs.GetBool()) || target.inVent || target.IsTransformedNeutralApocalypse() || target.Is(CustomRoles.Solsticer)) continue;
+            if (!target.IsAlive() || Medic.IsProtected(target.PlayerId) || (target.Is(Custom_Team.Impostor) && !shapeshifter.Is(CustomRoles.Narc) && ImpostorsSurviveBombs.GetBool()) || target.inVent || target.IsTransformedNeutralApocalypse() || target.Is(CustomRoles.Solsticer)) continue;
             if (target.IsPolice() && shapeshifter.Is(CustomRoles.Narc) && ImpostorsSurviveBombs.GetBool()) continue;
 
             var pos = shapeshifter.transform.position;
@@ -87,7 +87,7 @@ internal class Bomber : RoleBase
         {
             _ = new LateTask(() =>
             {
-                var totalAlive = Main.AllAlivePlayerControls.Length;
+                var totalAlive = Main.AllAlivePlayerControls.Count;
                 if (totalAlive > 0 && !GameStates.IsEnded)
                 {
                     shapeshifter.SetDeathReason(PlayerState.DeathReason.Bombed);

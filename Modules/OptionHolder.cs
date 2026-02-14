@@ -1,5 +1,6 @@
 using System;
 using TOHE.Modules;
+using TOHE.Patches;
 using TOHE.Roles.AddOns;
 using TOHE.Roles.AddOns.Impostor;
 using TOHE.Roles.Core;
@@ -72,7 +73,6 @@ public static class Options
     public static OptionItem DraftMode;
     public static OptionItem DraftableCount;
     // public static OptionItem BucketCount;
-    public static bool devEnableDraft = false;
     public static OptionItem DraftDeck;
 
     // 役職数・確率
@@ -247,7 +247,6 @@ public static class Options
     public static OptionItem AutoPlayAgainCountdown;
 
     public static OptionItem EnableVoteCommand;
-    public static OptionItem ShouldVoteCmdsSpamChat;
 
     public static OptionItem LowLoadMode;
     public static OptionItem LowLoadDelayUpdateNames;
@@ -257,7 +256,6 @@ public static class Options
 
     public static OptionItem CheatResponses;
     public static OptionItem CrossLanguageGetRole;
-    public static OptionItem NewHideMsg;
 
     public static OptionItem AutoDisplayKillLog;
     public static OptionItem AutoDisplayLastRoles;
@@ -282,9 +280,13 @@ public static class Options
 
     public static OptionItem NoGameEnd;
     public static OptionItem AllowConsole;
+    public static OptionItem DontUpdateDeadPlayers;
+    public static OptionItem DeepLowLoad;
     //public static OptionItem DisableAntiBlackoutProtects;
+    public static OptionItem MessageRpcSizeLimit;
 
     public static OptionItem RoleAssigningAlgorithm;
+    public static OptionItem KickNotJoinedPlayersRegularly;
     public static OptionItem KPDCamouflageMode;
     public static OptionItem EnableUpMode;
 
@@ -561,9 +563,9 @@ public static class Options
     public static OptionItem CrewCanGuessCrew;
     public static OptionItem ApocCanGuessApoc;
     public static OptionItem CovenCanGuessCoven;
-    public static OptionItem HideGuesserCommands;
     public static OptionItem ShowOnlyEnabledRolesInGuesserUI;
     public static OptionItem CanOnlyGuessEnabled;
+    public static OptionItem CanGuessCrewInvestigative;
     public static OptionItem UseQuickChatSpamCheat;
 
 
@@ -618,20 +620,7 @@ public static class Options
     public static OptionItem NoLimitAddonsNumMax;
     public static OptionItem RemoveIncompatibleAddOnsMidGame;
 
-    // Add-Ons settings 
-    public static OptionItem LoverSpawnChances;
-    public static OptionItem LoverKnowRoles;
-    public static OptionItem LoverSuicide;
-    public static OptionItem ImpCanBeInLove;
-    public static OptionItem CrewCanBeInLove;
-    public static OptionItem NeutralCanBeInLove;
-    public static OptionItem CovenCanBeInLove;
-
-    // Experimental Roles
-
-    //public static OptionItem SpeedBoosterUpSpeed;
-    //public static OptionItem SpeedBoosterTimes;
-
+    public static OptionItem DumpLogAfterGameEnd;
 
     public static VoteMode GetWhenSkipVote() => (VoteMode)WhenSkipVote.GetValue();
     public static VoteMode GetWhenNonVote() => (VoteMode)WhenNonVote.GetValue();
@@ -732,7 +721,7 @@ public static class Options
     private static System.Collections.IEnumerator CoLoadOptions()
     {
         //#######################################
-        // 32600 last id for roles/add-ons (Next use 32700)
+        // 32700 last id for roles/add-ons (Next use 32800)
         // Limit id for roles/add-ons --- "59999"
         //#######################################
 
@@ -995,6 +984,15 @@ public static class Options
             .SetColor(new Color32(140, 255, 255, byte.MaxValue));
 
         CustomRoleManager.GetNormalOptions(Custom_RoleType.CrewmateSupport).ForEach(r => r.SetupCustomOption());
+
+        /*
+        *  INVESTIGATIVE ROLES
+        */
+        TextOptionItem.Create(10000035, "RoleType.CrewInvestigative", TabGroup.CrewmateRoles)
+            .SetGameMode(CustomGameMode.Standard)
+            .SetColor(new Color32(140, 255, 255, byte.MaxValue));
+
+        CustomRoleManager.GetNormalOptions(Custom_RoleType.CrewmateInvestigative).ForEach(r => r.SetupCustomOption());
 
         /*
          * KILLING ROLES
@@ -1312,6 +1310,8 @@ public static class Options
         LowLoadMode = BooleanOptionItem.Create(60230, "LowLoadMode", true, TabGroup.SystemSettings, false)
             .SetHeader(true)
             .SetColor(Color.green);
+        DumpLogAfterGameEnd = BooleanOptionItem.Create(19327, "DumpLogAfterGameEnd", true, TabGroup.SystemSettings)
+            .SetColor(Color.yellow);
         EndWhenPlayerBug = BooleanOptionItem.Create(60240, "EndWhenPlayerBug", true, TabGroup.SystemSettings, false)
             .SetColor(Color.blue);
         HideExileChat = BooleanOptionItem.Create(60292, "HideExileChat", true, TabGroup.SystemSettings, false)
@@ -1353,8 +1353,15 @@ public static class Options
         UseQuickChatSpamCheat = StringOptionItem.Create(60695, "UseQuickChatSpamCheat", EnumHelper.GetAllNames<QuickChatSpamMode>(), 0, TabGroup.SystemSettings, false)
             .SetColor(Color.cyan)
             .SetHeader(true);
+        
         CrossLanguageGetRole = BooleanOptionItem.Create(60260, "CrossLanguageGetRole", false, TabGroup.SystemSettings, false)
             .SetColor(Color.cyan);
+
+        DeepLowLoad = BooleanOptionItem.Create(19325, "DeepLowLoad", false, TabGroup.SystemSettings)
+            .SetColor(Color.red);
+
+        DontUpdateDeadPlayers = BooleanOptionItem.Create(19326, "DontUpdateDeadPlayers", true, TabGroup.SystemSettings)
+            .SetColor(Color.red);
 
         NoGameEnd = BooleanOptionItem.Create(60380, "NoGameEnd", false, TabGroup.SystemSettings, false)
             .SetColor(Color.red)
@@ -1364,6 +1371,12 @@ public static class Options
         /* DisableAntiBlackoutProtects = BooleanOptionItem.Create(60384, "DisableAntiBlackoutProtects", false, TabGroup.SystemSettings, false)
              .SetGameMode(CustomGameMode.Standard)
              .SetColor(Color.red);*/
+
+        MessageRpcSizeLimit = IntegerOptionItem.Create(60296, "MessageRpcSizeLimit", new(500, 100000, 100), 1400, TabGroup.SystemSettings)
+            .SetHeader(true);
+
+        KickNotJoinedPlayersRegularly = BooleanOptionItem.Create(60295, "KickNotJoinedPlayersRegularly", true, TabGroup.SystemSettings)
+            .SetColor(Color.yellow);
 
         RoleAssigningAlgorithm = StringOptionItem.Create(60400, "RoleAssigningAlgorithm", roleAssigningAlgorithms, 3, TabGroup.SystemSettings, true)
             .RegisterUpdateValueEvent((object obj, OptionItem.UpdateValueEventArgs args) => IRandom.SetInstanceById(args.CurrentValue))
@@ -1404,8 +1417,7 @@ public static class Options
         // Draft Mode
         DraftHeader = TextOptionItem.Create(10000033, "MenuTitle.Draft", TabGroup.ModSettings)
             .SetGameMode(CustomGameMode.Standard)
-            .SetColor(new Color32(255, 238, 232, byte.MaxValue))
-            .SetHidden((!PlayerControl.LocalPlayer?.FriendCode?.GetDevUser().IsDev) ?? true);
+            .SetColor(new Color32(255, 238, 232, byte.MaxValue));
 
         DraftMode = BooleanOptionItem.Create(61000, "UseDraftMode", true, TabGroup.ModSettings, false)
             .SetGameMode(CustomGameMode.Standard)
@@ -1421,11 +1433,6 @@ public static class Options
             .SetParent(DraftMode);
 
         Logger.Info("Draft Bucket Options set up", "OptionsHolder.CoLoadOptions");
-
-        if ((!PlayerControl.LocalPlayer?.FriendCode?.GetDevUser().IsDev) ?? true)
-        {
-            DraftMode.SetHidden(true);
-        }
 
         Logger.Info("End of Draft Setup", "Draft Setup");
 
@@ -1504,9 +1511,6 @@ public static class Options
             .SetParent(CovenCanGuess);
         CanGuessAddons = BooleanOptionItem.Create(60685, "CanGuessAddons", true, TabGroup.ModSettings, false)
             .SetParent(GuesserMode);
-        HideGuesserCommands = BooleanOptionItem.Create(60688, "GuesserTryHideMsg", true, TabGroup.ModSettings, false)
-            .SetParent(GuesserMode)
-            .SetColor(Color.green);
 
         ShowOnlyEnabledRolesInGuesserUI = BooleanOptionItem.Create(60689, "ShowOnlyEnabledRolesInGuesserUI", true, TabGroup.ModSettings, false)
             .SetHeader(true)
@@ -1514,6 +1518,9 @@ public static class Options
             .SetColor(Color.cyan);
 
         CanOnlyGuessEnabled = BooleanOptionItem.Create(60696, "CanOnlyGuessEnabled", true, TabGroup.ModSettings, false)
+            .SetHeader(true)
+            .SetGameMode(CustomGameMode.Standard);
+        CanGuessCrewInvestigative = BooleanOptionItem.Create(60697, "CanGuessCrewInvestigative", true, TabGroup.ModSettings, false)
             .SetHeader(true)
             .SetGameMode(CustomGameMode.Standard);
 
@@ -1545,11 +1552,6 @@ public static class Options
         UseMoreRandomMapSelection = BooleanOptionItem.Create(60456, "UseMoreRandomMapSelection", false, TabGroup.ModSettings, false)
             .SetParent(RandomMapsMode)
             .SetValueFormat(OptionFormat.Percent);
-
-        NewHideMsg = BooleanOptionItem.Create(60460, "NewHideMsg", true, TabGroup.ModSettings, false)
-            .SetHidden(true)
-            .SetGameMode(CustomGameMode.Standard)
-            .SetColor(new Color32(193, 255, 209, byte.MaxValue));
 
         // Random Spawn
         RandomSpawn.SetupCustomOption();
@@ -2080,9 +2082,6 @@ public static class Options
         EnableVoteCommand = BooleanOptionItem.Create(60746, "EnableVote", true, TabGroup.ModSettings, false)
             .SetColor(new Color32(147, 241, 240, byte.MaxValue))
             .SetGameMode(CustomGameMode.Standard);
-        ShouldVoteCmdsSpamChat = BooleanOptionItem.Create(60747, "ShouldVoteSpam", false, TabGroup.ModSettings, false)
-            .SetParent(EnableVoteCommand)
-            .SetGameMode(CustomGameMode.Standard);
         // 其它设定
         TextOptionItem.Create(10000031, "MenuTitle.Other", TabGroup.ModSettings)
             .HideInFFA()
@@ -2189,6 +2188,8 @@ public static class Options
         Logger.Info("Game settings setup", "Load Options");
         yield return null;
 
+        AFKDetector.SetupCustomOption();
+
         // End Load Settings
         OptionSaver.Load();
         IsLoaded = true;
@@ -2210,51 +2211,6 @@ public static class Options
         {
             CustomGhostRoleCounts.Add(role, countOption);
         }
-
-        CustomRoleSpawnChances.Add(role, spawnOption);
-        CustomRoleCounts.Add(role, countOption);
-    }
-    private static void SetupLoversRoleOptionsToggle(int id, CustomGameMode customGameMode = CustomGameMode.Standard)
-    {
-        var role = CustomRoles.Lovers;
-        var spawnOption = StringOptionItem.Create(id, role.ToString(), EnumHelper.GetAllNames<RatesZeroOne>(), 0, TabGroup.Addons, false).SetColor(Utils.GetRoleColor(role))
-            .SetHeader(true)
-            .SetGameMode(customGameMode) as StringOptionItem;
-
-        LoverSpawnChances = IntegerOptionItem.Create(id + 2, "LoverSpawnChances", new(0, 100, 5), 50, TabGroup.Addons, false)
-        .SetParent(spawnOption)
-            .SetValueFormat(OptionFormat.Percent)
-            .SetGameMode(customGameMode);
-
-        LoverKnowRoles = BooleanOptionItem.Create(id + 4, "LoverKnowRoles", true, TabGroup.Addons, false)
-        .SetParent(spawnOption)
-            .SetGameMode(customGameMode);
-
-        LoverSuicide = BooleanOptionItem.Create(id + 3, "LoverSuicide", true, TabGroup.Addons, false)
-        .SetParent(spawnOption)
-            .SetGameMode(customGameMode);
-
-        ImpCanBeInLove = BooleanOptionItem.Create(id + 5, "ImpCanBeInLove", true, TabGroup.Addons, false)
-        .SetParent(spawnOption)
-            .SetGameMode(customGameMode);
-
-        CrewCanBeInLove = BooleanOptionItem.Create(id + 6, "CrewCanBeInLove", true, TabGroup.Addons, false)
-        .SetParent(spawnOption)
-            .SetGameMode(customGameMode);
-
-        NeutralCanBeInLove = BooleanOptionItem.Create(id + 7, "NeutralCanBeInLove", true, TabGroup.Addons, false)
-        .SetParent(spawnOption)
-            .SetGameMode(customGameMode);
-
-        CovenCanBeInLove = BooleanOptionItem.Create(id + 8, "CovenCanBeInLove", true, TabGroup.Addons, false)
-        .SetParent(spawnOption)
-            .SetGameMode(customGameMode);
-
-
-        var countOption = IntegerOptionItem.Create(id + 1, "NumberOfLovers", new(2, 2, 1), 2, TabGroup.Addons, false)
-            .SetParent(spawnOption)
-            .SetHidden(true)
-            .SetGameMode(customGameMode);
 
         CustomRoleSpawnChances.Add(role, spawnOption);
         CustomRoleCounts.Add(role, countOption);
@@ -2311,7 +2267,7 @@ public static class Options
 
     public static void SetupSingleRoleOptions(int id, TabGroup tab, CustomRoles role, int count = 1, CustomGameMode customGameMode = CustomGameMode.Standard, bool zeroOne = false)
     {
-        var spawnOption = StringOptionItem.Create(id, role.ToString(), zeroOne ? EnumHelper.GetAllNames<RatesZeroOne>() : EnumHelper.GetAllNames<SpawnChance>(), 0, tab, false).SetColor(Utils.GetRoleColor(role))
+        var spawnOption = RoleChanceOptionItem.Create(id, role, zeroOne ? EnumHelper.GetAllNames<RatesZeroOne>() : EnumHelper.GetAllNames<SpawnChance>(), 0, tab, false).SetColor(Utils.GetRoleColor(role))
             .SetHeader(true)
             .SetGameMode(customGameMode) as StringOptionItem;
 

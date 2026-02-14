@@ -19,7 +19,7 @@ namespace TOHE;
 
 
 [Obfuscation(Exclude = true)]
-public enum CustomRPC : byte // 178/255 USED
+public enum CustomRPC : byte // 182/255 USED
 {
     // RpcCalls can increase with each AU version
     // On version 2024.6.18 the last id in RpcCalls: 65
@@ -29,9 +29,9 @@ public enum CustomRPC : byte // 178/255 USED
     // NOTE: Set RPC's that are spammed to "ExtendedPlayerControl.RpcSendOption" to prevent kick due innersloth anti-cheat
 
     VersionCheck = 80,
-    RequestRetryVersionCheck = 81,
-    SyncCustomSettings = 100, // AUM use 101 rpc
-    SetDeathReason = 102,
+    RequestRetryVersionCheck,
+    SyncCustomSettings,
+    SetDeathReason,
     EndGame,
     PlaySound,
     SetCustomRole,
@@ -47,14 +47,13 @@ public enum CustomRPC : byte // 178/255 USED
     KillFlash,
     DumpLog,
     SetNameColorData,
+    KNChat = 119, // Kill network chat, may conflicts with judge and guess calls
     GuessKill,
     Judge,
     Guess,
-    KNChat = 119, // Kill network chat, may conflicts with judge and guess calls
     CouncillorJudge,
     NemesisRevenge,
     RetributionistRevenge,
-    SetFriendCode,
     SyncLobbyTimer,
     SyncPlayerSetting,
     ShowChat,
@@ -68,7 +67,7 @@ public enum CustomRPC : byte // 178/255 USED
     SyncDeadPassedMeetingList,
     SyncAbilityUseLimit,
     PlayGuardAndKill,
-    FixBlackscreen,
+    RequestCommandProcessing,
 
     //Roles 
     SyncRoleSkill,
@@ -81,12 +80,13 @@ public enum CustomRPC : byte // 178/255 USED
     SniperSync,
     // SetLoversPlayers,
     SetLoverPairs,
+    
+    // BetterAmongUs (BAU) RPC, This is sent to allow other BAU users know who's using BAU!
+    BetterCheck = 150,
+
     SendFireworkerState,
     SetCurrentDousingTarget,
     SetEvilTrackerTarget,
-
-    // BetterAmongUs (BAU) RPC, This is sent to allow other BAU users know who's using BAU!
-    BetterCheck = 150,
 
     SetDrawPlayer,
     SetCrewpostorTasksDone,
@@ -113,6 +113,7 @@ public enum CustomRPC : byte // 178/255 USED
     DictatorRPC,
     Necronomicon,
     ExorcistExorcise,
+    RequestSendMessage,
 
     //FFA
     SyncFFAPlayer,
@@ -154,66 +155,83 @@ internal class RPCHandlerPatch
     => (CustomRPC)id is CustomRPC.VersionCheck
         or CustomRPC.RequestRetryVersionCheck
         or CustomRPC.AntiBlackout
+        or CustomRPC.RequestCommandProcessing
         or CustomRPC.Judge
         or CustomRPC.ExorcistExorcise
         or CustomRPC.CouncillorJudge
         or CustomRPC.NemesisRevenge
         or CustomRPC.RetributionistRevenge
         or CustomRPC.Guess
+        or CustomRPC.GuessKill
         or CustomRPC.PresidentEnd
         or CustomRPC.SetSwapperVotes
         or CustomRPC.DumpLog
-        or CustomRPC.SetFriendCode
         or CustomRPC.BetterCheck
         or CustomRPC.DictatorRPC
-        or CustomRPC.FixBlackscreen;
+        or CustomRPC.RequestSendMessage;
     public static bool Prefix(PlayerControl __instance, [HarmonyArgument(0)] byte callId, [HarmonyArgument(1)] MessageReader reader)
     {
         var rpcType = (RpcCalls)callId;
         MessageReader subReader = MessageReader.Get(reader);
-        if (EAC.PlayerControlReceiveRpc(__instance, callId, reader)) return false;
-        Logger.Info($"{__instance?.Data?.PlayerId}({(__instance.IsHost() ? "Host" : __instance?.Data?.PlayerName)}):{callId}({RPC.GetRpcName(callId)})", "ReceiveRPC");
-        switch (rpcType)
+        try
         {
-            case RpcCalls.SetName: //SetNameRPC
-                subReader.ReadUInt32();
-                string name = subReader.ReadString();
-                if (subReader.BytesRemaining > 0 && subReader.ReadBoolean()) return false;
-                Logger.Info("RPC Set Name For Player: " + __instance.GetNameWithRole() + " => " + name, "SetName");
-                break;
-            case RpcCalls.SetRole: //SetRoleRPC
-                var role = (RoleTypes)subReader.ReadUInt16();
-                var canOverriddenRole = subReader.ReadBoolean();
-                Logger.Info("RPC Set Role For Player: " + __instance.GetRealName() + " => " + role + " CanOverrideRole: " + canOverriddenRole, "SetRole");
-                break;
-            case RpcCalls.SendChat: // Free chat
-                var text = subReader.ReadString();
-                Logger.Info($"{__instance.GetNameWithRole().RemoveHtmlTags()}:{text.RemoveHtmlTags()}", "ReceiveChat");
-                ChatCommands.OnReceiveChat(__instance, text, out var canceled);
-                if (canceled) return false;
-                break;
-            case RpcCalls.SendQuickChat:
-                Logger.Info($"{__instance.GetNameWithRole().RemoveHtmlTags()}:Some message from quick chat", "ReceiveChat");
-                ChatCommands.OnReceiveChat(__instance, "Some message from quick chat", out var canceledQuickChat);
-                if (canceledQuickChat) return false;
-                break;
-            case RpcCalls.StartMeeting:
-                var p = Utils.GetPlayerById(subReader.ReadByte());
-                Logger.Info($"{__instance.GetNameWithRole()} => {p?.GetNameWithRole() ?? "null"}", "StartMeeting");
-                break;
-        }
-        if (!__instance.IsHost() &&
-            (Enum.IsDefined(typeof(CustomRPC), callId) && !TrustedRpc(callId) // Is Custom RPC
-            || !Enum.IsDefined(typeof(CustomRPC), callId) && !Enum.IsDefined(typeof(RpcCalls), callId))) //Is not Custom RPC and not Vanilla RPC
-        {
-            Logger.Warn($"{__instance?.Data?.PlayerName}:{callId}({RPC.GetRpcName(callId)}) has been canceled because it was sent by someone other than the host", "CustomRPC");
-            if (AmongUsClient.Instance.AmHost)
+            if (EAC.PlayerControlReceiveRpc(__instance, callId, reader)) 
             {
-                AmongUsClient.Instance.KickPlayer(__instance.GetClientId(), false);
-                Logger.Warn($"Received an uncredited RPC from {__instance?.Data?.PlayerName} and kicked it out", "Kick");
-                Logger.SendInGame(string.Format(GetString("Warning.InvalidRpc"), __instance?.Data?.PlayerName));
+                subReader.Recycle();
+                return false;
             }
-            return false;
+            Logger.Info($"{__instance?.Data?.PlayerId}({(__instance.IsHost() ? "Host" : __instance?.Data?.PlayerName)}):{callId}({RPC.GetRpcName(callId)})", "ReceiveRPC");
+            switch (rpcType)
+            {
+                case RpcCalls.SetName: //SetNameRPC
+                    subReader.ReadUInt32();
+                    string name = subReader.ReadString();
+                    if (subReader.BytesRemaining > 0 && subReader.ReadBoolean()) 
+                    {
+                        subReader.Recycle();
+                        return false;
+                    }
+                    Logger.Info("RPC Set Name For Player: " + __instance.GetNameWithRole() + " => " + name, "SetName");
+                    break;
+                case RpcCalls.SetRole: //SetRoleRPC
+                    var role = (RoleTypes)subReader.ReadUInt16();
+                    var canOverriddenRole = subReader.ReadBoolean();
+                    Logger.Info("RPC Set Role For Player: " + __instance.GetRealName() + " => " + role + " CanOverrideRole: " + canOverriddenRole, "SetRole");
+                    break;
+                case RpcCalls.SendChat: // Free chat
+                    var text = subReader.ReadString();
+                    Logger.Info($"{__instance.GetNameWithRole().RemoveHtmlTags()}:{text}", "ReceiveChat");
+                    ChatCommands.OnReceiveChat(__instance, text, out var canceled);
+                    if (canceled) return false;
+                    break;
+                case RpcCalls.SendQuickChat:
+                    Logger.Info($"{__instance.GetNameWithRole().RemoveHtmlTags()}:Some message from quick chat", "ReceiveChat");
+                    ChatCommands.OnReceiveChat(__instance, "Some message from quick chat", out var canceledQuickChat);
+                    if (canceledQuickChat) return false;
+                    break;
+                case RpcCalls.StartMeeting:
+                    var p = Utils.GetPlayerById(subReader.ReadByte());
+                    Logger.Info($"{__instance.GetNameWithRole()} => {p?.GetNameWithRole() ?? "null"}", "StartMeeting");
+                    break;
+            }
+            if (!__instance.IsHost() &&
+                (Enum.IsDefined(typeof(CustomRPC), callId) && !TrustedRpc(callId) // Is Custom RPC
+                || !Enum.IsDefined(typeof(CustomRPC), callId) && !Enum.IsDefined(typeof(RpcCalls), callId))) //Is not Custom RPC and not Vanilla RPC
+            {
+                Logger.Warn($"{__instance?.Data?.PlayerName}:{callId}({RPC.GetRpcName(callId)}) has been canceled because it was sent by someone other than the host", "CustomRPC");
+                if (AmongUsClient.Instance.AmHost)
+                {
+                    AmongUsClient.Instance.KickPlayer(__instance.GetClientId(), false);
+                    Logger.Warn($"Received an uncredited RPC from {__instance?.Data?.PlayerName} and kicked it out", "Kick");
+                    Logger.SendInGame(string.Format(GetString("Warning.InvalidRpc"), __instance?.Data?.PlayerName));
+                }
+                subReader.Recycle();
+                return false;
+            }
+        }
+        finally
+        {
+            subReader.Recycle();
         }
         return true;
     }
@@ -231,67 +249,16 @@ internal class RPCHandlerPatch
                 break;
 
             case CustomRPC.VersionCheck:
-                try
-                {
-                    Version version = Version.Parse(reader.ReadString());
-                    string tag = reader.ReadString();
-                    string forkId = reader.ReadString();
-                    bool cheating = reader.ReadBoolean();
-                    if (__instance.GetClientId() < 0)
-                        break;
-
-                    if (!Main.playerVersion.TryGetValue(__instance.GetClientId(), out _))
-                    {
-                        RPC.RpcVersionCheck();
-                    }
-
-                    Main.playerVersion[__instance.GetClientId()] = new PlayerVersion(version, tag, forkId);
-
-                    if (Main.VersionCheat.Value && __instance.GetClientId() == AmongUsClient.Instance.HostId) RPC.RpcVersionCheck();
-
-                    if (__instance.GetClientId() == Main.HostClientId && cheating)
-                        Main.IsHostVersionCheating = true;
-
-                    if (Main.VersionCheat.Value && AmongUsClient.Instance.AmHost)
-                        Main.playerVersion[__instance.GetClientId()] = Main.playerVersion[AmongUsClient.Instance.HostId];
-
-                    // Kick Unmached Player Start
-                    if (AmongUsClient.Instance.AmHost)
-                    {
-                        if (!IsVersionMatch(__instance.GetClientId()) && !Main.VersionCheat.Value)
-                        {
-                            _ = new LateTask(() =>
-                            {
-                                if (__instance?.Data?.Disconnected is not null and not true)
-                                {
-                                    var msg = string.Format(GetString("KickBecauseDiffrentVersionOrMod"), __instance?.Data?.PlayerName);
-                                    Logger.Warn(msg, "Version Kick");
-                                    Logger.SendInGame(msg);
-                                    AmongUsClient.Instance.KickPlayer(__instance.GetClientId(), false);
-                                }
-                            }, 5f, "Kick Because Diffrent Version Or Mod");
-                        }
-                    }
-                    // Kick Unmached Player End
-                }
-                catch
-                {
-                    Logger.Warn($"{__instance?.Data?.PlayerName}({__instance.PlayerId}): バージョン情報が無効です", "RpcVersionCheck");
-
-                    _ = new LateTask(() =>
-                    {
-                        RpcUtils.LateSpecificSendMessage(new RpcRequestRetryVersionCheck(PlayerControl.LocalPlayer.NetId), __instance.OwnerId);
-                    }, 1f, "Retry Version Check Task");
-                }
+                VersionCheck(__instance, reader);
                 break;
 
             case CustomRPC.RequestRetryVersionCheck:
                 RPC.RpcVersionCheck();
                 break;
 
-            case CustomRPC.SetFriendCode:
-                RPC.SetFriendCode(__instance, reader.ReadString());
-                break;
+            // case CustomRPC.SetFriendCode:
+            //     RPC.SetFriendCode(__instance, reader.ReadString());
+            //     break;
 
             case CustomRPC.SyncCustomSettings:
                 if (AmongUsClient.Instance.AmHost) break;
@@ -366,16 +333,18 @@ internal class RPCHandlerPatch
                 RPC.PlaySound(playerID, sound);
                 break;
             case CustomRPC.ShowPopUp:
-                seerId = reader.ReadPackedInt32();
-                if (seerId != PlayerControl.LocalPlayer.PlayerId) break;
-                string message = reader.ReadString();
-                string title = reader.ReadString();
+                {
+                    seerId = reader.ReadPackedInt32();
+                    if (seerId != PlayerControl.LocalPlayer.PlayerId) break;
+                    string message = reader.ReadString();
+                    string title = reader.ReadString();
 
-                // add title
-                if (title != "")
-                    message = $"{title}\n{message}";
+                    // add title
+                    if (title != "")
+                        message = $"{title}\n{message}";
 
-                HudManager.Instance.ShowPopUp(message);
+                    HudManager.Instance.ShowPopUp(message);
+                }
                 break;
             case CustomRPC.SetCustomRole:
                 byte CustomRoleTargetId = reader.ReadByte();
@@ -396,6 +365,17 @@ internal class RPCHandlerPatch
                     else LocateArrow.ReceiveRPC(reader);
                 }
                 break;
+            case CustomRPC.RequestSendMessage:
+                {
+                    if (!AmongUsClient.Instance.AmHost) break;
+
+                    string text = reader.ReadString();
+                    byte sendTo = reader.ReadByte();
+                    string title = reader.ReadString();
+                    bool noSplit = reader.ReadBoolean();
+                    Utils.SendMessage(text, sendTo, title, noSplit);
+                    break;
+                }
             case CustomRPC.NotificationPopper:
                 {
                     var item = reader.ReadPackedInt32();
@@ -406,6 +386,29 @@ internal class RPCHandlerPatch
                     NotificationPopperPatch.AddSettingsChangeMessage(item, key, playSound);
                 }
                 break;
+            case CustomRPC.RequestCommandProcessing:
+                {
+                    if (!AmongUsClient.Instance.AmHost) break;
+
+                    string commandKey = reader.ReadString();
+                    PlayerControl player = reader.ReadByte().GetPlayer();
+                    string text = reader.ReadString();
+
+                    if (!Command.AllCommands.TryGetValue(commandKey, out Command command))
+                    {
+                        Logger.Error($"Invalid Command {commandKey}.", "RequestCommandProcessingFromHost");
+                        break;
+                    }
+
+                    if (!command.CanUseCommand(player)) break;
+
+                    command.Action(player, commandKey, text, text.Split(' '));
+
+                    // const BindingFlags flags = BindingFlags.Static | BindingFlags.NonPublic | BindingFlags.Public;
+                    // typeof(ChatCommands).GetMethod(methodName, flags)?.Invoke(null, [player, text, text.Split(' ')]);
+                    Logger.Info($"Invoke Command: {command.Action.Method.Name} ({player?.Data?.PlayerName}, {text})", "RequestCommandProcessing");
+                    break;
+                }
             case CustomRPC.SyncAbilityUseLimit:
                 {
                     var pc = Utils.GetPlayerById(reader.ReadByte());
@@ -506,9 +509,6 @@ internal class RPCHandlerPatch
                 byte killerId = reader.ReadByte();
                 RPC.SetRealKiller(tarid, killerId);
                 break;
-            //case CustomRPC.SetTrackerTarget:
-            //    Tracker.ReceiveRPC(reader);
-            //    break;
             case CustomRPC.SyncJailerData:
                 Jailer.ReceiveRPC(reader);
                 break;
@@ -622,11 +622,6 @@ internal class RPCHandlerPatch
             case CustomRPC.Guess:
                 GuessManager.ReceiveRPC(reader, __instance);
                 break;
-            case CustomRPC.FixBlackscreen:
-                Logger.Info("Attempted to fix Black Screen", "KeyCommand");
-                AntiBlackout.SetIsDead();
-                Logger.SendInGame("Attempted to fix Black Screen");
-                break;
             case CustomRPC.NemesisRevenge:
                 Nemesis.ReceiveRPC_Custom(reader, __instance);
                 break;
@@ -703,6 +698,63 @@ internal class RPCHandlerPatch
         }
     }
 
+    private static void VersionCheck(PlayerControl __instance, MessageReader reader)
+    {
+        Logger.Info($"Starting version check", "VersionCheck");
+        try
+        {
+            Version version = Version.Parse(reader.ReadString());
+            string tag = reader.ReadString();
+            string forkId = reader.ReadString();
+            bool cheating = reader.ReadBoolean();
+            if (__instance.GetClientId() < 0)
+                return;
+
+            if (!Main.playerVersion.TryGetValue(__instance.GetClientId(), out _))
+            {
+                RPC.RpcVersionCheck();
+            }
+
+            Main.playerVersion[__instance.GetClientId()] = new PlayerVersion(version, tag, forkId);
+
+            if (Main.VersionCheat.Value && __instance.GetClientId() == AmongUsClient.Instance.HostId) RPC.RpcVersionCheck();
+
+            if (__instance.GetClientId() == Main.HostClientId && cheating)
+                Main.IsHostVersionCheating = true;
+
+            if (Main.VersionCheat.Value && AmongUsClient.Instance.AmHost)
+                Main.playerVersion[__instance.GetClientId()] = Main.playerVersion[AmongUsClient.Instance.HostId];
+
+            // Kick Unmached Player Start
+            if (AmongUsClient.Instance.AmHost)
+            {
+                if (!IsVersionMatch(__instance.GetClientId()) && !Main.VersionCheat.Value)
+                {
+                    _ = new LateTask(() =>
+                    {
+                        if (__instance?.Data?.Disconnected is not null and not true)
+                        {
+                            var msg = string.Format(GetString("KickBecauseDiffrentVersionOrMod"), __instance?.Data?.PlayerName);
+                            Logger.Warn(msg, "Version Kick");
+                            Logger.SendInGame(msg);
+                            AmongUsClient.Instance.KickPlayer(__instance.GetClientId(), false);
+                        }
+                    }, 5f, "Kick Because Diffrent Version Or Mod");
+                }
+            }
+            // Kick Unmached Player End
+        }
+        catch
+        {
+            Logger.Warn($"{__instance?.Data?.PlayerName}({__instance.PlayerId}): バージョン情報が無効です", "RpcVersionCheck");
+
+            _ = new LateTask(() =>
+            {
+                RpcUtils.LateSpecificSendMessage(new RpcRequestRetryVersionCheck(PlayerControl.LocalPlayer.NetId), __instance.OwnerId);
+            }, 1f, "Retry Version Check Task");
+        }
+    }
+
     private static bool IsVersionMatch(int ClientId)
     {
         if (Main.VersionCheat.Value) return true;
@@ -758,70 +810,45 @@ internal static class RPC
     {
         if (targetId != -1)
         {
-            var client = Utils.GetClientById(targetId);
-            if (client == null || client.Character == null || !Main.playerVersion.ContainsKey(client.Id))
-            {
-                return;
-            }
-        }
-        else if (!Main.AllPlayerControls.Any(pc => pc.IsNonHostModdedClient()))
-        {
-            return;
+            ClientData client = Utils.GetClientById(targetId);
+            if (client == null || client.Character == null || !Main.playerVersion.ContainsKey(client.Character.PlayerId)) return;
         }
 
-        if (!AmongUsClient.Instance.AmHost || PlayerControl.AllPlayerControls.Count <= 1 || AmongUsClient.Instance.AmHost == false && PlayerControl.LocalPlayer == null)
-        {
-            return;
-        }
+        if (!AmongUsClient.Instance.AmHost || PlayerControl.AllPlayerControls.Count <= 1) return;
 
-        var amount = OptionItem.AllOptions.Count;
+        int amount = OptionItem.AllOptions.Count;
         int divideBy = amount / 10;
-
-        for (var i = 0; i <= 10; i++)
-        {
-            SyncOptionsBetween(i * divideBy, (i + 1) * divideBy, amount, targetId);
-        }
+        for (var i = 0; i <= 10; i++) SyncOptionsBetween(i * divideBy, (i + 1) * divideBy, targetId);
     }
 
-    static void SyncOptionsBetween(int startAmount, int lastAmount, int amountAllOptions, int targetId = -1)
+    static void SyncOptionsBetween(int startAmount, int lastAmount, int targetId = -1)
     {
         if (targetId != -1)
         {
-            var client = Utils.GetClientById(targetId);
-            if (client == null || client.Character == null || !Main.playerVersion.ContainsKey(client.Id))
-            {
-                return;
-            }
-        }
-        else if (!Main.AllPlayerControls.Any(pc => pc.IsNonHostModdedClient()))
-        {
-            return;
+            ClientData client = Utils.GetClientById(targetId);
+            if (client == null || client.Character == null || !Main.playerVersion.ContainsKey(client.Character.PlayerId)) return;
         }
 
-        if (!AmongUsClient.Instance.AmHost || PlayerControl.AllPlayerControls.Count <= 1 || AmongUsClient.Instance.AmHost == false && PlayerControl.LocalPlayer == null)
-        {
-            return;
-        }
+        if (!AmongUsClient.Instance.AmHost || PlayerControl.AllPlayerControls.Count <= 1) return;
 
-        if (amountAllOptions != OptionItem.AllOptions.Count)
-        {
-            amountAllOptions = OptionItem.AllOptions.Count;
-        }
+        int amountAllOptions = OptionItem.AllOptions.Count;
+
+        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncCustomSettings, SendOption.Reliable, targetId);
+        writer.Write(startAmount);
+        writer.Write(lastAmount);
+
         List<OptionItem> listOptions = [];
-        List<OptionItem> allOptionsList = [.. OptionItem.FastOptions.OrderBy(kv => kv.Key).Select(kv => kv.Value)];
 
         // Add Options
-        for (var option = startAmount; option < amountAllOptions && option <= lastAmount; option++)
-        {
-            listOptions.Add(allOptionsList[option]);
-        }
-        var countListOptions = listOptions.Count;
-        
-        Logger.Msg($"Sending StartAmount/LastAmount: {startAmount}/{lastAmount} :--: ListOptionsCount/AllOptions: {countListOptions}/{amountAllOptions}", "SyncOptionsBetween");
+        for (int option = startAmount; option < amountAllOptions && option <= lastAmount; option++) listOptions.Add(OptionItem.AllOptions[option]);
+
+        int countListOptions = listOptions.Count;
+        Logger.Info($"StartAmount: {startAmount} - LastAmount: {lastAmount} ({startAmount}/{lastAmount}) :--: ListOptionsCount: {countListOptions} - AllOptions: {amountAllOptions} ({countListOptions}/{amountAllOptions})", "SyncCustomSettings");
 
         // Sync Settings
-        var msg = new RpcSyncCustomSettings(PlayerControl.LocalPlayer.NetId, startAmount, lastAmount, listOptions);
-        RpcUtils.LateBroadcastReliableMessage(msg);
+        foreach (OptionItem option in listOptions) writer.WritePacked(option.GetValue());
+
+        AmongUsClient.Instance.FinishRpcImmediately(writer);
     }
 
     public static void PlaySoundRPC(Sounds sound, byte PlayerID = byte.MaxValue)
@@ -844,33 +871,6 @@ internal static class RPC
         if (!AmongUsClient.Instance.AmHost) return;
         var msg = new RpcShowPopUp(pc.NetId, pc.PlayerId, message, title);
         RpcUtils.LateBroadcastReliableMessage(msg);
-    }
-    /*
-    public static void ShowPopUp(this PlayerControl pc, string message, string title = "")
-    {
-        if (!AmongUsClient.Instance.AmHost) return;
-        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.ShowPopUp, SendOption.Reliable, pc.GetClientId());
-        writer.Write(message);
-        writer.Write(title);
-        AmongUsClient.Instance.FinishRpcImmediately(writer);
-    }
-    */
-    public static void RpcSetFriendCode(string fc)
-    {
-        var msg = new RpcSetFriendCode(PlayerControl.LocalPlayer.NetId, fc);
-        RpcUtils.LateBroadcastReliableMessage(msg);
-
-        SetFriendCode(PlayerControl.LocalPlayer, fc);
-    }
-    public static void SetFriendCode(PlayerControl target, string fc)
-    {
-        if (GameStates.IsVanillaServer) return;
-        if (target.GetClient() != null && target.GetClient().FriendCode != string.Empty) return;
-        // On Niko233's region this is not needed lol
-        target.FriendCode = fc;
-        target.Data.FriendCode = fc;
-        target.GetClient().FriendCode = fc;
-        target.Data.MarkDirty();
     }
     public static async void RpcVersionCheck()
     {
@@ -915,7 +915,7 @@ internal static class RPC
         if (AmongUsClient.Instance.AmHost)
         {
             ShipStatus.Instance.enabled = false;
-            Utils.NotifyGameEnding();
+            // Utils.NotifyGameEnding();
 
             try { GameManager.Instance.LogicFlow.CheckEndCriteria(); }
             catch { }
@@ -1024,7 +1024,7 @@ internal static class RPC
         try
         {
             target = targetClientId < 0 ? "All" : AmongUsClient.Instance.GetClient(targetClientId).PlayerName;
-            from = Main.AllPlayerControls.FirstOrDefault(c => c.NetId == targetNetId)?.GetRealName(clientData: true);
+            from = Main.EnumeratePlayerControls().FirstOrDefault(c => c.NetId == targetNetId)?.GetRealName(clientData: true);
         }
         catch { }
 

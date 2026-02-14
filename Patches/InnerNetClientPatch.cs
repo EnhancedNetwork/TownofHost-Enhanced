@@ -1,4 +1,5 @@
 using System;
+using AmongUs.GameOptions;
 using Hazel;
 using InnerNet;
 using TOHE.Modules;
@@ -157,6 +158,35 @@ internal class GameDataHandlerPatch
     }
 }
 
+[HarmonyPatch(typeof(InnerNetClient), nameof(InnerNetClient.HostGame))]
+internal class HostGamePatch
+{
+    public static bool Prefix(InnerNetClient __instance, IGameOptions settings, GameFilterOptions filterOpts)
+    {
+        // Standard HostGame method body
+        MessageWriter msg = MessageWriter.Get(SendOption.Reliable);
+        msg.StartMessage(25); // TODO: replace with Tags.HostModdedGame once possible
+        msg.WriteBytesAndSize(__instance.gameOptionsFactory.ToBytes(settings, AprilFoolsMode.IsAprilFoolsModeToggledOn));
+        msg.Write(CrossplayMode.GetCrossplayFlags());
+        filterOpts.Serialize(msg);
+
+        // Serializing your GUID as bytes in the message 
+        bool guidSucceeded = Guid.TryParse(Main.PluginGuid4, out Guid guid); // example GUID
+        if (!guidSucceeded)
+        {
+            Logger.Error("Whoa guid failed to generate", "HostGamePatch");
+            return true;
+        }
+        msg.Write(guid.ToByteArray());
+
+        // Standard HostGame method
+        msg.EndMessage();
+        __instance.SendOrDisconnect(msg);
+        msg.Recycle();
+        return false;
+    }
+}
+
 [HarmonyPatch(typeof(AmongUsClient), nameof(AmongUsClient.CoStartGameHost))]
 internal class StartGameHostPatch
 {
@@ -177,7 +207,6 @@ internal class StartGameHostPatch
 }
 
 #if !ANDROID
-
 [HarmonyPatch]
 internal class AuthTimeoutPatch
 {
@@ -226,3 +255,4 @@ public class NetworkedPlayerInfoPatch
         return false;
     }
 }
+

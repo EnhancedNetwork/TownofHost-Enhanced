@@ -1,6 +1,7 @@
 using Hazel;
 using TOHE.Modules;
 using TOHE.Modules.Rpc;
+using TOHE.Patches;
 using TOHE.Roles.Core;
 using static TOHE.MeetingHudStartPatch;
 using static TOHE.Options;
@@ -16,7 +17,7 @@ internal class Medium : RoleBase
     private const int Id = 8700;
     public static bool HasEnabled => CustomRoleManager.HasEnabled(CustomRoles.Medium);
     public override CustomRoles ThisRoleBase => CustomRoles.Crewmate;
-    public override Custom_RoleType ThisRoleType => Custom_RoleType.CrewmateSupport;
+    public override Custom_RoleType ThisRoleType => Custom_RoleType.CrewmateInvestigative;
     //==================================================================\\
 
     private static OptionItem ContactLimitOpt;
@@ -74,15 +75,19 @@ internal class Medium : RoleBase
             Logger.Info($"Psychics Make Connections： {medium.GetRealName} => {target.PlayerName}", "Medium");
         }
     }
-    public static bool MsMsg(PlayerControl pc, string msg)
+
+    public static void MediumCommand(PlayerControl pc, string commandKey, string msg, string[] args)
     {
-        if (!AmongUsClient.Instance.AmHost) return false;
-        if (!GameStates.IsMeeting || pc == null) return false;
-        if (!ContactPlayer.ContainsKey(pc.PlayerId)) return false;
-        if (OnlyReceiveMsgFromCrew.GetBool() && !pc.GetCustomRole().IsCrewmate()) return false;
-        if (pc.IsAlive()) return false;
-        msg = msg.ToLower().Trim();
-        if (!CheckCommond(ref msg, "通灵|ms|mediumship|medium", false)) return false;
+        if (!AmongUsClient.Instance.AmHost)
+        {
+            ChatCommands.RequestCommandProcessingFromHost(msg, commandKey);
+            return;
+        }
+
+        if (!GameStates.IsMeeting || pc == null) return;
+        if (!ContactPlayer.ContainsKey(pc.PlayerId)) return;
+        if (OnlyReceiveMsgFromCrew.GetBool() && !pc.GetCustomRole().IsCrewmate()) return;
+        if (pc.IsAlive()) return;
 
         bool ans;
         if (msg.Contains('n') || msg.Contains(GetString("No")) || msg.Contains('错') || msg.Contains("不是")) ans = false;
@@ -90,36 +95,15 @@ internal class Medium : RoleBase
         else
         {
             SendMessage(GetString("MediumHelp"), pc.PlayerId);
-            return true;
+            return;
         }
 
         SendMessage(GetString("Medium" + (ans ? "Yes" : "No")), ContactPlayer[pc.PlayerId], ColorString(GetRoleColor(CustomRoles.Medium), GetString("Medium").ToUpper()));
         SendMessage(GetString("MediumDone"), pc.PlayerId, ColorString(GetRoleColor(CustomRoles.Medium), GetString("Medium").ToUpper()));
 
         ContactPlayer.Remove(pc.PlayerId);
+    }
 
-        return true;
-    }
-    public static bool CheckCommond(ref string msg, string command, bool exact = true)
-    {
-        var comList = command.Split('|');
-        foreach (var comm in comList)
-        {
-            if (exact)
-            {
-                if (msg == "/" + comm) return true;
-            }
-            else
-            {
-                if (msg.StartsWith("/" + comm))
-                {
-                    msg = msg.Replace("/" + comm, string.Empty);
-                    return true;
-                }
-            }
-        }
-        return false;
-    }
     public override void OnOthersMeetingHudStart(PlayerControl pc)
     {
         if (!_Player.IsAlive()) return;

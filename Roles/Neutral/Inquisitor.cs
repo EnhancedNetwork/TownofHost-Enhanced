@@ -86,7 +86,7 @@ internal class Inquisitor : RoleBase
 
             List<PlayerControl> targetList = [];
             var rand = IRandom.Instance;
-            foreach (var target in Main.AllPlayerControls)
+            foreach (var target in Main.EnumeratePlayerControls())
             {
                 if (playerId == target.PlayerId) continue;
                 else if (Targets[inquisitor.PlayerId].Contains(target.PlayerId)) continue;

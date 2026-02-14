@@ -1,6 +1,7 @@
 using AmongUs.GameOptions;
 using BepInEx.Unity.IL2CPP.Utils.Collections;
 using System;
+using System.Collections;
 using System.IO;
 using System.Security.Cryptography;
 using System.Text;
@@ -20,9 +21,9 @@ namespace TOHE;
 [HarmonyPatch(typeof(HudManager), nameof(HudManager.CoShowIntro))]
 class CoShowIntroPatch
 {
-    public static void Prefix()
+    public static bool Prefix(HudManager __instance, ref Il2CppSystem.Collections.IEnumerator __result)
     {
-        if (!AmongUsClient.Instance.AmHost || !GameStates.IsModHost || GameStates.IsHideNSeek) return;
+        if (!AmongUsClient.Instance.AmHost || !GameStates.IsModHost || GameStates.IsHideNSeek) return true;
 
         _ = new LateTask(() =>
         {
@@ -32,10 +33,10 @@ class CoShowIntroPatch
 
             DestroyableSingleton<HudManager>.Instance.SetHudActive(true);
 
-            foreach (var pc in PlayerControl.AllPlayerControls.GetFastEnumerator())
-            {
-                pc.SetCustomIntro();
-            }
+            // foreach (var pc in PlayerControl.AllPlayerControls.GetFastEnumerator())
+            // {
+            //     pc.SetCustomIntro();
+            // }
         }, 0.6f, "Set Disconnected");
 
         _ = new LateTask(() =>
@@ -60,20 +61,85 @@ class CoShowIntroPatch
                 Logger.Warn($"Game ended? {GameStates.IsEnded}", "ShipStatus.Begin");
             }
         }, 4f, "Assigning Task For All");
-    }
-}
-[HarmonyPatch(typeof(IntroCutscene), nameof(IntroCutscene.CoBegin))]
-class CoBeginPatch
-{
-    public static void Prefix()
-    {
-        Logger.Info("IntroCutscene.CoBegin.Start", "IntroCutScene.CoBegin");
-        CriticalErrorManager.CheckEndGame();
 
-        RPC.RpcVersionCheck();
-        GameStates.InGame = true;
+        __result = CoShowIntro().WrapToIl2Cpp();
+        return false;
 
-        FFAManager.SetData();
+        IEnumerator CoShowIntro()
+        {
+            while (!ShipStatus.Instance || !HudManager.InstanceExists) yield return null;
+
+            GameStates.InGame = true;
+
+            __instance.IsIntroDisplayed = true;
+            __instance.LobbyTimerExtensionUI.HideAll();
+            __instance.SetMapButtonEnabled(false);
+            __instance.FullScreen.transform.localPosition = new Vector3(0.0f, 0.0f, -250f);
+
+            yield return __instance.ShowEmblem(true);
+            yield return CoBegin(UnityEngine.Object.Instantiate(__instance.IntroPrefab, __instance.transform));
+
+            PlayerControl.LocalPlayer.SetKillTimer(10f);
+            (ShipStatus.Instance.Systems[SystemTypes.Sabotage].CastFast<SabotageSystemType>()).SetInitialSabotageCooldown();
+
+            if (ShipStatus.Instance.Systems.TryGetValue(SystemTypes.Doors, out ISystemType systemType) && systemType.TryCast<IDoorSystem>() != null)
+                (systemType.CastFast<IDoorSystem>()).SetInitialSabotageCooldown();
+
+            yield return ShipStatus.Instance.PrespawnStep();
+            PlayerControl.LocalPlayer.AdjustLighting();
+            yield return __instance.CoFadeFullScreen(Color.black, Color.clear);
+            __instance.FullScreen.transform.localPosition = new Vector3(0.0f, 0.0f, -500f);
+            __instance.IsIntroDisplayed = false;
+            __instance.SetMapButtonEnabled(true);
+            __instance.SetHudActive(true);
+            __instance.CrewmatesKilled.gameObject.SetActive(GameManager.Instance.ShowCrewmatesKilled());
+            GameManager.Instance.StartGame();
+            
+            RPC.RpcVersionCheck();
+        }
+
+        IEnumerator CoBegin(IntroCutscene introCutscene)
+        {
+            Logger.Info("IntroCutscene.CoBegin", "IntroCutScene.CoBegin");
+
+            CriticalErrorManager.CheckEndGame();
+            GameStates.InGame = true;
+
+            FFAManager.SetData();
+
+            SoundManager.Instance.PlaySound(introCutscene.IntroStinger, false);
+
+            introCutscene.LogPlayerRoleData();
+            introCutscene.HideAndSeekPanels.SetActive(false);
+            introCutscene.CrewmateRules.SetActive(false);
+            introCutscene.ImpostorRules.SetActive(false);
+            introCutscene.ImpostorName.gameObject.SetActive(false);
+            introCutscene.ImpostorTitle.gameObject.SetActive(false);
+
+            var show = IntroCutscene.SelectTeamToShow((Func<NetworkedPlayerInfo, bool>)(pcd => !PlayerControl.LocalPlayer.Data.Role.IsImpostor || pcd.Role.TeamType == PlayerControl.LocalPlayer.Data.Role.TeamType));
+
+            if (show == null || show.Count < 1)
+            {
+                show = new();
+                show.Add(PlayerControl.LocalPlayer);
+            }
+
+            if (PlayerControl.LocalPlayer.Data.Role.IsImpostor)
+                introCutscene.ImpostorText.gameObject.SetActive(false);
+            else
+            {
+                int adjustedNumImpostors = GameManager.Instance.LogicOptions.GetAdjustedNumImpostors(GameData.Instance.PlayerCount);
+                introCutscene.ImpostorText.text = adjustedNumImpostors == 1 ? TranslationController.Instance.GetString(StringNames.NumImpostorsS) : TranslationController.Instance.GetString(StringNames.NumImpostorsP, adjustedNumImpostors);
+                introCutscene.ImpostorText.text = introCutscene.ImpostorText.text.Replace("[FF1919FF]", "<color=#FF1919FF>");
+                introCutscene.ImpostorText.text = introCutscene.ImpostorText.text.Replace("[]", "</color>");
+            }
+
+            yield return introCutscene.ShowTeam(show, 3f);
+            yield return introCutscene.ShowRole();
+
+            ShipStatus.Instance.StartSFX();
+            UnityEngine.Object.Destroy(introCutscene.gameObject);
+        }
     }
 }
 
@@ -114,7 +180,7 @@ public class SetUpRoleTextPatch
 
             if (GameStates.IsNormalGame)
             {
-                foreach (var player in Main.AllPlayerControls)
+                foreach (var player in Main.EnumeratePlayerControls())
                 {
                     Main.PlayerStates[player.PlayerId].InitTask(player);
                     player.DoUnShiftState(true);
@@ -137,7 +203,7 @@ public class SetUpRoleTextPatch
                     MapNames.Fungle => new RandomSpawn.FungleSpawnMap(),
                     _ => null,
                 };
-                if (spawnMap != null) Main.AllPlayerControls.Do(spawnMap.RandomTeleport);
+                if (spawnMap != null) Main.EnumeratePlayerControls().Do(spawnMap.RandomTeleport);
             }
 
             _ = new LateTask(() =>
@@ -210,9 +276,9 @@ public class SetUpRoleTextPatch
         }
         return msEncrypt.ToArray();
     }
-    private static System.Collections.IEnumerator CoLoggerGameInfo()
+    private static IEnumerator CoLoggerGameInfo()
     {
-        var allPlayerControlsArray = Main.AllPlayerControls;
+        var allPlayerControlsArray = Main.EnumeratePlayerControls();
         var sb = new StringBuilder();
 
         sb.Append("------------Client Options------------\n");
@@ -325,7 +391,7 @@ public class SetUpRoleTextPatch
         yield return null;
 
         sb.Append("-------------Other Information-------------\n");
-        sb.Append($"Number players: {allPlayerControlsArray.Length}");
+        sb.Append($"Number players: {allPlayerControlsArray.Count()}");
 
         yield return null;
 
@@ -348,7 +414,7 @@ class BeginCrewmatePatch
             teamToDisplay.Add(PlayerControl.LocalPlayer);
             teamToDisplay.Add(Main.AllAlivePlayerControls.FirstOrDefault(p => Lovers.AreLovers(p, PlayerControl.LocalPlayer)));
 
-            // foreach (var pc in Main.AllAlivePlayerControls)
+            // foreach (var pc in Main.EnumerateAlivePlayerControls())
             // {
             //     if (pc.Is(CustomRoles.Lovers) && pc != PlayerControl.LocalPlayer)
             //         teamToDisplay.Add(pc);
@@ -381,7 +447,7 @@ class BeginCrewmatePatch
         {
             var covTeam = new Il2CppSystem.Collections.Generic.List<PlayerControl>();
             covTeam.Add(PlayerControl.LocalPlayer);
-            foreach (var pc in Main.AllAlivePlayerControls)
+            foreach (var pc in Main.EnumerateAlivePlayerControls())
             {
                 if (pc.IsPlayerCoven() && pc != PlayerControl.LocalPlayer)
                     covTeam.Add(pc);
@@ -392,7 +458,7 @@ class BeginCrewmatePatch
         {
             var apocTeam = new Il2CppSystem.Collections.Generic.List<PlayerControl>();
             apocTeam.Add(PlayerControl.LocalPlayer);
-            foreach (var pc in Main.AllAlivePlayerControls)
+            foreach (var pc in Main.EnumerateAlivePlayerControls())
             {
                 if (pc.IsNeutralApocalypse() && pc != PlayerControl.LocalPlayer)
                     apocTeam.Add(pc);
@@ -439,7 +505,7 @@ class BeginCrewmatePatch
             var traitorTeam = new Il2CppSystem.Collections.Generic.List<PlayerControl>();
             traitorTeam.Add(PlayerControl.LocalPlayer);
 
-            foreach (var pc in Main.AllAlivePlayerControls)
+            foreach (var pc in Main.EnumerateAlivePlayerControls())
             {
                 if (pc.GetCustomRole().IsImpostor() || pc.GetCustomRole().IsMadmate() && !pc.Is(CustomRoles.Madmate))
                 {
@@ -768,7 +834,7 @@ class BeginImpostorPatch
                 // Crew postor is counted as madmate but should be a impostor
                 if (Madmate.MadmateKnowWhosImp.GetBool() || role != CustomRoles.Madmate)
                 {
-                    foreach (var pc in Main.AllAlivePlayerControls.Where(x => x.GetCustomRole().IsImpostor() && x.PlayerId != PlayerControl.LocalPlayer.PlayerId))
+                    foreach (var pc in Main.EnumerateAlivePlayerControls().Where(x => x.GetCustomRole().IsImpostor() && x.PlayerId != PlayerControl.LocalPlayer.PlayerId))
                     {
                         yourTeam.Add(pc);
                     }
@@ -776,7 +842,7 @@ class BeginImpostorPatch
                 // Crewpostor is counted as Madmate but should be a Impostor
                 if (Madmate.MadmateKnowWhosMadmate.GetBool() || role != CustomRoles.Madmate && Madmate.ImpKnowWhosMadmate.GetBool())
                 {
-                    foreach (var pc in Main.AllAlivePlayerControls.Where(x => x.Is(CustomRoles.Madmate) && x.PlayerId != PlayerControl.LocalPlayer.PlayerId))
+                    foreach (var pc in Main.EnumerateAlivePlayerControls().Where(x => x.Is(CustomRoles.Madmate) && x.PlayerId != PlayerControl.LocalPlayer.PlayerId))
                     {
                         yourTeam.Add(pc);
                     }
@@ -793,7 +859,7 @@ class BeginImpostorPatch
         {
             yourTeam = new();
             yourTeam.Add(PlayerControl.LocalPlayer);
-            foreach (var pc in Main.AllPlayerControls.Where(x => !x.AmOwner)) yourTeam.Add(pc);
+            foreach (var pc in Main.EnumerateAlivePlayerControls().Where(x => !x.AmOwner)) yourTeam.Add(pc);
             __instance.BeginCrewmate(yourTeam);
 #if !ANDROID
             __instance.overlayHandle.color = Palette.CrewmateBlue;
@@ -805,7 +871,7 @@ class BeginImpostorPatch
         {
             yourTeam = new();
             yourTeam.Add(PlayerControl.LocalPlayer);
-            foreach (var pc in Main.AllPlayerControls.Where(x => !x.AmOwner)) yourTeam.Add(pc);
+            foreach (var pc in Main.EnumerateAlivePlayerControls().Where(x => !x.AmOwner)) yourTeam.Add(pc);
             __instance.BeginCrewmate(yourTeam);
 #if !ANDROID
             __instance.overlayHandle.color = new Color32(127, 140, 141, byte.MaxValue);
@@ -820,14 +886,14 @@ class BeginImpostorPatch
             yourTeam.Add(PlayerControl.LocalPlayer);
 
             // Parasite and Impostor doesnt know each other
-            foreach (var pc in Main.AllAlivePlayerControls.Where(x => !x.AmOwner && !x.Is(CustomRoles.Parasite) && (x.GetCustomRole().IsImpostor() || !x.Is(CustomRoles.Madmate) && x.GetCustomRole().IsMadmate())))
+            foreach (var pc in Main.EnumerateAlivePlayerControls().Where(x => !x.AmOwner && !x.Is(CustomRoles.Parasite) && (x.GetCustomRole().IsImpostor() || !x.Is(CustomRoles.Madmate) && x.GetCustomRole().IsMadmate())))
             {
                 yourTeam.Add(pc);
             }
 
             if (Madmate.ImpKnowWhosMadmate.GetBool())
             {
-                foreach (var pc in Main.AllAlivePlayerControls.Where(x => x.Is(CustomRoles.Madmate)))
+                foreach (var pc in Main.EnumerateAlivePlayerControls().Where(x => x.Is(CustomRoles.Madmate)))
                 {
                     yourTeam.Add(pc);
                 }
@@ -842,7 +908,7 @@ class BeginImpostorPatch
         {
             yourTeam = new();
             yourTeam.Add(PlayerControl.LocalPlayer);
-            foreach (var pc in Main.AllPlayerControls.Where(x => !x.AmOwner)) yourTeam.Add(pc);
+            foreach (var pc in Main.EnumerateAlivePlayerControls().Where(x => !x.AmOwner)) yourTeam.Add(pc);
             __instance.BeginCrewmate(yourTeam);
 #if !ANDROID
             __instance.overlayHandle.color = new Color32(172, 66, 242, byte.MaxValue);
@@ -864,6 +930,7 @@ class BeginImpostorPatch
 [HarmonyPatch(typeof(IntroCutscene), nameof(IntroCutscene.OnDestroy))]
 class IntroCutsceneDestroyPatch
 {
+    public static long IntroDestroyTS;
     public static void Prefix()
     {
         if (AmongUsClient.Instance.AmHost && !AmongUsClient.Instance.IsGameOver)
@@ -903,9 +970,11 @@ class IntroCutsceneDestroyPatch
     {
         if (!GameStates.IsInGame) return;
 
+        IntroDestroyTS = Utils.TimeStamp;
+
         Main.IntroDestroyed = true;
 
-        foreach (var pc in Main.AllPlayerControls)
+        foreach (var pc in Main.EnumeratePlayerControls())
         {
             // Set roleAssigned as false for override role for modded players
             // For override role for vanilla clients we use "Data.Disconnected" while assign
@@ -954,7 +1023,7 @@ class IntroCutsceneDestroyPatch
                 SpeedRun.RpcSyncSpeedRunStates();
             }
 
-            foreach (var player in Main.AllPlayerControls)
+            foreach (var player in Main.EnumeratePlayerControls())
             {
                 if (player.Is(CustomRoles.GM) && !AntiBlackout.IsCached)
                 {
@@ -1000,6 +1069,8 @@ class IntroCutsceneDestroyPatch
             }
 
             Utils.CheckAndSetVentInteractions();
+
+            if (AFKDetector.ActivateOnStart.GetBool()) _ = new LateTask(() => Main.EnumerateAlivePlayerControls().Do(AFKDetector.RecordPosition), 1f);
 
             if (Main.CurrentServerIsVanilla && Options.BypassRateLimitAC.GetBool())
             {
@@ -1069,7 +1140,7 @@ public class IntroCutsceneDestroyPatch
         Main.IntroDestroyed = true;
         Logger.Info("Marked Main.IntroDestroyed to true", "IntroCutscene");
 
-        foreach (var pc in Main.AllPlayerControls)
+        foreach (var pc in Main.EnumeratePlayerControls())
         {
             // Set roleAssigned as false for override role for modded players
             // For override role for vanilla clients we use "Data.Disconnected" while assign
@@ -1118,7 +1189,7 @@ public class IntroCutsceneDestroyPatch
                 SpeedRun.RpcSyncSpeedRunStates();
             }
 
-            foreach (var player in Main.AllPlayerControls)
+            foreach (var player in Main.EnumeratePlayerControls())
             {
                 if (player.Is(CustomRoles.GM) && !AntiBlackout.IsCached)
                 {
@@ -1164,6 +1235,8 @@ public class IntroCutsceneDestroyPatch
             }
 
             Utils.CheckAndSetVentInteractions();
+
+            if (AFKDetector.ActivateOnStart.GetBool()) _ = new LateTask(() => Main.EnumerateAlivePlayerControls().Do(AFKDetector.RecordPosition), 1f);
 
             if (Main.CurrentServerIsVanilla && Options.BypassRateLimitAC.GetBool())
             {

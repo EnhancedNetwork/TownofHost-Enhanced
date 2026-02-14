@@ -59,7 +59,7 @@ class MurderPlayerInHidenSeekPatch
     public static void Postfix(PlayerControl __instance, [HarmonyArgument(0)] PlayerControl target/*, [HarmonyArgument(1)] MurderResultFlags resultFlags*/)
     {
         if (!AmongUsClient.Instance.AmHost || GameStates.IsNormalGame) return;
-        if (!target.Data.IsDead) return;
+        if (!target.Data.IsDead || target.IsAlive()) return;
 
         PlayerControl killer = __instance;
 

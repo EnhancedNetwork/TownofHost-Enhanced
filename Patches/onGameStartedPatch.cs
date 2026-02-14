@@ -54,6 +54,8 @@ internal class ChangeRoleSettings
             }
 
             Main.PlayerStates = [];
+            RoleAssign.PrevRoleResult = RoleAssign.RoleResult;
+            RoleAssign.PrevRolePreventAttempts = [];
             RoleAssign.RoleResult = [];
             KillTimerManager.Initializate();
             AbilityUseManager.Initializate();
@@ -83,6 +85,8 @@ internal class ChangeRoleSettings
             Main.OvverideOutfit.Clear();
             Main.GameIsLoaded = false;
             Main.CurrentServerIsVanilla = GameStates.IsVanillaServer && !GameStates.IsLocalGame;
+
+            AFKDetector.ShieldedPlayers.Clear();
 
             Main.LastNotifyNames.Clear();
 
@@ -135,7 +139,7 @@ internal class ChangeRoleSettings
 
             if (AmongUsClient.Instance.AmHost)
             {
-                var invalidColor = Main.AllPlayerControls.Where(p => p.Data.DefaultOutfit.ColorId < 0 || Palette.PlayerColors.Length <= p.Data.DefaultOutfit.ColorId);
+                var invalidColor = Main.EnumeratePlayerControls().Where(p => p.Data.DefaultOutfit.ColorId < 0 || Palette.PlayerColors.Length <= p.Data.DefaultOutfit.ColorId);
                 if (invalidColor.Any())
                 {
                     StringBuilder sb = new();
@@ -149,7 +153,7 @@ internal class ChangeRoleSettings
                 }
             }
 
-            foreach (var pc in Main.AllPlayerControls)
+            foreach (var pc in Main.EnumeratePlayerControls())
             {
                 var outfit = pc.Data.DefaultOutfit;
                 var colorId = pc.Data.DefaultOutfit.ColorId;
@@ -173,7 +177,7 @@ internal class ChangeRoleSettings
                     }
                 }
 
-                foreach (var target in Main.AllPlayerControls)
+                foreach (var target in Main.EnumeratePlayerControls())
                 {
                     var pair = (target.PlayerId, pc.PlayerId);
                     Main.LastNotifyNames[pair] = currentName;
@@ -212,7 +216,7 @@ internal class ChangeRoleSettings
             }
 
             // Initialize all Roles
-            foreach (var role in EnumHelper.GetAllValues<CustomRoles>().Where(role => role < CustomRoles.NotAssigned).ToArray())
+            foreach (var role in Main.CustomRoleValues.Where(role => role < CustomRoles.NotAssigned).ToArray())
             {
                 var RoleClass = role.GetStaticRoleClass();
                 RoleClass?.OnInit();
@@ -367,7 +371,7 @@ internal class StartGameHostPatch
             timer += Time.deltaTime;
         }
         thiz.SendClientReady();
-        yield return new WaitForSeconds(2f);
+        yield return new WaitForSecondsRealtime(2f);
         yield return AssignRoles();
         //ShipStatus.Instance.Begin(); // Tasks sets in IntroPatch
         yield break;
@@ -388,7 +392,7 @@ internal class StartGameHostPatch
             // Select custom Roles/Add-ons
             EAC.OriginalRoles = [];
 
-            if (Options.DraftMode.GetBool() && Options.devEnableDraft)
+            if (Options.DraftMode.GetBool())
                 DraftAssign.StartSelect();
             else
                 RoleAssign.StartSelect();
@@ -556,13 +560,13 @@ internal class StartGameHostPatch
         }
 
         Logger.Info("Others assign finished", "AssignRoleTypes");
-        yield return new WaitForSeconds(GameStates.IsLocalGame ? 1f : 2f);
+        yield return new WaitForSecondsRealtime(GameStates.IsLocalGame ? 1f : 2f);
 
         Logger.Info("Send rpc disconnected for all", "AssignRoleTypes");
         DataDisconnected.Clear();
         RpcSetDisconnected(disconnected: true);
 
-        yield return new WaitForSeconds(GameStates.IsLocalGame ? 2f : 4f);
+        yield return new WaitForSecondsRealtime(GameStates.IsLocalGame ? 2f : 4f);
 
         Logger.Info("Assign self", "AssignRoleTypes");
         SetRoleSelf();
@@ -638,7 +642,7 @@ internal class SelectRolesPatch
                 Main.PlayerStates[PlayerControl.LocalPlayer.PlayerId].SetDead();
             }
 
-            foreach (var player in Main.AllPlayerControls)
+            foreach (var player in Main.EnumeratePlayerControls())
             {
                 if (!player.IsDisconnected() && TagManager.AssignGameMaster(player.FriendCode))
                 {
@@ -707,7 +711,7 @@ public static class RpcSetRoleReplacer
             {
                 var BaseRole = role.GetVNRole();
 
-                foreach (var target in Main.AllPlayerControls)
+                foreach (var target in Main.EnumeratePlayerControls())
                 {
                     RoleTypes targetRoleType = RoleTypes.Crewmate;
                     var targetCustomRole = RoleAssign.RoleResult.GetValueOrDefault(target.PlayerId, CustomRoles.CrewmateTOHE);
@@ -731,7 +735,7 @@ public static class RpcSetRoleReplacer
 
                 if (roleType is not RoleTypes.Impostor and not RoleTypes.Shapeshifter and not RoleTypes.Phantom)
                 {
-                    foreach (var target in Main.AllPlayerControls)
+                    foreach (var target in Main.EnumeratePlayerControls())
                     {
                         if (target.PlayerId == player.PlayerId)
                         {
@@ -757,7 +761,7 @@ public static class RpcSetRoleReplacer
                 }
                 else
                 {
-                    foreach (var target in Main.AllPlayerControls)
+                    foreach (var target in Main.EnumeratePlayerControls())
                     {
                         if (target.PlayerId == player.PlayerId)
                         {
@@ -787,7 +791,7 @@ public static class RpcSetRoleReplacer
 
     public static void MakeDesyncSenders()
     {
-        foreach (var player in Main.AllPlayerControls)
+        foreach (var player in Main.EnumeratePlayerControls())
         {
             if (player.AmOwner)
             {
@@ -894,7 +898,7 @@ public static class RpcSetRoleReplacer
         foreach (var kvp in Senders)
         {
             kvp.Value.SendMessage();
-            yield return new WaitForSeconds(0.3f);
+            yield return new WaitForSecondsRealtime(0.3f);
         }
         BlockSetRole = false;
     }

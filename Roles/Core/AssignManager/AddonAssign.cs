@@ -7,12 +7,12 @@ namespace TOHE.Roles.Core.AssignManager;
 public static class AddonAssign
 {
     private static readonly HashSet<CustomRoles> AddonRolesList = [];
+    public static readonly Dictionary<byte, HashSet<CustomRoles>> SetAddOns = [];
 
     private static bool NotAssignAddOnInGameStarted(CustomRoles role)
     {
         switch (role)
         {
-            // case CustomRoles.Lovers:
             case CustomRoles.Workhorse:
             case CustomRoles.LastImpostor:
             case CustomRoles.Narc:
@@ -103,6 +103,24 @@ public static class AddonAssign
 
         Logger.Info($" Is Started", "Assign Add-ons");
 
+        // Assign Set Add-Ons
+        foreach ((byte id, HashSet<CustomRoles> addons) in SetAddOns)
+        {
+            var player = id.GetPlayer();
+
+            foreach (CustomRoles addon in addons)
+            {
+                if (!CustomRolesHelper.CheckAddonConfilct(addon, player)) continue;
+
+                // Set Add-on
+                Main.PlayerStates[player.PlayerId].SetSubRole(addon);
+                Logger.Info($"Registered Add-on: {player?.Data?.PlayerName} = {player.GetCustomRole()} + {addon}", $"Assign {addon}");
+                
+                addonsList.Remove(addon);
+            }
+            
+        }
+
         // Assign add-ons
         foreach (var addOn in addonsList.ToArray())
         {
@@ -116,7 +134,7 @@ public static class AddonAssign
     {
         try
         {
-            var checkAllPlayers = Main.AllAlivePlayerControls.Where(x => CustomRolesHelper.CheckAddonConfilct(role, x));
+            var checkAllPlayers = Main.EnumerateAlivePlayerControls().Where(x => CustomRolesHelper.CheckAddonConfilct(role, x));
             var allPlayers = checkAllPlayers.ToList();
             if (!allPlayers.Any()) return;
             var count = Math.Clamp(RawCount, 0, allPlayers.Count);
@@ -145,64 +163,6 @@ public static class AddonAssign
             Logger.Warn($"Add-On {role} get error after check addon confilct for: {error}", "AssignSubRoles");
         }
     }
-
-    // public static void InitAndStartAssignLovers()
-    // {
-    //     var rd = IRandom.Instance;
-    //     if (CustomRoles.Lovers.IsEnable() && (CustomRoles.Hater.IsEnable() ? -1 : rd.Next(1, 100)) <= Options.LoverSpawnChances.GetInt())
-    //     {
-    //         // Initialize Lovers
-    //         Main.LoversPlayers.Clear();
-    //         Main.isLoversDead = false;
-
-    //         //Two randomly selected
-    //         AssignLovers();
-    //     }
-    // }
-    // private static void AssignLovers(int RawCount = -1)
-    // {
-    //     var allPlayers = new List<PlayerControl>();
-    //     foreach (var pc in Main.AllPlayerControls)
-    //     {
-    //         if (pc.Is(CustomRoles.GM)
-    //             || (pc.HasSubRole() && pc.GetCustomSubRoles().Count >= Options.NoLimitAddonsNumMax.GetInt())
-    //             || pc.Is(CustomRoles.Dictator)
-    //             || pc.Is(CustomRoles.God)
-    //             || pc.Is(CustomRoles.Hater)
-    //             || pc.Is(CustomRoles.Sunnyboy)
-    //             || pc.Is(CustomRoles.Bomber)
-    //             || pc.Is(CustomRoles.Provocateur)
-    //             || pc.Is(CustomRoles.RuthlessRomantic)
-    //             || pc.Is(CustomRoles.Romantic)
-    //             || pc.Is(CustomRoles.VengefulRomantic)
-    //             || pc.Is(CustomRoles.Workaholic)
-    //             || pc.Is(CustomRoles.Solsticer)
-    //             || pc.Is(CustomRoles.Mini)
-    //             || pc.Is(CustomRoles.NiceMini)
-    //             || pc.Is(CustomRoles.EvilMini)
-    //             || (pc.GetCustomRole().IsCrewmate() && !Options.CrewCanBeInLove.GetBool())
-    //             || (pc.GetCustomRole().IsNeutral() && !Options.NeutralCanBeInLove.GetBool())
-    //             || (pc.GetCustomRole().IsImpostor() && !Options.ImpCanBeInLove.GetBool())
-    //             || (pc.GetCustomRole().IsCoven() && !Options.CovenCanBeInLove.GetBool()))
-    //             continue;
-
-    //         allPlayers.Add(pc);
-    //     }
-    //     var role = CustomRoles.Lovers;
-    //     var count = Math.Clamp(RawCount, 0, allPlayers.Count);
-    //     if (RawCount == -1) count = Math.Clamp(role.GetCount(), 0, allPlayers.Count);
-    //     if (count <= 0 || allPlayers.Count <= 1) return;
-    //     for (var i = 0; i < count; i++)
-    //     {
-    //         var player = allPlayers.RandomElement();
-    //         Main.LoversPlayers.Add(player);
-    //         allPlayers.Remove(player);
-    //         Main.PlayerStates[player.PlayerId].SetSubRole(role);
-    //         Logger.Info($"Registered Lovers: {player?.Data?.PlayerName} = {player.GetCustomRole()} + {role}", "Assign Lovers");
-    //     }
-    //     if (AmongUsClient.Instance.AmHost && Main.LoversPlayers.Any())
-    //         Lovers.SendRPC();
-    // }
 
     public static void StartAssigningNarc()
     {

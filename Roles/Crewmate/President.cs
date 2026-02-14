@@ -2,6 +2,7 @@ using Hazel;
 using TOHE.Modules;
 using TOHE.Modules.ChatManager;
 using TOHE.Modules.Rpc;
+using TOHE.Patches;
 using static TOHE.Options;
 using static TOHE.Translator;
 
@@ -29,15 +30,15 @@ internal class President : RoleBase
 
     public override void SetupCustomOption()
     {
-        Options.SetupRoleOptions(Id, TabGroup.CrewmateRoles, CustomRoles.President);
-        PresidentAbilityUses = IntegerOptionItem.Create(Id + 10, GeneralOption.SkillLimitTimes, new(1, 20, 1), 1, TabGroup.CrewmateRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.President])
+        SetupRoleOptions(Id, TabGroup.CrewmateRoles, CustomRoles.President);
+        PresidentAbilityUses = IntegerOptionItem.Create(Id + 10, GeneralOption.SkillLimitTimes, new(1, 20, 1), 1, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.President])
             .SetValueFormat(OptionFormat.Times);
-        PresidentCanBeGuessedAfterRevealing = BooleanOptionItem.Create(Id + 11, "PresidentCanBeGuessedAfterRevealing", false, TabGroup.CrewmateRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.President]);
-        NeutralsSeePresident = BooleanOptionItem.Create(Id + 12, "NeutralsSeePresident", true, TabGroup.CrewmateRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.President]);
-        MadmatesSeePresident = BooleanOptionItem.Create(Id + 13, "MadmatesSeePresident", true, TabGroup.CrewmateRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.President]);
-        ImpsSeePresident = BooleanOptionItem.Create(Id + 14, "ImpsSeePresident", true, TabGroup.CrewmateRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.President]);
-        CovenSeePresident = BooleanOptionItem.Create(Id + 16, "CovenSeePresident", true, TabGroup.CrewmateRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.President]);
-        HidePresidentEndCommand = BooleanOptionItem.Create(Id + 15, "HidePresidentEndCommand", true, TabGroup.CrewmateRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.President]);
+        PresidentCanBeGuessedAfterRevealing = BooleanOptionItem.Create(Id + 11, "PresidentCanBeGuessedAfterRevealing", false, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.President]);
+        NeutralsSeePresident = BooleanOptionItem.Create(Id + 12, "NeutralsSeePresident", true, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.President]);
+        MadmatesSeePresident = BooleanOptionItem.Create(Id + 13, "MadmatesSeePresident", true, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.President]);
+        ImpsSeePresident = BooleanOptionItem.Create(Id + 14, "ImpsSeePresident", true, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.President]);
+        CovenSeePresident = BooleanOptionItem.Create(Id + 16, "CovenSeePresident", true, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.President]);
+        HidePresidentEndCommand = BooleanOptionItem.Create(Id + 15, "HidePresidentEndCommand", true, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.President]);
     }
     public override void Init()
     {
@@ -58,141 +59,70 @@ internal class President : RoleBase
 
     public static bool CheckReveal(byte targetId) => CheckPresidentReveal.TryGetValue(targetId, out var canBeReveal) && canBeReveal;
 
-    public static void TryHideMsgForPresident()
+    public static void FinishCommand(PlayerControl player, string commandKey, string text, string[] args)
     {
-        ChatUpdatePatch.DoBlockChat = true;
-
-        if (ChatManager.quickChatSpamMode != QuickChatSpamMode.QuickChatSpam_Disabled)
+        if (!AmongUsClient.Instance.AmHost)
         {
-            ChatManager.SendQuickChatSpam();
-            ChatUpdatePatch.DoBlockChat = false;
+            ChatCommands.RequestCommandProcessingFromHost(text, commandKey);
             return;
         }
 
-        var rd = IRandom.Instance;
-        string msg;
-        for (int i = 0; i < 20; i++)
+        var originMsg = text;
+
+        if (!GameStates.IsMeeting || player == null || GameStates.IsExilling) return;
+        if (!player.Is(CustomRoles.President)) return;
+
+        if (player.GetAbilityUseLimit() < 1)
         {
-            msg = "/";
-            if (rd.Next(100) < 20)
-                msg += "finish";
-            else
-                msg += "reveal";
-            var player = Main.AllAlivePlayerControls.RandomElement();
-            DestroyableSingleton<HudManager>.Instance.Chat.AddChat(player, msg);
-            var writer = CustomRpcSender.Create("MessagesToSend", SendOption.None);
-            writer.StartMessage(-1);
-            writer.StartRpc(player.NetId, (byte)RpcCalls.SendChat)
-                .Write(msg)
-                .EndRpc();
-            writer.EndMessage();
-            writer.SendMessage();
+            Utils.SendMessage(GetString("PresidentEndMax"), player.PlayerId);
+            return;
         }
-        ChatUpdatePatch.DoBlockChat = false;
+        player.RpcRemoveAbilityUse();
+
+        foreach (var pva in MeetingHud.Instance.playerStates)
+        {
+            if (pva == null) continue;
+
+            if (pva.VotedFor < 253)
+                MeetingHud.Instance.RpcClearVote(pva.TargetPlayerId);
+        }
+        List<MeetingHud.VoterState> statesList = [];
+        MeetingHud.Instance.RpcVotingComplete(statesList.ToArray(), null, true);
+        MeetingHud.Instance.RpcClose();
     }
 
-    public static bool EndMsg(PlayerControl pc, string msg)
+    public static void RevealCommand(PlayerControl player, string commandKey, string text, string[] args)
     {
-        var originMsg = msg;
-
-        if (!AmongUsClient.Instance.AmHost) return false;
-        if (!GameStates.IsMeeting || pc == null || GameStates.IsExilling) return false;
-        if (!pc.Is(CustomRoles.President)) return false;
-
-        int operate;
-        msg = msg.ToLower().TrimStart().TrimEnd();
-        if (CheckCommond(ref msg, "finish|结束|结束会议|結束|結束會議")) operate = 1;
-        else if (CheckCommond(ref msg, "reveal|展示")) operate = 2;
-        else return false;
-
-        if (!pc.IsAlive())
+        if (!AmongUsClient.Instance.AmHost)
         {
-            Utils.SendMessage(GetString("PresidentDead"), pc.PlayerId);
-            return false;
+            ChatCommands.RequestCommandProcessingFromHost(text, commandKey);
+            return;
         }
 
-        else if (operate == 1)
+        var originMsg = text;
+
+        if (!GameStates.IsMeeting || player == null || GameStates.IsExilling) return;
+        if (!player.Is(CustomRoles.President)) return;
+
+        if (RevealLimit[player.PlayerId] < 1)
         {
-
-            if (HidePresidentEndCommand.GetBool())
-            {
-                //if (Options.NewHideMsg.GetBool()) ChatManager.SendPreviousMessagesToAll();
-                //else TryHideMsgForPresident();
-                TryHideMsgForPresident();
-                ChatManager.SendPreviousMessagesToAll();
-            }
-            else if (pc.AmOwner) Utils.SendMessage(originMsg, 255, pc.GetRealName());
-
-            if (pc.GetAbilityUseLimit() < 1)
-            {
-                Utils.SendMessage(GetString("PresidentEndMax"), pc.PlayerId);
-                return true;
-            }
-            pc.RpcRemoveAbilityUse();
-
-            foreach (var pva in MeetingHud.Instance.playerStates)
-            {
-                if (pva == null) continue;
-
-                if (pva.VotedFor < 253)
-                    MeetingHud.Instance.RpcClearVote(pva.TargetPlayerId);
-            }
-            List<MeetingHud.VoterState> statesList = [];
-            MeetingHud.Instance.RpcVotingComplete(statesList.ToArray(), null, true);
-            MeetingHud.Instance.RpcClose();
+            Utils.SendMessage(GetString("PresidentRevealMax"), player.PlayerId);
+            return;
         }
-        else if (operate == 2)
+
+        RevealLimit[player.PlayerId]--;
+        CheckPresidentReveal[player.PlayerId] = true;
+        foreach (var tar in Main.EnumerateAlivePlayerControls())
         {
-
-            if (HidePresidentEndCommand.GetBool())
-            {
-                //if (Options.NewHideMsg.GetBool()) ChatManager.SendPreviousMessagesToAll();
-                //else TryHideMsgForPresident();
-                TryHideMsgForPresident();
-                ChatManager.SendPreviousMessagesToAll();
-            }
-            else if (pc.AmOwner) Utils.SendMessage(originMsg, 255, pc.GetRealName());
-
-            if (RevealLimit[pc.PlayerId] < 1)
-            {
-                Utils.SendMessage(GetString("PresidentRevealMax"), pc.PlayerId);
-                return true;
-            }
-
-            RevealLimit[pc.PlayerId]--;
-            CheckPresidentReveal[pc.PlayerId] = true;
-            foreach (var tar in Main.AllAlivePlayerControls)
-            {
-                if (!MadmatesSeePresident.GetBool() && tar.Is(CustomRoles.Madmate) && tar != pc) continue;
-                if (!NeutralsSeePresident.GetBool() && tar.GetCustomRole().IsNeutral() && !tar.GetCustomRole().IsMadmate()) continue;
-                if (!ImpsSeePresident.GetBool() && tar.GetCustomRole().IsImpostorTeamV3() && !tar.Is(CustomRoles.Narc)) continue;
-                if (!CovenSeePresident.GetBool() && tar.GetCustomRole().IsCoven()) continue;
-                Utils.SendMessage(string.Format(GetString("PresidentRevealed"), pc.GetRealName()), tar.PlayerId, Utils.ColorString(Utils.GetRoleColor(CustomRoles.President), GetString("PresidentRevealTitle")));
-            }
-            SendRPC(pc.PlayerId, isEnd: false);
+            if (!MadmatesSeePresident.GetBool() && tar.Is(CustomRoles.Madmate) && tar != player) continue;
+            if (!NeutralsSeePresident.GetBool() && tar.GetCustomRole().IsNeutral() && !tar.GetCustomRole().IsMadmate()) continue;
+            if (!ImpsSeePresident.GetBool() && tar.GetCustomRole().IsImpostorTeamV3() && !tar.Is(CustomRoles.Narc)) continue;
+            if (!CovenSeePresident.GetBool() && tar.GetCustomRole().IsCoven()) continue;
+            Utils.SendMessage(string.Format(GetString("PresidentRevealed"), player.GetRealName()), tar.PlayerId, Utils.ColorString(Utils.GetRoleColor(CustomRoles.President), GetString("PresidentRevealTitle")));
         }
-        return true;
+        SendRPC(player.PlayerId, isEnd: false);
     }
-    public static bool CheckCommond(ref string msg, string command, bool exact = true)
-    {
-        var comList = command.Split('|');
-        for (int i = 0; i < comList.Length; i++)
-        {
-            if (exact)
-            {
-                if (msg == "/" + comList[i]) return true;
-            }
-            else
-            {
-                if (msg.StartsWith("/" + comList[i]))
-                {
-                    //msg = msg.Replace("/" + comList[i], string.Empty);
-                    return true;
-                }
-            }
-        }
-        return false;
-    }
+
     public override bool OnCheckMurderAsTarget(PlayerControl killer, PlayerControl target)
     {
         if (CheckPresidentReveal[target.PlayerId])
@@ -211,7 +141,6 @@ internal class President : RoleBase
         }
         var msg2 = new RpcPresidentEnd(PlayerControl.LocalPlayer.NetId, playerId);
         RpcUtils.LateBroadcastReliableMessage(msg2);
-
     }
     public static void ReceiveRPC(MessageReader reader, PlayerControl pc, bool isEnd = true)
     {
@@ -222,7 +151,7 @@ internal class President : RoleBase
             CheckPresidentReveal[PlayerId] = revealed;
             return;
         }
-        EndMsg(pc, $"/finish");
+        // FinishCommand(pc, "Command.Finish", "/finish", []);
     }
     public override bool OnRoleGuess(bool isUI, PlayerControl target, PlayerControl guesser, CustomRoles role, ref bool guesserSuicide)
     {
@@ -235,11 +164,11 @@ internal class President : RoleBase
         return false;
     }
     public override bool KnowRoleTarget(PlayerControl seer, PlayerControl target)
-        => (target.Is(CustomRoles.President) && (seer.GetCustomRole().IsCrewmate() || seer.Is(CustomRoles.Narc)) && !seer.Is(CustomRoles.Madmate) && CheckPresidentReveal[target.PlayerId] == true) ||
-            (target.Is(CustomRoles.President) && seer.Is(CustomRoles.Madmate) && MadmatesSeePresident.GetBool() && CheckPresidentReveal[target.PlayerId] == true) ||
-            (target.Is(CustomRoles.President) && seer.GetCustomRole().IsNeutral() && NeutralsSeePresident.GetBool() && CheckPresidentReveal[target.PlayerId] == true) ||
-            (target.Is(CustomRoles.President) && seer.GetCustomRole().IsCoven() && CovenSeePresident.GetBool() && CheckPresidentReveal[target.PlayerId] == true) ||
-            (target.Is(CustomRoles.President) && seer.GetCustomRole().IsImpostor() && ImpsSeePresident.GetBool() && CheckPresidentReveal[target.PlayerId] == true);
+        => (target.Is(CustomRoles.President) && (seer.GetCustomRole().IsCrewmate() || seer.Is(CustomRoles.Narc)) && !seer.Is(CustomRoles.Madmate) && CheckPresidentReveal[target.PlayerId]) ||
+            (target.Is(CustomRoles.President) && seer.Is(CustomRoles.Madmate) && MadmatesSeePresident.GetBool() && CheckPresidentReveal[target.PlayerId]) ||
+            (target.Is(CustomRoles.President) && seer.GetCustomRole().IsNeutral() && NeutralsSeePresident.GetBool() && CheckPresidentReveal[target.PlayerId]) ||
+            (target.Is(CustomRoles.President) && seer.GetCustomRole().IsCoven() && CovenSeePresident.GetBool() && CheckPresidentReveal[target.PlayerId]) ||
+            (target.Is(CustomRoles.President) && seer.GetCustomRole().IsImpostor() && ImpsSeePresident.GetBool() && CheckPresidentReveal[target.PlayerId]);
 
     public override bool OthersKnowTargetRoleColor(PlayerControl seer, PlayerControl target) => KnowRoleTarget(seer, target);
 }

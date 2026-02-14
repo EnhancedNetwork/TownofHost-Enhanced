@@ -8,11 +8,11 @@ public class IntegerOptionItem(int id, string name, int defaultValue, TabGroup t
     // 必須情報
     public IntegerValueRule Rule = rule;
 
-    public static IntegerOptionItem Create(int id, string name, IntegerValueRule rule, int defaultValue, TabGroup tab, bool isSingleValue, bool vanillaText = false)
+    public static IntegerOptionItem Create(int id, string name, IntegerValueRule rule, int defaultValue, TabGroup tab, bool isSingleValue = false, bool vanillaText = false)
     {
         return new IntegerOptionItem(id, name, defaultValue, tab, isSingleValue, rule, vanillaText);
     }
-    public static IntegerOptionItem Create(int id, Enum name, IntegerValueRule rule, int defaultValue, TabGroup tab, bool isSingleValue, bool vanillaText = false)
+    public static IntegerOptionItem Create(int id, Enum name, IntegerValueRule rule, int defaultValue, TabGroup tab, bool isSingleValue = false, bool vanillaText = false)
     {
         return new IntegerOptionItem(id, name.ToString(), defaultValue, tab, isSingleValue, rule, vanillaText);
     }

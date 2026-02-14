@@ -1,4 +1,5 @@
 using AmongUs.Data;
+using Hazel;
 using System;
 using System.Globalization;
 using System.IO;
@@ -158,7 +159,7 @@ public static class TemplateManager
         return reader.ReadToEnd();
     }
 
-    public static void SendTemplate(string str = "", byte playerId = 0xff, bool noErr = false)
+    public static void SendTemplate(string str = "", byte playerId = 0xff, bool noErr = false, SendOption sendOption = SendOption.Reliable)
     {
         CreateIfNotExists();
         using StreamReader sr = new(TEMPLATE_FILE_PATH, Encoding.GetEncoding("UTF-8"));
@@ -188,21 +189,21 @@ public static class TemplateManager
         {
             if (playerId == 0xff)
                 HudManager.Instance.Chat.AddChat(PlayerControl.LocalPlayer, string.Format(GetString("Message.TemplateNotFoundHost"), str, tags.Join(delimiter: ", ")));
-            else Utils.SendMessage(string.Format(GetString("Message.TemplateNotFoundClient"), str), playerId, noReplay: true);
+            else Utils.SendMessage(string.Format(GetString("Message.TemplateNotFoundClient"), str), playerId, addToHistory: false, noSplit: true, sendOption: sendOption);
         }
         else foreach (string x in sendList.ToArray())
+        {
+            var title = TryGetTitle(x, out var HasTitle);
+            var rmv = x;
+            if (HasTitle)
             {
-                var title = TryGetTitle(x, out var HasTitle);
-                var rmv = x;
-                if (HasTitle)
-                {
-                    rmv = title != "" ? x.Remove(x.IndexOf("<title>"), x.IndexOf("</title>")) : "";
-                    rmv = rmv.Replace("<title>", "");
-                    rmv = rmv.Replace("</title>", "");
-                }
-
-                Utils.SendMessage(ApplyReplaceDictionary(rmv), playerId, title, noReplay: true);
+                rmv = title != "" ? x.Remove(x.IndexOf("<title>"), x.IndexOf("</title>")) : "";
+                rmv = rmv.Replace("<title>", "");
+                rmv = rmv.Replace("</title>", "");
             }
+
+            Utils.SendMessage(ApplyReplaceDictionary(rmv), playerId, title, addToHistory: false, sendOption: sendOption);
+        }
     }
 
     private static string ApplyReplaceDictionary(string text)

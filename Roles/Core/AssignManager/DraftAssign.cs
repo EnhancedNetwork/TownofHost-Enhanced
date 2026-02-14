@@ -5,6 +5,8 @@ using System.Text.RegularExpressions;
 using AmongUs.GameOptions;
 using Cpp2IL.Core.Extensions;
 using Rewired;
+using TOHE.Modules;
+using TOHE.Patches;
 using TOHE.Roles.Core.AssignManager;
 using TOHE.Roles.Crewmate;
 using TOHE.Roles.Double;
@@ -27,7 +29,7 @@ public static class DraftAssign
     public static List<CustomRoles>[] PoolLookup = [];
 
     public static bool DraftActive => AssignedSlots.Any();
-    public static bool CanStartWithDraft => Main.AllAlivePlayerControls.All(x => PoolLookup[x.PlayerId] != null && PoolLookup[x.PlayerId].Any());
+    public static bool CanStartWithDraft => PoolLookup.Length >= Main.AllAlivePlayerControls.Count && Main.EnumerateAlivePlayerControls().All(x => x.PlayerId < PoolLookup.Length && PoolLookup[x.PlayerId] != null && PoolLookup[x.PlayerId].Any());
 
     private static Dictionary<byte, CustomRoles> RoleResult => RoleAssign.RoleResult;
 
@@ -38,14 +40,15 @@ public static class DraftAssign
         Reset();
 
         var rd = IRandom.Instance;
-        int playerCount = Main.AllAlivePlayerControls.Length;
+        int playerCount = Main.AllAlivePlayerControls.Count;
 
-        foreach (var role in EnumHelper.GetAllValues<CustomRoles>())
+        foreach (var role in Main.CustomRoleValues)
         {
             // Logger.Info(role.ToString(), "LoadDraftRoles");
             int chance = role.GetMode();
 
             if (role.IsVanilla() || chance == 0 || role.IsAdditionRole() || role.IsGhostRole()) continue;
+            if (role.UsesCNOs() && GameStates.IsVanillaServer) continue;
             switch (role)
             {
                 case CustomRoles.Stalker when GameStates.FungleIsActive:
@@ -115,7 +118,7 @@ public static class DraftAssign
             AllPlayers.Remove(PlayerControl.LocalPlayer);
         }
 
-        foreach (var player in Main.AllPlayerControls)
+        foreach (var player in Main.EnumeratePlayerControls())
         {
             if (player == null) continue;
 
@@ -321,6 +324,8 @@ public static class DraftAssign
 
     AfterPoolsAssigned:
 
+        FixSlotDistribution();
+
         Logger.Info("================================================", "PoolsAssigned");
         foreach (var id in PoolIds)
         {
@@ -338,6 +343,47 @@ public static class DraftAssign
         RoleSlot GetSlot(int index)
         {
             return SlotLookup[index];
+        }
+
+        /// <summary>
+        /// Adjusts the role slot distribution to match the set of currently connected players.
+        /// Ensures that slots marked as always evil are assigned to existing player IDs and that
+        /// non-always-evil slots are not reserved for non-existent players by swapping entries
+        /// in <c>SlotLookup</c> and <c>PoolLookup</c> until a consistent assignment is reached.
+        /// </summary>
+        void FixSlotDistribution()
+        {
+            var allPlayerIds = Main.EnumeratePlayerControls().Select(x => x.PlayerId).ToList();
+            var allSlotIds = SlotLookup.Select((value, index) => new { Value = value, Index = index })
+                .Where(item => item.Value != null).Select(item => item.Index).ToList();
+
+            List<byte> slotsToReassignFrom = [];
+            List<byte> slotsToReassignTo = [];
+
+            foreach (var id in allSlotIds)
+            {
+                if (!allPlayerIds.Contains((byte)id))
+                {
+                    if (GetSlot(id).IsEvil == RoleSlot.Evil.ALWAYS) slotsToReassignFrom.Add((byte)id);
+                }
+                else
+                {
+                    if (GetSlot(id).IsEvil != RoleSlot.Evil.ALWAYS) slotsToReassignTo.Add((byte)id);
+                }
+            }
+
+            while (slotsToReassignFrom.Count > 0 && slotsToReassignTo.Count > 0)
+            {
+                slotsToReassignFrom.Shuffle();
+                slotsToReassignTo.Shuffle();
+
+                // Swaps Slots and Pools at the From/To Locations
+                (SlotLookup[slotsToReassignFrom[0]], SlotLookup[slotsToReassignTo[0]]) = (SlotLookup[slotsToReassignTo[0]], SlotLookup[slotsToReassignFrom[0]]);
+                (PoolLookup[slotsToReassignFrom[0]], PoolLookup[slotsToReassignTo[0]]) = (PoolLookup[slotsToReassignTo[0]], PoolLookup[slotsToReassignFrom[0]]);
+
+                slotsToReassignTo.RemoveAt(0);
+                slotsToReassignFrom.RemoveAt(0);
+            }
         }
 
         CustomRoles GetRoleFromSlot(List<CustomRoles> roles, RoleSlot slot)
@@ -645,7 +691,7 @@ public static class DraftAssign
         switch (Options.CurrentGameMode)
         {
             case CustomGameMode.FFA:
-                foreach (PlayerControl pc in Main.AllPlayerControls)
+                foreach (PlayerControl pc in Main.EnumeratePlayerControls())
                 {
                     if (Main.EnableGM.Value && pc.IsHost())
                     {
@@ -663,7 +709,7 @@ public static class DraftAssign
                 return;
 
             case CustomGameMode.SpeedRun:
-                foreach (PlayerControl pc in Main.AllPlayerControls)
+                foreach (PlayerControl pc in Main.EnumeratePlayerControls())
                 {
                     if (Main.EnableGM.Value && pc.IsHost())
                     {
@@ -688,9 +734,7 @@ public static class DraftAssign
         }
         Logger.Info("Started draft assign roles.", "DraftAssign");
         var rd = IRandom.Instance;
-        int playerCount = Main.AllAlivePlayerControls.Length;
-
-        var AllPlayers = Main.AllAlivePlayerControls;
+        int playerCount = Main.AllAlivePlayerControls.Count;
 
         List<CustomRoles> FinalRolesList = [];
 
@@ -706,7 +750,7 @@ public static class DraftAssign
             AssignedSlots.Remove(id);
         }
 
-        foreach (var player in AllPlayers)
+        foreach (var player in Main.EnumerateAlivePlayerControls())
         {
             byte playerId = player.PlayerId;
             // Assign Role if drafted
@@ -738,31 +782,31 @@ public static class DraftAssign
         return;
     }
 
-    public static DraftCmdResult AddPlayersToDraft()
-    {
-        if (!DraftActive) return DraftCmdResult.NoCurrentDraft;
+    // public static DraftCmdResult AddPlayersToDraft()
+    // {
+    //     if (!DraftActive) return DraftCmdResult.NoCurrentDraft;
 
-        var rd = IRandom.Instance;
+    //     var rd = IRandom.Instance;
 
-        // foreach player that doesn't have a bucket/role assigned
-        foreach (var player in Main.AllAlivePlayerControls.ExceptBy(AssignedSlots.Keys, x => x.PlayerId))
-        {
-            var unassigned = UnassignedSlots.Shuffle(rd).ToList();
+    //     // foreach player that doesn't have a bucket/role assigned
+    //     foreach (var player in Main.AllAlivePlayerControls.ExceptBy(AssignedSlots.Keys, x => x.PlayerId))
+    //     {
+    //         var unassigned = UnassignedSlots.Shuffle(rd).ToList();
 
-            var toAssign = unassigned.First();
+    //         var toAssign = unassigned.First();
 
-            UnassignedSlots.Remove(toAssign);
-            AssignedSlots.Add(player.PlayerId, toAssign);
+    //         UnassignedSlots.Remove(toAssign);
+    //         AssignedSlots.Add(player.PlayerId, toAssign);
 
-            var pool = UnassignedDraftPools.FirstOrDefault(x => x.Key == toAssign);
+    //         var pool = UnassignedDraftPools.FirstOrDefault(x => x.Key == toAssign);
 
-            DraftPools.Add(player.PlayerId, pool.Value);
-            UnassignedDraftPools.Remove(pool);
+    //         DraftPools.Add(player.PlayerId, pool.Value);
+    //         UnassignedDraftPools.Remove(pool);
 
-            Logger.Info($"Pool [{string.Join(", ", pool.Value)}] assigned to {player.name}", "PoolAssigned");
-        }
-        return DraftCmdResult.Success;
-    }
+    //         Logger.Info($"Pool [{string.Join(", ", pool.Value)}] assigned to {player.name}", "PoolAssigned");
+    //     }
+    //     return DraftCmdResult.Success;
+    // }
 
     public static void Reset()
     {
@@ -790,6 +834,14 @@ public static class DraftAssign
         }
 
         return sb.ToString();
+    }
+
+    public static void ResendDraftPoolMsg()
+    {
+        foreach (var pc in Main.EnumeratePlayerControls())
+        {
+            Utils.SendMessage(string.Format(GetString("DraftPoolMessage"), pc.GetFormattedDraftPool()), pc.PlayerId);
+        }
     }
 
     [Obfuscation(Exclude = true)]
@@ -846,10 +898,10 @@ public static class DraftAssign
 
         }
         // Show role info
-        Utils.SendMessage(Des, playerId, title, noReplay: true);
+        Utils.SendMessage(Des, playerId, title, addToHistory: false);
 
         // Show role settings
-        Utils.SendMessage("", playerId, Conf.ToString(), noReplay: true);
+        Utils.SendMessage("", playerId, Conf.ToString(), addToHistory: false);
     }
 
     public static void SendDeckList(this PlayerControl player)
@@ -864,7 +916,7 @@ public static class DraftAssign
         var slots = deck.Select(x => x.ToColoredString()).ToList();
         var slotsFormatted = string.Join("\n- ", slots);
 
-        Utils.SendMessage(string.Format(template, slotsFormatted), player.PlayerId, title, noReplay: true);
+        Utils.SendMessage(string.Format(template, slotsFormatted), player.PlayerId, title, addToHistory: false);
     }
 
     private static readonly Dictionary<string, string> PremadeDecks = new()
@@ -921,4 +973,14 @@ public class RoleSlot(HashSet<RoleBucket> buckets, HashSet<CustomRoles> roles)
             TryAddType(type);
         }
     }
+
+    public enum Evil
+    {
+        ALWAYS,
+        SOMETIMES,
+        NEVER
+    }
+
+    public Evil IsEvil => !Types.Contains(RoleAssign.RoleAssignType.Crewmate) ? Evil.ALWAYS : 
+        Types.Any(x => x != RoleAssign.RoleAssignType.Crewmate) ? Evil.SOMETIMES : Evil.NEVER;
 }

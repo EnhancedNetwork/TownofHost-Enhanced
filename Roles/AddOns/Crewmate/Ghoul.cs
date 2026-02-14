@@ -27,13 +27,13 @@ public class Ghoul : IAddon
     }
     public void Remove(byte playerId)
     {
-        if (!Main.AllPlayerControls.Any(x => x.Is(CustomRoles.Ghoul)))
+        if (!Main.EnumeratePlayerControls().Any(x => x.Is(CustomRoles.Ghoul)))
             IsEnable = false;
     }
 
     public static void ApplyGameOptions(PlayerControl player)
     {
-        if (Main.AllPlayerControls.Any(x => x.Is(CustomRoles.Ghoul) && !x.IsAlive() && x.GetRealKiller()?.PlayerId == player.PlayerId))
+        if (Main.EnumeratePlayerControls().Any(x => x.Is(CustomRoles.Ghoul) && !x.IsAlive() && x.GetRealKiller()?.PlayerId == player.PlayerId))
         {
             if (!player.IsTransformedNeutralApocalypse())
                 KillGhoul.Add(player.PlayerId);

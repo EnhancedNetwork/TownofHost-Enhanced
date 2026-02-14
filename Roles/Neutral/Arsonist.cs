@@ -51,7 +51,7 @@ internal class Arsonist : RoleBase
     }
     public override void Add(byte playerId)
     {
-        foreach (var ar in Main.AllPlayerControls)
+        foreach (var ar in Main.EnumeratePlayerControls())
             IsDoused.Add((playerId, ar.PlayerId), false);
 
         CustomRoleManager.CheckDeadBodyOthers.Add(CheckDeadBody);
@@ -225,7 +225,7 @@ internal class Arsonist : RoleBase
                     CustomWinnerHolder.WinnerIds.Add(__instance.myPlayer.PlayerId);
                 }
 
-                foreach (var pc in Main.AllPlayerControls)
+                foreach (var pc in Main.EnumeratePlayerControls())
                 {
                     pc.KillFlash();
 
@@ -244,7 +244,7 @@ internal class Arsonist : RoleBase
                 if (douseCount >= ArsonistMinPlayersToIgnite.GetInt()) // Don't check for max, since the player would not be able to ignite at all if they somehow get more players doused than the max
                 {
                     if (douseCount > ArsonistMaxPlayersToIgnite.GetInt()) Logger.Warn("Arsonist Ignited with more players doused than the maximum amount in the settings", "Arsonist Ignite");
-                    foreach (var pc in Main.AllAlivePlayerControls)
+                    foreach (var pc in Main.EnumerateAlivePlayerControls())
                     {
                         if (!IsDousedPlayer(__instance.myPlayer, pc)) continue;
                         if (pc.IsTransformedNeutralApocalypse()) continue;
@@ -253,7 +253,7 @@ internal class Arsonist : RoleBase
                         pc.RpcMurderPlayer(pc);
                         pc.SetRealKiller(__instance.myPlayer);
                     }
-                    if (Main.AllAlivePlayerControls.Length == 1)
+                    if (Main.AllAlivePlayerControls.Count == 1)
                     {
                         if (!CustomWinnerHolder.CheckForConvertedWinner(__instance.myPlayer.PlayerId))
                         {
@@ -293,7 +293,7 @@ internal class Arsonist : RoleBase
     {
         int doused = 0, all = 0;
 
-        foreach (var pc in Main.AllAlivePlayerControls)
+        foreach (var pc in Main.EnumerateAlivePlayerControls())
         {
             if (pc.PlayerId == playerId) continue;
 

@@ -69,7 +69,7 @@ internal class Conjurer : CovenManager
     public override bool OnCheckMurderAsKiller(PlayerControl killer, PlayerControl target)
     {
         if (!CanUseKillButton(killer)) return false;
-        if (HasNecronomicon(killer) && !target.GetCustomRole().IsCovenTeam())
+        if (HasNecronomicon(killer) && (!target.GetCustomRole().IsCovenTeam() || Main.PlayerStates[killer.PlayerId].IsRandomizer || Main.PlayerStates[target.PlayerId].IsRandomizer))
         {
             return true;
         }
@@ -96,7 +96,7 @@ internal class Conjurer : CovenManager
                 break;
 
             case ConjState.NormalBomb:
-                foreach (var player in Main.AllAlivePlayerControls)
+                foreach (var player in Main.EnumerateAlivePlayerControls())
                 {
                     foreach (var pos in ConjPosition[shapeshifterId].ToArray())
                     {
@@ -135,7 +135,7 @@ internal class Conjurer : CovenManager
                     return false;
                 }
 
-                foreach (var player in Main.AllAlivePlayerControls)
+                foreach (var player in Main.EnumerateAlivePlayerControls())
                 {
                     var dis = GetDistance(necroBombHolder.transform.position, player.transform.position);
                     if (dis > NecroRadius.GetFloat()) continue;

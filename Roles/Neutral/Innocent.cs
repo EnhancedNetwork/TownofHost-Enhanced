@@ -44,7 +44,7 @@ internal class Innocent : RoleBase
         if (exiled == null || !TargetIsKilled) return;
 
         var exiledRole = exiled.GetCustomRole();
-        var innocentArray = Main.AllPlayerControls.Where(x => x.Is(CustomRoles.Innocent) && !x.IsAlive() && x.GetRealKiller()?.PlayerId == exiled.PlayerId);
+        var innocentArray = Main.EnumeratePlayerControls().Where(x => x.Is(CustomRoles.Innocent) && !x.IsAlive() && x.GetRealKiller()?.PlayerId == exiled.PlayerId);
 
         if (!innocentArray.Any()) return;
 

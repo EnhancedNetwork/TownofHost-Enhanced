@@ -140,7 +140,8 @@ public static class RoleDocsGenerator
         Custom_RoleType.ImpostorConcealing or Custom_RoleType.ImpostorHindering or Custom_RoleType.ImpostorGhosts or
         Custom_RoleType.Madmate => "Impostors",
         Custom_RoleType.CrewmateVanilla or Custom_RoleType.CrewmateVanillaGhosts or Custom_RoleType.CrewmateBasic or
-        Custom_RoleType.CrewmateSupport or Custom_RoleType.CrewmateKilling or Custom_RoleType.CrewmatePower or
+        Custom_RoleType.CrewmateSupport or Custom_RoleType.CrewmateKilling or Custom_RoleType.CrewmatePower or 
+        Custom_RoleType.CrewmateInvestigative or
         Custom_RoleType.CrewmateGhosts => "Crewmates",
         Custom_RoleType.NeutralBenign or Custom_RoleType.NeutralEvil or Custom_RoleType.NeutralChaos or
         Custom_RoleType.NeutralKilling or Custom_RoleType.NeutralApocalypse or Custom_RoleType.NeutralPariah => "Neutrals",
@@ -169,6 +170,7 @@ public static class RoleDocsGenerator
         Custom_RoleType.NeutralPariah => "Pariah",
         Custom_RoleType.CovenTrickery => "Trickey",
         Custom_RoleType.CovenUtility => "Utility",
+        Custom_RoleType.CrewmateInvestigative => "Investigative",
         _ => "None"
     };
 

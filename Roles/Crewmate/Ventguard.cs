@@ -71,9 +71,8 @@ internal class Ventguard : RoleBase
 
             var ventId = vent.Id;
             BlockedVents.Add(ventId);
-            foreach (var player in Main.AllPlayerControls)
+            foreach (var player in Main.EnumerateAlivePlayerControls())
             {
-                if (!player.IsAlive()) continue;
                 if (player.NotUnlockVent(ventId)) continue;
                 if (ventguard.PlayerId != player.PlayerId && BlockDoesNotAffectCrew.GetBool() && player.IsPlayerCrewmateTeam()) continue;
 
@@ -94,9 +93,8 @@ internal class Ventguard : RoleBase
         {
             foreach (var ventId in BlockedVents)
             {
-                foreach (var player in Main.AllPlayerControls)
+                foreach (var player in Main.EnumerateAlivePlayerControls())
                 {
-                    if (!player.IsAlive()) continue;
                     if (player.NotUnlockVent(ventId)) continue;
                     if (player.PlayerId != _Player?.PlayerId && BlockDoesNotAffectCrew.GetBool() && player.Is(Custom_Team.Crewmate)) continue;
 
@@ -109,9 +107,8 @@ internal class Ventguard : RoleBase
         {
             foreach (var ventId in BlockedVents)
             {
-                foreach (var player in Main.AllPlayerControls)
+                foreach (var player in Main.EnumerateAlivePlayerControls())
                 {
-                    if (!player.IsAlive()) continue;
                     if (player.NotUnlockVent(ventId)) continue;
                     if (player.PlayerId != _Player?.PlayerId && BlockDoesNotAffectCrew.GetBool() && player.Is(Custom_Team.Crewmate)) continue;
 

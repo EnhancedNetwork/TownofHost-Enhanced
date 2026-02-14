@@ -5,14 +5,14 @@ using static TOHE.Translator;
 
 namespace TOHE.Roles.Neutral;
 
-internal class Taskinator : RoleBase
+internal class Taskinator : PariahManager
 {
     //===========================SETUP================================\\
     public override CustomRoles Role => CustomRoles.Taskinator;
     private const int Id = 13700;
     public static bool HasEnabled => CustomRoleManager.HasEnabled(CustomRoles.Taskinator);
     public override CustomRoles ThisRoleBase => CustomRoles.Crewmate;
-    public override Custom_RoleType ThisRoleType => Custom_RoleType.NeutralBenign;
+    public override Custom_RoleType ThisRoleType => Custom_RoleType.NeutralPariah;
     //==================================================================\\
 
     private static OptionItem TaskMarkPerRoundOpt;

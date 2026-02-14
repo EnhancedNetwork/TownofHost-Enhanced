@@ -86,7 +86,7 @@ internal class TaskManager : RoleBase
     {
         if (!taskManager.IsAlive() && !CanCompleteTaskAfterDeath.GetBool()) return true;
 
-        var randomPlayer = Main.AllAlivePlayerControls.Where(pc => taskManager.PlayerId != pc.PlayerId && pc.Is(Custom_Team.Crewmate) && Utils.HasTasks(pc.Data, false)).ToList().RandomElement();
+        var randomPlayer = Main.EnumerateAlivePlayerControls().Where(pc => taskManager.PlayerId != pc.PlayerId && pc.Is(Custom_Team.Crewmate) && Utils.HasTasks(pc.Data, false)).ToList().RandomElement();
 
         if (randomPlayer == null)
         {

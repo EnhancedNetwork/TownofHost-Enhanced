@@ -6,6 +6,7 @@ using Il2CppInterop.Generator.Extensions;
 using Il2CppInterop.Runtime.InteropTypes.Arrays;
 using InnerNet;
 using System;
+using System.Collections;
 using System.Data;
 using System.Diagnostics;
 using System.IO;
@@ -43,7 +44,7 @@ public static class Utils
     public static void NotifyGameEnding()
     {
         if (!AmongUsClient.Instance.AmHost) return;
-        foreach (var player in Main.AllPlayerControls.Where(x => x.GetClient() != null && !x.Data.Disconnected))
+        foreach (var player in Main.EnumeratePlayerControls().Where(x => x.GetClient() != null && !x.Data.Disconnected))
         {
             var writer = AmongUsClient.Instance.StartRpcImmediately(player.NetId, (byte)RpcCalls.SendChat, SendOption.None, player.OwnerId);
             writer.Write(GetString("NotifyGameEnding"));
@@ -217,9 +218,9 @@ public static class Utils
 
     public static void TargetDies(PlayerControl killer, PlayerControl target)
     {
-        if (!target.Data.IsDead || GameStates.IsMeeting) return;
+        if (target.IsAlive() || GameStates.IsMeeting) return;
 
-        foreach (var seer in Main.AllPlayerControls)
+        foreach (var seer in Main.EnumeratePlayerControls())
         {
             if (KillFlashCheck(killer, target, seer))
             {
@@ -318,7 +319,7 @@ public static class Utils
     }
     public static string GetRoleMode(CustomRoles role, bool parentheses = true)
     {
-        if (Options.HideGameSettings.GetBool() && Main.AllPlayerControls.Length > 1)
+        if (Options.HideGameSettings.GetBool() && Main.AllPlayerControls.Count > 1)
             return string.Empty;
 
         string mode = GetChance(role.GetMode());
@@ -417,13 +418,29 @@ public static class Utils
         return GetString("DeathReason." + Enum.GetName(typeof(PlayerState.DeathReason), status));
     }
 
-    public static void SyncGeneralOptions(this PlayerControl player)
+    public static bool SyncGeneralOptions(this PlayerControl player)
     {
-        if (!AmongUsClient.Instance.AmHost || !GameStates.IsInGame) return;
+        if (!AmongUsClient.Instance.AmHost || !GameStates.IsInGame) return false;
         var playerId = player.PlayerId;
         var msg = new RpcSyncGeneralOptions(PlayerControl.LocalPlayer.NetId, playerId, player.GetCustomRole(), Main.PlayerStates[playerId].IsDead, Main.PlayerStates[playerId].Disconnected, Main.PlayerStates[playerId].deathReason, Main.AllPlayerKillCooldown[playerId], Main.AllPlayerSpeed[playerId]);
         RpcUtils.LateBroadcastReliableMessage(msg);
+        return true;
+    }
+    public static bool DoRPC => AmongUsClient.Instance.AmHost && Main.EnumeratePlayerControls().Any(x => x.IsModded() && !x.IsHost());
+    public static bool SyncGeneralOptions(this CustomRpcSender sender, PlayerControl player)
+    {
+        if (!AmongUsClient.Instance.AmHost || !GameStates.IsInGame || !DoRPC) return false;
 
+        sender.AutoStartRpc(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncGeneralOptions);
+        sender.Write(player.PlayerId);
+        sender.WritePacked((int)player.GetCustomRole());
+        sender.Write(Main.PlayerStates[player.PlayerId].IsDead);
+        sender.WritePacked((int)Main.PlayerStates[player.PlayerId].deathReason);
+        sender.Write(Main.AllPlayerKillCooldown[player.PlayerId]);
+        sender.Write(Main.AllPlayerSpeed[player.PlayerId]);
+        sender.EndRpc();
+        
+        return true;
     }
     public static void SyncSpeed(this PlayerControl player)
     {
@@ -935,11 +952,11 @@ public static class Utils
         covenb.Sort();
         addonsb.Sort();
 
-        SendMessage(string.Join("\n", impsb), PlayerId, ColorString(GetRoleColor(CustomRoles.Impostor), GetString("ImpostorRoles")), ShouldSplit: true);
-        SendMessage(string.Join("\n", crewsb), PlayerId, ColorString(GetRoleColor(CustomRoles.Crewmate), GetString("CrewmateRoles")), ShouldSplit: true);
-        SendMessage(string.Join("\n", neutralsb), PlayerId, ColorString(new Color32(127, 140, 141, byte.MaxValue), GetString("NeutralRoles")), ShouldSplit: true);
-        SendMessage(string.Join("\n", covenb), PlayerId, ColorString(GetRoleColor(CustomRoles.Coven), GetString("CovenRoles")), ShouldSplit: true);
-        SendMessage(string.Join("\n", addonsb), PlayerId, ColorString(new Color32(255, 154, 206, byte.MaxValue), GetString("AddonRoles")), ShouldSplit: true);
+        SendMessage(string.Join("\n", impsb), PlayerId, ColorString(GetRoleColor(CustomRoles.Impostor), GetString("ImpostorRoles")));
+        SendMessage(string.Join("\n", crewsb), PlayerId, ColorString(GetRoleColor(CustomRoles.Crewmate), GetString("CrewmateRoles")));
+        SendMessage(string.Join("\n", neutralsb), PlayerId, ColorString(new Color32(127, 140, 141, byte.MaxValue), GetString("NeutralRoles")));
+        SendMessage(string.Join("\n", covenb), PlayerId, ColorString(GetRoleColor(CustomRoles.Coven), GetString("CovenRoles")));
+        SendMessage(string.Join("\n", addonsb), PlayerId, ColorString(new Color32(255, 154, 206, byte.MaxValue), GetString("AddonRoles")));
     }
     public static void ShowChildrenSettings(OptionItem option, ref StringBuilder sb, int deep = 0, bool command = false)
     {
@@ -1044,11 +1061,11 @@ public static class Utils
             string kl = EndGamePatch.KillLog;
             kl = Options.OldKillLog.GetBool() ? kl.RemoveHtmlTags() : kl.Replace("<color=", "<");
             var tytul = !Options.OldKillLog.GetBool() ? ColorString(new Color32(102, 16, 16, 255), "《 " + GetString("KillLog") + " 》") : "";
-            SendSpesificMessage(kl, PlayerId, tytul);
+            SendMessage(kl, PlayerId, tytul);
         }
         if (EndGamePatch.MainRoleLog != "")
         {
-            SendSpesificMessage(EndGamePatch.MainRoleLog, PlayerId);
+            SendMessage(EndGamePatch.MainRoleLog, PlayerId);
         }
     }
     public static void ShowLastResult(byte PlayerId = byte.MaxValue)
@@ -1123,7 +1140,7 @@ public static class Utils
 
         var Ip = region.Servers.FirstOrDefault()?.Ip ?? string.Empty;
 
-        if (Ip.Contains("aumods.us", StringComparison.Ordinal)
+        if (Ip.Contains("aumods.org", StringComparison.Ordinal)
             || Ip.Contains("duikbo.at", StringComparison.Ordinal))
         {
             // Official Modded Server
@@ -1236,53 +1253,42 @@ public static class Utils
         return !isHost && color == 18 ? byte.MaxValue : color is < 0 or > 18 ? byte.MaxValue : Convert.ToByte(color);
     }
 
-    public static void ShowHelpToClient(byte ID)
+    public static StringBuilder AppendGetString(this StringBuilder builder, string key)
     {
-        SendMessage(
-            GetString("CommandList")
-            + $"\n  ○ /n {GetString("Command.now")}"
-            + $"\n  ○ /r {GetString("Command.roles")}"
-            + $"\n  ○ /m {GetString("Command.myrole")}"
-            + $"\n  ○ /xf {GetString("Command.solvecover")}"
-            + $"\n  ○ /l {GetString("Command.lastresult")}"
-            + $"\n  ○ /win {GetString("Command.winner")}"
-            + "\n\n" + GetString("CommandOtherList")
-            + $"\n  ○ /color {GetString("Command.color")}"
-            + $"\n  ○ /qt {GetString("Command.quit")}"
-            + $"\n ○ /death {GetString("Command.death")}"
-            + $"\n ○ /icons {GetString("Command.iconinfo")}"
-            , ID);
+        return builder.Append(GetString(key));
     }
+
+    private static Command.UsageLevels currentBlock = Command.UsageLevels.Everyone;
+    private static void BuildHelp(Command command)
+    {
+        if (command.UsageLevel != currentBlock)
+        {
+            currentBlock = command.UsageLevel;
+            helpString.Append("\n\n");
+            helpString.AppendGetString($"CommandList.{currentBlock}");
+        }
+    
+        helpString.Append(command.ToHelpString());
+    }
+    private static readonly StringBuilder helpString = new();
     public static void ShowHelp(byte ID)
     {
-        SendMessage(
-            GetString("CommandList")
-            + $"\n  ○ /n {GetString("Command.now")}"
-            + $"\n  ○ /r {GetString("Command.roles")}"
-            + $"\n  ○ /m {GetString("Command.myrole")}"
-            + $"\n  ○ /l {GetString("Command.lastresult")}"
-            + $"\n  ○ /win {GetString("Command.winner")}"
-            + "\n\n" + GetString("CommandOtherList")
-            + $"\n  ○ /color {GetString("Command.color")}"
-            + $"\n  ○ /rn {GetString("Command.rename")}"
-            + $"\n  ○ /qt {GetString("Command.quit")}"
-            + $"\n  ○ /icons {GetString("Command.iconinfo")}"
-            + $"\n  ○ /death {GetString("Command.death")}"
-            + "\n\n" + GetString("CommandHostList")
-            + $"\n  ○ /s {GetString("Command.say")}"
-            + $"\n  ○ /rn {GetString("Command.rename")}"
-            + $"\n  ○ /poll {GetString("Command.Poll")}"
-            + $"\n  ○ /xf {GetString("Command.solvecover")}"
-            + $"\n  ○ /mw {GetString("Command.mw")}"
-            + $"\n  ○ /kill {GetString("Command.kill")}"
-            + $"\n  ○ /exe {GetString("Command.exe")}"
-            + $"\n  ○ /level {GetString("Command.level")}"
-            + $"\n  ○ /id {GetString("Command.idlist")}"
-            + $"\n  ○ /qq {GetString("Command.qq")}"
-            + $"\n  ○ /dump {GetString("Command.dump")}"
-            + $"\n  ○ /start {GetString("Command.start")}"
-        //    + $"\n  ○ /iconhelp {GetString("Command.iconhelp")}"
-            , ID);
+        PlayerControl pc = ID.GetPlayer();
+        if (pc == null) return;
+
+        List<Command> commands = [.. Command.AllCommands.Values.OrderBy(x => x.UsageLevel).ThenBy(x => x.UsageTime)];
+
+        helpString.Clear();
+        helpString.Append("CommandList");
+
+        foreach (Command command in commands)
+        {
+            if (!command.CanUseCommand(pc, checkTime: false)) continue;
+
+            BuildHelp(command);
+        }
+
+        SendMessage(helpString.ToString(), ID);
     }
     public static string[] SplitMessage(this string LongMsg)
     {
@@ -1338,46 +1344,558 @@ public static class Utils
             if (text.IndexOf("\n") <= 4) text = text[(text.IndexOf("\n") + 1)..text.Length];
             SendMessage(text, sendTo, title);
         }
-
-
     }
-    public static void SendMessage(string text, byte sendTo = byte.MaxValue, string title = "", bool logforChatManager = false, bool noReplay = false, bool ShouldSplit = false)
+
+    public static bool TempReviveHostRunning;
+    private static Stopwatch TempReviveHostRevertStopwatch = new();
+    private static Stopwatch TempReviveHostTimeSinceRevivalStopwatch = new();
+    private static string[] CachedLetterOnlyHexColors = [];
+    private static readonly Regex ColorTagRegex = new(@"<\s*(?:color\s*=\s*)?#([0-9a-fA-F]{6}(?:[0-9a-fA-F]{2})?)\s*>", RegexOptions.Compiled);
+    private static readonly Dictionary<(int R, int G, int B), string> CachedColorReplacements = [];
+    private static readonly char[] HexLetters = ['a', 'b', 'c', 'd', 'e', 'f'];
+    static readonly Dictionary<string, (int r, int g, int b)> NamedColors = new()
     {
-        if (!AmongUsClient.Instance.AmHost) return;
-        if (title.IsNullOrWhiteSpace()) title = "<color=#aaaaff>" + GetString("DefaultSystemMessageTitle") + "</color>";
-        if (title.Count(x => x == '\u2605') == 2 && !title.Contains('\n'))
-        {
-            if (title.Contains('<') && title.Contains('>') && title.Contains('#'))
-                title = $"{title[..(title.IndexOf('>') + 1)]}\u27a1{title.Replace("\u2605", "")[..(title.LastIndexOf('<') - 2)]}\u2b05";
-            else title = "\u27a1" + title.Replace("\u2605", "") + "\u2b05";
-        }
+        { "red",    (255,   0,   0) },
+        { "orange", (255, 165,   0) },
+        { "yellow", (255, 255,   0) },
+        { "green",  (  0, 255,   0) },
+        { "blue",   (  0,   0, 255) },
+        { "purple", (128,   0, 128) },
+        { "white",  (255, 255, 255) },
+        { "grey",   (128, 128, 128) },
+        { "black",  (  0,   0,   0) }
+    };
 
-        text = text.Replace("color=", string.Empty);
+    public static void SendMultipleMessages(this IEnumerable<Message> messages, SendOption sendOption = SendOption.Reliable)
+    {
+        messages.Do(x => SendMessage(x.Text, x.SendTo, x.Title, sendOption: sendOption));
+    }
 
+    public static CustomRpcSender SendMessage(string text, byte sendTo = byte.MaxValue, string title = "", bool noSplit = false, CustomRpcSender writer = null, bool final = false, bool multiple = false, SendOption sendOption = SendOption.Reliable, bool addToHistory = true, bool force = false, bool noNumberSplit = false, bool numberSplitFinal = false, [CallerFilePath] string callerFilePath = "", [CallerLineNumber] int callerLineNumber = 0)
+    {
         try
         {
-            if (ShouldSplit && text.Length > 1200)
+            Logger.Info($"SendMessage called from {callerFilePath.Split('\\')[^1]} at line {callerLineNumber}", "SendMessage");
+
+            PlayerControl receiver = GetPlayerById(sendTo, false);
+            if (sendTo != byte.MaxValue && receiver == null || !force && title.RemoveHtmlTags().Trim().Length == 0 && text.RemoveHtmlTags().Trim().Length == 0) return writer;
+
+            if (!AmongUsClient.Instance.AmHost)
             {
-                text.SplitMessage().Do(x => SendMessage(x, sendTo, title, logforChatManager, noReplay, false));
-                return;
+                if (sendTo == PlayerControl.LocalPlayer.PlayerId && !multiple)
+                    SendLocally(PlayerControl.LocalPlayer);
+
+                return writer;
             }
-            //else if (text.Length > 1200 && (!GetPlayerById(sendTo).IsModClient()))
-            //{
-            //    text = text.RemoveHtmlTagsIfNeccessary();
-            //}
+
+            if (title == string.Empty) title = GetString("DefaultSystemMessageTitle");
+
+            if (title.Count(x => x == '\u2605') == 2 && !title.Contains('\n'))
+            {
+                if (title.Contains('<') && title.Contains('>') && title.Contains('#'))
+                    title = $"{title[..(title.IndexOf('>') + 1)]}\u27a1{title.Replace("\u2605", "")[..(title.LastIndexOf('<') - 2)]}\u2b05";
+                else
+                    title = "\u27a1" + title.Replace("\u2605", "") + "\u2b05";
+            }
+
+            text = text.Replace("color=#", "#");
+            title = title.Replace("color=", string.Empty);
+
+            if (GameStates.IsVanillaServer)
+            {
+                text = ReplaceHexColorsWithSafeColors(text);
+                text = ReplaceDigitsOutsideRichText(text);
+            }
+
+            PlayerControl sender = !addToHistory || GameStates.IsVanillaServer ? PlayerControl.LocalPlayer : Main.EnumerateAlivePlayerControls().MinBy(x => x.PlayerId) ?? Main.EnumerateAlivePlayerControls().MinBy(x => x.PlayerId) ?? PlayerControl.LocalPlayer;
+
+            if (sendTo != byte.MaxValue && receiver.AmOwner)
+            {
+                SendLocally(sender);
+
+                if (addToHistory) ChatUpdatePatch.LastMessages.Add((text, sendTo, title, TimeStamp));
+                return writer;
+            }
+
+            Logger.Info($"sender owner: {sender.AmOwner}; sender dead: {sender.Data.IsDead}; sender alive: {sender.IsAlive()}", "SendMessage CheckTempReviveHost");
+            if (sender.AmOwner && sender.Data.IsDead)
+            {
+                bool delayMessage = false;
+                if (!TempReviveHostRunning)
+                {
+                    delayMessage = true;
+                    Main.Instance.StartCoroutine(TempReviveHost());
+                }
+                else
+                {
+                    if (TempReviveHostTimeSinceRevivalStopwatch.ElapsedMilliseconds < 250)
+                        delayMessage = true;
+                    
+                    TempReviveHostRevertStopwatch.Restart();
+                }
+
+                if (delayMessage)
+                {
+                    Main.Instance.StartCoroutine(DelaySend());
+                    return writer;
+                    
+                    IEnumerator DelaySend()
+                    {
+                        yield return new WaitForSecondsRealtime(0.3f);
+                        SendMessage(text, sendTo, title, noSplit, writer, final, multiple, sendOption, addToHistory);
+                    }
+                }
+                
+                IEnumerator TempReviveHost()
+                {
+                    TempReviveHostRunning = true;
+                    TempReviveHostRevertStopwatch = Stopwatch.StartNew();
+                    TempReviveHostTimeSinceRevivalStopwatch = Stopwatch.StartNew();
+                    
+                    Logger.Msg("Temporarily reviving host to send message....", "TempReviveHost");
+
+                    sender.Data.IsDead = false;
+                    sender.Data.SendGameData();
+                    
+                    while (TempReviveHostRevertStopwatch.ElapsedMilliseconds < 1000)
+                        yield return null;
+                    
+                    Logger.Msg("Re-killing host after message sent.", "TempReviveHost");
+                    
+                    TempReviveHostTimeSinceRevivalStopwatch.Reset();
+                    
+                    if (!AmongUsClient.Instance.AmHost || GameStates.IsEnded || GameStates.IsLobby)
+                    {
+                        TempReviveHostRunning = false;
+                        yield break;
+                    }
+
+                    sender.Data.IsDead = true;
+                    sender.Data.SendGameData();
+                    
+                    TempReviveHostRunning = false;
+                }
+            }
+
+            if (GameStates.IsVanillaServer && !noSplit && !noNumberSplit)
+            {
+                var parts = SplitByNumberLimit(text);
+
+                if (parts.Count > 1)
+                {
+                    writer = parts.Take(parts.Count - 1).Aggregate(writer, (current, part) => SendMessage(part, sendTo, title, writer: current, final: false, multiple: true, sendOption: sendOption, addToHistory: addToHistory, noNumberSplit: true));
+                    return SendMessage(parts[^1], sendTo, title, false, writer, final, multiple, sendOption, addToHistory, noNumberSplit: true, numberSplitFinal: true);
+                }
+            }
+
+            int targetClientId = sendTo == byte.MaxValue ? -1 : receiver.OwnerId;
+
+            if (writer == null || writer.CurrentState == CustomRpcSender.State.Finished)
+                writer = CustomRpcSender.Create("Utils.SendMessage(1)", sendOption);
+
+            int fullRpcSizeLimit = Options.MessageRpcSizeLimit.GetInt();
+            int textRpcSize = text.Length * 2;
+            int titleRpcSize = title.Length * 2 + 4;
+            int resetNameRpcSize = sender.Data.PlayerName.Length * 2 + 4;
+            int fullRpcSize = textRpcSize + titleRpcSize + resetNameRpcSize;
+
+            if (!noSplit)
+            {
+                int titleRpcSizeLimit = fullRpcSizeLimit - textRpcSize - resetNameRpcSize;
+
+                if ((fullRpcSize <= fullRpcSizeLimit && titleRpcSizeLimit <= titleRpcSize) || title.Length <= 100)
+                {
+                    Logger.Info($"Set sender name to {title}; Split", "SendMessage");
+                    writer.AutoStartRpc(sender.NetId, RpcCalls.SetName, targetClientId)
+                        .Write(sender.Data.NetId)
+                        .Write(title)
+                        .EndRpc();
+                }
+                else
+                {
+                    titleRpcSizeLimit = (fullRpcSizeLimit - 8 - resetNameRpcSize) * 2;
+
+                    if (titleRpcSizeLimit - 4 < 1)
+                    {
+                        Logger.SendInGame(GetString("MessageTooLong"), Color.red);
+                        if (!multiple) writer.SendMessage(dispose: true);
+                        return writer;
+                    }
+
+                    string[] lines = title.Split('\n');
+                    var shortenedTitle = string.Empty;
+
+                    foreach (string line in lines)
+                    {
+                        if (shortenedTitle.Length * 2 + line.Length * 2 + 4 < titleRpcSizeLimit)
+                        {
+                            shortenedTitle += line + "\n";
+                            continue;
+                        }
+
+                        if (shortenedTitle.Length * 2 >= titleRpcSizeLimit - 4)
+                        {
+                            foreach (char[] chars in shortenedTitle.Chunk(titleRpcSizeLimit - 4))
+                                writer = SendTempTitleMessage(new string(chars));
+                        }
+                        else
+                            writer = SendTempTitleMessage(shortenedTitle);
+
+                        string sentText = shortenedTitle;
+                        shortenedTitle = line + "\n";
+
+                        if (Regex.Matches(sentText, "<size").Count > Regex.Matches(sentText, "</size>").Count)
+                        {
+                            string sizeTag = Regex.Matches(sentText, @"<size=\d+\.?\d*%?>")[^1].Value;
+                            shortenedTitle = sizeTag + shortenedTitle;
+                        }
+                    }
+
+                    if (shortenedTitle.Length > 0 && !shortenedTitle.IsNullOrWhiteSpace())
+                        writer = SendTempTitleMessage(shortenedTitle);
+
+                    if (text == "\n") return writer;
+
+                    title = "\u200e";
+
+                    if (writer.CurrentState == CustomRpcSender.State.Finished)
+                        writer = CustomRpcSender.Create("Utils.SendMessage(2)", sendOption);
+
+                    Logger.Info($"Set sender name to {title}", "SendMessage");
+                    writer.AutoStartRpc(sender.NetId, RpcCalls.SetName, targetClientId)
+                        .Write(sender.Data.NetId)
+                        .Write(title)
+                        .EndRpc();
+
+                    CustomRpcSender SendTempTitleMessage(string tempTitle)
+                    {
+                        if (writer.CurrentState == CustomRpcSender.State.Finished)
+                            writer = CustomRpcSender.Create("Utils.SendMessage.SendTempTitleMessage", sendOption);
+
+                        Logger.Info($"Set sender name to {tempTitle}; TempTitle", "SendMessage");
+                        writer.AutoStartRpc(sender.NetId, RpcCalls.SetName, targetClientId)
+                            .Write(sender.Data.NetId)
+                            .Write(tempTitle)
+                            .EndRpc();
+
+                        writer.AutoStartRpc(sender.NetId, RpcCalls.SendChat, targetClientId)
+                            .Write("\n")
+                            .EndRpc();
+
+                        Logger.Info($"Set sender name to {sender.GetRealName()}; TempTitle2", "SendMessage");
+                        writer.AutoStartRpc(sender.NetId, RpcCalls.SetName, targetClientId)
+                            .Write(sender.Data.NetId)
+                            .Write(Main.AllPlayerNames.GetValueOrDefault(sender.PlayerId, string.Empty))
+                            .EndRpc();
+
+                        writer.SendMessage();
+
+                        try
+                        {
+                            string pureTitle = tempTitle.RemoveHtmlTags();
+                            Logger.Info($" Message: \\n - To: {(sendTo == byte.MaxValue ? "Everyone" : $"{GetPlayerById(sendTo)?.GetRealName()}")} - Title: {pureTitle[..(pureTitle.Length <= 300 ? pureTitle.Length : 300)]}", "SendMessage");
+                        }
+                        catch { Logger.Info(" Message sent", "SendMessage"); }
+
+                        if (addToHistory) ChatUpdatePatch.LastMessages.Add(("\n", sendTo, tempTitle, TimeStamp));
+                        return writer;
+                    }
+                }
+            }
+
+            titleRpcSize = title.Length * 2 + 4;
+            int textRpcSizeLimit = fullRpcSizeLimit - titleRpcSize - resetNameRpcSize;
+
+            if (textRpcSizeLimit < 1 && textRpcSize >= textRpcSizeLimit && !noSplit)
+            {
+                Logger.SendInGame(GetString("MessageTooLong"), Color.red);
+                if (!multiple) writer.SendMessage(dispose: true);
+                return writer;
+            }
+
+            if (textRpcSize >= textRpcSizeLimit && !noSplit)
+            {
+                string[] lines = text.Split('\n');
+                var shortenedText = string.Empty;
+
+                foreach (string line in lines)
+                {
+                    if (shortenedText.Length * 2 + line.Length * 2 + 4 < textRpcSizeLimit)
+                    {
+                        shortenedText += line + "\n";
+                        continue;
+                    }
+
+                    writer = shortenedText.Length * 2 >= textRpcSizeLimit
+                        ? shortenedText.Chunk(textRpcSizeLimit).Aggregate(writer, (current, chunk) => SendMessage(new(chunk), sendTo, title, true, current, sendOption: sendOption))
+                        : SendMessage(shortenedText, sendTo, title, true, writer, sendOption: sendOption);
+
+                    string sentText = shortenedText;
+                    shortenedText = line + "\n";
+
+                    if (Regex.Matches(sentText, "<size").Count > Regex.Matches(sentText, "</size>").Count)
+                    {
+                        string sizeTag = Regex.Matches(sentText, @"<size=\d+\.?\d*%?>")[^1].Value;
+                        shortenedText = sizeTag + shortenedText;
+                    }
+                }
+
+                if (shortenedText.Length > 0 && !shortenedText.IsNullOrWhiteSpace()) writer = SendMessage(shortenedText, sendTo, title, true, writer, true, sendOption: sendOption);
+                else
+                {
+                    Logger.Info($"Set sender name to {sender.GetRealName()}; Shortened", "SendMessage");
+                    writer.AutoStartRpc(sender.NetId, RpcCalls.SetName, targetClientId)
+                        .Write(sender.Data.NetId)
+                        .Write(Main.AllPlayerNames.GetValueOrDefault(sender.PlayerId, string.Empty))
+                        .EndRpc();
+
+                    if (!multiple) writer.SendMessage();
+                    else RestartMessageIfTooLong();
+                }
+
+                return writer;
+            }
+
+            try
+            {
+                string pureText = text.RemoveHtmlTags();
+                string pureTitle = title.RemoveHtmlTags();
+                Logger.Info($" Message: {pureText[..(pureText.Length <= 300 ? pureText.Length : 300)]} - To: {(sendTo == byte.MaxValue ? "Everyone" : $"{GetPlayerById(sendTo)?.GetRealName()}")} - Title: {pureTitle[..(pureTitle.Length <= 300 ? pureTitle.Length : 300)]}", "SendMessage");
+            }
+            catch { Logger.Info(" Message sent", "SendMessage"); }
+
+            if (noSplit)
+            {
+                text = text.TrimStart('\n');
+                if (!text.EndsWith('\n')) text += "\n";
+                text += "\u200e";
+            }
+
+            if (writer.CurrentState == CustomRpcSender.State.Ready)
+            {
+                Logger.Info($"Set sender name to {title}; Ready", "SendMessage");
+                writer.AutoStartRpc(sender.NetId, RpcCalls.SetName, targetClientId)
+                    .Write(sender.Data.NetId)
+                    .Write(title)
+                    .EndRpc();
+            }
+
+            writer.AutoStartRpc(sender.NetId, RpcCalls.SendChat, targetClientId)
+                .Write(text)
+                .EndRpc();
+
+            if (sendTo == byte.MaxValue && HudManager.InstanceExists)
+            {
+                string name = sender.Data.PlayerName;
+                sender.SetName(title);
+                HudManager.Instance.Chat.AddChat(sender, text);
+                sender.SetName(name);
+            }
+
+            if ((noSplit && final) || (!noSplit && (!noNumberSplit || numberSplitFinal)))
+            {
+                Logger.Info($"Set sender name to {sender.GetRealName()}; Final", "SendMessage");
+                writer.AutoStartRpc(sender.NetId, RpcCalls.SetName, targetClientId)
+                    .Write(sender.Data.NetId)
+                    .Write(Main.AllPlayerNames.GetValueOrDefault(sender.PlayerId, string.Empty))
+                    .EndRpc();
+
+                if (!multiple) writer.SendMessage();
+                else RestartMessageIfTooLong();
+            }
+            else
+                RestartMessageIfTooLong();
         }
-        catch (Exception exx)
+        catch (Exception e) { ThrowException(e); }
+
+        if (addToHistory) ChatUpdatePatch.LastMessages.Add((text, sendTo, title, TimeStamp));
+        return writer;
+
+        void RestartMessageIfTooLong()
         {
-            Logger.Warn($"Error after try split the msg {text} at: {exx}", "Utils.SendMessage.SplitMessage");
+            if (writer.stream.Length > 500)
+            {
+                writer.SendMessage();
+                writer = CustomRpcSender.Create("Utils.SendMessage", sendOption);
+            }
         }
 
-        // set noReplay to false when you want to send previous sys msg or do not want to add a sys msg in the history
-        if (!noReplay && GameStates.IsInGame) ChatManager.AddSystemChatHistory(sendTo, text);
+        static List<string> SplitByNumberLimit(string text)
+        {
+            List<string> result = [];
+            StringBuilder sb = new();
 
-        if (!logforChatManager)
-            ChatManager.AddToHostMessage(text.RemoveHtmlTagsTemplate());
+            int digitCount = 0;
 
-        Main.MessagesToSend.Add((text.RemoveHtmlTagsTemplate(), sendTo, title));
+            foreach (char c in text)
+            {
+                if (c is >= '0' and <= '9' && digitCount == 5)
+                {
+                    int lastNewline = sb.ToString().LastIndexOf('\n');
+
+                    if (lastNewline >= 0)
+                    {
+                        result.Add(sb.ToString(0, lastNewline + 1));
+                        sb.Remove(0, lastNewline + 1);
+                    }
+                    else
+                    {
+                        result.Add(sb.ToString());
+                        sb.Clear();
+                    }
+
+                    digitCount = 0;
+                    foreach (char r in sb.ToString())
+                        if (char.IsDigit(r))
+                            digitCount++;
+                }
+
+                sb.Append(c);
+
+                if (char.IsDigit(c))
+                    digitCount++;
+            }
+
+            if (sb.Length > 0)
+                result.Add(sb.ToString());
+
+            return result;
+        }
+
+        void SendLocally(PlayerControl sender)
+        {
+            if (HudManager.InstanceExists)
+            {
+                string name = sender.Data.PlayerName;
+                sender.SetName(title);
+                HudManager.Instance.Chat.AddChat(sender, text);
+                sender.SetName(name);
+            }
+
+            try
+            {
+                string pureText = text.RemoveHtmlTags();
+                string pureTitle = title.RemoveHtmlTags();
+                Logger.Info($" Message: {pureText[..(pureText.Length <= 300 ? pureText.Length : 300)]} - To: {PlayerControl.LocalPlayer.GetRealName()} - Title: {pureTitle[..(pureTitle.Length <= 300 ? pureTitle.Length : 300)]}", "SendMessage");
+            }
+            catch { Logger.Info(" Message sent", "SendMessage"); }
+        }
+
+        static string ReplaceHexColorsWithSafeColors(string text) => ColorTagRegex.Replace(text, match =>
+        {
+            string hex = match.Groups[1].Value.ToLowerInvariant();
+            
+            string a = hex.Length == 8 ? hex[6..8] : string.Empty;
+            if (!string.IsNullOrEmpty(a)) hex = hex[..6];
+            
+            if (hex.Length != 6 || !hex.Any(char.IsDigit)) return match.Value;
+
+            int r = Convert.ToInt32(hex[..2], 16);
+            int g = Convert.ToInt32(hex.Substring(2, 2), 16);
+            int b = Convert.ToInt32(hex.Substring(4, 2), 16);
+
+            var best = FindClosestSafeColor(r, g, b);
+
+            return NamedColors.ContainsKey(best)
+                ? $"<color={best}>"
+                : $"<#{best}{a}>";
+        });
+        static string FindClosestSafeColor(int r, int g, int b)
+        {
+            if (CachedColorReplacements.TryGetValue((r, g, b), out string cache)) return cache;
+            
+            double bestDist = double.MaxValue;
+            string bestValue = "white";
+
+            foreach (var kvp in NamedColors)
+            {
+                (int cr, int cg, int cb) = kvp.Value;
+                double d = ColorDistance(r, g, b, cr, cg, cb);
+
+                if (d < bestDist)
+                {
+                    bestDist = d;
+                    bestValue = kvp.Key;
+                }
+            }
+
+            foreach (var hex in GenerateLetterOnlyHexColors())
+            {
+                int cr = Convert.ToInt32(hex[..2], 16);
+                int cg = Convert.ToInt32(hex.Substring(2, 2), 16);
+                int cb = Convert.ToInt32(hex.Substring(4, 2), 16);
+
+                double d = ColorDistance(r, g, b, cr, cg, cb);
+
+                if (d < bestDist)
+                {
+                    bestDist = d;
+                    bestValue = hex;
+                }
+            }
+
+            CachedColorReplacements[(r, g, b)] = bestValue;
+            if (CachedColorReplacements.Count > 4096) CachedColorReplacements.Clear();
+            return bestValue;
+        }
+
+        static double ColorDistance(int r1, int g1, int b1, int r2, int g2, int b2)
+        {
+            int dr = r1 - r2;
+            int dg = g1 - g2;
+            int db = b1 - b2;
+            return dr * dr + dg * dg + db * db;
+        }
+
+        static string[] GenerateLetterOnlyHexColors()
+        {
+            if (CachedLetterOnlyHexColors.Length > 0)
+                return CachedLetterOnlyHexColors;
+
+            CachedLetterOnlyHexColors = new string[46656];
+            int i = 0;
+
+            foreach (char r1 in HexLetters)
+                foreach (char r2 in HexLetters)
+                    foreach (char g1 in HexLetters)
+                        foreach (char g2 in HexLetters)
+                            foreach (char b1 in HexLetters)
+                                foreach (char b2 in HexLetters)
+                                    CachedLetterOnlyHexColors[i++] = $"{r1}{r2}{g1}{g2}{b1}{b2}";
+
+            return CachedLetterOnlyHexColors;
+        }
+        
+        static string ReplaceDigitsOutsideRichText(string text)
+        {
+            if (string.IsNullOrWhiteSpace(text)) return text;
+
+            StringBuilder sb = new(text.Length);
+            bool insideTag = false;
+
+            foreach (char c in text)
+            {
+                switch (c)
+                {
+                    case '<':
+                        insideTag = true;
+                        sb.Append(c);
+                        continue;
+                    case '>':
+                        insideTag = false;
+                        sb.Append(c);
+                        continue;
+                    case >= '0' and <= '9' when !insideTag:
+                        sb.Append((char)('０' + (c - '0')));
+                        break;
+                    default:
+                        sb.Append(c);
+                        break;
+                }
+            }
+
+            return sb.ToString();
+        }
     }
     public static bool IsPlayerModerator(string friendCode)
     {
@@ -1674,11 +2192,14 @@ public static class Utils
     }
     public static bool CheckCamoflague(this PlayerControl PC) => Camouflage.IsCamouflage || Camouflager.AbilityActivated || Utils.IsActive(SystemTypes.MushroomMixupSabotage)
         || (Main.CheckShapeshift.TryGetValue(PC.PlayerId, out bool isShapeshifitng) && isShapeshifitng);
-    public static PlayerControl GetPlayerById(int PlayerId)
+    public static PlayerControl GetPlayerById(int PlayerId, bool obfuscated = false)
     {
-        return Main.AllPlayerControls.FirstOrDefault(pc => pc.PlayerId == PlayerId) ?? null;
+        if (obfuscated)
+            PlayerId = Main.PlayerStates.FirstOrDefault(ps => ps.Value.StolenId == PlayerId).Value?.PlayerId ?? PlayerId;
+        return Main.EnumeratePlayerControls().FirstOrDefault(pc => pc.PlayerId == PlayerId) ?? null;
     }
     public static PlayerControl GetPlayer(this byte id) => GetPlayerById(id);
+    public static string GetPlayerName(this byte id) => GetPlayer(id).GetRealName();
     public static List<PlayerControl> GetPlayerListByIds(this IEnumerable<byte> PlayerIdList)
     {
         var PlayerList = PlayerIdList?.ToList().Select(x => GetPlayerById(x)).ToList();
@@ -1736,11 +2257,11 @@ public static class Utils
 
         return baseMethod.DeclaringType != derivedMethod.DeclaringType;
     }
-    public static System.Collections.IEnumerator NotifyEveryoneAsync(int speed = 2)
+    public static IEnumerator NotifyEveryoneAsync(int speed = 2)
     {
         var count = 0;
 
-        PlayerControl[] aapc = Main.AllAlivePlayerControls;
+        var aapc = Main.EnumeratePlayerControls();
 
         foreach (PlayerControl seer in aapc)
         {
@@ -1761,8 +2282,8 @@ public static class Utils
         //Get role info font size based on the length of the role info
         static int GetInfoSize(string RoleInfo)
         {
-            RoleInfo = Regex.Replace(RoleInfo, "<[^>]*>", "");
-            RoleInfo = Regex.Replace(RoleInfo, "{[^}]*}", "");
+            RoleInfo = Regex.Replace(RoleInfo, "<[^>]*>", string.Empty);
+            RoleInfo = Regex.Replace(RoleInfo, "{[^}]*}", string.Empty);
 
             var BaseFontSize = 200;
             int BaseFontSizeMin = 100;
@@ -1828,27 +2349,46 @@ public static class Utils
     private static readonly StringBuilder TargetDeathReason = new();
     private static readonly StringBuilder TargetSuffix = new();
     private static readonly StringBuilder TargetMark = new(20);
-    public static async void NotifyRoles(PlayerControl SpecifySeer = null, PlayerControl SpecifyTarget = null, bool isForMeeting = false, bool NoCache = false, bool ForceLoop = true, bool CamouflageIsForMeeting = false, bool MushroomMixupIsActive = false)
+    public static void NotifyRoles(PlayerControl SpecifySeer = null, PlayerControl SpecifyTarget = null, bool isForMeeting = false, bool NoCache = false, bool ForceLoop = true, bool CamouflageIsForMeeting = false, bool MushroomMixupIsActive = false, bool GuesserIsForMeeting = false, SendOption SendOption = SendOption.Reliable)
     {
-        if (!AmongUsClient.Instance.AmHost || GameStates.IsHideNSeek || Main.AllPlayerControls == null || SetUpRoleTextPatch.IsInIntro) return;
-        if (MeetingHud.Instance)
+        try
         {
-            // When the meeting window is active and game is not ended
-            if (!GameEndCheckerForNormal.GameIsEnded) return;
-        }
-        else
-        {
-            // When some one press report button but NotifyRoles is not for meeting
-            if (Main.MeetingIsStarted && !isForMeeting) return;
-        }
+            if (!AmongUsClient.Instance.AmHost) return;
+            if (!SetUpRoleTextPatch.IsInIntro && ((SpecifySeer != null && SpecifySeer.IsModded() && (Options.CurrentGameMode == CustomGameMode.Standard || SpecifySeer.IsHost())) || (GameStates.IsMeeting && !isForMeeting) || GameStates.IsLobby)) return;
 
-        //var caller = new System.Diagnostics.StackFrame(1, false);
-        //var callerMethod = caller.GetMethod();
-        //string callerMethodName = callerMethod.Name;
-        //string callerClassName = callerMethod.DeclaringType.FullName;
-        //Logger.Info($" Was called from: {callerClassName}.{callerMethodName}", "NotifyRoles");
+            var apc = Main.EnumeratePlayerControls();
+            var seerList = SpecifySeer != null ? [SpecifySeer] : apc;
+            var targetList = SpecifyTarget != null ? [SpecifyTarget] : apc;
 
-        await DoNotifyRoles(SpecifySeer, SpecifyTarget, isForMeeting, NoCache, ForceLoop, CamouflageIsForMeeting, MushroomMixupIsActive);
+            var sender = CustomRpcSender.Create("NotifyRoles", SendOption, log: false);
+            var hasValue = false;
+
+            foreach (PlayerControl seer in seerList)
+            {
+                hasValue |= WriteSetNameRpcsToSender(ref sender, isForMeeting, NoCache, ForceLoop, CamouflageIsForMeeting, GuesserIsForMeeting, MushroomMixupIsActive, seer, seerList, targetList, out bool senderWasCleared, SendOption);
+                if (senderWasCleared) hasValue = false;
+
+                if (sender.stream.Length > 500)
+                {
+                    sender.SendMessage();
+                    sender = CustomRpcSender.Create("NotifyRoles", SendOption, log: false);
+                    hasValue = false;
+                }
+            }
+
+            sender.SendMessage(!hasValue || sender.stream.Length <= 3);
+
+            if (Options.CurrentGameMode != CustomGameMode.Standard) return;
+
+            string seers = seerList.Count() == apc.Count() ? "Everyone" : string.Join(", ", seerList.Select(x => x.GetRealName()));
+            string targets = targetList.Count() == apc.Count() ? "Everyone" : string.Join(", ", targetList.Select(x => x.GetRealName()));
+
+            if (seers.Length == 0) seers = "\u2205";
+            if (targets.Length == 0) targets = "\u2205";
+
+            Logger.Info($" Seers: {seers} ---- Targets: {targets}", "NR");
+        }
+        catch (Exception e) { ThrowException(e); }
     }
     public static Task DoNotifyRoles(PlayerControl SpecifySeer = null, PlayerControl SpecifyTarget = null, bool isForMeeting = false, bool NoCache = false, bool ForceLoop = true, bool CamouflageIsForMeeting = false, bool MushroomMixupIsActive = false, SendOption SendOption = SendOption.Reliable)
     {
@@ -1866,13 +2406,13 @@ public static class Utils
 
         //var logger = Logger.Handler("DoNotifyRoles");
 
-        PlayerControl[] seerList = SpecifySeer != null
-            ? ([SpecifySeer])
-            : Main.AllPlayerControls;
+        var seerList = SpecifySeer != null
+            ? [SpecifySeer]
+            : Main.EnumeratePlayerControls();
 
-        PlayerControl[] targetList = SpecifyTarget != null
-            ? ([SpecifyTarget])
-            : Main.AllPlayerControls;
+        var targetList = SpecifyTarget != null
+            ? [SpecifyTarget]
+            : Main.EnumeratePlayerControls();
 
         if (!MushroomMixupIsActive)
         {
@@ -1902,7 +2442,7 @@ public static class Utils
             var seerRoleClass = seer.GetRoleClass();
 
             // Hide player names in during Mushroom Mixup if seer is alive and desync impostor
-            if (!CamouflageIsForMeeting && MushroomMixupIsActive && seer.IsAlive() && (!seer.Is(Custom_Team.Impostor) || Main.PlayerStates[seer.PlayerId].IsNecromancer) && seer.HasDesyncRole())
+            if (!CamouflageIsForMeeting && MushroomMixupIsActive && seer.IsAlive() && (!seer.Is(Custom_Team.Impostor) || Main.PlayerStates[seer.PlayerId].IsFalseRole) && seer.HasDesyncRole())
             {
                 seer.RpcSetNamePrivate("<size=0%>", force: NoCache);
             }
@@ -1933,6 +2473,9 @@ public static class Utils
                 SelfSuffix.Append(CustomRoleManager.GetSuffixOthers(seer, seer, isForMeeting: isForMeeting));
 
                 SelfSuffix.Append(Radar.GetPlayerArrow(seer, seer, isForMeeting: isForMeeting));
+                SelfSuffix.Append(Necromancer.NecromancerReminder(seer, seer, isForMeeting: isForMeeting));
+                SelfSuffix.Append(CopyCat.CopycatReminder(seer, seer, isForMeeting: isForMeeting));
+                SelfSuffix.Append(Randomizer.RandomizerReminder(seer, seer, isForMeeting: isForMeeting));
                 SelfSuffix.Append(Spurt.GetSuffix(seer, isformeeting: isForMeeting));
 
 
@@ -2033,8 +2576,8 @@ public static class Utils
 
             // Start run loop for target only when condition is "true"
             if (seer.Data.IsDead || !seer.IsAlive()
-                || seerList.Length == 1
-                || targetList.Length == 1
+                || seerList.Count() == 1
+                || targetList.Count() == 1
                 || MushroomMixupIsActive
                 || NoCache
                 || ForceLoop)
@@ -2052,7 +2595,7 @@ public static class Utils
                     // Logger.Info(target.GetNameWithRole() + ":START", "NotifyRoles-Loop2");
 
                     // Hide player names in during Mushroom Mixup if seer is alive and desync impostor
-                    if (!CamouflageIsForMeeting && MushroomMixupIsActive && target.IsAlive() && (!seer.Is(Custom_Team.Impostor) || Main.PlayerStates[seer.PlayerId].IsNecromancer) && seer.HasDesyncRole())
+                    if (!CamouflageIsForMeeting && MushroomMixupIsActive && target.IsAlive() && (!seer.Is(Custom_Team.Impostor) || Main.PlayerStates[seer.PlayerId].IsFalseRole) && seer.HasDesyncRole())
                     {
                         realTarget.RpcSetNamePrivate("<size=0%>", seer, force: NoCache);
                     }
@@ -2070,22 +2613,21 @@ public static class Utils
 
                         if ((seer.IsPlayerCovenTeam() || !seer.IsAlive()) && target.IsPlayerCovenTeam() && CovenManager.HasNecronomicon(target))
                         {
-                            TargetMark.Append(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Coven), "♣"));
+                            TargetMark.Append(CustomRoles.Coven.GetColoredTextByRole("♣"));
                         }
 
                         if (target.Is(CustomRoles.Cyber) && Cyber.CyberKnown.GetBool())
-                            TargetMark.Append(ColorString(GetRoleColor(CustomRoles.Cyber), "★"));
+                            TargetMark.Append(CustomRoles.Cyber.GetColoredTextByRole("★"));
 
 
                         TargetMark.Append(Lovers.GetMarkOthers(seer, target));
-                        // if (seer.Is(CustomRoles.Lovers) && target.Is(CustomRoles.Lovers))
-                        // {
-                        //     TargetMark.Append($"<color={GetRoleColorCode(CustomRoles.Lovers)}>♥</color>");
-                        // }
-                        // else if (seer.Data.IsDead && !seer.Is(CustomRoles.Lovers) && target.Is(CustomRoles.Lovers))
-                        // {
-                        //     TargetMark.Append($"<color={GetRoleColorCode(CustomRoles.Lovers)}>♥</color>");
-                        // }
+                        TargetSuffix.Append(CustomRoleManager.GetLowerTextOthers(seer, target, isForMeeting: isForMeeting));
+
+                        TargetSuffix.Append(seerRoleClass?.GetSuffix(seer, target, isForMeeting: isForMeeting));
+                        TargetSuffix.Append(CustomRoleManager.GetSuffixOthers(seer, target, isForMeeting: isForMeeting));
+                        TargetSuffix.Append(Necromancer.NecromancerReminder(seer, target, isForMeeting: isForMeeting));
+                        TargetSuffix.Append(CopyCat.CopycatReminder(seer, target, isForMeeting: isForMeeting));
+                        TargetSuffix.Append(Randomizer.RandomizerReminder(seer, target, isForMeeting: isForMeeting));
 
                         // ====== Seer know target role ======
 
@@ -2120,14 +2662,6 @@ public static class Utils
                             TargetRoleText = $"<size={fontSize}>{BlankRT}</size>\r\n";
                         }
 
-                        // if (seer.IsAlive() && Lich.IsCursed(target) && Lich.IsDeceived(seer, target))
-                        // {
-                        //     BlankRT = ColorString(GetRoleColor(CustomRoles.Lich), GetString(CustomRoles.Lich.GetActualRoleName()));
-                        //     TargetRoleText = $"<size={fontSize}>{BlankRT}</size>\r\n";
-                            
-                        //     TargetRoleText = KnowRoleTarget ? TargetRoleText : "";
-                        // }
-
                         // ====== Target player name ======
 
                         string TargetPlayerName = target.GetRealName(isForMeeting);
@@ -2145,7 +2679,7 @@ public static class Utils
                                 // seer & target is alive
                                 if (seer.IsAlive() && target.IsAlive())
                                 {
-                                    var GetTragetId = ColorString(GetRoleColor(seer.GetCustomRole()), target.PlayerId.ToString()) + " " + TargetPlayerName;
+                                    var GetTragetId = ColorString(GetRoleColor(seer.GetCustomRole()), target.GetVisiblePlayerId().ToString()) + " " + TargetPlayerName;
 
                                     //Crewmates
                                     if (Options.CrewmatesCanGuess.GetBool() && seer.GetCustomRole().IsCrewmate() && !seer.Is(CustomRoles.Judge) && !seer.Is(CustomRoles.Inspector) && !seer.Is(CustomRoles.Lookout) && !seer.Is(CustomRoles.Swapper))
@@ -2185,8 +2719,14 @@ public static class Utils
                                 {
                                     if (seer.Is(CustomRoles.NiceGuesser) || seer.Is(CustomRoles.EvilGuesser) ||
                                         (seer.Is(CustomRoles.Guesser) && !seer.Is(CustomRoles.Inspector) && !seer.Is(CustomRoles.Swapper) && !seer.Is(CustomRoles.Lookout)))
-                                        TargetPlayerName = ColorString(GetRoleColor(seer.GetCustomRole()), target.PlayerId.ToString()) + " " + TargetPlayerName;
+                                        TargetPlayerName = ColorString(GetRoleColor(seer.GetCustomRole()), target.GetVisiblePlayerId().ToString()) + " " + TargetPlayerName;
                                 }
+                            }
+                            // Summoner Dead players ID
+                            if (seer.IsAlive() && !target.IsAlive())
+                            {
+                                if (seer.Is(CustomRoles.Summoner))
+                                    TargetPlayerName = ColorString(GetRoleColor(seer.GetCustomRole()), target.GetVisiblePlayerId().ToString()) + " " + TargetPlayerName;
                             }
                         }
 
@@ -2199,6 +2739,9 @@ public static class Utils
 
                         TargetSuffix.Append(seerRoleClass?.GetSuffix(seer, target, isForMeeting: isForMeeting));
                         TargetSuffix.Append(CustomRoleManager.GetSuffixOthers(seer, target, isForMeeting: isForMeeting));
+
+                        if (!isForMeeting)
+                            TargetSuffix.Append(AFKDetector.GetSuffix(seer, target));
 
                         if (TargetSuffix.Length > 0)
                         {
@@ -2244,7 +2787,7 @@ public static class Utils
         return Task.CompletedTask;
     }
 
-    public static bool WriteSetNameRpcsToSender(ref CustomRpcSender sender, bool isForMeeting, bool NoCache, bool forceLoop, bool CamouflageIsForMeeting, bool guesserIsForMeeting, bool MushroomMixupIsActive, PlayerControl seer, PlayerControl[] seerList, PlayerControl[] targetList, out bool senderWasCleared, SendOption sendOption = SendOption.Reliable)
+    public static bool WriteSetNameRpcsToSender(ref CustomRpcSender sender, bool isForMeeting, bool NoCache, bool forceLoop, bool CamouflageIsForMeeting, bool guesserIsForMeeting, bool MushroomMixupIsActive, PlayerControl seer, IEnumerable<PlayerControl> seerList, IEnumerable<PlayerControl> targetList, out bool senderWasCleared, SendOption sendOption = SendOption.Reliable)
     {
         long now = TimeStamp;
         var hasValue = false;
@@ -2402,8 +2945,8 @@ public static class Utils
             }
 
             if (seer.Data.IsDead || !seer.IsAlive()
-                    || seerList.Length == 1
-                    || targetList.Length == 1
+                    || seerList.Count() == 1
+                    || targetList.Count() == 1
                     || MushroomMixupIsActive
                     || NoCache
                     || forceLoop)
@@ -2559,6 +3102,9 @@ public static class Utils
                             TargetSuffix.Append(seerRoleClass?.GetSuffix(seer, target, isForMeeting: isForMeeting));
                             TargetSuffix.Append(CustomRoleManager.GetSuffixOthers(seer, target, isForMeeting: isForMeeting));
 
+                            if (!isForMeeting)
+                                TargetSuffix.Append(AFKDetector.GetSuffix(seer, target));
+
                             if (TargetSuffix.Length > 0)
                             {
                                 TargetSuffix.Insert(0, "\r\n");
@@ -2674,7 +3220,7 @@ public static class Utils
     {
         bool shouldPerformVentInteractions = false;
 
-        foreach (var pc in Main.AllPlayerControls)
+        foreach (var pc in Main.EnumeratePlayerControls())
         {
             if (VentSystemDeterioratePatch.BlockVentInteraction(pc))
             {
@@ -2694,6 +3240,8 @@ public static class Utils
         {
             return rso is PlayerState.DeathReason.Overtired
                 or PlayerState.DeathReason.etc
+                or PlayerState.DeathReason.AFK
+                or PlayerState.DeathReason.Disconnected
                 or PlayerState.DeathReason.Vote
                 or PlayerState.DeathReason.Gambled
                 or PlayerState.DeathReason.Armageddon;
@@ -2703,6 +3251,7 @@ public static class Utils
         {
             PlayerState.DeathReason.Equilibrium => (CustomRoles.YinYanger.IsEnable()),
             PlayerState.DeathReason.Eaten => (CustomRoles.Pelican.IsEnable()),
+            PlayerState.DeathReason.Expired => (CustomRoles.Summoner.IsEnable()),
             PlayerState.DeathReason.Spell => (CustomRoles.Witch.IsEnable()),
             PlayerState.DeathReason.Hex => (CustomRoles.HexMaster.IsEnable()),
             PlayerState.DeathReason.Curse => (CustomRoles.CursedWolf.IsEnable()),
@@ -2719,7 +3268,7 @@ public static class Utils
             PlayerState.DeathReason.Torched => (CustomRoles.Arsonist.IsEnable() || CustomRoles.Inquisitor.IsEnable()),
             PlayerState.DeathReason.Sniped => (CustomRoles.Sniper.IsEnable()),
             PlayerState.DeathReason.Revenge => (CustomRoles.Avanger.IsEnable() || CustomRoles.Retributionist.IsEnable()
-                                || CustomRoles.Nemesis.IsEnable() || CustomRoles.Randomizer.IsEnable()),
+                                || CustomRoles.Nemesis.IsEnable()),
             PlayerState.DeathReason.Quantization => (CustomRoles.Lightning.IsEnable()),
             //PlayerState.DeathReason.Overtired => (CustomRoles.Workaholic.IsEnable()),
             PlayerState.DeathReason.Ashamed => (CustomRoles.Workaholic.IsEnable()),
@@ -2781,6 +3330,9 @@ public static class Utils
 
         try
         {
+            AFKDetector.NumAFK = 0;
+            AFKDetector.PlayerData.Clear();
+
             foreach (var playerState in Main.PlayerStates.Values.ToArray())
             {
                 if (playerState.RoleClass == null) continue;
@@ -2796,7 +3348,7 @@ public static class Utils
             }
 
             //Set kill timer
-            foreach (var player in Main.AllAlivePlayerControls)
+            foreach (var player in Main.EnumerateAlivePlayerControls())
             {
                 player.SetKillTimer();
 
@@ -2804,13 +3356,16 @@ public static class Utils
                 {
                     Prohibited.AfterMeetingTasks(player.PlayerId);
                 }
+
+                AFKDetector.RecordPosition(player);
             }
 
             if (Statue.IsEnable) Statue.AfterMeetingTasks();
             if (Burst.IsEnable) Burst.AfterMeetingTasks();
 
-            if (CustomRoles.CopyCat.HasEnabled()) CopyCat.UnAfterMeetingTasks(); // All crew hast to be before this
+            if (CustomRoles.CopyCat.HasEnabled()) CopyCat.UnAfterMeetingTasks(); // All crew have to be before this
             if (CustomRoles.Necromancer.HasEnabled()) Necromancer.UnAfterMeetingTasks();
+            if (CustomRoles.Randomizer.HasEnabled()) Randomizer.UnAfterMeetingTasks();
         }
         catch (Exception error)
         {
@@ -2843,7 +3398,7 @@ public static class Utils
     }
     public static void CountAlivePlayers(bool sendLog = false, bool checkGameEnd = false)
     {
-        int AliveImpostorCount = Main.AllAlivePlayerControls.Count(pc => (pc.Is(Custom_Team.Impostor) || pc.GetCustomRole().IsMadmate()) && !pc.Is(CustomRoles.Narc) && !Main.PlayerStates[pc.PlayerId].IsNecromancer);
+        int AliveImpostorCount = Main.EnumerateAlivePlayerControls().Count(pc => (pc.Is(Custom_Team.Impostor) || pc.GetCustomRole().IsMadmate()) && !pc.Is(CustomRoles.Narc) && !Main.PlayerStates[pc.PlayerId].IsNecromancer);
         if (Main.AliveImpostorCount != AliveImpostorCount)
         {
             Logger.Info("Number Impostor left: " + AliveImpostorCount, "CountAliveImpostors");
@@ -2879,7 +3434,7 @@ public static class Utils
 
         string name = "invalid";
         var player = GetPlayerById(num);
-        var playerCount = Main.AllPlayerControls.Length;
+        var playerCount = Main.AllPlayerControls.Count;
         if (num < playerCount && player != null) name = player?.GetNameWithRole();
         if (num == 252) name = "Dead";
         if (num == 253) name = "Skip";
@@ -2894,14 +3449,35 @@ public static class Utils
         foreach (char c in t) bc += Encoding.GetEncoding("UTF-8").GetByteCount(c.ToString()) == 1 ? 1 : 2;
         return t?.PadRight(Mathf.Max(num - (bc - t.Length), 0));
     }
-    public static void DumpLog()
+
+    private static int previousDumpEnd = 0;
+    public static void DumpLog(bool open = true)
     {
-        string f = $"{Environment.GetFolderPath(Environment.SpecialFolder.DesktopDirectory)}/TOHE-logs/";
+        var f = $"{Environment.GetFolderPath(Environment.SpecialFolder.DesktopDirectory)}/TOHE-logs/";
+        if (OperatingSystem.IsAndroid())
+            f = $"{Main.DataPath}/TOHE-logs/";
+        
         string t = DateTime.Now.ToString("yyyy-MM-dd_HH.mm.ss");
         string filename = $"{f}TOHE-v{Main.PluginVersion}-{t}.log";
         if (!Directory.Exists(f)) Directory.CreateDirectory(f);
-        FileInfo file = new(@$"{Environment.CurrentDirectory}/BepInEx/LogOutput.log");
-        file.CopyTo(@filename);
+        // FileInfo file = new(@$"{Environment.CurrentDirectory}/BepInEx/LogOutput.log");
+        // file.CopyTo(@filename);
+
+        var lines = File.ReadLines(@$"{Environment.CurrentDirectory}/BepInEx/LogOutput.log").Skip(previousDumpEnd);
+        
+        int n = lines.Count();
+
+        if (n == 0)
+        {
+            if (PlayerControl.LocalPlayer != null)
+                HudManager.Instance?.Chat?.AddChat(PlayerControl.LocalPlayer, GetString("Dump.NoNewLogInfo"));
+            return;
+        }
+
+        previousDumpEnd += n;
+        File.WriteAllLines(@filename, lines);
+
+        if (!open) return;
 
         if (PlayerControl.LocalPlayer != null)
             HudManager.Instance?.Chat?.AddChat(PlayerControl.LocalPlayer, string.Format(GetString("Message.DumpfileSaved"), $"TOHE - v{Main.PluginVersion}-{t}.log"));
@@ -3053,12 +3629,11 @@ public static class Utils
     public static float GetSettingNameAndValueForRole(CustomRoles role, string settingName)
     {
         const BindingFlags flags = BindingFlags.Public | BindingFlags.Static;
-        var types = Assembly.GetExecutingAssembly().GetTypes();
-        var field = types.SelectMany(x => x.GetFields(flags)).FirstOrDefault(x => x.Name == $"{role}{settingName}");
+        var field = Main.AllTypes.SelectMany(x => x.GetFields(flags)).FirstOrDefault(x => x.Name == $"{role}{settingName}");
         if (field == null)
         {
             FieldInfo tempField = null;
-            foreach (var x in types)
+            foreach (var x in Main.AllTypes)
             {
                 bool any = false;
                 foreach (var f in x.GetFields(flags))
@@ -3165,9 +3740,30 @@ public static class Utils
         return true;
     }
 
+    public static float CalculatePingDelay()
+    {
+        // The value of AmongUsClient.Instance.Ping is in milliseconds (ms), so ÷1000 to convert to seconds
+        float divice = 1000f;
+
+        float minTime = Mathf.Max(0.2f, AmongUsClient.Instance.Ping / divice * 6f);
+        return minTime;
+    }
+
+    public static bool IsRevivingRoleAlive()
+    {
+        return Main.EnumerateAlivePlayerControls().Any(x => x.GetCustomRole() is CustomRoles.Altruist);
+    }
+
     public static int AllPlayersCount => Main.PlayerStates.Values.Count(state => state.countTypes != CountTypes.OutOfGame);
-    public static int AllAlivePlayersCount => Main.AllAlivePlayerControls.Count(pc => !pc.Is(CountTypes.OutOfGame));
+    public static int AllAlivePlayersCount => Main.EnumerateAlivePlayerControls().Count(pc => !pc.Is(CountTypes.OutOfGame));
     public static bool IsAllAlive => Main.PlayerStates.Values.All(state => state.countTypes == CountTypes.OutOfGame || !state.IsDead);
     public static int PlayersCount(CountTypes countTypes) => Main.PlayerStates.Values.Count(state => state.countTypes == countTypes);
-    public static int AlivePlayersCount(CountTypes countTypes) => Main.AllAlivePlayerControls.Count(pc => pc.Is(countTypes));
+    public static int AlivePlayersCount(CountTypes countTypes) => Main.EnumerateAlivePlayerControls().Count(pc => pc.Is(countTypes));
+}
+
+public class Message(string text, byte sendTo = byte.MaxValue, string title = "")
+{
+    public string Text { get; } = text;
+    public byte SendTo { get; } = sendTo;
+    public string Title { get; } = title;
 }

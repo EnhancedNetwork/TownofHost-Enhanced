@@ -53,21 +53,21 @@ public static class NameColorManager
         if (seer.Is(CustomRoles.Madmate) && target.Is(CustomRoles.Madmate) && Madmate.MadmateKnowWhosMadmate.GetBool()) color = Main.roleColors[CustomRoles.Madmate];
 
         // Coven
-        if (seer.Is(Custom_Team.Coven) && target.Is(Custom_Team.Coven)) color = Main.roleColors[CustomRoles.Coven];
-        if (seer.Is(CustomRoles.Enchanted) && target.Is(Custom_Team.Coven) && Ritualist.EnchantedKnowsCoven.GetBool()) color = Main.roleColors[CustomRoles.Coven];
-        if (Main.PlayerStates[seer.PlayerId].IsNecromancer && target.Is(Custom_Team.Coven)) color = Main.roleColors[CustomRoles.Coven];
-        if (Main.PlayerStates[target.PlayerId].IsNecromancer && seer.Is(Custom_Team.Coven)) color = Main.roleColors[CustomRoles.Coven];
-        if (seer.Is(Custom_Team.Coven) && target.Is(CustomRoles.Enchanted)) color = Main.roleColors[CustomRoles.Enchanted];
-        if (Main.PlayerStates[seer.PlayerId].IsNecromancer && target.Is(CustomRoles.Enchanted)) color = Main.roleColors[CustomRoles.Enchanted];
-        if (Main.PlayerStates[target.PlayerId].IsNecromancer && seer.Is(CustomRoles.Enchanted)) color = Main.roleColors[CustomRoles.Enchanted];
-        if (seer.Is(CustomRoles.Enchanted) && target.Is(CustomRoles.Enchanted) && Ritualist.EnchantedKnowsEnchanted.GetBool()) color = Main.roleColors[CustomRoles.Enchanted];
+        if (seer.Is(Custom_Team.Coven) && target.Is(Custom_Team.Coven) && !Main.PlayerStates[seer.PlayerId].IsRandomizer && !Main.PlayerStates[target.PlayerId].IsRandomizer) color = Main.roleColors[CustomRoles.Coven];
+        if (seer.Is(CustomRoles.Enchanted) && target.Is(Custom_Team.Coven) && Ritualist.EnchantedKnowsCoven.GetBool() && !Main.PlayerStates[target.PlayerId].IsRandomizer) color = Main.roleColors[CustomRoles.Coven];
+        if (seer.Is(CustomRoles.Summoned) && target.Is(Custom_Team.Coven) && Summoner.KnowSummonedRoles.GetBool() && !Main.PlayerStates[target.PlayerId].IsRandomizer) color = Main.roleColors[CustomRoles.Coven];
+        if (Main.PlayerStates[seer.PlayerId].IsNecromancer && target.Is(Custom_Team.Coven) && !Main.PlayerStates[seer.PlayerId].IsRandomizer && !Main.PlayerStates[target.PlayerId].IsRandomizer) color = Main.roleColors[CustomRoles.Coven];
+        if (Main.PlayerStates[target.PlayerId].IsNecromancer && seer.Is(Custom_Team.Coven) && !Main.PlayerStates[seer.PlayerId].IsRandomizer && !Main.PlayerStates[target.PlayerId].IsRandomizer) color = Main.roleColors[CustomRoles.Coven];
+        if (seer.Is(Custom_Team.Coven) && target.Is(CustomRoles.Enchanted) && !Main.PlayerStates[seer.PlayerId].IsRandomizer) color = Main.roleColors[CustomRoles.Enchanted];
+        if (Main.PlayerStates[seer.PlayerId].IsNecromancer && target.Is(CustomRoles.Enchanted) && !Main.PlayerStates[seer.PlayerId].IsRandomizer ) color = Main.roleColors[CustomRoles.Enchanted];
+        if (Main.PlayerStates[target.PlayerId].IsNecromancer && seer.Is(CustomRoles.Enchanted) && !Main.PlayerStates[seer.PlayerId].IsRandomizer) color = Main.roleColors[CustomRoles.Enchanted];
 
         // Cultist
         if (Cultist.NameRoleColor(seer, target)) color = Main.roleColors[CustomRoles.Cultist];
 
         // Admirer
-        if (seer.Is(CustomRoles.Admirer) && !Main.PlayerStates[seer.PlayerId].IsNecromancer && target.Is(CustomRoles.Admired)) color = Main.roleColors[CustomRoles.Admirer];
-        if (seer.Is(CustomRoles.Admired) && target.Is(CustomRoles.Admirer) && !Main.PlayerStates[target.PlayerId].IsNecromancer) color = Main.roleColors[CustomRoles.Admirer];
+        if (seer.Is(CustomRoles.Admirer) && !Main.PlayerStates[seer.PlayerId].IsNecromancer && !Main.PlayerStates[seer.PlayerId].IsRandomizer && target.Is(CustomRoles.Admired)) color = Main.roleColors[CustomRoles.Admirer];
+        if (seer.Is(CustomRoles.Admired) && target.Is(CustomRoles.Admirer) && !Main.PlayerStates[target.PlayerId].IsNecromancer && !Main.PlayerStates[target.PlayerId].IsRandomizer) color = Main.roleColors[CustomRoles.Admirer];
 
         // Bounties
         if (seer.Is(CustomRoles.BountyHunter) && BountyHunter.GetTarget(seer) == target.PlayerId) color = "bf1313";
@@ -112,11 +112,11 @@ public static class NameColorManager
             || Consigliere.ImpKnowRoleTarget(seer, target)
             || Baker.ApocKnowRoleTarget(seer, target)
             || Mimic.CanSeeDeadRoles(seer, target)
-            || (seer.IsNeutralApocalypse() && target.IsNeutralApocalypse() && !Main.PlayerStates[seer.PlayerId].IsNecromancer && !Main.PlayerStates[target.PlayerId].IsNecromancer)
+            || (seer.IsNeutralApocalypse() && target.IsNeutralApocalypse() && !Main.PlayerStates[seer.PlayerId].IsFalseRole && !Main.PlayerStates[target.PlayerId].IsFalseRole)
             || (seer.CheckImpCanSeeAllies(CheckAsSeer: true) && target.CheckImpCanSeeAllies(CheckAsTarget: true))
             || (seer.Is(CustomRoles.Madmate) && target.CheckImpCanSeeAllies(CheckAsTarget: true) && Madmate.MadmateKnowWhosImp.GetBool())
             || (seer.CheckImpCanSeeAllies(CheckAsSeer: true) && target.Is(CustomRoles.Madmate) && Madmate.ImpKnowWhosMadmate.GetBool())
-            || (seer.Is(CustomRoles.Madmate) && target.Is(CustomRoles.Madmate) && Madmate.MadmateKnowWhosMadmate.GetBool())
+            || (seer.Is(CustomRoles.Madmate) && target.Is(CustomRoles.Madmate) && Madmate.MadmateKnowWhosMadmate.GetBool() && !Main.PlayerStates[seer.PlayerId].IsNecromancer && !Main.PlayerStates[target.PlayerId].IsNecromancer)
             || Workaholic.OthersKnowWorka(target)
             || (target.Is(CustomRoles.Gravestone) && Main.PlayerStates[target.Data.PlayerId].IsDead)
             || Mare.KnowTargetRoleColor(target, isMeeting)

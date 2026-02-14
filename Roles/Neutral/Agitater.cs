@@ -143,7 +143,7 @@ internal class Agitater : RoleBase
             Dictionary<byte, float> targetDistance = [];
             float dis;
 
-            foreach (var target in Main.AllAlivePlayerControls)
+            foreach (var target in Main.EnumerateAlivePlayerControls())
             {
                 if (target.PlayerId != player.PlayerId && target.PlayerId != LastBombedPlayer)
                 {
@@ -188,7 +188,7 @@ internal class Agitater : RoleBase
 
 
         player.Notify(GetString("AgitaterPassNotify"));
-        target.Notify(GetString("AgitaterTargetNotify"), hasPriority: true);
+        target.Notify(GetString("AgitaterTargetNotify"));
 
         SendRPC(CurrentBombedPlayer, LastBombedPlayer);
         Logger.Msg($"{player.GetNameWithRole()} passed bomb to {target.GetNameWithRole()}", "Agitater Pass");

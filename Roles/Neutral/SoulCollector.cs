@@ -72,7 +72,7 @@ internal class SoulCollector : RoleBase
     public override string GetMarkOthers(PlayerControl seer, PlayerControl target, bool isForMeeting = false)
     {
         if (_Player == null) return string.Empty;
-        if (TargetId == target.PlayerId && seer.IsNeutralApocalypse() && seer.PlayerId != _Player.PlayerId && !Main.PlayerStates[seer.PlayerId].IsNecromancer)
+        if (TargetId == target.PlayerId && seer.IsNeutralApocalypse() && seer.PlayerId != _Player.PlayerId && !Main.PlayerStates[seer.PlayerId].IsFalseRole)
         {
             return Utils.ColorString(Utils.GetRoleColor(CustomRoles.SoulCollector), "♠");
         }
@@ -179,9 +179,9 @@ internal class Death : RoleBase
 
         var deathList = new List<byte>();
         var death = _Player;
-        foreach (var pc in Main.AllAlivePlayerControls)
+        foreach (var pc in Main.EnumerateAlivePlayerControls())
         {
-            if (pc.IsNeutralApocalypse() && !Main.PlayerStates[pc.PlayerId].IsNecromancer) continue;
+            if (pc.IsNeutralApocalypse() && !Main.PlayerStates[pc.PlayerId].IsFalseRole) continue;
             if (death.IsAlive())
             {
                 if (!Main.AfterMeetingDeathPlayers.ContainsKey(pc.PlayerId))

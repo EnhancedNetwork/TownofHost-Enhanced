@@ -31,21 +31,21 @@ public static class AntiBlackout
         HashSet<byte> Coven = [];
 
         var lastExiled = ExileControllerWrapUpPatch.AntiBlackout_LastExiled;
-        foreach (var pc in Main.AllAlivePlayerControls)
+        foreach (var pc in Main.EnumerateAlivePlayerControls())
         {
             // if player is ejected, do not count him as alive
             if (lastExiled != null && pc.PlayerId == lastExiled.PlayerId) continue;
 
             // Impostors
-            if (pc.Is(Custom_Team.Impostor) && !Main.PlayerStates[pc.PlayerId].IsNecromancer && !pc.Is(CustomRoles.Narc))
+            if (pc.Is(Custom_Team.Impostor) && !Main.PlayerStates[pc.PlayerId].IsFalseRole && !pc.Is(CustomRoles.Narc))
                 Impostors.Add(pc.PlayerId);
 
             // Only Neutral killers
-            else if ((pc.IsNeutralKiller() || pc.IsNeutralApocalypse()) && !Main.PlayerStates[pc.PlayerId].IsNecromancer)
+            else if ((pc.IsNeutralKiller() || pc.IsNeutralApocalypse()) && !Main.PlayerStates[pc.PlayerId].IsFalseRole)
                 NeutralKillers.Add(pc.PlayerId);
 
             //Coven
-            else if (pc.Is(Custom_Team.Coven) || Main.PlayerStates[pc.PlayerId].IsNecromancer)
+            if (pc.Is(Custom_Team.Coven) || Main.PlayerStates[pc.PlayerId].IsFalseRole)
                 Coven.Add(pc.PlayerId);
 
             // Crewmate
@@ -118,11 +118,12 @@ public static class AntiBlackout
         if (CustomWinnerHolder.WinnerTeam != CustomWinner.Default) return;
 
         PlayerControl dummyImp = PlayerControl.LocalPlayer;
+        var players = Main.AllAlivePlayerControls;
 
         if (ExilePlayerId == PlayerControl.LocalPlayer.PlayerId)
         {
             // Dead > Modded > not Impostor/Shapeshifter/Phantom
-            dummyImp = Main.AllPlayerControls
+            dummyImp = Main.EnumeratePlayerControls()
                 .Where(pc => pc.PlayerId != PlayerControl.LocalPlayer.PlayerId)
                 .OrderByDescending(pc => !pc.IsAlive())
                 .ThenByDescending(pc => pc.IsModded())
@@ -132,7 +133,7 @@ public static class AntiBlackout
             Logger.Info($"Dummy Impostor is set to ({dummyImp.PlayerId}){dummyImp.Data.PlayerName}", "AntiBlackout.RevivePlayersAndSetDummyImp");
         }
 
-        if (Main.AllPlayerControls.Length < 4 && !(ExilePlayerId == -1 && Main.AllPlayerControls.Length >= 3))
+        if (players.Count < 4 && !(ExilePlayerId == -1 && players.Count >= 3))
         {
             Logger.Warn("Not enough players to revive and set dummy Impostor..", "AntiBlackout.RevivePlayersAndSetDummyImp");
             Logger.SendInGame(Translator.GetString("AntiBlackNotEnoughPlayersWarning"));
@@ -140,7 +141,7 @@ public static class AntiBlackout
 
         var sender = CustomRpcSender.Create("AntiBlackout.RevivePlayersAndSetDummyImp", SendOption.Reliable).StartMessage(-1);
 
-        foreach (var player in Main.AllPlayerControls)
+        foreach (var player in Main.EnumerateAlivePlayerControls())
         {
             if (player.PlayerId == dummyImp.PlayerId)
             {
@@ -187,9 +188,9 @@ public static class AntiBlackout
     {
         var sender = CustomRpcSender.Create("AntiBlackout RestoreIsDeadByExile", SendOption.Reliable);
         var hasValue = false;
-        foreach (var player in Main.AllPlayerControls)
+        foreach (var player in Main.EnumeratePlayerControls())
         {
-            if (player.Data.IsDead && !player.Data.Disconnected)
+            if (!player.IsAlive() && !player.Data.Disconnected)
             {
                 sender.AutoStartRpc(player.NetId, (byte)RpcCalls.Exiled);
                 sender.EndRpc();
@@ -220,7 +221,7 @@ public static class AntiBlackout
             __instance.VotingComplete(states, exiled, tie);
         }
 
-        foreach (var pc in Main.AllPlayerControls)
+        foreach (var pc in Main.EnumeratePlayerControls())
         {
             if (pc.IsHost()) continue;
 
@@ -268,7 +269,7 @@ public static class AntiBlackout
         if (BlackOutIsActive && CheckForEndVotingPatch.TempExileMsg != null)
         {
             timeNotify = 4f;
-            foreach (var pc in Main.AllPlayerControls.Where(p => !p.IsModded()).ToArray())
+            foreach (var pc in Main.EnumeratePlayerControls().Where(p => !p.IsModded()).ToArray())
             {
                 pc.Notify(CheckForEndVotingPatch.TempExileMsg, time: timeNotify);
             }
@@ -280,7 +281,7 @@ public static class AntiBlackout
             {
                 var sender = CustomRpcSender.Create("AntiBlackout.SetDeadAfterMeetingTasks", SendOption.Reliable);
 
-                foreach (var pc in Main.AllAlivePlayerControls)
+                foreach (var pc in Main.EnumerateAlivePlayerControls())
                 {
                     pc.GetRoleClass()?.NotifyAfterMeeting();
 
@@ -317,7 +318,7 @@ public static class AntiBlackout
             if (seer == null || target == null) continue;
 
             var isSelf = seerId == targetId;
-            var isDead = target.Data.IsDead;
+            var isDead = !target.IsAlive();
             var changedRoleType = roletype;
 
             if (isDead)
@@ -373,7 +374,7 @@ public static class AntiBlackout
     }
     private static void ResetAllCooldown()
     {
-        foreach (var seer in Main.AllPlayerControls)
+        foreach (var seer in Main.EnumeratePlayerControls())
         {
             seer.RpcResetAbilityCooldown();
         }

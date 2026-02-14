@@ -117,7 +117,7 @@ internal class Troller : RoleBase
                 var newSpeed = randomEvent is Events.LowSpeed ? 0.3f : 5f;
                 var tempSpeed = Main.AllPlayerSpeed.ToDictionary(k => k.Key, v => v.Value);
 
-                foreach (var pcSpeed in Main.AllAlivePlayerControls)
+                foreach (var pcSpeed in Main.EnumerateAlivePlayerControls())
                 {
                     Main.AllPlayerSpeed[pcSpeed.PlayerId] = newSpeed;
                     pcSpeed.Notify(GetString("Troller_ChangesSpeed"));
@@ -126,7 +126,7 @@ internal class Troller : RoleBase
 
                 _ = new LateTask(() =>
                 {
-                    foreach (var pcSpeed in Main.AllAlivePlayerControls)
+                    foreach (var pcSpeed in Main.EnumerateAlivePlayerControls())
                     {
                         Main.AllPlayerSpeed[pcSpeed.PlayerId] = Main.AllPlayerSpeed[pcSpeed.PlayerId] - newSpeed + tempSpeed[pcSpeed.PlayerId];
                         pcSpeed.Notify(GetString("Troller_SpeedOut"));
@@ -210,7 +210,7 @@ internal class Troller : RoleBase
             case Events.CooldownsResetToDefault:
             case Events.CooldownsResetToZero:
                 var setToDefault = randomEvent is Events.CooldownsResetToDefault;
-                foreach (var pc in Main.AllAlivePlayerControls)
+                foreach (var pc in Main.EnumerateAlivePlayerControls())
                 {
                     if (pc.HasKillButton() && pc.CanUseKillButton())
                     {
@@ -225,7 +225,7 @@ internal class Troller : RoleBase
                 troller.Notify(GetString("Troller_YouChangedCooldown"));
                 break;
             case Events.LoseAddon:
-                var randomPC = Main.AllAlivePlayerControls.RandomElement();
+                var randomPC = Main.EnumerateAlivePlayerControls().RandomElement();
                 var addons = Main.PlayerStates[randomPC.PlayerId].SubRoles.ToList();
                 foreach (var role in addons)
                 {
@@ -247,24 +247,24 @@ internal class Troller : RoleBase
                 randomPC.MarkDirtySettings();
                 break;
             case Events.TelepostEveryoneToVents:
-                foreach (var pcTeleport in Main.AllAlivePlayerControls.Where(x => x.CanBeTeleported()))
+                foreach (var pcTeleport in Main.EnumerateAlivePlayerControls().Where(x => x.CanBeTeleported()))
                 {
                     pcTeleport.RpcRandomVentTeleport();
                 }
                 break;
             case Events.PullEveryone:
-                foreach (var pc in Main.AllAlivePlayerControls.Where(x => x.CanBeTeleported()))
+                foreach (var pc in Main.EnumerateAlivePlayerControls().Where(x => x.CanBeTeleported()))
                 {
                     pc.RpcTeleport(troller.GetCustomPosition());
                 }
                 break;
             case Events.TwistEveryone:
                 List<byte> changePositionPlayers = [];
-                foreach (var pc in Main.AllAlivePlayerControls)
+                foreach (var pc in Main.EnumerateAlivePlayerControls())
                 {
                     if (changePositionPlayers.Contains(pc.PlayerId) || !pc.CanBeTeleported()) continue;
 
-                    var filtered = Main.AllAlivePlayerControls.Where(a => a.CanBeTeleported() && a.PlayerId != pc.PlayerId && !changePositionPlayers.Contains(a.PlayerId)).ToArray();
+                    var filtered = Main.EnumerateAlivePlayerControls().Where(a => a.CanBeTeleported() && a.PlayerId != pc.PlayerId && !changePositionPlayers.Contains(a.PlayerId)).ToArray();
                     if (!filtered.Any()) break;
 
                     var target = filtered.RandomElement();
@@ -281,7 +281,7 @@ internal class Troller : RoleBase
                 }
                 break;
             case Events.StartMeeting:
-                var pcCallMeeting = Main.AllAlivePlayerControls.RandomElement();
+                var pcCallMeeting = Main.EnumerateAlivePlayerControls().RandomElement();
                 pcCallMeeting.NoCheckStartMeeting(null);
                 break;
                 //case Events.GetBadAddon:

@@ -31,19 +31,27 @@ class EndGamePatch
 
         try
         {
-            if (AmongUsClient.Instance.AmHost)
+            if (AmongUsClient.Instance.AmHost && GhostRoleAssign.GhostGetPreviousRole != null)
             {
-                if (GhostRoleAssign.GhostGetPreviousRole != null)
+                foreach (var pvc in GhostRoleAssign.GhostGetPreviousRole.Keys) // Sets role back to original so it shows up in /l results.
                 {
-                    foreach (var pvc in GhostRoleAssign.GhostGetPreviousRole.Keys) // Sets role back to original so it shows up in /l results.
+                    if (!Main.PlayerStates.TryGetValue(pvc, out var state) || !state.MainRole.IsGhostRole()) continue;
+                    if (!GhostRoleAssign.GhostGetPreviousRole.TryGetValue(pvc, out CustomRoles prevrole)) continue;
+
+                    Main.PlayerStates[pvc].MainRole = prevrole;
+
+                    if (state.MainRole == CustomRoles.Summoned)
                     {
-                        if (!Main.PlayerStates.TryGetValue(pvc, out var state) || !state.MainRole.IsGhostRole()) continue;
-                        if (!GhostRoleAssign.GhostGetPreviousRole.TryGetValue(pvc, out CustomRoles prevrole)) continue;
-
-                        Main.PlayerStates[pvc].MainRole = prevrole;
-
+                        Logger.Info($"Player {Utils.GetPlayerById(pvc).GetRealName()} is Summoned. Skipping role reversion.", "OutroPatch");
+                        continue;
+                    }
+                    if (state.IsRandomizer)
+                    {
+                        // Ensure Randomizer role persists
+                        state.MainRole = CustomRoles.Randomizer;
                         var message = new RpcSyncPlayerSetting(PlayerControl.LocalPlayer.NetId, pvc, prevrole);
                         RpcUtils.LateBroadcastReliableMessage(message);
+
                     }
 
                     if (GhostRoleAssign.GhostGetPreviousRole.Any()) Logger.Info(string.Join(", ", GhostRoleAssign.GhostGetPreviousRole.Select(x => $"{Utils.GetPlayerInfoById(x.Key).PlayerName}/{x.Value}")), "OutroPatch.GhostGetPreviousRole");
@@ -76,6 +84,10 @@ class EndGamePatch
 
         CustomRoleManager.RoleClass.Values.Where(x => x.IsEnable).Do(x => x.IsEnable = false);
         CustomNetObject.Reset();
+
+        AFKDetector.ExemptedPlayers.Clear();
+
+        if (Options.DumpLogAfterGameEnd.GetBool()) Utils.DumpLog(false);
 
         var sb = new StringBuilder(GetString("KillLog") + ":");
         if (Options.OldKillLog.GetBool())
@@ -133,13 +145,13 @@ class EndGamePatch
         //winnerListÒâ¬Òé╗ÒââÒâê
         EndGameResult.CachedWinners = new Il2CppSystem.Collections.Generic.List<CachedPlayerData>();
         var winner = new List<PlayerControl>();
-        foreach (var pc in Main.AllPlayerControls)
+        foreach (var pc in Main.EnumeratePlayerControls())
         {
             if (CustomWinnerHolder.WinnerIds.Contains(pc.PlayerId)) winner.Add(pc);
         }
         foreach (var team in CustomWinnerHolder.WinnerRoles.ToArray())
         {
-            winner.AddRange(Main.AllPlayerControls.Where(p => p.Is(team) && !winner.Contains(p)));
+            winner.AddRange(Main.EnumeratePlayerControls().Where(p => p.Is(team) && !winner.Contains(p)));
         }
 
         Main.winnerNameList.Clear();

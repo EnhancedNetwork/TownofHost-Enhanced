@@ -4,17 +4,28 @@ using Il2CppInterop.Runtime.InteropTypes.Arrays;
 using InnerNet;
 using System;
 using System.Text;
+using TOHE.Roles.Core;
+using TOHE.Roles.Crewmate;
+using TOHE.Roles.Neutral;
+using TOHE.Modules;
+using UnityEngine;
 
 namespace TOHE;
 
 public class CustomRpcSender
 {
+    private int messages;
     public MessageWriter stream;
     public readonly string name;
     public readonly SendOption sendOption;
     public bool isUnsafe;
+    public bool shouldLog;
     public delegate void onSendDelegateType();
     public onSendDelegateType onSendDelegate;
+
+    // for logging
+    private RpcCalls? LastCall;
+    private readonly List<object> LastMessages = [];
 
     private readonly List<MessageWriter> doneStreams = [];
 
@@ -34,26 +45,28 @@ public class CustomRpcSender
     //-2: 未設定
     private int currentRpcTarget;
 
-    private int rootMessageCount;
+    // private int rootMessageCount;
 
     private CustomRpcSender() { }
-    public CustomRpcSender(string name, SendOption sendOption, bool isUnsafe)
+    public CustomRpcSender(string name, SendOption sendOption, bool isUnsafe, bool log)
     {
         stream = MessageWriter.Get(sendOption);
 
         this.name = name;
         this.sendOption = sendOption;
         this.isUnsafe = isUnsafe;
+        this.shouldLog = log;
         this.currentRpcTarget = -2;
-        onSendDelegate = () => Logger.Info($"{this.name}'s onSendDelegate =>", "CustomRpcSender");
+        onSendDelegate = () => {if(this.shouldLog) Logger.Info($"{this.name}'s onSendDelegate =>", "CustomRpcSender");};
 
         currentState = State.Ready;
-        rootMessageCount = 0;
-        Logger.Info($"\"{name}\" is ready", "CustomRpcSender");
+        messages = 0;
+        if (this.shouldLog)
+            Logger.Info($"\"{name}\" is ready", "CustomRpcSender");
     }
-    public static CustomRpcSender Create(string name = "No Name Sender", SendOption sendOption = SendOption.None, bool isUnsafe = false)
+    public static CustomRpcSender Create(string name = "No Name Sender", SendOption sendOption = SendOption.None, bool isUnsafe = false, bool log = true)
     {
-        return new CustomRpcSender(name, sendOption, isUnsafe);
+        return new CustomRpcSender(name, sendOption, isUnsafe, log);
     }
 
     #region Start/End Message
@@ -74,6 +87,7 @@ public class CustomRpcSender
         {
             doneStreams.Add(stream);
             stream = MessageWriter.Get(sendOption);
+            messages = 0;
         }
 
         if (targetClientId < 0)
@@ -137,6 +151,14 @@ public class CustomRpcSender
                 throw new InvalidOperationException(errorMsg);
         }
 
+        if (messages >= AmongUsClient.Instance.GetMaxMessagePackingLimit())
+        {
+            EndMessage(startNew: true);
+            StartMessage(currentRpcTarget);
+        }
+
+        messages++;
+
         stream.StartMessage(2);
         stream.WritePacked(targetNetId);
         stream.Write(callId);
@@ -154,12 +176,18 @@ public class CustomRpcSender
             else
                 throw new InvalidOperationException(errorMsg);
         }
-
+        Logger.Info($"Sending Rpc with id {LastCall} and values [{LastMessages.Join(delimiter: ", ")}]", "CustomRpcSender");
+        LastCall = null;
+        LastMessages.Clear();
         stream.EndMessage();
         currentState = State.InRootMessage;
         return this;
     }
     #endregion
+    public CustomRpcSender AutoStartRpc(
+        uint targetNetId,
+        RpcCalls callId,
+        int targetClientId = -1) => AutoStartRpc(targetNetId, (byte) callId, targetClientId);
     public CustomRpcSender AutoStartRpc(
         uint targetNetId,
         byte callId,
@@ -177,9 +205,16 @@ public class CustomRpcSender
         if (currentRpcTarget != targetClientId)
         {
             //StartMessage処理
-            if (currentState == State.InRootMessage) this.EndMessage();
+            if (currentState == State.InRootMessage) this.EndMessage(startNew: true);
+            else if (messages > 0) // state is Ready
+            {
+                doneStreams.Add(stream);
+                stream = MessageWriter.Get(sendOption);
+                messages = 0;
+            }
             this.StartMessage(targetClientId);
         }
+        LastCall = (RpcCalls)callId;
         this.StartRpc(targetNetId, callId);
 
         return this;
@@ -198,7 +233,7 @@ public class CustomRpcSender
                 throw new InvalidOperationException(errorMsg);
         }
 
-        if (stream.Length >= 1500 && sendOption == SendOption.Reliable && !dispose) Logger.Warn($"Large reliable packet \"{name}\" is sending ({stream.Length} bytes)", "CustomRpcSender");
+        if (stream.Length >= 1400 && sendOption == SendOption.Reliable && !dispose) Logger.Warn($"Large reliable packet \"{name}\" is sending ({stream.Length} bytes)", "CustomRpcSender");
         else if (stream.Length > 3) Logger.Info($"\"{name}\" is finished (Length: {stream.Length}, dispose: {dispose}, sendOption: {sendOption})", "CustomRpcSender");
 
         if (!dispose)
@@ -209,7 +244,7 @@ public class CustomRpcSender
 
                 doneStreams.ForEach(x =>
                 {
-                    if (x.Length >= 1500 && sendOption == SendOption.Reliable) Logger.Warn($"Large reliable packet \"{name}\" is sending ({x.Length} bytes)", "CustomRpcSender");
+                    if (x.Length >= 1400 && sendOption == SendOption.Reliable) Logger.Warn($"Large reliable packet \"{name}\" is sending ({x.Length} bytes)", "CustomRpcSender");
                     else if (x.Length > 3) sb.Append($" | {x.Length}");
 
                     AmongUsClient.Instance.SendOrDisconnect(x);
@@ -233,26 +268,27 @@ public class CustomRpcSender
 
     // Write
     #region PublicWriteMethods
-    public CustomRpcSender Write(float val) => Write(w => w.Write(val));
-    public CustomRpcSender Write(string val) => Write(w => w.Write(val));
-    public CustomRpcSender Write(ulong val) => Write(w => w.Write(val));
-    public CustomRpcSender Write(int val) => Write(w => w.Write(val));
-    public CustomRpcSender Write(uint val) => Write(w => w.Write(val));
-    public CustomRpcSender Write(ushort val) => Write(w => w.Write(val));
-    public CustomRpcSender Write(byte val) => Write(w => w.Write(val));
-    public CustomRpcSender Write(sbyte val) => Write(w => w.Write(val));
-    public CustomRpcSender Write(bool val) => Write(w => w.Write(val));
-    public CustomRpcSender Write(Il2CppStructArray<byte> bytes) => Write(w => w.Write(bytes));
-    public CustomRpcSender Write(Il2CppStructArray<byte> bytes, int offset, int length) => Write(w => w.Write(bytes, offset, length));
-    public CustomRpcSender WriteBytesAndSize(Il2CppStructArray<byte> bytes) => Write(w => w.WriteBytesAndSize(bytes));
-    public CustomRpcSender WritePacked(int val) => Write(w => w.WritePacked(val));
-    public CustomRpcSender WritePacked(uint val) => Write(w => w.WritePacked(val));
-    public CustomRpcSender WriteNetObject(InnerNetObject obj) => Write(w => w.WriteNetObject(obj));
-    public CustomRpcSender WriteMessageType(byte val) => Write(w => w.StartMessage(val));
-    public CustomRpcSender WriteEndMessage() => Write(w => w.EndMessage());
+    public CustomRpcSender Write(float val) => Write(w => w.Write(val), val);
+    public CustomRpcSender Write(string val) => Write(w => w.Write(val), val);
+    public CustomRpcSender Write(ulong val) => Write(w => w.Write(val), val);
+    public CustomRpcSender Write(int val) => Write(w => w.Write(val), val);
+    public CustomRpcSender Write(uint val) => Write(w => w.Write(val), val);
+    public CustomRpcSender Write(ushort val) => Write(w => w.Write(val), val);
+    public CustomRpcSender Write(byte val) => Write(w => w.Write(val), val);
+    public CustomRpcSender Write(sbyte val) => Write(w => w.Write(val), val);
+    public CustomRpcSender Write(bool val) => Write(w => w.Write(val), val);
+    public CustomRpcSender Write(Il2CppStructArray<byte> bytes) => Write(w => w.Write(bytes), bytes);
+    public CustomRpcSender Write(Il2CppStructArray<byte> bytes, int offset, int length) => Write(w => w.Write(bytes, offset, length), bytes);
+    public CustomRpcSender WriteBytesAndSize(Il2CppStructArray<byte> bytes) => Write(w => w.WriteBytesAndSize(bytes), bytes);
+    public CustomRpcSender WritePacked(int val) => Write(w => w.WritePacked(val), val);
+    public CustomRpcSender WritePacked(uint val) => Write(w => w.WritePacked(val), val);
+    public CustomRpcSender WriteNetObject(InnerNetObject obj) => Write(w => w.WriteNetObject(obj), obj);
+    public CustomRpcSender WriteMessageType(byte val) => Write(w => w.StartMessage(val), val);
+    public CustomRpcSender WriteEndMessage() => Write(w => w.EndMessage(), "[EndMessage]");
+    public CustomRpcSender WriteVector2(Vector2 vector2) => Write(w => NetHelpers.WriteVector2(vector2, w), vector2);
     #endregion
 
-    private CustomRpcSender Write(Action<MessageWriter> action)
+    private CustomRpcSender Write(Action<MessageWriter> action, object val)
     {
         if (currentState != State.InRpc)
         {
@@ -262,6 +298,7 @@ public class CustomRpcSender
             else
                 throw new InvalidOperationException(errorMsg);
         }
+        LastMessages.Add(val);
         action(stream);
 
         return this;
@@ -301,23 +338,81 @@ public static class CustomRpcSenderExtensions
 
         name = name.Replace("color=", string.Empty);
 
+        var saw = seerIsNull ? "Everyone" : seer.GetRealName(); // Ternary operators can't be used inside of $ strings
+
         switch (seerIsNull)
         {
             case true when Main.LastNotifyNames.Where(x => x.Key.Item1 == player.PlayerId).All(x => x.Value == name):
             case false when Main.LastNotifyNames[(player.PlayerId, seer.PlayerId)] == name:
+                Logger.Info($"Skipped setting name of {player.GetRealName()} for seer {saw} because it was the same as previous", "RpcSetName");
                 return;
             case true:
-                Main.AllPlayerControls.Do(x => Main.LastNotifyNames[(player.PlayerId, x.PlayerId)] = name);
+                Main.EnumeratePlayerControls().Do(x => Main.LastNotifyNames[(player.PlayerId, x.PlayerId)] = name);
                 break;
             default:
                 Main.LastNotifyNames[(player.PlayerId, seer.PlayerId)] = name;
                 break;
         }
 
+        Logger.Info($"Set name for {player.GetRealName()} for seer {saw} to {name.RemoveHtmlTags()}", "RpcSetName");
+
         sender.AutoStartRpc(player.NetId, (byte)RpcCalls.SetName, targetClientId)
             .Write(player.Data.NetId)
             .Write(name)
             .Write(false)
             .EndRpc();
+    }
+
+    // Credit: EHR
+    public static void RpcDesyncRepairSystem(this CustomRpcSender sender, PlayerControl target, SystemTypes systemType, int amount)
+    {
+        sender.AutoStartRpc(ShipStatus.Instance.NetId, RpcCalls.UpdateSystem, target.OwnerId);
+        sender.Write((byte)systemType);
+        sender.WriteNetObject(target);
+        sender.Write((byte)amount);
+        sender.EndRpc();
+    }
+
+    public static bool TP(this CustomRpcSender sender, PlayerControl pc, Vector2 location, bool noCheckState = false, bool log = true)
+    {
+        if (!AmongUsClient.Instance.AmHost) return false;
+        
+        CustomNetworkTransform nt = pc.NetTransform;
+
+        if (!noCheckState)
+        {
+            // if (pc.Is(CustomRoles.AntiTP)) return false;
+
+            if (pc.inVent || pc.inMovingPlat || pc.onLadder || !pc.IsAlive() || pc.MyPhysics.Animations.IsPlayingAnyLadderAnimation() || pc.MyPhysics.Animations.IsPlayingEnterVentAnimation())
+            {
+                if (log) Logger.Warn($"Target ({pc.GetNameWithRole().RemoveHtmlTags()}) is in an un-teleportable state - Teleporting canceled", "TP");
+                return false;
+            }
+
+            if (Vector2.Distance(pc.GetCustomPosition(), location) < 0.5f)
+            {
+                if (log) Logger.Warn($"Target ({pc.GetNameWithRole().RemoveHtmlTags()}) is too close to the destination - Teleporting canceled", "TP");
+                return false;
+            }
+        }
+
+        
+        nt.SnapTo(location, (ushort)(nt.lastSequenceId + 328));
+        nt.SetDirtyBit(uint.MaxValue);
+
+        var newSid = (ushort)(nt.lastSequenceId + 8);
+
+        sender.AutoStartRpc(nt.NetId, RpcCalls.SnapTo);
+        sender.WriteVector2(location);
+        sender.Write(newSid);
+        sender.EndRpc();
+
+        if (log) Logger.Info($"{pc.GetNameWithRole().RemoveHtmlTags()} => {location}", "TP");
+
+        // CheckInvalidMovementPatch.LastPosition[pc.PlayerId] = location;
+        // CheckInvalidMovementPatch.ExemptedPlayers.Add(pc.PlayerId);
+
+        // if (sender.sendOption == SendOption.Reliable) Utils.NumSnapToCallsThisRound++;
+        return true;
     }
 }

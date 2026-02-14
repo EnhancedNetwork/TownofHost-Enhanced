@@ -1,4 +1,5 @@
 using AmongUs.GameOptions;
+using AmongUs.Matchmaking;
 using BepInEx;
 using BepInEx.Configuration;
 using BepInEx.Unity.IL2CPP;
@@ -6,12 +7,14 @@ using BepInEx.Unity.IL2CPP.Utils.Collections;
 using Il2CppInterop.Runtime.Injection;
 using MonoMod.Utils;
 using System;
+using System.Collections;
 using System.IO;
 using System.Security.Cryptography;
 using System.Text;
 using System.Text.Json;
 using TOHE.Modules;
 using TOHE.Modules.Rpc;
+using TOHE.Patches;
 using TOHE.Patches.Crowded;
 using TOHE.Roles.AddOns;
 using TOHE.Roles.Core;
@@ -53,17 +56,29 @@ public class Main : BasePlugin
     public static ConfigEntry<string> DebugKeyInput { get; private set; }
 
     public const string PluginGuid = "com.0xdrmoe.townofhostenhanced";
-    public const string PluginVersion = "2025.1203.241.00000"; // YEAR.MMDD.VERSION.CANARYDEV
-    public const string PluginDisplayVersion = "2.4.1 hotfix 1";
+    public const string PluginGuid4 = "90759289-1d0d-494b-b36c-839f93ae0df1"; // for matchmaking token
+    public const string PluginVersion = "2026.0213.300.00028"; // YEAR.MMDD.VERSION.CANARYDEV
+    public const string PluginDisplayVersion = "3.0.0 Alpha 28";
     public static readonly List<(int year, int month, int day, int revision)> SupportedVersionAU =
     [
-        (2025, 11, 18, 0) // 2025.11.18 & 17.1s
+        (2025, 11, 18, 0) // 2025.11.18 & 17.1
     ];
 
-    /******************* Change one of the three variables to true before making a release. *******************/
-    public static readonly bool devRelease = false; // Discontinued, use Beta instead
-    public static readonly bool canaryRelease = false; // Latest: V2.4.0 Beta 6
-    public static readonly bool fullRelease = true; // Latest: V2.4.1
+    // Change this to change alpha/beta/full release
+    public static readonly Release RELEASE = Release.ALPHA;
+
+#pragma warning disable IDE1006 // Naming Styles
+    public static bool devRelease => RELEASE == Release.ALPHA; // Latest: v3.0.0 Alpha 28
+    public static bool canaryRelease => RELEASE == Release.BETA; // Latest: V2.4.2 Beta 3
+    public static bool fullRelease => RELEASE == Release.RELEASE; // Latest: V2.4.1 hotfix 1
+#pragma warning restore IDE1006 // Naming Styles
+
+    public enum Release
+    {
+        ALPHA,
+        BETA,
+        RELEASE
+    }
 
     public static bool hasAccess = true;
 
@@ -108,6 +123,7 @@ public class Main : BasePlugin
     public static ConfigEntry<bool> ShowModdedClientText { get; private set; }
     public static ConfigEntry<bool> HorseMode { get; private set; }
     public static ConfigEntry<bool> LongMode { get; private set; }
+    public static ConfigEntry<bool> EnableCommandHelper { get; private set; }
     public static ConfigEntry<bool> ForceOwnLanguage { get; private set; }
     public static ConfigEntry<bool> ForceOwnLanguageRoleName { get; private set; }
     public static ConfigEntry<bool> EnableCustomButton { get; private set; }
@@ -149,11 +165,13 @@ public class Main : BasePlugin
     public static readonly Dictionary<byte, PlayerState.DeathReason> AfterMeetingDeathPlayers = [];
     public static readonly Dictionary<CustomRoles, string> roleColors = [];
 
-#if ANDROID
-    public static readonly string LANGUAGE_FOLDER_NAME = Path.Combine(UnityEngine.Application.persistentDataPath, "TOHE-DATA", "Language");
-#else
-    public const string LANGUAGE_FOLDER_NAME = "TOHE-DATA/Language";
-#endif
+    public static readonly string LANGUAGE_FOLDER_NAME = OperatingSystem.IsAndroid() ? Path.Combine(UnityEngine.Application.persistentDataPath, "TOHE-DATA", "Language") : "TOHE-DATA/Language";
+
+    public static readonly string DataPath = OperatingSystem.IsAndroid() ? Application.persistentDataPath : ".";
+
+    // Cache
+    public static readonly Type[] AllTypes = Assembly.GetExecutingAssembly().GetTypes();
+    public static readonly CustomRoles[] CustomRoleValues = Enum.GetValues<CustomRoles>();
 
     public static bool IsFixedCooldown => CustomRoles.Vampire.IsEnable() || CustomRoles.Poisoner.IsEnable();
     public static float RefixCooldownDelay = 0f;
@@ -162,7 +180,7 @@ public class Main : BasePlugin
     public static readonly HashSet<byte> winnerList = [];
     public static readonly HashSet<string> winnerNameList = [];
     public static readonly HashSet<int> clientIdList = [];
-    public static readonly List<(string, byte, string)> MessagesToSend = [];
+    // public static readonly List<(string, byte, string)> MessagesToSend = [];
     public static readonly Dictionary<string, int> PlayerQuitTimes = [];
     public static bool isChatCommand = false;
     public static bool MeetingIsStarted = false;
@@ -211,8 +229,8 @@ public class Main : BasePlugin
         get
         {
             DateTime utcNow = DateTime.UtcNow;
-            DateTime t = new DateTime(utcNow.Year, 4, 1, 7, 0, 0, 0, DateTimeKind.Utc);
-            DateTime t2 = new DateTime(utcNow.Year, 4, 8, 7, 0, 0, 0, DateTimeKind.Utc);
+            DateTime t = new(utcNow.Year, 4, 1, 7, 0, 0, 0, DateTimeKind.Utc);
+            DateTime t2 = new(utcNow.Year, 4, 8, 7, 0, 0, 0, DateTimeKind.Utc);
             return utcNow >= t && utcNow <= t2;
         }
     }
@@ -223,46 +241,26 @@ public class Main : BasePlugin
     public static int MeetingsPassed = 0;
     public static long LastMeetingEnded = Utils.GetTimeStamp();
     public static bool Daybreak;
+    
+    public static IReadOnlyList<PlayerControl> AllPlayerControls => [.. EnumeratePlayerControls()];
+    public static IReadOnlyList<PlayerControl> AllAlivePlayerControls => [.. EnumerateAlivePlayerControls()];
 
-
-    public static PlayerControl[] AllPlayerControls
+    public static IEnumerable<PlayerControl> EnumeratePlayerControls()
     {
-        get
+        foreach (var pc in PlayerControl.AllPlayerControls)
         {
-            int count = PlayerControl.AllPlayerControls.Count;
-            var result = new PlayerControl[count];
-            int i = 0;
-            foreach (var pc in PlayerControl.AllPlayerControls)
-            {
-                if (pc == null || pc.PlayerId == 255 || pc.notRealPlayer) continue;
-                result[i++] = pc;
-            }
-
-            if (i == 0) return [];
-
-            Array.Resize(ref result, i);
-            return result;
+            if (pc == null || pc.PlayerId >= 254) continue;
+            yield return pc;
         }
     }
 
-    public static PlayerControl[] AllAlivePlayerControls
+    public static IEnumerable<PlayerControl> EnumerateAlivePlayerControls()
     {
-        get
-        {
-            int count = PlayerControl.AllPlayerControls.Count;
-            var result = new PlayerControl[count];
-            int i = 0;
-            foreach (var pc in PlayerControl.AllPlayerControls)
-            {
-                if (pc == null || pc.PlayerId == 255 || pc.notRealPlayer || !pc.IsAlive() || pc.Data == null || pc.Data.Disconnected || Pelican.IsEaten(pc.PlayerId)) continue;
-                result[i++] = pc;
-            }
-
-            if (i == 0) return [];
-
-            Array.Resize(ref result, i);
-            return result;
-        }
+        return EnumeratePlayerControls()
+            .Where(pc => pc.IsAlive()
+                        && pc.Data != null
+                        && (!pc.Data.Disconnected || !IntroDestroyed)
+                        && !Pelican.IsEaten(pc.PlayerId));
     }
 
     public static Main Instance;
@@ -327,22 +325,25 @@ public class Main : BasePlugin
         }
     }
 
-    public void StartCoroutine(System.Collections.IEnumerator coroutine)
+    public Coroutine StartCoroutine(IEnumerator coroutine)
     {
-        if (coroutine == null)
-        {
-            return;
-        }
-        coroutines.StartCoroutine(coroutine.WrapToIl2Cpp());
+        if (coroutine == null) return null;
+        return coroutines.StartCoroutine(coroutine.WrapToIl2Cpp());
     }
 
-    public void StopCoroutine(System.Collections.IEnumerator coroutine)
+    public void StopCoroutine(IEnumerator coroutine)
     {
         if (coroutine == null)
         {
             return;
         }
         coroutines.StopCoroutine(coroutine.WrapToIl2Cpp());
+    }
+
+    public void StopCoroutine(Coroutine coroutine)
+    {
+        if (coroutine == null) return;
+        coroutines.StopCoroutine(coroutine);
     }
 
     public void StopAllCoroutines()
@@ -384,7 +385,7 @@ public class Main : BasePlugin
                 }
             }
 
-            foreach (var role in EnumHelper.GetAllValues<CustomRoles>())
+            foreach (var role in CustomRoleValues)
             {
                 switch (role.GetCustomRoleTeam())
                 {
@@ -555,6 +556,7 @@ public class Main : BasePlugin
         ShowModdedClientText = Config.Bind("Client Options", "ShowModdedClientText", true);
         HorseMode = Config.Bind("Client Options", "HorseMode", false);
         LongMode = Config.Bind("Client Options", "LongMode", false);
+        EnableCommandHelper = Config.Bind("Client Options", "EnableCommandHelper", true);
         ForceOwnLanguage = Config.Bind("Client Options", "ForceOwnLanguage", false);
         ForceOwnLanguageRoleName = Config.Bind("Client Options", "ForceOwnLanguageRoleName", false);
         EnableCustomButton = Config.Bind("Client Options", "EnableCustomButton", true);
@@ -581,13 +583,13 @@ public class Main : BasePlugin
         TOHE.Logger.Disable("SwitchSystem");
         TOHE.Logger.Disable("ModNews");
         TOHE.Logger.Disable("RpcSetNamePrivate");
+        // TOHE.Logger.Disable("SendRPC");
         TOHE.Logger.Disable("KnowRoleTarget");
         if (!DebugModeManager.AmDebugger)
         {
             TOHE.Logger.Disable("2018k");
             TOHE.Logger.Disable("Github");
             //TOHE.Logger.Disable("ReceiveRPC");
-            TOHE.Logger.Disable("SendRPC");
             TOHE.Logger.Disable("SetRole");
             TOHE.Logger.Disable("Info.Role");
             TOHE.Logger.Disable("TaskState.Init");
@@ -600,8 +602,10 @@ public class Main : BasePlugin
             //TOHE.Logger.Disable("CheckMurder");
             TOHE.Logger.Disable("PlayerControl.RpcSetRole");
             TOHE.Logger.Disable("SyncCustomSettings");
-            //TOHE.Logger.Disable("DoNotifyRoles");
+            TOHE.Logger.Disable("NR");
+            TOHE.Logger.Disable("RpcSetName");
             TOHE.Logger.Disable("CustomRpcSender");
+            // TOHE.Logger.Disable("KnowRoleTarget");
         }
         //TOHE.Logger.isDetail = true;
 
@@ -640,6 +644,8 @@ public class Main : BasePlugin
         DevManager.Init();
         Cloud.Init();
 
+        ChatCommands.LoadCommands();
+
         IRandom.SetInstance(new NetRandomWrapper());
 
         TOHE.Logger.Info($" {Application.version}", "Among Us Version");
@@ -669,14 +675,16 @@ public class Main : BasePlugin
         HideNSeekGameOptionsV10.MinPlayers = Enumerable.Repeat(4, 128).ToArray();
         DisconnectPopup.ErrorMessages[DisconnectReasons.Hacking] = StringNames.ErrorHacking;
 
-        Harmony.PatchAll();
+        Harmony.PatchAll(Assembly.GetExecutingAssembly());
 
-        // ConsoleManager.DetachConsole();
-#if !ANDROID
-        if (DebugModeManager.AmDebugger) ConsoleManager.CreateConsole();
-#endif
+        if (!OperatingSystem.IsAndroid())
+        {
+            if (DebugModeManager.AmDebugger) ConsoleManager.CreateConsole();
+            else ConsoleManager.DetachConsole();
+            
+            // Harmony.PatchAll(typeof(TextBoxPatch));
+        }
 
-        // InitializeFileHash();
         FileHash = "drafting_2025_09_09";
         TOHE.Logger.Msg("========= TOHE loaded! =========", "Plugin Load");
     }
@@ -972,6 +980,8 @@ public enum CustomRoles
     PotionMaster,
     Ritualist,
     Sacrifist,
+    Summoner,
+    Summoned,
     Sorceress,
     VoodooMaster,
 
@@ -1152,6 +1162,8 @@ public enum AdditionalWinners
     Lovers = CustomRoles.Lovers,
     Cupid = CustomRoles.Cupid,
     Opportunist = CustomRoles.Opportunist,
+    Summoned = CustomRoles.Summoned,
+    Randomizer = CustomRoles.Randomizer,
     Executioner = CustomRoles.Executioner,
     Lawyer = CustomRoles.Lawyer,
     Hater = CustomRoles.Hater,
@@ -1167,7 +1179,8 @@ public enum AdditionalWinners
     Specter = CustomRoles.Specter,
     Maverick = CustomRoles.Maverick,
     Shaman = CustomRoles.Shaman,
-    Taskinator = CustomRoles.Taskinator,
+    // Changed to Pariah
+    // Taskinator = CustomRoles.Taskinator,
     Pixie = CustomRoles.Pixie,
     Quizmaster = CustomRoles.Quizmaster,
     SchrodingersCat = CustomRoles.SchrodingersCat,

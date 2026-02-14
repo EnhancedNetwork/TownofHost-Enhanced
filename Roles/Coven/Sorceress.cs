@@ -13,6 +13,8 @@ internal class Sorceress : CovenManager
     public override CustomRoles Role => CustomRoles.Sorceress;
     private const int Id = 32600;
     public override bool IsDesyncRole => true;
+    public override bool IsExperimental => true;
+    public override bool UsesCNOs => true;
     public override CustomRoles ThisRoleBase => CustomRoles.Shapeshifter;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.CovenTrickery;
     //==================================================================\\
@@ -71,7 +73,7 @@ internal class Sorceress : CovenManager
     public static void SetBlinded(PlayerControl player, IGameOptions opt)
     {
         if (Mirages.Any(a => a.Value.TargetId == player.PlayerId && 
-            Main.AllAlivePlayerControls.Any(b => b.PlayerId == a.Key)))
+            Main.EnumerateAlivePlayerControls().Any(b => b.PlayerId == a.Key)))
         {
             opt.SetVision(false);
             opt.SetFloat(FloatOptionNames.CrewLightMod, MirageVision.GetFloat());
@@ -125,7 +127,7 @@ internal class Sorceress : CovenManager
         var id = _Player.PlayerId;
         if (Mirages.TryGetValue(id, out var mirages))
         {
-            mirages.TargetId.GetPlayer().MarkDirtySettings();
+            mirages.TargetId.GetPlayer()?.MarkDirtySettings();
             foreach (var mirage in mirages.NetObjects)
             {
                 mirage.Despawn();
@@ -216,8 +218,8 @@ internal class Sorceress : CovenManager
         internal DeathMirage(Vector2 position, List<byte> visibleList)
         {
             if (!AmongUsClient.Instance.AmHost) return;
-            CreateNetObject(position: position, visible: true, pOutfit: Main.AllAlivePlayerControls.RandomElement()?.Data.Outfits[PlayerOutfitType.Default]);
-            Main.AllAlivePlayerControls.ExceptBy(visibleList, x => x.PlayerId).Do(Hide);
+            CreateNetObject(position: position, visible: true, pOutfit: Main.EnumerateAlivePlayerControls().RandomElement()?.Data.Outfits[PlayerOutfitType.Default]);
+            Main.EnumerateAlivePlayerControls().ExceptBy(visibleList, x => x.PlayerId).Do(Hide);
         }
     }
 }

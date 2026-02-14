@@ -13,7 +13,7 @@ internal class RiftMaker : RoleBase
     //===========================SETUP================================\\
     public override CustomRoles Role => CustomRoles.RiftMaker;
     private const int Id = 27200;
-
+    public override bool UsesCNOs => true;
     public override CustomRoles ThisRoleBase => CustomRoles.Shapeshifter;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.ImpostorConcealing;
     //==================================================================\\
@@ -58,8 +58,9 @@ internal class RiftMaker : RoleBase
     public override void SetAbilityButtonText(HudManager hud, byte id) => hud.AbilityButton.OverrideText(Translator.GetString("RiftMakerButtonText"));
     // public override Sprite GetAbilityButtonSprite(PlayerControl player, bool shapeshifting) => CustomButton.Get("Create Rift");
 
-    private void SendRPC(byte riftID, int operate)
+    private void SendRPC(byte riftID, int operate) // Something here is throwing a null ref
     {
+        if (PlayerControl.LocalPlayer == null || _Player == null) return;
         var writer = MessageWriter.Get(SendOption.Reliable);
         writer.Write(operate);
         if (operate == 3)

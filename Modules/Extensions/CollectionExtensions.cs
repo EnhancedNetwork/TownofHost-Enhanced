@@ -152,8 +152,128 @@ public static class CollectionExtensions
     }
 
     /// <summary>
+    ///     Determines whether a collection contains any elements that satisfy a predicate and returns the first element that
+    ///     satisfies the predicate
+    /// </summary>
+    /// <param name="collection">The collection to search</param>
+    /// <param name="predicate">The predicate to check for each element</param>
+    /// <param name="element">
+    ///     The first element that satisfies the predicate, or the default value of <typeparamref name="T" />
+    ///     if no elements satisfy the predicate
+    /// </param>
+    /// <typeparam name="T">The type of the elements in the collection</typeparam>
+    /// <returns><c>true</c> if the collection contains any elements that satisfy the predicate, <c>false</c> otherwise</returns>
+    public static bool FindFirst<T>(this IEnumerable<T> collection, Func<T, bool> predicate, out T element)
+    {
+        if (collection is List<T> list)
+        {
+            for (var i = 0; i < list.Count; i++)
+            {
+                T item = list[i];
+
+                if (predicate(item))
+                {
+                    element = item;
+                    return true;
+                }
+            }
+
+            element = default(T);
+            return false;
+        }
+
+        foreach (T item in collection)
+        {
+            if (predicate(item))
+            {
+                element = item;
+                return true;
+            }
+        }
+
+        element = default(T);
+        return false;
+    }
+
+    /// <summary>
     /// Return the first byte of a HashSet(Byte)
     /// </summary>
     public static byte First(this HashSet<byte> source)
         => source.ToArray().First();
+
+    #region ToValidPlayers
+
+    /// <summary>
+    ///     Converts a collection of player IDs to a collection of <see cref="PlayerControl" /> instances
+    /// </summary>
+    /// <param name="playerIds"></param>
+    /// <returns></returns>
+    public static IEnumerable<PlayerControl> ToValidPlayers(this IEnumerable<byte> playerIds)
+    {
+        return playerIds.Select(Utils.GetPlayer).Where(x => x != null);
+    }
+
+    /// <summary>
+    ///     Converts a list of player IDs to a list of <see cref="PlayerControl" /> instances
+    /// </summary>
+    /// <param name="playerIds"></param>
+    /// <returns></returns>
+    public static List<PlayerControl> ToValidPlayers(this List<byte> playerIds)
+    {
+        return playerIds.ConvertAll(Utils.GetPlayer).FindAll(x => x != null);
+    }
+
+    #endregion
+
+        #region Without
+
+    /// <summary>
+    ///     Removes an element from a collection
+    /// </summary>
+    /// <param name="collection">The collection to remove the element from</param>
+    /// <param name="element">The element to remove</param>
+    /// <typeparam name="T">The type of the elements in the collection</typeparam>
+    /// <returns>
+    ///     A collection containing all elements of <paramref name="collection" /> except for <paramref name="element" />
+    /// </returns>
+    public static IEnumerable<T> Without<T>(this IEnumerable<T> collection, T element)
+    {
+        return collection.Where(x => !x.Equals(element));
+    }
+
+    /// <summary>
+    ///     Removes an element from a collection
+    /// </summary>
+    /// <param name="collection">The collection to remove the element from</param>
+    /// <param name="element">The element to remove</param>
+    /// <returns>
+    ///     A collection containing all elements of <paramref name="collection" /> except for <paramref name="element" />
+    /// </returns>
+    public static IEnumerable<PlayerControl> Without(this IEnumerable<PlayerControl> collection, PlayerControl element)
+    {
+        return collection.Where(x => x.PlayerId != element.PlayerId);
+    }
+
+    /// <summary>
+    ///     Removes an element from a collection
+    /// </summary>
+    /// <param name="collection">The collection to remove the element from</param>
+    /// <param name="element">The element to remove</param>
+    /// <returns>
+    ///     A collection containing all elements of <paramref name="collection" /> except for <paramref name="element" />
+    /// </returns>
+    public static IEnumerable<PlainShipRoom> Without(this IEnumerable<PlainShipRoom> collection, PlainShipRoom element)
+    {
+        return collection.Where(x => x != element);
+    }
+
+    #endregion
+}
+
+public static class Loop
+{
+    public static void Times(int count, Action<int> action)
+    {
+        for (var i = 0; i < count; i++) action(i);
+    }
 }

@@ -69,7 +69,7 @@ internal class ChiefOfPolice : RoleBase
 
         if (target.IsPlayerCrewmateTeam())
         {
-            if (PreventRecruitNonKiller.GetBool() && !target.CanUseKillButton())
+            if (PreventRecruitNonKiller.GetBool() && !target.CanUseKillButton() || target.Is(CustomRoles.Loyal))
             {
                 suidice = true;
             }
@@ -124,6 +124,7 @@ internal class ChiefOfPolice : RoleBase
                     target.RpcSetCustomRole(CustomRoles.Sheriff);
                     target.GetRoleClass()?.OnAdd(target.PlayerId);
                     if (Main.PlayerStates[target.PlayerId].IsNecromancer) Main.PlayerStates[target.PlayerId].IsNecromancer = false;
+                    if (Main.PlayerStates[target.PlayerId].IsRandomizer) Main.PlayerStates[target.PlayerId].IsRandomizer = false;
 
                     target.ResetKillCooldown();
                     target.SetKillCooldown(forceAnime: true);

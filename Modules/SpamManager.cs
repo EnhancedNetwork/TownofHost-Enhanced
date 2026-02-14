@@ -109,7 +109,7 @@ public static class SpamManager
             if (kick || !GameStates.IsInGame) Utils.SendMessage(msg);
             else
             {
-                foreach (var pc in Main.AllAlivePlayerControls.Where(x => x.IsAlive() == player.IsAlive()).ToArray())
+                foreach (var pc in Main.EnumerateAlivePlayerControls().Where(x => x.IsAlive() == player.IsAlive()).ToArray())
                     Utils.SendMessage(msg, pc.PlayerId);
             }
         }
@@ -120,155 +120,116 @@ public static class SpamManager
     {
         text = text.Trim().ToLower();
 
-        int stNum = 0;
-        for (int i = 0; i < text.Length; i++)
+        var stNum = 0;
+
+        for (var i = 0; i < text.Length; i++)
         {
             if (text[i..].Equals("k")) stNum++;
             if (text[i..].Equals("开")) stNum++;
         }
+
         if (stNum >= 3) return true;
 
-        if (text == "Start") return true;
-        if (text == "start") return true;
-        if (text == "/Start") return true;
-        if (text == "/Start/") return true;
-        if (text == "Start/") return true;
-        if (text == "/start") return true;
-        if (text == "/start/") return true;
-        if (text == "start/") return true;
+        switch (text)
+        {
+            case "Start":
+            case "start":
+            case "/Start":
+            case "/Start/":
+            case "Start/":
+            case "/start":
+            case "/start/":
+            case "start/":
+            case "plsstart":
+            case "pls start":
+            case "please start":
+            case "pleasestart":
+            case "Plsstart":
+            case "Pls start":
+            case "Please start":
+            case "Pleasestart":
+            case "plsStart":
+            case "pls Start":
+            case "please Start":
+            case "pleaseStart":
+            case "PlsStart":
+            case "Pls Start":
+            case "Please Start":
+            case "PleaseStart":
+            case "sTart":
+            case "stArt":
+            case "staRt":
+            case "starT":
+            case "s t a r t":
+            case "S t a r t":
+            case "started":
+            case "Started":
+            case "s t a r t e d":
+            case "S t a r t e d":
+            case "Го":
+            case "гО":
+            case "го":
+            case "Гоу":
+            case "гоу":
+            case "Старт":
+            case "старт":
+            case "/Старт":
+            case "/Старт/":
+            case "Старт/":
+            case "/старт":
+            case "/старт/":
+            case "старт/":
+            case "пжстарт":
+            case "пж старт":
+            case "пжСтарт":
+            case "пж Старт":
+            case "Пжстарт":
+            case "Пж старт":
+            case "ПжСтарт":
+            case "Пж Старт":
+            case "сТарт":
+            case "стАрт":
+            case "стаРт":
+            case "старТ":
+            case "с т а р т":
+            case "С т а р т":
+            case "начни":
+            case "Начни":
+            case "начинай":
+            case "начинай уже":
+            case "Начинай":
+            case "Начинай уже":
+            case "Начинай Уже":
+            case "н а ч и н а й":
+            case "Н а ч и н а й":
+            case "пж го":
+            case "пжго":
+            case "Пж Го":
+            case "Пж го":
+            case "пж Го":
+            case "ПжГо":
+            case "Пжго":
+            case "пжГо":
+            case "ГоПж":
+            case "гоПж":
+            case "Гопж":
+            case "开":
+            case "快开":
+            case "开始":
+            case "开啊":
+            case "开阿":
+            case "kai":
+            case "kaishi":
+                return true;
+        }
 
-        if (text == "plsstart") return true;
-        if (text == "pls start") return true;
-        if (text == "please start") return true;
-        if (text == "pleasestart") return true;
+        if (text.Length > 30) return false;
 
-        if (text == "Plsstart") return true;
-        if (text == "Pls start") return true;
-        if (text == "Please start") return true;
-        if (text == "Pleasestart") return true;
-
-        if (text == "plsStart") return true;
-        if (text == "pls Start") return true;
-        if (text == "please Start") return true;
-        if (text == "pleaseStart") return true;
-
-        if (text == "PlsStart") return true;
-        if (text == "Pls Start") return true;
-        if (text == "Please Start") return true;
-        if (text == "PleaseStart") return true;
-
-        if (text == "sTart") return true;
-        if (text == "stArt") return true;
-        if (text == "staRt") return true;
-        if (text == "starT") return true;
-
-        if (text == "s t a r t") return true;
-        if (text == "S t a r t") return true;
-
-        if (text == "started") return true;
-        if (text == "Started") return true;
-        if (text == "s t a r t e d") return true;
-        if (text == "S t a r t e d") return true;
-
-        if (text == "Começa") return true;
-        if (text == "começa") return true;
-        if (text == "/Começar") return true;
-        if (text == "/Começar/") return true;
-        if (text == "Começar/") return true;
-        if (text == "/começar") return true;
-        if (text == "/começar/") return true;
-        if (text == "começar/") return true;
-
-        if (text == "começa por favor") return true;
-        if (text == "COMEÇA POR FAVOR") return true;
-        if (text == "cmc pfv") return true;
-        if (text == "CMC PFV") return true;
-
-        if (text == "cmc logo") return true;
-        if (text == "CMC LOGO") return true;
-        if (text == "começa logo") return true;
-        if (text == "COMEÇA LOGO") return true;
-
-        if (text == "CMC MANO") return true;
-        if (text == "CMC MN") return true;
-        if (text == "cmc mano") return true;
-        if (text == "cmc mn") return true;
-
-        if (text == "Iniciar") return true;
-        if (text == "Iniciar Por Favor") return true;
-        if (text == "iniciar por favor") return true;
-        if (text == "iNiciar") return true;
-
-        if (text == "inIciar") return true;
-        if (text == "iniCiar") return true;
-        if (text == "iniciAr") return true;
-
-        if (text == "C O M E Ç A") return true;
-        if (text == "I N I C I A R") return true;
-
-        if (text == "Го") return true;
-        if (text == "гО") return true;
-        if (text == "го") return true;
-        if (text == "Гоу") return true;
-        if (text == "гоу") return true;
-        if (text == "Старт") return true;
-        if (text == "старт") return true;
-        if (text == "/Старт") return true;
-        if (text == "/Старт/") return true;
-        if (text == "Старт/") return true;
-        if (text == "/старт") return true;
-        if (text == "/старт/") return true;
-        if (text == "старт/") return true;
-
-        if (text == "пжстарт") return true;
-        if (text == "пж старт") return true;
-        if (text == "пжСтарт") return true;
-        if (text == "пж Старт") return true;
-        if (text == "Пжстарт") return true;
-        if (text == "Пж старт") return true;
-        if (text == "ПжСтарт") return true;
-        if (text == "Пж Старт") return true;
-
-        if (text == "сТарт") return true;
-        if (text == "стАрт") return true;
-        if (text == "стаРт") return true;
-        if (text == "старТ") return true;
-
-        if (text == "с т а р т") return true;
-        if (text == "С т а р т") return true;
-
-        if (text == "начни") return true;
-        if (text == "Начни") return true;
-        if (text == "начинай") return true;
-        if (text == "начинай уже") return true;
-        if (text == "Начинай") return true;
-        if (text == "Начинай уже") return true;
-        if (text == "Начинай Уже") return true;
-        if (text == "н а ч и н а й") return true;
-        if (text == "Н а ч и н а й") return true;
-
-        if (text == "пж го") return true;
-        if (text == "пжго") return true;
-        if (text == "Пж Го") return true;
-        if (text == "Пж го") return true;
-        if (text == "пж Го") return true;
-        if (text == "ПжГо") return true;
-        if (text == "Пжго") return true;
-        if (text == "пжГо") return true;
-        if (text == "ГоПж") return true;
-        if (text == "гоПж") return true;
-        if (text == "Гопж") return true;
-
-        if (text == "开") return true;
-        if (text == "快开") return true;
-        if (text == "开始") return true;
-        if (text == "开啊") return true;
-        if (text == "开阿") return true;
-        if (text == "kai") return true;
-        if (text == "kaishi") return true;
-
-        //if (text.Length >= 3) return false;
-
+        if (text.Contains("start")) return true;
+        if (text.Contains("Start")) return true;
+        if (text.Contains("STart")) return true;
+        if (text.Contains("s t a r t")) return true;
+        if (text.Contains("begin")) return true;
         if (text.Contains('了')) return false;
         if (text.Contains('没')) return false;
         if (text.Contains('吗')) return false;
@@ -298,7 +259,6 @@ public static class SpamManager
         if (text.Contains('《')) return false;
         if (text.Contains('?')) return false;
         if (text.Contains('？')) return false;
-
-        return text.Contains('开') || text.Contains("kai");
+        return text.Contains('开') /*|| text.Contains("kai")*/;
     }
 }

@@ -178,7 +178,7 @@ internal class Alchemist : RoleBase
             Vector2 bloodthirstPos = player.transform.position;
             Dictionary<byte, float> targetDistance = [];
             float dis;
-            foreach (var target in Main.AllAlivePlayerControls)
+            foreach (var target in Main.EnumerateAlivePlayerControls())
             {
                 if (target.PlayerId != player.PlayerId && !target.IsTransformedNeutralApocalypse())
                 {
@@ -235,7 +235,7 @@ internal class Alchemist : RoleBase
             else if (remainTime <= 10)
             {
                 if (!alchemist.IsModded())
-                    alchemist.Notify(string.Format(GetString("SwooperInvisStateCountdown"), remainTime), sendInLog: false);
+                    alchemist.Notify(string.Format(GetString("SwooperInvisStateCountdown"), remainTime), log: false);
             }
         }
 
@@ -268,7 +268,7 @@ internal class Alchemist : RoleBase
     {
         if (!AmongUsClient.Instance.AmHost) return;
 
-        NameNotifyManager.Notice.Remove(player.PlayerId);
+        NameNotifyManager.Notifies.Remove(player.PlayerId);
 
         switch (PotionID)
         {
@@ -297,7 +297,7 @@ internal class Alchemist : RoleBase
             case 3: // TP to random player
                 _ = new LateTask(() =>
                 {
-                    List<PlayerControl> AllAlivePlayer = [.. Main.AllAlivePlayerControls.Where(x => x.CanBeTeleported() && x.PlayerId != player.PlayerId).ToArray()];
+                    List<PlayerControl> AllAlivePlayer = [.. Main.EnumerateAlivePlayerControls().Where(x => x.CanBeTeleported() && x.PlayerId != player.PlayerId).ToArray()];
                     var target = AllAlivePlayer.RandomElement();
                     player.RpcTeleport(target.GetCustomPosition());
                     player.RPCPlayCustomSound("Teleport");
@@ -359,7 +359,7 @@ internal class Alchemist : RoleBase
 
         PotionID = 10;
         var pc = __instance.myPlayer;
-        NameNotifyManager.Notice.Remove(pc.PlayerId);
+        NameNotifyManager.Notifies.Remove(pc.PlayerId);
 
         _ = new LateTask(() =>
         {

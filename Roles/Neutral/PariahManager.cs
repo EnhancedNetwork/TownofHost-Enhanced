@@ -85,7 +85,7 @@ public abstract class PariahManager : RoleBase // NO, THIS IS NOT A ROLE
 
         if (winTeam is CustomWinner.None or CustomWinner.Default or CustomWinner.Draw or CustomWinner.Crewmate or CustomWinner.Lovers or CustomWinner.Youtuber or CustomWinner.Error) return;
 
-        List<PlayerControl> nps = [.. Main.AllPlayerControls.Where(x => x.GetCustomRole().IsNP())];
+        List<PlayerControl> nps = [.. Main.EnumeratePlayerControls().Where(x => x.GetCustomRole().IsNP())];
 
         foreach (var np in nps)
         {

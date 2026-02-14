@@ -138,9 +138,9 @@ internal class PlagueBearer : RoleBase
     }
     private static (int, int) PlaguedPlayerCount(byte playerId)
     {
-        if (Main.AllAlivePlayerControls.Length == 0) return (0, 100);
-        int all = Main.AllAlivePlayerControls.Count(pc => pc.PlayerId != playerId);
-        int plagued = Main.AllAlivePlayerControls.Count(pc => pc.PlayerId != playerId && IsPlagued(playerId, pc.PlayerId));
+        if (!Main.EnumerateAlivePlayerControls().Any()) return (0, 100);
+        int all = Main.EnumerateAlivePlayerControls().Count(pc => pc.PlayerId != playerId);
+        int plagued = Main.EnumerateAlivePlayerControls().Count(pc => pc.PlayerId != playerId && IsPlagued(playerId, pc.PlayerId));
 
         return (plagued, all);
     }
@@ -216,7 +216,7 @@ internal class PlagueBearer : RoleBase
         => IsPlagued(seer.PlayerId, seen.PlayerId) ? ColorString(GetRoleColor(CustomRoles.PlagueBearer), "⦿") : string.Empty;
     public override string GetMarkOthers(PlayerControl seer, PlayerControl target, bool isForMeeting = false)
     {
-        if (playerIdList.Any() && IsPlagued(playerIdList.First(), target.PlayerId) && seer.IsNeutralApocalypse() && seer.PlayerId != playerIdList.First() && !Main.PlayerStates[seer.PlayerId].IsNecromancer)
+        if (playerIdList.Any() && IsPlagued(playerIdList.First(), target.PlayerId) && seer.IsNeutralApocalypse() && seer.PlayerId != playerIdList.First() && !Main.PlayerStates[seer.PlayerId].IsFalseRole)
         {
             return ColorString(GetRoleColor(CustomRoles.PlagueBearer), "⦿");
         }
@@ -251,14 +251,14 @@ internal class Pestilence : RoleBase
 
     public override bool OnCheckMurderAsTarget(PlayerControl killer, PlayerControl target)
     {
-        if (killer.IsNeutralApocalypse() && !Main.PlayerStates[killer.PlayerId].IsNecromancer) return false;
+        if (killer.IsNeutralApocalypse() && !Main.PlayerStates[killer.PlayerId].IsFalseRole) return false;
         target.RpcMurderPlayer(killer);
         killer.SetRealKiller(target);
         return false;
     }
     public override bool OnCheckMurderAsKiller(PlayerControl killer, PlayerControl target)
     {
-        if (target.IsNeutralApocalypse() && !Main.PlayerStates[target.PlayerId].IsNecromancer) return false;
+        if (target.IsNeutralApocalypse() && !Main.PlayerStates[target.PlayerId].IsFalseRole) return false;
         return true;
     }
 

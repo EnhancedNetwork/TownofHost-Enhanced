@@ -6,66 +6,112 @@ namespace TOHE;
 
 public static class NameNotifyManager
 {
-    public static readonly Dictionary<byte, (string Text, long TimeStamp)> Notice = [];
-    public static void Reset() => Notice.Clear();
-    public static bool Notifying(this PlayerControl pc) => Notice.ContainsKey(pc.PlayerId);
-    public static void Notify(this PlayerControl pc, string text, float time = 5f, bool sendInLog = true, bool hasPriority = false)
+    public static Dictionary<byte, Dictionary<string, long>> Notifies = [];
+    private static long LastUpdate;
+    public static bool Notifying(PlayerControl player) => Notifies.ContainsKey(player.PlayerId) && Notifies[player.PlayerId]?.Count > 0;
+
+    public static void Reset()
+    {
+        Notifies = [];
+    }
+
+    public static void Notify(this PlayerControl pc, string text, float time = 6f, bool overrideAll = false, bool log = true, SendOption sendOption = SendOption.Reliable)
     {
         if (!AmongUsClient.Instance.AmHost || pc == null) return;
         if (!GameStates.IsInTask) return;
-        if (pc.Notifying() && !hasPriority) return;
-        if (!text.Contains("<color=") && !text.Contains("</color>")) text = Utils.ColorString(Color.white, text);
+
+        text = text.Trim();
+        if (!text.Contains("<color=") && !text.Contains("</color>") && !text.Contains("<#")) text = Utils.ColorString(Color.white, text);
         if (!text.Contains("<size=")) text = $"<size=1.9>{text}</size>";
 
-        Notice.Remove(pc.PlayerId);
-        Notice.Add(pc.PlayerId, new(text, Utils.TimeStamp + (long)time));
+        long expireTS = Utils.TimeStamp + (long)time;
 
-        SendRPC(pc.PlayerId);
+        if (overrideAll || !Notifies.TryGetValue(pc.PlayerId, out Dictionary<string, long> notifies))
+            Notifies[pc.PlayerId] = new() { { text, expireTS } };
+        else
+            notifies[text] = expireTS;
+
+        if (pc.IsNonHostModdedClient()) SendRPC(pc.PlayerId, text, expireTS, overrideAll, sendOption);
         Utils.NotifyRoles(SpecifySeer: pc, SpecifyTarget: pc);
-
-        if (sendInLog) Logger.Info($"New name notify for {pc.GetNameWithRole().RemoveHtmlTags()}: {text} ({time}s)", "Name Notify");
+        if (log) Logger.Info($"New name notify for {pc.GetNameWithRole().RemoveHtmlTags()}: {text} ({time}s)", "Name Notify");
     }
-    public static void OnFixedUpdate(PlayerControl player)
+
+    public static void OnFixedUpdate()
     {
         if (!GameStates.IsInTask)
         {
-            if (Notice.Any()) Notice.Clear();
+            Reset();
             return;
         }
 
-        if (Notice.ContainsKey(player.PlayerId) && Notice[player.PlayerId].TimeStamp < Utils.GetTimeStamp())
+        long now = Utils.TimeStamp;
+        if (now == LastUpdate) return;
+        LastUpdate = now;
+
+        List<byte> toNotify = [];
+
+        foreach ((byte id, Dictionary<string, long> notifies) in Notifies)
         {
-            Notice.Remove(player.PlayerId);
-            Utils.NotifyRoles(SpecifySeer: player, ForceLoop: false);
+            List<string> toRemove = [];
+
+            notifies.DoIf(x => x.Value <= now, x => toRemove.Add(x.Key));
+
+            toRemove.ForEach(x => notifies.Remove(x));
+            if (toRemove.Count > 0) toNotify.Add(id);
         }
+
+        if (toNotify.Count == 0 || !AmongUsClient.Instance.AmHost) return;
+
+        toNotify.ToValidPlayers().ForEach(x => Utils.NotifyRoles(SpecifySeer: x, SpecifyTarget: x));
     }
+
     public static bool GetNameNotify(PlayerControl player, out string name)
     {
         name = string.Empty;
-        if (!Notice.TryGetValue(player.PlayerId, out (string Text, long TimeStamp) value)) return false;
-        name = value.Text;
+        if (!Notifies.TryGetValue(player.PlayerId, out Dictionary<string, long> notifies)) return false;
+
+        name = string.Join('\n', notifies.OrderBy(x => x.Value).Select(x => x.Key));
         return true;
     }
-    private static void SendRPC(byte playerId)
-    {
-        var player = playerId.GetPlayer();
-        if (player == null || !AmongUsClient.Instance.AmHost || !player.IsNonHostModdedClient()) return;
 
-        var message = new RpcSyncNameNotify(
-            PlayerControl.LocalPlayer.NetId,
-            playerId,
-            Notice.ContainsKey(playerId),
-            Notice.ContainsKey(playerId) ? Notice[playerId].Text : string.Empty,
-            Notice.ContainsKey(playerId) ? Notice[playerId].TimeStamp - Utils.GetTimeStamp() : 0f);
-        RpcUtils.LateSpecificSendMessage(message, player.OwnerId);
+    private static void SendRPC(byte playerId, string text, long expireTS, bool overrideAll, SendOption sendOption) // Only sent when adding a new notification
+    {
+        if (!AmongUsClient.Instance.AmHost) return;
+
+        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncNameNotify, sendOption);
+        writer.Write(playerId);
+        writer.Write(text);
+        writer.Write(expireTS.ToString());
+        writer.Write(overrideAll);
+        AmongUsClient.Instance.FinishRpcImmediately(writer);
     }
+
+    public static void SendRPC(CustomRpcSender sender, byte playerId, string text, long expireTS, bool overrideAll)
+    {
+        if (!AmongUsClient.Instance.AmHost) return;
+
+        sender.AutoStartRpc(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncNameNotify);
+        sender.Write(playerId);
+        sender.Write(text);
+        sender.Write(expireTS.ToString());
+        sender.Write(overrideAll);
+        sender.EndRpc();
+    }
+
     public static void ReceiveRPC(MessageReader reader)
     {
-        byte PlayerId = reader.ReadByte();
-        Notice.Remove(PlayerId);
-        long now = Utils.GetTimeStamp();
-        if (reader.ReadBoolean())
-            Notice.Add(PlayerId, new(reader.ReadString(), now + (long)reader.ReadSingle()));
-        Logger.Info($"New name notify for {Main.AllPlayerNames[PlayerId]}: {Notice[PlayerId].Text} ({Notice[PlayerId].TimeStamp - now}s)", "Name Notify");
+        if (AmongUsClient.Instance.AmHost) return;
+
+        byte playerId = reader.ReadByte();
+        string text = reader.ReadString();
+        long expireTS = long.Parse(reader.ReadString());
+        bool overrideAll = reader.ReadBoolean();
+
+        if (overrideAll || !Notifies.TryGetValue(playerId, out Dictionary<string, long> notifies))
+            Notifies[playerId] = new() { { text, expireTS } };
+        else
+            notifies[text] = expireTS;
+
+        Logger.Info($"New name notify for {Main.AllPlayerNames[playerId]}: {text} ({expireTS - Utils.TimeStamp}s)", "Name Notify");
     }
 }

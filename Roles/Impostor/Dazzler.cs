@@ -94,7 +94,7 @@ internal class Dazzler : RoleBase
     public static void SetDazzled(PlayerControl player, IGameOptions opt)
     {
         if (PlayersDazzled.Any(a => a.Value.Contains(player.PlayerId) &&
-           (!ResetDazzledVisionOnDeath.GetBool() || Main.AllAlivePlayerControls.Any(b => b.PlayerId == a.Key))))
+           (!ResetDazzledVisionOnDeath.GetBool() || Main.EnumerateAlivePlayerControls().Any(b => b.PlayerId == a.Key))))
         {
             opt.SetVision(false);
             opt.SetFloat(FloatOptionNames.CrewLightMod, CauseVision.GetFloat());

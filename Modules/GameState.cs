@@ -36,6 +36,11 @@ public class PlayerState(byte playerId)
             _canUseMovingPlatform = value;
         }
     }
+    public byte? StolenId = null;
+    /// <summary>
+    /// IsNecromancer or IsRandomizer
+    /// </summary>
+    public bool IsFalseRole => IsNecromancer || IsRandomizer;
     public bool IsNecromancer { get; set; } = false;
     public (DateTime, byte) RealKiller = (DateTime.MinValue, byte.MaxValue);
     public List<(DateTime, CustomRoles)> MainRoleLogs = [];
@@ -70,6 +75,10 @@ public class PlayerState(byte playerId)
                 2 => countTypes,
                 _ => throw new NotImplementedException()
             };
+        }
+        if (Main.PlayerStates[pc.PlayerId].IsRandomizer)
+        {
+            countTypes = CountTypes.OutOfGame;
         }
         if (pc.Is(CustomRoles.Charmed))
         {
@@ -130,9 +139,12 @@ public class PlayerState(byte playerId)
             // Since role basis may change, we need to re assign tasks?
 
             //Some role may be bugged for this, need further testing.
-            Logger.Info($"{pc.GetNameWithRole()} previously was {GetRoleName(preMainRole)}, reassign tasks!", "PlayerState.SetMainRole");
+            if (!(preMainRole == CustomRoles.Summoned || pc.GetCustomRole() == CustomRoles.Summoned))
+            {
+                Logger.Info($"{pc.GetNameWithRole()} previously was {GetRoleName(preMainRole)}, reassign tasks!", "PlayerState.SetMainRole");
 
-            pc.RpcResetTasks();
+                pc.RpcResetTasks();
+            }
 
             if (!Main.UnShapeShifter.Contains(pc.PlayerId) && pc.GetRoleClass()?.ThisRoleBase == CustomRoles.Shapeshifter && Utils.IsMethodOverridden(pc.GetRoleClass(), "UnShapeShiftButton"))
             {
@@ -143,6 +155,119 @@ public class PlayerState(byte playerId)
             }
         }
     }
+    public void ResetSubRoles()
+    {
+        foreach (var subRole in SubRoles.ToArray()) // Use ToArray() to avoid modification during iteration
+        {
+            RemoveSubRole(subRole); // Ensure this method exists and removes a subrole correctly
+        }
+        SubRoles.Clear(); // Clear the SubRoles list after removal
+    }
+    public bool IsRandomizer { get; set; } = false; // Flag indicating if the player is a Randomizer
+    public Custom_Team LockedTeam { get; set; }
+
+    // Team flags for Randomizer
+    private bool isRandCrewmateTeam;
+    private bool isRandNeutralTeam;
+    private bool isRandImpostorTeam;
+    private bool isRandCovenTeam;
+
+    public bool TeamLockApplied { get; set; } = false; // Flag to lock the team once set
+
+    public Custom_RoleType? LockedRoleType { get; set; } // Role type enforced after lock
+    public Custom_Team RandomizerWinCondition { get; set; } = Custom_Team.Neutral;
+
+    public bool IsRandCrewmateTeam
+    {
+        get => IsRandomizer && isRandCrewmateTeam;
+        set
+        {
+            if (IsRandomizer && !TeamLockApplied)
+            {
+                isRandCrewmateTeam = value;
+                isRandNeutralTeam = false; // Reset others
+                isRandImpostorTeam = false;
+                isRandCovenTeam = false;
+                TeamLockApplied = true; // Lock the team
+                LockedTeam = Custom_Team.Crewmate; // Lock to Crewmate team
+                LockedRoleType = Custom_RoleType.CrewmateBasic; // Enforce role type
+                RandomizerWinCondition = Custom_Team.Crewmate; // Set win condition
+            }
+        }
+    }
+
+    public bool IsRandNeutralTeam
+    {
+        get => IsRandomizer && isRandNeutralTeam;
+        set
+        {
+            if (IsRandomizer && !TeamLockApplied)
+            {
+                isRandNeutralTeam = value;
+                isRandCrewmateTeam = false; // Reset others
+                isRandImpostorTeam = false;
+                isRandCovenTeam = false;
+                TeamLockApplied = true; // Lock the team
+                LockedTeam = Custom_Team.Neutral; // Lock to Neutral team
+                LockedRoleType = Custom_RoleType.NeutralChaos; // Enforce role type
+                RandomizerWinCondition = Custom_Team.Neutral; // Set win condition
+            }
+        }
+    }
+
+    public bool IsRandImpostorTeam
+    {
+        get => IsRandomizer && isRandImpostorTeam;
+        set
+        {
+            if (IsRandomizer && !TeamLockApplied)
+            {
+                isRandImpostorTeam = value;
+                isRandCrewmateTeam = false; // Reset others
+                isRandNeutralTeam = false;
+                isRandCovenTeam = false;
+                TeamLockApplied = true; // Lock the team
+                LockedTeam = Custom_Team.Impostor; // Lock to Impostor team
+                LockedRoleType = Custom_RoleType.ImpostorVanilla; // Enforce role type
+                RandomizerWinCondition = Custom_Team.Impostor; // Set win condition
+            }
+        }
+    }
+
+    public bool IsRandCovenTeam
+    {
+        get => IsRandomizer && isRandCovenTeam;
+        set
+        {
+            if (IsRandomizer && !TeamLockApplied)
+            {
+                isRandCovenTeam = value;
+                isRandCrewmateTeam = false; // Reset others
+                isRandNeutralTeam = false;
+                isRandImpostorTeam = false;
+                TeamLockApplied = true; // Lock the team
+                LockedTeam = Custom_Team.Coven; // Lock to Impostor team
+                LockedRoleType = Custom_RoleType.CovenKilling; // Enforce role type
+                RandomizerWinCondition = Custom_Team.Coven; // Set win condition
+            }
+        }
+    }
+
+    /// <summary>
+    /// Resets team lock and related properties. Should be used cautiously.
+    /// </summary>
+
+
+    /// <summary>
+    /// Gets the effective role type for the player based on the Randomizer logic.
+    /// </summary>
+    /// <returns>The enforced role type if the player is Randomizer; otherwise, the default.</returns>
+    /// 
+    public CustomRoles GetCustomRole()
+    {
+        return (CustomRoles)(Main.PlayerStates[this.PlayerId]?.MainRole); // No clue why you would fetch a local variable like this?
+    }
+
     public void SetSubRole(CustomRoles role, PlayerControl pc = null)
     {
         if (role == CustomRoles.Cleansed)
@@ -422,6 +547,9 @@ public class PlayerState(byte playerId)
         Electrocuted,
         Scavenged,
         BlastedOff,
+        Expired,
+        AFK,
+        Disconnected,
 
         //Please add all new roles with deathreason & new deathreason in Utils.DeathReasonIsEnable();
         etc = -1,

@@ -105,7 +105,7 @@ public class ModUpdater
 
         foreach (var region in regions)
         {
-            if (region.Name.Contains("Niko233(NA_US)", StringComparison.OrdinalIgnoreCase) || region.Name.Contains("NikoCat233", StringComparison.OrdinalIgnoreCase) || !region.Name.Contains("Niko233(EU)", StringComparison.OrdinalIgnoreCase))
+            if (region.Name.Contains("Niko233(NA_US)", StringComparison.OrdinalIgnoreCase) || region.Name.Contains("NikoCat233", StringComparison.OrdinalIgnoreCase))
             {
                 forceUpdate = true;
                 break;
@@ -210,7 +210,7 @@ public class ModUpdater
         request.chunkedTransfer = false;
 
         yield return request.SendWebRequest();
-        yield return new WaitForSeconds(0.5f);
+        yield return new WaitForSecondsRealtime(0.5f);
 
         if (request.result != UnityWebRequest.Result.Success)
         {
@@ -239,7 +239,7 @@ public class ModUpdater
             betaNum = betaNum == 0 ? 999 : betaNum;
 
             var pluginNum = int.Parse(Main.PluginVersion.Substring(10, 1)) * 10000000 + int.Parse(Main.PluginVersion.Substring(11, 1)) * 1000000 + int.Parse(Main.PluginVersion.Substring(12, 1)) * 100000 + betaNum * 100;
-            var versionNum = int.Parse(tag[0]) * 10000000 + int.Parse(tag[1]) * 1000000 + int.Parse($"{tag[2][0]}") * 100000 + (tag[2].Length > 2 && tag[2][1] == 'b' ? int.Parse(tag[2][2..]) : 999) * 100;
+            var versionNum = int.Parse(tag[0]) * 10000000 + int.Parse(tag[1]) * 1000000 + int.Parse($"{tag[2][0]}") * 100000 + (tag[2].Length > 2 && tag[2][1] == 'b' ? int.Parse(tag[2][2..]) : 999) * 100 + (tag[2].Length > 2 && tag[2][1] == 'a' ? int.Parse(tag[2][2..]) : 99);
 
             Logger.Info($"Found local version: {pluginNum}; github version: {versionNum}", "CheckRelease");
 
@@ -333,9 +333,9 @@ public class ModUpdater
     public static IEnumerator DeleteFilesAfterCancel()
     {
         ShowPopupAsync(GetString("deletingFiles"), StringNames.None, false);
-        yield return new WaitForSeconds(2f);
+        yield return new WaitForSecondsRealtime(2f);
         InfoPopup.Close();
-        yield return new WaitForSeconds(0.3f);
+        yield return new WaitForSecondsRealtime(0.3f);
         DeleteOldFiles();
         yield break;
     }

@@ -27,7 +27,7 @@ internal class SuperStar : RoleBase
 
     public override bool OnCheckMurderAsTarget(PlayerControl killer, PlayerControl target)
     {
-        return !Main.AllAlivePlayerControls.Any(x =>
+        return !Main.EnumerateAlivePlayerControls().Any(x =>
                 x.PlayerId != killer.PlayerId &&
                 x.PlayerId != target.PlayerId &&
                 GetDistance(x.transform.position, target.transform.position) < 2f);

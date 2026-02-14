@@ -79,8 +79,8 @@ internal class Baker : RoleBase
     private static (int, int) BreadedPlayerCount(byte playerId)
     {
         int breaded = 0, all = BreadNeededToTransform.GetInt();
-        if (all == 0 || Main.AllAlivePlayerControls.Length == 0) return (-1, 100);
-        foreach (var pc in Main.AllAlivePlayerControls)
+        if (all == 0 || Main.AllAlivePlayerControls.Count == 0) return (-1, 100);
+        foreach (var pc in Main.EnumerateAlivePlayerControls())
         {
             if (pc.PlayerId == playerId) continue;
 
@@ -162,7 +162,7 @@ internal class Baker : RoleBase
     public override string GetMarkOthers(PlayerControl seer, PlayerControl target, bool isForMeeting = false)
     {
         if (!_Player) return string.Empty;
-        if (HasBread(_Player.PlayerId, target.PlayerId) && seer.IsNeutralApocalypse() && seer.PlayerId != _Player.PlayerId && !Main.PlayerStates[seer.PlayerId].IsNecromancer)
+        if (HasBread(_Player.PlayerId, target.PlayerId) && seer.IsNeutralApocalypse() && seer.PlayerId != _Player.PlayerId && !Main.PlayerStates[seer.PlayerId].IsFalseRole)
         {
             return ColorString(GetRoleColor(CustomRoles.Baker), "●");
         }
@@ -256,7 +256,7 @@ internal class Baker : RoleBase
         if (!CanUseAbility)
             killer.Notify(GetString("BakerBreadUsedAlready"));
 
-        else if (target.IsNeutralApocalypse() && !Main.PlayerStates[target.PlayerId].IsNecromancer)
+        else if (target.IsNeutralApocalypse() && !Main.PlayerStates[target.PlayerId].IsFalseRole)
             killer.Notify(GetString("BakerCantBreadApoc"));
 
         else if (HasBread(killer.PlayerId, target.PlayerId))
@@ -337,7 +337,7 @@ internal class Baker : RoleBase
     {
         if (lowLoad || player.Is(CustomRoles.Famine)) return;
 
-        if (AllHasBread(player) || (TransformNoMoreBread.GetBool() && BreadedPlayerCount(player.PlayerId).Item1 >= Main.AllAlivePlayerControls.Where(x => !x.IsNeutralApocalypse() && !Main.PlayerStates[x.PlayerId].IsNecromancer).Count()))
+        if (AllHasBread(player) || (TransformNoMoreBread.GetBool() && BreadedPlayerCount(player.PlayerId).Item1 >= Main.EnumerateAlivePlayerControls().Count(x => !x.IsNeutralApocalypse() && !Main.PlayerStates[x.PlayerId].IsFalseRole)))
         {
             var bread = BreadedPlayerCount(player.PlayerId);
             Logger.Info($"{player.GetRealName()} transformed to Famine with {bread.Item1}/{bread.Item2} bread", "Baker");
@@ -395,7 +395,7 @@ internal class Famine : RoleBase
 
     public override bool ForcedCheckMurderAsKiller(PlayerControl killer, PlayerControl target)
     {
-        if (target.IsNeutralApocalypse() && !Main.PlayerStates[target.PlayerId].IsNecromancer)
+        if (target.IsNeutralApocalypse() && !Main.PlayerStates[target.PlayerId].IsFalseRole)
             killer.Notify(GetString("FamineCantStarveApoc"));
 
         else if (FamineList[killer.PlayerId].Contains(target.PlayerId))
@@ -446,9 +446,9 @@ internal class Famine : RoleBase
 
         var deathList = new HashSet<byte>();
         var baker = _Player;
-        foreach (var pc in Main.AllAlivePlayerControls)
+        foreach (var pc in Main.EnumerateAlivePlayerControls())
         {
-            if ((pc.IsNeutralApocalypse() && !Main.PlayerStates[pc.PlayerId].IsNecromancer) || Baker.HasBread(baker.PlayerId, pc.PlayerId)) continue;
+            if ((pc.IsNeutralApocalypse() && !Main.PlayerStates[pc.PlayerId].IsFalseRole) || Baker.HasBread(baker.PlayerId, pc.PlayerId)) continue;
             if (baker.IsAlive())
             {
                 if (!Main.AfterMeetingDeathPlayers.ContainsKey(pc.PlayerId))

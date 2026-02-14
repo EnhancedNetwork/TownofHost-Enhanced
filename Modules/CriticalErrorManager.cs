@@ -1,5 +1,6 @@
 using Hazel;
 using TOHE.Modules.Rpc;
+using TOHE.Patches;
 using static TOHE.Translator;
 
 namespace TOHE.Modules;

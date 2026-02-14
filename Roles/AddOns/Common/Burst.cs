@@ -52,7 +52,7 @@ public class Burst : IAddon
         BurstBodies.Add(target.PlayerId);
         if (killer.PlayerId != target.PlayerId && !killer.IsTransformedNeutralApocalypse())
         {
-            killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Burst), GetString("BurstNotify")), hasPriority: true);
+            killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Burst), GetString("BurstNotify")));
             _ = new LateTask(() =>
             {
                 if (killer.IsTransformedNeutralApocalypse()) return;

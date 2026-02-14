@@ -176,7 +176,7 @@ public abstract class OptionItem
     }
     public virtual string GetNameVanilla()
     {
-        return Translator.GetString(Name, ReplacementDictionary, vanilla: true);
+        return Translator.GetString(Name, ReplacementDictionary);
     }
     public virtual bool GetBool() => CurrentValue != 0 && (Parent == null || Parent.GetBool());
     public virtual int GetInt() => CurrentValue;
@@ -237,7 +237,7 @@ public abstract class OptionItem
         {
             if (isSingle)
             {
-                if (AmongUsClient.Instance.AmHost && PlayerControl.LocalPlayer != null && Main.AllPlayerControls.Any(pc => pc.IsNonHostModdedClient()))
+                if (AmongUsClient.Instance.AmHost && PlayerControl.LocalPlayer != null && Main.EnumeratePlayerControls().Any(pc => pc.IsNonHostModdedClient()))
                 {
                     var message = new RpcSyncCustomSettingsSingle(PlayerControl.LocalPlayer.NetId, Id, afterValue);
                     RpcUtils.LateBroadcastReliableMessage(message);
@@ -312,8 +312,8 @@ public abstract class OptionItem
     public static void SyncAllOptions(int targetId = -1)
     {
         if (
-            Main.AllPlayerControls.Length <= 1 ||
-            AmongUsClient.Instance.AmHost == false ||
+            Main.AllPlayerControls.Count <= 1 ||
+            !AmongUsClient.Instance.AmHost ||
             PlayerControl.LocalPlayer == null
         ) return;
 
