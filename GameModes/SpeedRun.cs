@@ -627,7 +627,7 @@ public class Runner : RoleBase
 
     public override string GetSuffix(PlayerControl seer, PlayerControl target, bool isForMeeting = false)
     {
-        if (target != null && seer.PlayerId != target.PlayerId) return "";
+        if (target && seer.PlayerId != target.PlayerId) return "";
         if (!seer.IsAlive() || !SpeedRun.SpeedRun_ArrowPlayers.GetBool()) return "";
 
         var listing = Main.EnumerateAlivePlayerControls().Where(x => x.Is(CustomRoles.Runner));

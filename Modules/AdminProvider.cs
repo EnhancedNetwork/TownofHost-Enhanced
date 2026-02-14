@@ -31,7 +31,7 @@ public static class AdminProvider
         {
             var roomId = room.RoomId;
             // If it's not a passage or a hit-and-run, it's nothing
-            if (roomId == SystemTypes.Hallway || room.roomArea == null)
+            if (roomId == SystemTypes.Hallway || !room.roomArea)
             {
                 continue;
             }
@@ -50,7 +50,7 @@ public static class AdminProvider
                 if (collider.CompareTag("DeadBody"))
                 {
                     var deadBody = collider.GetComponent<DeadBody>();
-                    if (deadBody != null && countedPlayers.Add(deadBody.ParentId))
+                    if (deadBody && countedPlayers.Add(deadBody.ParentId))
                     {
                         totalPlayers++;
                         numDeadBodies++;

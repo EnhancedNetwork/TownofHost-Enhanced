@@ -193,13 +193,13 @@ internal class StartGameHostPatch
     public static bool isStartingAsHost = false;
     public static void Prefix(AmongUsClient __instance)
     {
-        if (LobbyBehaviour.Instance != null)
+        if (LobbyBehaviour.Instance)
             isStartingAsHost = true;
     }
     public static void Postfix(AmongUsClient __instance)
     {
         Logger.Info("StartGameHostPatch: Postfix called", "StartGameHostPatch");
-        if (ShipStatus.Instance != null)
+        if (ShipStatus.Instance)
             isStartingAsHost = false;
 
         GameStates.InGame = true;

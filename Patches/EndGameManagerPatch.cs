@@ -34,7 +34,7 @@ public class EndGameManagerPatch
         {
             try
             {
-                if (CountdownTextText != null && CountdownTextText.isActiveAndEnabled)
+                if (CountdownTextText && CountdownTextText.isActiveAndEnabled)
                 {
                     CountdownTextText.text = string.Format(GetString("CancelStartCountDown"), seconds);
                 }
@@ -42,9 +42,9 @@ public class EndGameManagerPatch
             catch { }
             return;
         }
-        if (endGameManager == null) return;
+        if (!endGameManager) return;
         EndGameNavigation navigation = endGameManager.Navigation;
-        if (navigation == null) return;
+        if (!navigation) return;
 
         if (seconds == Options.AutoPlayAgainCountdown.GetInt())
         {

@@ -86,7 +86,7 @@ public static class CriticalErrorManager
                     {
                         Logger.SendInGame(string.Format(GetString("RpcAntiBlackOutIgnored"), player?.Data?.PlayerName));
 
-                        if (player != null)
+                        if (player)
                         {
                             if (GameStates.IsInGame && !GameStates.IsCoStartGame)
                             {
@@ -97,7 +97,7 @@ public static class CriticalErrorManager
                             {
                                 _ = new LateTask(() =>
                                 {
-                                    if (player == null) return;
+                                    if (!player) return;
                                     AmongUsClient.Instance.KickPlayer(player.GetClientId(), false);
                                     Logger.SendInGame(string.Format(GetString("RpcAntiBlackOutKicked"), player?.Data?.PlayerName));
                                 }, 0.5f, "RPC Anti-Black Kicked As Critical Error");
@@ -107,13 +107,13 @@ public static class CriticalErrorManager
                         }
                     }
                 }
-                else if (GameStartManager.Instance != null)
+                else if (GameStartManager.Instance)
                 {
                     // We imagine rpc is received when starting game in lobby, not fucked yet
                     if (AmongUsClient.Instance.AmHost)
                     {
                         GameStartManager.Instance.ResetStartState();
-                        if (player != null)
+                        if (player)
                         {
                             AmongUsClient.Instance.KickPlayer(player.GetClientId(), false);
                         }
@@ -139,7 +139,7 @@ public static class CriticalErrorManager
                         RPC.ForceEndGame(CustomWinner.Error);
                     }, 0.5f, "Anti-Black End Game As Critical Error");
                 }
-                else if (GameStartManager.Instance != null)
+                else if (GameStartManager.Instance)
                 {
                     GameStartManager.Instance.ResetStartState();
                     AmongUsClient.Instance.RemoveUnownedObjects();

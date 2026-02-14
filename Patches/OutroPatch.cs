@@ -72,7 +72,7 @@ class EndGamePatch
             if (AmongUsClient.Instance.AmHost && Main.OvverideOutfit.TryGetValue(id, out var RealOutfit))
             {
                 var dpc = Utils.GetPlayerById(id);
-                if (dpc != null)
+                if (dpc)
                 {
                     dpc.RpcSetName(RealOutfit.name);
                     Main.AllPlayerNames[id] = RealOutfit.name;

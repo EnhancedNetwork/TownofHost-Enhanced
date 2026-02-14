@@ -33,17 +33,17 @@ class ChatControllerUpdatePatch
             __instance.quickChatField.background.color = backgroundColor;
             __instance.quickChatField.text.color = Color.white;
 
-            if (QuickChatIcon == null)
+            if (!QuickChatIcon)
                 QuickChatIcon = GameObject.Find("QuickChatIcon")?.transform.GetComponent<SpriteRenderer>();
             else
                 QuickChatIcon.sprite = Utils.LoadSprite("TOHE.Resources.Images.DarkQuickChat.png", 100f);
 
-            if (OpenBanMenuIcon == null)
+            if (!OpenBanMenuIcon)
                 OpenBanMenuIcon = GameObject.Find("OpenBanMenuIcon")?.transform.GetComponent<SpriteRenderer>();
             else
                 OpenBanMenuIcon.sprite = Utils.LoadSprite("TOHE.Resources.Images.DarkReport.png", 100f);
 
-            if (OpenKeyboardIcon == null)
+            if (!OpenKeyboardIcon)
                 OpenKeyboardIcon = GameObject.Find("OpenKeyboardIcon")?.transform.GetComponent<SpriteRenderer>();
             else
                 OpenKeyboardIcon.sprite = Utils.LoadSprite("TOHE.Resources.Images.DarkKeyboard.png", 100f);

@@ -105,7 +105,7 @@ namespace TOHE.Modules
 
             try
             {
-                if (playerControl != null)
+                if (playerControl)
                 {
                     MessageWriter writer = MessageWriter.Get(SendOption.Reliable);
                     writer.StartMessage(5);
@@ -454,7 +454,7 @@ internal static class RawSetNamePatch
         {
             switch (exception)
             {
-                case true when __instance != null:
+                case true when __instance:
                     TOHE.Logger.Warn($"Failed to set name for {__instance.GetRealName()}, trying alternative method", "RawSetNamePatch");
                     __instance.transform.FindChild("Names").FindChild("NameText_TMP").GetComponent<TextMeshPro>().text = name;
                     TOHE.Logger.Msg($"Successfully set name for {__instance.GetRealName()}", "RawSetNamePatch");

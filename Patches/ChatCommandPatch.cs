@@ -776,7 +776,7 @@ internal class ChatCommands
         if (args.Length < 2 || !byte.TryParse(args[1], out byte id)) return;
 
         var pc = id.GetPlayer();
-        if (pc == null) return;
+        if (!pc) return;
 
         pc.FixBlackScreen();
 
@@ -1139,7 +1139,7 @@ internal class ChatCommands
         }
 
         PlayerControl targetPc = Utils.GetPlayerById(resultId);
-        if (targetPc == null) return;
+        if (!targetPc) return;
 
         if (roleToSet.IsAdditionRole())
         {
@@ -1290,7 +1290,7 @@ internal class ChatCommands
         if (Main.DeadPassedMeetingPlayers.Contains(player.PlayerId) && Utils.IsRevivingRoleAlive()) return;
 
         PlayerControl target = args.Length < 2 || !byte.TryParse(args[1], out byte targetId) ? player : targetId.GetPlayer();
-        if (target == null) return;
+        if (!target) return;
 
         if (target.IsAlive())
         {
@@ -1311,9 +1311,9 @@ internal class ChatCommands
         else
         {
             var killer = target.GetRealKiller(out var MurderRole);
-            string killerName = killer == null ? "N/A" : killer.GetRealName(clientData: true);
-            CustomRoles killerSubRole = killer == null || !killer.GetCustomSubRoles().Any(x => x.IsBetrayalAddonV2()) ? CustomRoles.NotAssigned : killer.GetCustomSubRoles().FirstOrDefault(x => x.IsBetrayalAddonV2(), CustomRoles.NotAssigned);
-            string killerRole = killer == null ? "N/A" : Utils.GetRoleName(MurderRole);
+            string killerName = !killer ? "N/A" : killer.GetRealName(clientData: true);
+            CustomRoles killerSubRole = !killer || !killer.GetCustomSubRoles().Any(x => x.IsBetrayalAddonV2()) ? CustomRoles.NotAssigned : killer.GetCustomSubRoles().FirstOrDefault(x => x.IsBetrayalAddonV2(), CustomRoles.NotAssigned);
+            string killerRole = !killer ? "N/A" : Utils.GetRoleName(MurderRole);
             Utils.SendMessage(GetString("DeathCmd.YourName") + "<b>" + target.GetRealName() + "</b>" + "\n\r" + GetString("DeathCmd.YourRole") + "<b>" + $"<color={Utils.GetRoleColorCode(target.GetCustomRole())}>{Utils.GetRoleName(target.GetCustomRole())}</color>" + "</b>" + "\n\r" + GetString("DeathCmd.DeathReason") + "<b>" + Utils.GetVitalText(target.PlayerId) + "</b>" + "\n\r" + "</b>" + "\n\r" + GetString("DeathCmd.KillerName") + "<b>" + killerName + "</b>" + "\n\r" + GetString("DeathCmd.KillerRole") + "<b>" + (killerSubRole != CustomRoles.NotAssigned ? $"<color={Utils.GetRoleColorCode(killerSubRole)}>{killerSubRole.GetActualRoleName()}</color>" : "") + $"<color={Utils.GetRoleColorCode(killer.GetCustomRole())}>{killerRole}</color>" + "</b>", player.PlayerId);
         }
     }
@@ -1390,7 +1390,7 @@ internal class ChatCommands
 
         if (arg != 253) // skip
         {
-            if (plr == null || !plr.IsAlive())
+            if (!plr || !plr.IsAlive())
             {
                 Utils.SendMessage(GetString("VoteDead"), player.PlayerId);
                 return;
@@ -1449,7 +1449,7 @@ internal class ChatCommands
         }
 
         var kickedPlayer = Utils.GetPlayerById(kickPlayerId);
-        if (kickedPlayer == null)
+        if (!kickedPlayer)
         {
             Utils.SendMessage(GetString(isBan ? "BanCommandInvalidID" : "KickCommandInvalidID"), player.PlayerId);
             return;
@@ -1500,7 +1500,7 @@ internal class ChatCommands
 
         if (args.Length < 2 || !int.TryParse(args[1], out int id)) return;
         var target = Utils.GetPlayerById(id);
-        if (target != null)
+        if (target)
         {
             target.Data.IsDead = true;
             target.SetDeathReason(PlayerState.DeathReason.etc);
@@ -1533,7 +1533,7 @@ internal class ChatCommands
         }
 
         var warnedPlayer = Utils.GetPlayerById(warnPlayerId);
-        if (warnedPlayer == null)
+        if (!warnedPlayer)
         {
             Utils.SendMessage(GetString("WarnCommandInvalidID"), player.PlayerId);
             return;
@@ -1655,7 +1655,7 @@ internal class ChatCommands
         string msgText = GetString("PlayerIdList");
         foreach (var pc in Main.EnumeratePlayerControls())
         {
-            if (pc == null) continue;
+            if (!pc) continue;
             msgText += "\n" + pc.PlayerId.ToString() + " → " + pc.GetRealName().RemoveHtmlTags();
         }
         Utils.SendMessage(msgText, player.PlayerId);
@@ -1728,7 +1728,7 @@ internal class ChatCommands
                 if (meid != player.PlayerId)
                 {
                     var targetplayer = Utils.GetPlayerById(meid);
-                    if (targetplayer != null && targetplayer.GetClient() != null)
+                    if (targetplayer && targetplayer.GetClient() != null)
                     {
                         HudManager.Instance.Chat.AddChat(player, (player.FriendCode.GetDevUser().HasTag() ? "\n" : string.Empty) + $"{string.Format(GetString("Message.MeCommandTargetInfo"), targetplayer.PlayerId, targetplayer.GetRealName(clientData: true), targetplayer.GetClient().FriendCode, targetplayer.GetClient().GetHashedPuid(), targetplayer.FriendCode.GetDevUser().GetUserType())}");
                     }
@@ -1788,7 +1788,7 @@ internal class ChatCommands
     {
         if (args.Length < 2 || !int.TryParse(args[1], out int id2)) return;
         var target = Utils.GetPlayerById(id2);
-        if (target != null)
+        if (target)
         {
             target.RpcMurderPlayer(target);
             if (target.IsHost()) Utils.SendMessage(GetString("HostKillSelfByCommand"), title: $"<color=#ff0000>{GetString("DefaultSystemMessageTitle")}</color>");
@@ -2607,7 +2607,7 @@ class ChatUpdatePatch
     internal static bool SendLastMessages(ref CustomRpcSender sender)
     {
         PlayerControl player = GameStates.IsVanillaServer ? PlayerControl.LocalPlayer : GameStates.IsLobby ? Main.EnumeratePlayerControls().Without(PlayerControl.LocalPlayer).RandomElement() : Main.EnumerateAlivePlayerControls().MinBy(x => x.PlayerId) ?? Main.EnumeratePlayerControls().MinBy(x => x.PlayerId) ?? PlayerControl.LocalPlayer;
-        if (player == null) return false;
+        if (!player) return false;
 
         bool wasCleared = false;
 

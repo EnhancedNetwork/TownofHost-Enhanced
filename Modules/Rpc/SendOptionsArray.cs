@@ -11,7 +11,7 @@ namespace TOHE.Modules.Rpc
 
         public SendOptionsArray(Il2CppStructArray<byte> optionArray)
         {
-            if (GameManager.Instance == null || GameManager.Instance.LogicOptions == null)
+            if (!GameManager.Instance || GameManager.Instance.LogicOptions == null)
             {
                 Logger.Error("GameManager or LogicOptions is null in SendOptionsArray constructor", "SendOptionsArrayCustom");
                 return;
@@ -24,7 +24,7 @@ namespace TOHE.Modules.Rpc
 
         public SendOptionsArray(PlayerControl player)
         {
-            if (GameManager.Instance == null || GameManager.Instance.LogicOptions == null)
+            if (!GameManager.Instance || GameManager.Instance.LogicOptions == null)
             {
                 Logger.Error("GameManager or LogicOptions is null in SendOptionsArray constructor", "SendOptionsArrayCustom");
                 return;
@@ -45,7 +45,7 @@ namespace TOHE.Modules.Rpc
 
         public SendOptionsArray(IGameOptions options)
         {
-            if (GameManager.Instance == null || GameManager.Instance.LogicOptions == null)
+            if (!GameManager.Instance || GameManager.Instance.LogicOptions == null)
             {
                 Logger.Error("GameManager or LogicOptions is null in SendOptionsArray constructor", "SendOptionsArrayCustom");
                 return;

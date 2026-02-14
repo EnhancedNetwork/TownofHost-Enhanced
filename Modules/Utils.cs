@@ -500,7 +500,7 @@ public static class Utils
         // If a player is possessed by the Dollmaster swap each other's role and add-ons for display for every other client other than Dollmaster and target.
         if (DollMaster.IsControllingPlayer)
         {
-            if (!(DollMaster.DollMasterTarget == null || DollMaster.controllingTarget == null))
+            if (DollMaster.DollMasterTarget && DollMaster.controllingTarget)
             {
                 if (seerId != DollMaster.DollMasterTarget.PlayerId && targetId == DollMaster.DollMasterTarget.PlayerId)
                     targetSubRoles = Main.PlayerStates[DollMaster.controllingTarget.PlayerId].SubRoles;
@@ -524,7 +524,7 @@ public static class Utils
                 var seer = GetPlayerById(seerId);
                 var target = GetPlayerById(targetId);
 
-                if (seer == null || target == null) return (RoleText.ToString(), RoleColor);
+                if (!seer || !target) return (RoleText.ToString(), RoleColor);
 
                 var oldRoleText = RoleText.ToString();
 
@@ -643,9 +643,9 @@ public static class Utils
         if (GameStates.IsLobby) return false;
 
         //Tasks may be null, in which case no task is assumed
-        if (playerData == null) return false;
+        if (!playerData) return false;
         if (playerData.Tasks == null) return false;
-        if (playerData.Role == null) return false;
+        if (!playerData.Role) return false;
 
         var hasTasks = true;
         if (!Main.PlayerStates.TryGetValue(playerData.PlayerId, out var States))
@@ -1274,7 +1274,7 @@ public static class Utils
     public static void ShowHelp(byte ID)
     {
         PlayerControl pc = ID.GetPlayer();
-        if (pc == null) return;
+        if (!pc) return;
 
         List<Command> commands = [.. Command.AllCommands.Values.OrderBy(x => x.UsageLevel).ThenBy(x => x.UsageTime)];
 
@@ -1378,7 +1378,7 @@ public static class Utils
             Logger.Info($"SendMessage called from {callerFilePath.Split('\\')[^1]} at line {callerLineNumber}", "SendMessage");
 
             PlayerControl receiver = GetPlayerById(sendTo, false);
-            if (sendTo != byte.MaxValue && receiver == null || !force && title.RemoveHtmlTags().Trim().Length == 0 && text.RemoveHtmlTags().Trim().Length == 0) return writer;
+            if (sendTo != byte.MaxValue && !receiver || !force && title.RemoveHtmlTags().Trim().Length == 0 && text.RemoveHtmlTags().Trim().Length == 0) return writer;
 
             if (!AmongUsClient.Instance.AmHost)
             {
@@ -1988,7 +1988,7 @@ public static class Utils
     public static void ApplySuffix(PlayerControl player)
     {
         // Only host
-        if (!AmongUsClient.Instance.AmHost || player == null) return;
+        if (!AmongUsClient.Instance.AmHost || !player) return;
         // Check invalid color
         if (player.Data.DefaultOutfit.ColorId < 0 || Palette.PlayerColors.Length <= player.Data.DefaultOutfit.ColorId) return;
 
@@ -2277,7 +2277,7 @@ public static class Utils
     // If not a Desync Role remove team display
     public static void SetCustomIntro(this PlayerControl player)
     {
-        if (!SetUpRoleTextPatch.IsInIntro || player == null || player.IsModded()) return;
+        if (!SetUpRoleTextPatch.IsInIntro || !player || player.IsModded()) return;
 
         //Get role info font size based on the length of the role info
         static int GetInfoSize(string RoleInfo)
@@ -2354,11 +2354,11 @@ public static class Utils
         try
         {
             if (!AmongUsClient.Instance.AmHost) return;
-            if (!SetUpRoleTextPatch.IsInIntro && ((SpecifySeer != null && SpecifySeer.IsModded() && (Options.CurrentGameMode == CustomGameMode.Standard || SpecifySeer.IsHost())) || (GameStates.IsMeeting && !isForMeeting) || GameStates.IsLobby)) return;
+            if (!SetUpRoleTextPatch.IsInIntro && ((SpecifySeer && SpecifySeer.IsModded() && (Options.CurrentGameMode == CustomGameMode.Standard || SpecifySeer.IsHost())) || (GameStates.IsMeeting && !isForMeeting) || GameStates.IsLobby)) return;
 
             var apc = Main.EnumeratePlayerControls();
-            var seerList = SpecifySeer != null ? [SpecifySeer] : apc;
-            var targetList = SpecifyTarget != null ? [SpecifyTarget] : apc;
+            var seerList = SpecifySeer ? [SpecifySeer] : apc;
+            var targetList = SpecifyTarget ? [SpecifyTarget] : apc;
 
             var sender = CustomRpcSender.Create("NotifyRoles", SendOption, log: false);
             var hasValue = false;
@@ -2406,11 +2406,11 @@ public static class Utils
 
         //var logger = Logger.Handler("DoNotifyRoles");
 
-        var seerList = SpecifySeer != null
+        var seerList = SpecifySeer
             ? [SpecifySeer]
             : Main.EnumeratePlayerControls();
 
-        var targetList = SpecifyTarget != null
+        var targetList = SpecifyTarget
             ? [SpecifyTarget]
             : Main.EnumeratePlayerControls();
 
@@ -2426,7 +2426,7 @@ public static class Utils
         foreach (var seer in seerList)
         {
             // Do nothing when the seer is not present in the game
-            if (seer == null || seer.notRealPlayer) continue;
+            if (!seer || seer.notRealPlayer) continue;
 
             // Only non-modded players or player left
             if (seer.IsModded() || seer.PlayerId == OnPlayerLeftPatch.LeftPlayerId || seer.Data.Disconnected) continue;
@@ -2585,7 +2585,7 @@ public static class Utils
                 foreach (var realTarget in targetList)
                 {
                     // if the target is the seer itself, do nothing
-                    if (realTarget == null || (realTarget.PlayerId == seer.PlayerId) || realTarget.PlayerId == OnPlayerLeftPatch.LeftPlayerId || realTarget.Data.Disconnected || realTarget.notRealPlayer) continue;
+                    if (!realTarget || (realTarget.PlayerId == seer.PlayerId) || realTarget.PlayerId == OnPlayerLeftPatch.LeftPlayerId || realTarget.Data.Disconnected || realTarget.notRealPlayer) continue;
 
                     var target = realTarget;
 
@@ -2795,7 +2795,7 @@ public static class Utils
 
         try
         {
-            if (seer == null || seer.Data.Disconnected || (seer.IsModded() && (seer.IsHost() || Options.CurrentGameMode == CustomGameMode.Standard)) || (!SetUpRoleTextPatch.IsInIntro && GameStates.IsLobby))
+            if (!seer || seer.Data.Disconnected || (seer.IsModded() && (seer.IsHost() || Options.CurrentGameMode == CustomGameMode.Standard)) || (!SetUpRoleTextPatch.IsInIntro && GameStates.IsLobby))
                 return false;
 
             sender ??= CustomRpcSender.Create("NotifyRoles", sendOption);
@@ -2956,7 +2956,7 @@ public static class Utils
                     try
                     {
                         // if the target is the seer itself, do nothing
-                        if (realTarget == null || (realTarget.PlayerId == seer.PlayerId) || realTarget.PlayerId == OnPlayerLeftPatch.LeftPlayerId || realTarget.Data.Disconnected || realTarget.notRealPlayer) continue;
+                        if (!realTarget || (realTarget.PlayerId == seer.PlayerId) || realTarget.PlayerId == OnPlayerLeftPatch.LeftPlayerId || realTarget.Data.Disconnected || realTarget.notRealPlayer) continue;
 
                         var target = realTarget;
 
@@ -3435,7 +3435,7 @@ public static class Utils
         string name = "invalid";
         var player = GetPlayerById(num);
         var playerCount = Main.AllPlayerControls.Count;
-        if (num < playerCount && player != null) name = player?.GetNameWithRole();
+        if (num < playerCount && player) name = player?.GetNameWithRole();
         if (num == 252) name = "Dead";
         if (num == 253) name = "Skip";
         if (num == 254) name = "MissedVote";
@@ -3469,7 +3469,7 @@ public static class Utils
 
         if (n == 0)
         {
-            if (PlayerControl.LocalPlayer != null)
+            if (PlayerControl.LocalPlayer)
                 HudManager.Instance?.Chat?.AddChat(PlayerControl.LocalPlayer, GetString("Dump.NoNewLogInfo"));
             return;
         }
@@ -3479,7 +3479,7 @@ public static class Utils
 
         if (!open) return;
 
-        if (PlayerControl.LocalPlayer != null)
+        if (PlayerControl.LocalPlayer)
             HudManager.Instance?.Chat?.AddChat(PlayerControl.LocalPlayer, string.Format(GetString("Message.DumpfileSaved"), $"TOHE - v{Main.PluginVersion}-{t}.log"));
 
         SendMessage(string.Format(GetString("Message.DumpcmdUsed"), PlayerControl.LocalPlayer.GetNameWithRole()));
@@ -3555,9 +3555,9 @@ public static class Utils
     public static void FlashColor(Color color, float duration = 1f)
     {
         var hud = DestroyableSingleton<HudManager>.Instance;
-        if (hud.FullScreen == null) return;
+        if (!hud.FullScreen) return;
         var obj = hud.transform.FindChild("FlashColor_FullScreen")?.gameObject;
-        if (obj == null)
+        if (!obj)
         {
             obj = UnityEngine.Object.Instantiate(hud.FullScreen.gameObject, hud.transform);
             obj.name = "FlashColor_FullScreen";

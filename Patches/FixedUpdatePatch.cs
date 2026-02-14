@@ -182,7 +182,7 @@ public static class FixedUpdatePatch
                 try
                 {
                     Vent closestVent = pc.GetClosestVent();
-                    if (closestVent == null) continue;
+                    if (!closestVent) continue;
 
                     int ventId = closestVent.Id;
                     bool canUseVent = pc.CanUseVents();
@@ -212,10 +212,10 @@ public static class FixedUpdatePatch
     private readonly static Dictionary<byte, (bool, bool, bool)> killButtonStateCache = [];
     public static void UpdateHud(HudManager __instance)
     {
-        if (!GameStates.IsModHost || __instance == null) return;
+        if (!GameStates.IsModHost || !__instance) return;
 
         var player = PlayerControl.LocalPlayer;
-        if (player == null) return;
+        if (!player) return;
         //Õúüµè£Òüæ
         if (Input.GetKeyDown(KeyCode.LeftControl))
         {
@@ -242,7 +242,7 @@ public static class FixedUpdatePatch
         {
             if (Options.CurrentGameMode == CustomGameMode.FFA)
             {
-                if (LowerInfoText == null)
+                if (!LowerInfoText)
                 {
                     TempLowerInfoText = new GameObject("CountdownText");
                     TempLowerInfoText.transform.position = new Vector3(0f, -2f, 1f);
@@ -271,7 +271,7 @@ public static class FixedUpdatePatch
                 player.GetRoleClass()?.SetAbilityButtonText(__instance, player.PlayerId);
 
                 // Set lower info text for modded players
-                if (LowerInfoText == null)
+                if (!LowerInfoText)
                 {
                     LowerInfoText = UnityEngine.Object.Instantiate(__instance.KillButton.cooldownTimerText, __instance.transform, true);
                     LowerInfoText.alignment = TextAlignmentOptions.Center;

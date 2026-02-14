@@ -58,7 +58,7 @@ public class PlayerState(byte playerId)
         RoleClass = role.CreateRoleClass();
 
         var pc = PlayerId.GetPlayer();
-        if (pc == null) return;
+        if (!pc) return;
 
         if (pc.Is(CustomRoles.Necromancer))
         {
@@ -272,7 +272,7 @@ public class PlayerState(byte playerId)
     {
         if (role == CustomRoles.Cleansed)
         {
-            if (pc != null) countTypes = pc.GetCustomRole().GetCountTypes();
+            if (pc) countTypes = pc.GetCustomRole().GetCountTypes();
 
             // // Remove lovers on Cleansed
             // if (pc.Is(CustomRoles.Lovers))
@@ -294,7 +294,7 @@ public class PlayerState(byte playerId)
         if (CustomRoleManager.AddonClasses.TryGetValue(role, out var IAddOn))
         {
             var target = PlayerId.GetPlayer();
-            if (target != null)
+            if (target)
             {
                 IAddOn?.Add(target.PlayerId, !Main.IntroDestroyed);
             }
@@ -386,14 +386,14 @@ public class PlayerState(byte playerId)
         if (CustomRoleManager.AddonClasses.TryGetValue(addOn, out var IAddon))
         {
             var target = PlayerId.GetPlayer();
-            if (target != null)
+            if (target)
             {
                 IAddon?.Remove(target.PlayerId);
             }
         }
 
         var pc = PlayerId.GetPlayer();
-        if (pc == null) return;
+        if (!pc) return;
 
         // check for role addon
         if (pc.Is(CustomRoles.Madmate))
@@ -610,7 +610,7 @@ public class TaskState
     {
         Logger.Info($"{player.GetNameWithRole().RemoveHtmlTags()}: InitTask", "TaskState.Init");
 
-        if (player == null || player.Data == null || player.Data.Tasks == null) return;
+        if (!player || player.Data == null || player.Data.Tasks == null) return;
 
         if (!HasTasks(player.Data, false))
         {
@@ -708,10 +708,10 @@ public static class GameStates
     public static bool IsMeeting => InGame && (MeetingHud.Instance || Main.MeetingIsStarted);
     public static bool IsVoting => IsMeeting && MeetingHud.Instance.state is MeetingHud.VoteStates.Voted or MeetingHud.VoteStates.NotVoted;
     public static bool IsProceeding => IsMeeting && MeetingHud.Instance.state is MeetingHud.VoteStates.Proceeding;
-    public static bool IsExilling => ExileController.Instance != null && !(AirshipIsActive && Minigame.Instance != null && Minigame.Instance.isActiveAndEnabled);
+    public static bool IsExilling => ExileController.Instance && !(AirshipIsActive && Minigame.Instance && Minigame.Instance.isActiveAndEnabled);
     public static bool IsCountDown => GameStartManager.InstanceExists && GameStartManager.Instance.startState == GameStartManager.StartingStates.Countdown;
     /**********TOP ZOOM.cs***********/
-    public static bool IsShip => ShipStatus.Instance != null;
+    public static bool IsShip => ShipStatus.Instance;
     public static bool IsCanMove => PlayerControl.LocalPlayer?.CanMove is true;
     public static bool IsDead => PlayerControl.LocalPlayer?.Data?.IsDead is true;
 }
@@ -719,7 +719,7 @@ public static class MeetingStates
 {
     public static DeadBody[] DeadBodies = null;
     public static NetworkedPlayerInfo ReportTarget = null;
-    public static bool IsEmergencyMeeting => ReportTarget == null;
+    public static bool IsEmergencyMeeting => !ReportTarget;
     public static bool IsExistDeadBody => DeadBodies.Any();
     public static bool MeetingCalled = false;
     public static bool FirstMeeting = true;

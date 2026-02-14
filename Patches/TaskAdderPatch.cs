@@ -11,7 +11,7 @@ class ShowFolderPatch
     {
         if (GameStates.IsHideNSeek) return;
 
-        if (__instance.Root == taskFolder && CustomRolesFolder == null)
+        if (__instance.Root == taskFolder && !CustomRolesFolder)
         {
             TaskFolder rolesFolder = Object.Instantiate(
                 __instance.RootFolderPrefab,
@@ -31,7 +31,7 @@ class ShowFolderPatch
         float xCursor = 0f;
         float yCursor = 0f;
         float maxHeight = 0f;
-        if (CustomRolesFolder != null && CustomRolesFolder.FolderName == taskFolder.FolderName)
+        if (CustomRolesFolder && CustomRolesFolder.FolderName == taskFolder.FolderName)
         {
             var crewBehaviour = DestroyableSingleton<RoleManager>.Instance.AllRoles.ToArray().FirstOrDefault(role => role.Role == RoleTypes.Crewmate);
             foreach (var cRole in CustomRolesHelper.AllRoles)

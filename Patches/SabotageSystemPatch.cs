@@ -66,7 +66,7 @@ public class SabotageSystemPatch
             if (!GameStates.AirshipIsActive) return;
 
             // If Reactor sabotage is end (Airship)
-            if (!__instance.IsActive || ShipStatus.Instance == null || !SetDurationForReactorSabotage)
+            if (!__instance.IsActive || !ShipStatus.Instance || !SetDurationForReactorSabotage)
             {
                 if (!SetDurationForReactorSabotage && !__instance.IsActive)
                 {

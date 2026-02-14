@@ -210,7 +210,7 @@ public static class CollectionExtensions
     /// <returns></returns>
     public static IEnumerable<PlayerControl> ToValidPlayers(this IEnumerable<byte> playerIds)
     {
-        return playerIds.Select(Utils.GetPlayer).Where(x => x != null);
+        return playerIds.Select(Utils.GetPlayer).Where(x => x);
     }
 
     /// <summary>
@@ -220,7 +220,7 @@ public static class CollectionExtensions
     /// <returns></returns>
     public static List<PlayerControl> ToValidPlayers(this List<byte> playerIds)
     {
-        return playerIds.ConvertAll(Utils.GetPlayer).FindAll(x => x != null);
+        return playerIds.ConvertAll(Utils.GetPlayer).FindAll(x => x);
     }
 
     #endregion

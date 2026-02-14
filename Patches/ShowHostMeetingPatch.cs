@@ -18,7 +18,7 @@ public class ShowHostMeetingPatch
     {
         try
         {
-            if (GameStates.IsInGame && HostControl == null)
+            if (GameStates.IsInGame && !HostControl)
             {
                 HostControl = AmongUsClient.Instance.GetHost().Character;
                 HostName = Main.PlayerStates[AmongUsClient.Instance.GetHost().Character.Data.PlayerId].NormalOutfit.PlayerName;

@@ -732,7 +732,7 @@ namespace TOHE.Modules.Rpc
         {
             msg.Write(type);
             msg.Write(playerId);
-            if (target != null && type == 1)
+            if (target && type == 1)
             {
                 msg.WriteNetObject(target);
                 msg.Write(timer);

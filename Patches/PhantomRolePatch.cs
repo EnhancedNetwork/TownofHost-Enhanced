@@ -64,7 +64,7 @@ public static class PhantomRolePatch
 
             _ = new LateTask(() =>
             {
-                if (Main.MeetingIsStarted || phantom == null) return;
+                if (Main.MeetingIsStarted || !phantom) return;
 
                 var petId = phantom.Data.DefaultOutfit.PetId;
                 if (petId != "")
@@ -103,13 +103,13 @@ public static class PhantomRolePatch
             _ = new LateTask(() =>
             {
                 // Check appear again for desync role
-                if (target != null)
+                if (target)
                     phantom?.RpcCheckAppearDesync(shouldAnimate, target);
             }, 0.5f, $"Check Appear when vanish is over {target.PlayerId}", shoudLog: false);
 
             _ = new LateTask(() =>
             {
-                if (Main.MeetingIsStarted || phantom == null) return;
+                if (Main.MeetingIsStarted || !phantom) return;
 
                 InvisibilityList.Remove(phantom);
                 phantom?.RpcSetRoleDesync(RoleTypes.Scientist, clientId);
@@ -151,7 +151,7 @@ public static class PhantomRolePatch
             Logger.Error(error.ToString(), "PhantomRole.OnReportDeadBody");
         }
     }
-    private static bool InValid(PlayerControl phantom, PlayerControl seer) => phantom == null || seer.GetClientId() == -1;
+    private static bool InValid(PlayerControl phantom, PlayerControl seer) => !phantom || seer.GetClientId() == -1;
     private static System.Collections.IEnumerator CoRevertInvisible(PlayerControl phantom, PlayerControl seer)
     {
         // Set Scientist for meeting

@@ -441,7 +441,7 @@ public class MeetingHudPagingBehaviour : AbstractPagingBehaviour
     {
     }
 
-    internal MeetingHud meetingHud = null!;
+    internal MeetingHud meetingHud = null;
 
     [HideFromIl2Cpp]
     public IEnumerable<PlayerVoteArea> Targets => meetingHud.playerStates.OrderBy(p => p.AmDead);

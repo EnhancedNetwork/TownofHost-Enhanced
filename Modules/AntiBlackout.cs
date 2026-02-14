@@ -34,7 +34,7 @@ public static class AntiBlackout
         foreach (var pc in Main.EnumerateAlivePlayerControls())
         {
             // if player is ejected, do not count him as alive
-            if (lastExiled != null && pc.PlayerId == lastExiled.PlayerId) continue;
+            if (lastExiled && pc.PlayerId == lastExiled.PlayerId) continue;
 
             // Impostors
             if (pc.Is(Custom_Team.Impostor) && !Main.PlayerStates[pc.PlayerId].IsFalseRole && !pc.Is(CustomRoles.Narc))
@@ -104,7 +104,7 @@ public static class AntiBlackout
         isDeadCache.Clear();
         foreach (var info in GameData.Instance.AllPlayers)
         {
-            if (info == null) continue;
+            if (!info) continue;
             isDeadCache[info.PlayerId] = (info.IsDead, info.Disconnected);
             info.IsDead = false;
             info.Disconnected = false;
@@ -168,7 +168,7 @@ public static class AntiBlackout
         logger.Info($"RestoreIsDead is called from {callerMethodName}");
         foreach (var info in GameData.Instance.AllPlayers)
         {
-            if (info == null) continue;
+            if (!info) continue;
             if (isDeadCache.TryGetValue(info.PlayerId, out var val))
             {
                 info.IsDead = val.isDead;
@@ -237,7 +237,7 @@ public static class AntiBlackout
                         sender.Write(voterState.VotedForId);
                         sender.WriteEndMessage();
                     }
-                    sender.Write(exiled != null ? exiled.PlayerId : byte.MaxValue);
+                    sender.Write(exiled ? exiled.PlayerId : byte.MaxValue);
                     sender.Write(tie);
                     sender.EndRpc();
                 }
@@ -315,7 +315,7 @@ public static class AntiBlackout
             var seer = seerId.GetPlayer();
             var target = targetId.GetPlayer();
 
-            if (seer == null || target == null) continue;
+            if (!seer || !target) continue;
 
             var isSelf = seerId == targetId;
             var isDead = !target.IsAlive();

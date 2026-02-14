@@ -158,6 +158,6 @@ public class PlayerGameOptionsSender(PlayerControl player) : GameOptionsSender
 
     public override bool AmValid()
     {
-        return base.AmValid() && player != null && !player.Data.Disconnected && Main.RealOptionsData != null;
+        return base.AmValid() && player && !player.Data.Disconnected && Main.RealOptionsData != null;
     }
 }

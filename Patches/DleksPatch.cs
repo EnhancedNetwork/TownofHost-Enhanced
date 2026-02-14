@@ -54,7 +54,7 @@ class AllMapIconsPatch
     [Obfuscation(Exclude = true)]
     public static void Postfix_AllMapIcons(GameStartManager __instance)
     {
-        if (__instance == null) return;
+        if (!__instance) return;
 
         if (GameStates.IsNormalGame && Main.NormalOptions.MapId == 3)
         {

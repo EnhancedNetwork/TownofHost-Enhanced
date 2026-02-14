@@ -85,7 +85,7 @@ public static class OptionSaver
     /// <summary>Save current options to json file</summary>
     public static void Save()
     {
-        if (AmongUsClient.Instance != null && !AmongUsClient.Instance.AmHost) return;
+        if (AmongUsClient.Instance && !AmongUsClient.Instance.AmHost) return;
 
         try
         {

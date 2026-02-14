@@ -145,7 +145,7 @@ internal class ChangeRoleSettings
                     StringBuilder sb = new();
                     sb.Append(GetString("Error.InvalidColor"));
                     Logger.SendInGame(sb.ToString());
-                    sb.Append($" {string.Join(", ", invalidColor.Where(pc => pc != null).Select(p => $"{Main.AllPlayerNames.GetValueOrDefault(p.PlayerId, "PlayerNotFound")}"))}");
+                    sb.Append($" {string.Join(", ", invalidColor.Where(pc => pc).Select(p => $"{Main.AllPlayerNames.GetValueOrDefault(p.PlayerId, "PlayerNotFound")}"))}");
                     var msg = sb.ToString();
                     Utils.SendMessage(msg);
                     CriticalErrorManager.SetCriticalError("Player Have Invalid Color", true);
@@ -621,7 +621,7 @@ internal class StartGameHostPatch
 
     private static void AssignCustomRole(CustomRoles role, PlayerControl player)
     {
-        if (player == null) return;
+        if (!player) return;
         Main.PlayerStates[player.PlayerId].SetMainRole(role);
     }
 }
@@ -703,7 +703,7 @@ public static class RpcSetRoleReplacer
         {
             var player = Utils.GetPlayerById(playerId);
 
-            if (player == null) continue;
+            if (!player) continue;
 
             Main.PlayerStates[playerId].SetMainRole(role);
 
@@ -813,7 +813,7 @@ public static class RpcSetRoleReplacer
                     if (kvp.Key.seerId == player.PlayerId)
                     {
                         var target = Utils.GetPlayerById(kvp.Key.targetId);
-                        if (target == null) continue;
+                        if (!target) continue;
                         sender.RpcSetRole(target, kvp.Value.roleType, player.GetClientId());
                     }
                 }

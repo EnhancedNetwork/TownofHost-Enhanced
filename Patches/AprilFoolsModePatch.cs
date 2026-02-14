@@ -36,7 +36,7 @@ public static class GetHnsBodyType_Patch
 {
     public static void Postfix(ref PlayerBodyTypes __result, [HarmonyArgument(0)] PlayerControl player)
     {
-        if (player == null || player.Data == null || player.Data.Role == null)
+        if (!player || !player.Data || !player.Data.Role)
         {
             if (Main.HorseMode.Value)
             {
@@ -115,7 +115,7 @@ public static class LongBoiPatches
         if (__instance.isExiledPlayer)
         {
             ShipStatus instance = ShipStatus.Instance;
-            if (instance == null || instance.Type != ShipStatus.MapType.Fungle)
+            if (!instance || instance.Type != ShipStatus.MapType.Fungle)
             {
                 __instance.cosmeticLayer.AdjustCosmeticRotations(-17.75f);
             }

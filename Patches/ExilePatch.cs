@@ -110,7 +110,7 @@ class ExileControllerWrapUpPatch
         Logger.Info($"{exiled != null}", "exiled != null");
         bool CLThingy = collectorCL == null || !collectorCL.Any(x => x.CollectorWin(false));
 
-        if (CLThingy && exiled != null)
+        if (CLThingy && exiled)
         {
             exiled.IsDead = true;
             exiled.PlayerId.SetDeathReason(PlayerState.DeathReason.Vote);
@@ -161,8 +161,8 @@ class ExileControllerWrapUpPatch
                 AntiBlackout.SetRealPlayerRoles();
 
                 if (AntiBlackout.BlackOutIsActive && // State in which the expulsion target is overwritten (need not be executed if the expulsion target is not overwritten)
-                    exiled != null && // Exiled is not null
-                    exiled.Object != null) //exiled.Object is not null
+                    exiled && // Exiled is not null
+                    exiled.Object) //exiled.Object is not null
                 {
                     exiled.Object.RpcExileV2();
                 }

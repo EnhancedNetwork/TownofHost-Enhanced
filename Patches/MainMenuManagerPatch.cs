@@ -50,7 +50,7 @@ class MainMenuManagerLateUpdatePatch
 
     private static void Postfix(MainMenuManager __instance)
     {
-        if (__instance == null) return;
+        if (!__instance) return;
 
         if (lateUpdate <= 600)
         {
@@ -77,12 +77,12 @@ class MainMenuManagerLateUpdatePatch
         //__instance.playButton.transform.gameObject.SetActive(Options.IsLoaded);
 
         var PlayOnlineButton = __instance.PlayOnlineButton;
-        if (PlayOnlineButton != null)
+        if (PlayOnlineButton)
         {
             if (RunLoginPatch.isAllowedOnline && !Main.hasAccess)
             {
                 var PlayLocalButton = __instance.playLocalButton;
-                if (PlayLocalButton != null) PlayLocalButton.gameObject.SetActive(false);
+                PlayLocalButton?.gameObject.SetActive(false);
 
                 PlayOnlineButton.gameObject.SetActive(false);
                 DisconnectPopup.Instance.ShowCustom(GetString("NoAccess"));
@@ -103,7 +103,7 @@ public static class MainMenuManagerPatch
     [HarmonyPatch(nameof(MainMenuManager.Start)), HarmonyPostfix, HarmonyPriority(Priority.Normal)]
     public static void Start_Postfix(MainMenuManager __instance)
     {
-        if (template == null)
+        if (!template)
         {
             template = __instance.creditsButton;
         }
@@ -228,11 +228,11 @@ public static class MainMenuManagerPatch
 
 
 
-        if (template == null) return;
+        if (!template) return;
 
 
         // donation Button
-        if (donationButton == null)
+        if (!donationButton)
         {
             donationButton = CreateButton(
                 "donationButton",
@@ -245,7 +245,7 @@ public static class MainMenuManagerPatch
         donationButton.gameObject.SetActive(Main.ShowDonationButton);
 
         // GitHub Button
-        if (gitHubButton == null)
+        if (!gitHubButton)
         {
             gitHubButton = CreateButton(
                 "GitHubButton",
@@ -258,7 +258,7 @@ public static class MainMenuManagerPatch
         gitHubButton.gameObject.SetActive(Main.ShowGitHubButton);
 
         // Discord Button
-        if (discordButton == null)
+        if (!discordButton)
         {
             discordButton = CreateButton(
                 "DiscordButton",
@@ -271,7 +271,7 @@ public static class MainMenuManagerPatch
         discordButton.gameObject.SetActive(Main.ShowDiscordButton);
 
         // Website Button
-        if (websiteButton == null)
+        if (!websiteButton)
         {
             websiteButton = CreateButton(
                 "WebsiteButton",
@@ -286,7 +286,7 @@ public static class MainMenuManagerPatch
         var howToPlayButton = __instance.howToPlayButton;
         var freeplayButton = howToPlayButton.transform.parent.Find("FreePlayButton");
 
-        if (freeplayButton != null) freeplayButton.gameObject.SetActive(false);
+        freeplayButton?.gameObject.SetActive(false);
 
         howToPlayButton.transform.SetLocalX(0);
 
@@ -331,7 +331,7 @@ public static class MainMenuManagerPatch
     }
     public static void Modify(this PassiveButton passiveButton, UnityEngine.Events.UnityAction action)
     {
-        if (passiveButton == null) return;
+        if (!passiveButton) return;
         passiveButton.OnClick = new Button.ButtonClickedEvent();
         passiveButton.OnClick.AddListener(action);
     }
@@ -365,11 +365,11 @@ public static class MainMenuManagerPatch
     [HarmonyPostfix]
     public static void OpenMenu_Postfix()
     {
-        if (MainMenuManagerStartPatch.ToheLogo != null) MainMenuManagerStartPatch.ToheLogo.gameObject.SetActive(false);
+        MainMenuManagerStartPatch.ToheLogo?.gameObject.SetActive(false);
     }
     [HarmonyPatch(nameof(MainMenuManager.ResetScreen)), HarmonyPostfix]
     public static void ResetScreen_Postfix()
     {
-        if (MainMenuManagerStartPatch.ToheLogo != null) MainMenuManagerStartPatch.ToheLogo.gameObject.SetActive(true);
+        MainMenuManagerStartPatch.ToheLogo?.gameObject.SetActive(true);
     }
 }

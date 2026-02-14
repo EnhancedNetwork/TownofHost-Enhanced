@@ -157,7 +157,7 @@ public class ModUpdater
     }
     public static void ResetUpdateButton()
     {
-        if (updateButton == null)
+        if (!updateButton)
         {
             updateButton = MainMenuManagerPatch.CreateButton(
                 "updateButton",
@@ -452,11 +452,11 @@ public class ModUpdater
     }
     private static void ShowPopup(string message, StringNames buttonText, bool showButton = false, Action onClick = null)
     {
-        if (InfoPopup != null)
+        if (InfoPopup)
         {
             InfoPopup.Show(message);
             var button = InfoPopup.transform.FindChild("ExitGame");
-            if (button != null)
+            if (button)
             {
                 button.gameObject.SetActive(showButton);
                 button.GetChild(0).GetComponent<TextTranslatorTMP>().TargetText = buttonText;
@@ -469,20 +469,20 @@ public class ModUpdater
     }
     private static void ShowPopupWithTwoButtons(string message, string firstButtonText, string secondButtonText = "", Action onClickOnFirstButton = null, Action onClickOnSecondButton = null)
     {
-        if (InfoPopupV2 != null)
+        if (InfoPopupV2)
         {
             var templateExitGame = InfoPopupV2.transform.FindChild("ExitGame");
-            if (templateExitGame == null) return;
+            if (!templateExitGame) return;
 
             var background = InfoPopupV2.transform.FindChild("Background");
-            if (background == null) return;
+            if (!background) return;
             background.localScale *= 2f;
 
             InfoPopupV2.Show(message);
             templateExitGame.gameObject.SetActive(false);
             var firstButton = UnityEngine.Object.Instantiate(templateExitGame, InfoPopupV2.transform);
             var secondButton = UnityEngine.Object.Instantiate(templateExitGame, InfoPopupV2.transform);
-            if (firstButton != null)
+            if (firstButton)
             {
                 firstButton.gameObject.SetActive(true);
                 firstButton.name = "FirstButtom";
@@ -500,7 +500,7 @@ public class ModUpdater
                     firstButton.GetComponent<PassiveButton>().OnClick.AddListener((UnityEngine.Events.UnityAction)(() => { onClickOnFirstButton(); InfoPopupV2.Close(); }));
                 else firstButton.GetComponent<PassiveButton>().OnClick.AddListener((UnityEngine.Events.UnityAction)(() => InfoPopupV2.Close()));
             }
-            if (secondButton != null)
+            if (secondButton)
             {
                 secondButton.gameObject.SetActive(true);
                 secondButton.name = "SecondButtom";

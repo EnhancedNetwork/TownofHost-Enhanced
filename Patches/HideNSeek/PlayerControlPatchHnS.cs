@@ -25,7 +25,7 @@ class CheckMurderInHidenSeekPatch
         }
 
         // Is the target in a killable state?
-        if (target.Data == null // Check if PlayerData is not null
+        if (!target.Data // Check if PlayerData is not null
                                 // Check target status
             || target.inVent
             || target.inMovingPlat // Moving Platform on Airhip and Zipline on Fungle
@@ -43,7 +43,7 @@ class CheckMurderInHidenSeekPatch
             return false;
         }
         // Checking during the meeting
-        if (MeetingHud.Instance != null)
+        if (MeetingHud.Instance)
         {
             Logger.Info("In the meeting, the kill was canceled", "CheckMurder H&S");
             return false;
@@ -101,7 +101,7 @@ class FixedUpdateInHidenSeekPatch
     {
         if (GameStates.IsNormalGame) return;
         if (!GameStates.IsModHost) return;
-        if (__instance == null) return;
+        if (!__instance) return;
 
         try
         {

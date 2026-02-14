@@ -14,7 +14,7 @@ public static class CustomSoundsManager
     public static void RPCPlayCustomSound(this PlayerControl pc, string sound, float volume = 1f, float pitch = 1f, bool force = false)
     {
         if (!force && (!AmongUsClient.Instance.AmHost || !pc.IsModded())) return;
-        if (pc == null || PlayerControl.LocalPlayer.PlayerId == pc.PlayerId)
+        if (!pc || PlayerControl.LocalPlayer.PlayerId == pc.PlayerId)
         {
             Play(sound);
             return;
@@ -73,7 +73,7 @@ public static class CustomSoundsManager
             audioCache[path] = clip;
         }
 
-        if (clip != null)
+        if (clip)
         {
             SoundManager.Instance.PlaySoundImmediate(clip, false, volume);
         }

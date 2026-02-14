@@ -11,7 +11,7 @@ public static class OutfitManager
 
         void Setoutfit()
         {
-            if (player == null || Outfit == null) return;
+            if (!player || Outfit == null) return;
 
             player.SetName(Outfit.PlayerName);
             Main.AllPlayerNames[player.PlayerId] = Outfit.PlayerName;

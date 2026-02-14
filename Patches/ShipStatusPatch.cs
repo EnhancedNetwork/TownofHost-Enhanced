@@ -207,7 +207,7 @@ class StartPatch
                 break;
             case MapNames.Polus when Main.EnableCustomDecorations.Value:
                 var Dropship = GameObject.Find("Dropship/panel_fuel");
-                if (Dropship != null)
+                if (Dropship)
                 {
                     var Decorations = UnityEngine.Object.Instantiate(Dropship, GameObject.Find("Dropship")?.transform);
                     Decorations.name = "Dropship_Decorations";

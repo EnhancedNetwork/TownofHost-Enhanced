@@ -17,7 +17,7 @@ public static class NameNotifyManager
 
     public static void Notify(this PlayerControl pc, string text, float time = 6f, bool overrideAll = false, bool log = true, SendOption sendOption = SendOption.Reliable)
     {
-        if (!AmongUsClient.Instance.AmHost || pc == null) return;
+        if (!AmongUsClient.Instance.AmHost || !pc) return;
         if (!GameStates.IsInTask) return;
 
         text = text.Trim();

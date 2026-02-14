@@ -652,7 +652,7 @@ internal class RPCHandlerPatch
                 break;
             case CustomRPC.DumpLog:
                 var target = Utils.GetPlayerById(reader.ReadByte());
-                if (target != null && !target.FriendCode.GetDevUser().DeBug)
+                if (target && !target.FriendCode.GetDevUser().DeBug)
                 {
                     Logger.Info($"Player {target.GetNameWithRole()} used /dump", "RPC_DumpLogger");
                 }
@@ -660,7 +660,7 @@ internal class RPCHandlerPatch
             case CustomRPC.FixModdedClientCNO:
                 var CNO = reader.ReadNetObject<PlayerControl>();
                 bool active = reader.ReadBoolean();
-                if (CNO != null)
+                if (CNO)
                 {
                     CNO.transform.FindChild("Names").FindChild("NameText_TMP").gameObject.SetActive(active);
                     CNO.Collider.enabled = false;
@@ -811,7 +811,7 @@ internal static class RPC
         if (targetId != -1)
         {
             ClientData client = Utils.GetClientById(targetId);
-            if (client == null || client.Character == null || !Main.playerVersion.ContainsKey(client.Character.PlayerId)) return;
+            if (client == null || !client.Character || !Main.playerVersion.ContainsKey(client.Character.PlayerId)) return;
         }
 
         if (!AmongUsClient.Instance.AmHost || PlayerControl.AllPlayerControls.Count <= 1) return;
@@ -826,7 +826,7 @@ internal static class RPC
         if (targetId != -1)
         {
             ClientData client = Utils.GetClientById(targetId);
-            if (client == null || client.Character == null || !Main.playerVersion.ContainsKey(client.Character.PlayerId)) return;
+            if (client == null || !client.Character || !Main.playerVersion.ContainsKey(client.Character.PlayerId)) return;
         }
 
         if (!AmongUsClient.Instance.AmHost || PlayerControl.AllPlayerControls.Count <= 1) return;
@@ -876,7 +876,7 @@ internal static class RPC
     {
         try
         {
-            while (PlayerControl.LocalPlayer == null || AmongUsClient.Instance.HostId < 0 || PlayerControl.LocalPlayer.GetClientId() < 0) await Task.Delay(500);
+            while (!PlayerControl.LocalPlayer || AmongUsClient.Instance.HostId < 0 || PlayerControl.LocalPlayer.GetClientId() < 0) await Task.Delay(500);
             var hostId = AmongUsClient.Instance.HostId;
             if (Main.playerVersion.ContainsKey(hostId) || !Main.VersionCheat.Value)
             {
@@ -893,7 +893,7 @@ internal static class RPC
     }
     public static async void RpcRequestRetryVersionCheck()
     {
-        while (PlayerControl.LocalPlayer == null || AmongUsClient.Instance.GetHost() == null) await Task.Delay(500);
+        while (!PlayerControl.LocalPlayer || AmongUsClient.Instance.GetHost() == null) await Task.Delay(500);
         RpcUtils.LateBroadcastReliableMessage(new RpcRequestRetryVersionCheck(PlayerControl.LocalPlayer.NetId));
     }
     public static void SendDeathReason(byte playerId, PlayerState.DeathReason deathReason)

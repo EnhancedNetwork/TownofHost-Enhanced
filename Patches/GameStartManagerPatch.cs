@@ -126,7 +126,7 @@ public class GameStartManagerPatch
         private static int minPlayer;
         public static void Prefix(GameStartManager __instance)
         {
-            if (__instance == null || LobbyBehaviour.Instance == null) return;
+            if (!__instance || !LobbyBehaviour.Instance) return;
             minWait = Options.MinWaitAutoStart.GetFloat();
             maxWait = Options.MaxWaitAutoStart.GetFloat();
             minPlayer = Options.PlayerAutoStart.GetInt();
@@ -198,9 +198,9 @@ public class GameStartManagerPatch
                 List<string> mismatchedPlayerNameList = [];
                 foreach (var client in AmongUsClient.Instance.allClients.ToArray())
                 {
-                    if (client.Character == null) continue;
+                    if (!client.Character) continue;
                     var dummyComponent = client.Character.GetComponent<DummyBehaviour>();
-                    if (dummyComponent != null && dummyComponent.enabled)
+                    if (dummyComponent && dummyComponent.enabled)
                         continue;
                     if (!MatchVersions(client.Id, true))
                     {

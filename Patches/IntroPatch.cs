@@ -251,7 +251,7 @@ public class SetUpRoleTextPatch
             _ = new LateTask(() =>
             {
                 // Return if game is ended or player in lobby or player is null
-                if (AmongUsClient.Instance.IsGameOver || GameStates.IsLobby || PlayerControl.LocalPlayer == null) return;
+                if (AmongUsClient.Instance.IsGameOver || GameStates.IsLobby || !PlayerControl.LocalPlayer) return;
 
                 var realName = Main.AllPlayerNames[PlayerControl.LocalPlayer.PlayerId];
                 // Don't use RpcSetName because the modded client needs to set the name locally
@@ -300,9 +300,9 @@ public class SetUpRoleTextPatch
         sb.Append($"Auto Rehost: {Main.AutoRehost.Value}\n");
 
         sb.Append("------------Player Names------------\n");
-        foreach (var pc in allPlayerControlsArray)
+        foreach (var pc in Main.EnumeratePlayerControls())
         {
-            if (pc == null) continue;
+            if (!pc) continue;
             sb.Append($"{(pc.AmOwner ? "[*]" : string.Empty),-3}{pc.PlayerId,-2}:{pc.name.PadRightV2(20)}:{Main.AllPlayerNames[pc.PlayerId]}({Palette.ColorNames[pc.Data.DefaultOutfit.ColorId].ToString().Replace("Color", string.Empty)})\n");
             pc.cosmetics.nameText.text = pc.name;
         }
@@ -314,7 +314,7 @@ public class SetUpRoleTextPatch
         {
             foreach (var pc in allPlayerControlsArray)
             {
-                if (pc == null) continue;
+                if (!pc) continue;
                 sb.Append($"{(pc.AmOwner ? "[*]" : string.Empty),-3}{pc.PlayerId,-2}:{Main.AllPlayerNames[pc.PlayerId].PadRightV2(20)}:{pc.GetAllRoleName().RemoveHtmlTags().Replace("\n", " + ")}\n");
             }
         }
@@ -484,7 +484,7 @@ class BeginCrewmatePatch
             exeTeam.Add(PlayerControl.LocalPlayer);
 
             PlayerControl executing = ex.GetTargetId().GetPlayer();
-            if (executing != null)
+            if (executing)
                 exeTeam.Add(executing);
 
             teamToDisplay = exeTeam;
@@ -495,7 +495,7 @@ class BeginCrewmatePatch
             lawyerTeam.Add(PlayerControl.LocalPlayer);
 
             PlayerControl lawyerTarget = lw.GetTargetId().GetPlayer();
-            if (lawyerTarget != null)
+            if (lawyerTarget)
                 lawyerTeam.Add(lawyerTarget);
 
             teamToDisplay = lawyerTeam;
@@ -793,7 +793,7 @@ class BeginCrewmatePatch
             milliseconds += 20;
             float time = milliseconds / (float)500;
             Color LerpingColor = Color.Lerp(start, end, time);
-            if (__instance == null || milliseconds > 500)
+            if (!__instance || milliseconds > 500)
             {
                 Logger.Info("Terminates the loop", "StartFadeIntro");
                 break;
@@ -1003,7 +1003,7 @@ class IntroCutsceneDestroyPatch
                     {
                         _ = new LateTask(() =>
                         {
-                            if (pc != null)
+                            if (pc)
                             {
                                 pc.ResetKillCooldown();
 
@@ -1169,7 +1169,7 @@ public class IntroCutsceneDestroyPatch
                     {
                         _ = new LateTask(() =>
                         {
-                            if (pc != null)
+                            if (pc)
                             {
                                 pc.ResetKillCooldown();
 

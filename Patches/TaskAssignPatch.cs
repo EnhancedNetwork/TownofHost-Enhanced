@@ -252,7 +252,7 @@ class RpcSetTasksPatch
 
         if (hasCommonTasks)
         {
-            if (__instance.Object != null)
+            if (__instance.Object)
             {
                 if (__instance.Object.IsPlayerCrewmateTeam() || !Options.NonCrewRandomCommonTasks.GetBool())
                 {

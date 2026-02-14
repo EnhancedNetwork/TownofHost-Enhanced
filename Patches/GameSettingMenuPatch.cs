@@ -153,7 +153,7 @@ public class GameSettingMenuPatch
 
     private static void SetupAdittionalButtons(GameSettingMenu __instance)
     {
-        if (__instance == null) return;
+        if (!__instance) return;
 
         var ParentLeftPanel = __instance.GamePresetsButton.transform.parent;
 
@@ -200,7 +200,7 @@ public class GameSettingMenuPatch
         Minus.OnClick.AddListener(
                 (UnityEngine.Events.UnityAction)(() =>
                 {
-                    if (PresetBehaviour == null) __instance.ChangeTab(3, false);
+                    if (!PresetBehaviour) __instance.ChangeTab(3, false);
                     PresetBehaviour.Decrease();
                 }));
         Minus.activeTextColor = new Color(255f, 255f, 255f);
@@ -233,7 +233,7 @@ public class GameSettingMenuPatch
         plus.OnClick.AddListener(
                 (UnityEngine.Events.UnityAction)(() =>
                 {
-                    if (PresetBehaviour == null) __instance.ChangeTab(3, false);
+                    if (!PresetBehaviour) __instance.ChangeTab(3, false);
                     PresetBehaviour.Increase();
                 }));
         plus.activeTextColor = new Color(255f, 255f, 255f);
@@ -304,7 +304,7 @@ public class GameSettingMenuPatch
             && !GetString($"{x.Name}").ToLower().Contains(text) && x.Tab == (TabGroup)(ModGameOptionsMenu.TabIndex - 3)).ToList();
             HiddenBySearch = Result;
             var SearchWinners = OptionItem.AllOptions.Where(x => x.Parent == null && !x.IsHiddenOn(Options.CurrentGameMode) && x.Tab == (TabGroup)(ModGameOptionsMenu.TabIndex - 3) && !Result.Contains(x)).ToList();
-            if (!SearchWinners.Any() || !ModSettingsTabs.TryGetValue((TabGroup)(ModGameOptionsMenu.TabIndex - 3), out var settingsTab) || settingsTab == null)
+            if (!SearchWinners.Any() || !ModSettingsTabs.TryGetValue((TabGroup)(ModGameOptionsMenu.TabIndex - 3), out var settingsTab) || !settingsTab)
             {
                 HiddenBySearch.Clear();
                 Logger.SendInGame(GetString("SearchNoResult")); // okay so showpopup nor this will overlay the menu, but I use this just for the sound lol
@@ -324,7 +324,7 @@ public class GameSettingMenuPatch
         if (HiddenBySearch.Any())
         {
             HiddenBySearch.Do(x => x.SetHidden(false));
-            if (ModSettingsTabs.TryGetValue((TabGroup)(ModGameOptionsMenu.TabIndex - 3), out var GameSettingsTab) && GameSettingsTab != null)
+            if (ModSettingsTabs.TryGetValue((TabGroup)(ModGameOptionsMenu.TabIndex - 3), out var GameSettingsTab) && GameSettingsTab)
                 GameOptionsMenuPatch.ReCreateSettings(GameSettingsTab);
 
             HiddenBySearch.Clear();
@@ -340,7 +340,7 @@ public class GameSettingMenuPatch
             foreach (var tab in EnumHelper.GetAllValues<TabGroup>())
             {
                 if (ModSettingsTabs.TryGetValue(tab, out settingsTab) &&
-                    settingsTab != null)
+                    settingsTab)
                 {
                     settingsTab.gameObject.SetActive(false);
                 }
@@ -348,7 +348,7 @@ public class GameSettingMenuPatch
             foreach (var tab in EnumHelper.GetAllValues<TabGroup>())
             {
                 if (ModSettingsButtons.TryGetValue(tab, out button) &&
-                    button != null)
+                    button)
                 {
                     button.SelectButton(false);
                 }
@@ -367,7 +367,7 @@ public class GameSettingMenuPatch
             __instance.GameSettingsButton.SelectButton(false);
             __instance.RoleSettingsButton.SelectButton(false);
 
-            if (ModSettingsTabs.TryGetValue(tabGroupId, out settingsTab) && settingsTab != null)
+            if (ModSettingsTabs.TryGetValue(tabGroupId, out settingsTab) && settingsTab)
             {
                 settingsTab.gameObject.SetActive(true);
                 __instance.MenuDescriptionText.DestroyTranslator();
@@ -398,7 +398,7 @@ public class GameSettingMenuPatch
         __instance.ToggleRightSideDarkener(false);
 
         if (ModSettingsButtons.TryGetValue(tabGroupId, out button) &&
-            button != null)
+            button)
         {
             button.SelectButton(true);
         }
@@ -410,12 +410,12 @@ public class GameSettingMenuPatch
     private static bool OnEnablePrefix(GameSettingMenu __instance)
     {
 
-        if (TemplateGameOptionsMenu == null)
+        if (!TemplateGameOptionsMenu)
         {
             TemplateGameOptionsMenu = Object.Instantiate(__instance.GameSettingsTab, __instance.GameSettingsTab.transform.parent);
             TemplateGameOptionsMenu.gameObject.SetActive(false);
         }
-        if (TemplateGameSettingsButton == null)
+        if (!TemplateGameSettingsButton)
         {
             TemplateGameSettingsButton = Object.Instantiate(__instance.GameSettingsButton, __instance.GameSettingsButton.transform.parent);
             TemplateGameSettingsButton.gameObject.SetActive(false);
@@ -452,7 +452,7 @@ public static class FixInputChatField
 {
     public static bool Prefix(FreeChatInputField __instance)
     {
-        if (GameSettingMenuPatch.InputField != null && __instance == GameSettingMenuPatch.InputField)
+        if (GameSettingMenuPatch.InputField && __instance == GameSettingMenuPatch.InputField)
         {
             Vector2 size = __instance.Background.size;
             size.y = Math.Max(0.62f, __instance.textArea.TextHeight + 0.2f);
@@ -469,7 +469,7 @@ public static class FixDarkThemeForSearchBar
     {
         if (!GameSettingMenu.Instance || !Main.DarkTheme.Value) return;
         var field = GameSettingMenuPatch.InputField;
-        if (field != null)
+        if (field)
         {
             field.background.color = new Color32(40, 40, 40, byte.MaxValue);
             field.textArea.compoText.Color(Color.white);
