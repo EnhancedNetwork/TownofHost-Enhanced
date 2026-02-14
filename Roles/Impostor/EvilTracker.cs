@@ -80,7 +80,7 @@ internal class EvilTracker : RoleBase
         ImpostorsId[playerId] = [];
         var pc = playerId.GetPlayer();
 
-        foreach (var target in Main.AllAlivePlayerControls)
+        foreach (var target in Main.EnumerateAlivePlayerControls())
         {
             var targetId = target.PlayerId;
             if (targetId != playerId && (pc.Is(CustomRoles.Narc) ? target.IsPolice() : target.CheckImpCanSeeAllies(CheckAsTarget: true)))

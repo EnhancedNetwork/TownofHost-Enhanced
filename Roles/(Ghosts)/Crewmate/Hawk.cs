@@ -45,7 +45,7 @@ internal class Hawk : RoleBase
     {
         playerId.SetAbilityUseLimit(HawkCanKillNum.GetInt());
 
-        foreach (var pc in Main.AllPlayerControls)
+        foreach (var pc in Main.EnumeratePlayerControls())
         {
             if (pc.IsAnySubRole(x => x.IsConverted()))
             {
@@ -57,7 +57,7 @@ internal class Hawk : RoleBase
     {
         if (_Player == null) return;
         int ThisCount = 0;
-        foreach (var pc in Main.AllPlayerControls)
+        foreach (var pc in Main.EnumeratePlayerControls())
         {
             if (pc.IsAnySubRole(x => x.IsConverted()))
             {
@@ -89,7 +89,7 @@ internal class Hawk : RoleBase
             killer.RpcRemoveAbilityUse();
         }
         else if (killer.GetAbilityUseLimit() <= 0) killer.Notify(GetString("HawkKillMax"));
-        else if (Main.AllAlivePlayerControls.Length < MinimumPlayersAliveToKill.GetInt()) killer.Notify(GetString("HawkKillTooManyDead"));
+        else if (Main.AllAlivePlayerControls.Count < MinimumPlayersAliveToKill.GetInt()) killer.Notify(GetString("HawkKillTooManyDead"));
         else
         {
             killer.RpcResetAbilityCooldown();
@@ -107,7 +107,7 @@ internal class Hawk : RoleBase
     {
         var rnd = IRandom.Instance;
 
-        return target != null && Main.AllAlivePlayerControls.Length >= MinimumPlayersAliveToKill.GetInt()
+        return target != null && Main.AllAlivePlayerControls.Count >= MinimumPlayersAliveToKill.GetInt()
             && _Player.GetAbilityUseLimit() > 0
             && rnd.Next(100) >= KillerChanceMiss[target.PlayerId]
             && !target.IsNeutralApocalypse()

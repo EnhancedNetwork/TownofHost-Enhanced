@@ -10,19 +10,11 @@ namespace TOHE;
 
 public static class BanManager
 {
-#if ANDROID
-    private static string DenyNameListPath = Path.Combine(UnityEngine.Application.persistentDataPath, "TOHE-DATA", "DenyName.txt");
-    private static string BanListPath = Path.Combine(UnityEngine.Application.persistentDataPath, "TOHE-DATA", "BanList.txt");
-    private static string ModeratorListPath = Path.Combine(UnityEngine.Application.persistentDataPath, "TOHE-DATA", "Moderators.txt");
-    private static string VIPListPath = Path.Combine(UnityEngine.Application.persistentDataPath, "TOHE-DATA", "VIP-List.txt");
-    private static string WhiteListListPath = Path.Combine(UnityEngine.Application.persistentDataPath, "TOHE-DATA", "WhiteList.txt");
-#else
-    private static string DenyNameListPath = "./TOHE-DATA/DenyName.txt";
-    private static string BanListPath = "./TOHE-DATA/BanList.txt";
-    private static string ModeratorListPath = "./TOHE-DATA/Moderators.txt";
-    private static string VIPListPath = "./TOHE-DATA/VIP-List.txt";
-    private static string WhiteListListPath = "./TOHE-DATA/WhiteList.txt";
-#endif
+    private static readonly string DenyNameListPath = OperatingSystem.IsAndroid() ? Path.Combine(UnityEngine.Application.persistentDataPath, "TOHE-DATA", "DenyName.txt") : "./TOHE-DATA/DenyName.txt";
+    private static readonly string BanListPath = OperatingSystem.IsAndroid() ? Path.Combine(UnityEngine.Application.persistentDataPath, "TOHE-DATA", "BanList.txt") : "./TOHE-DATA/BanList.txt";
+    private static readonly string ModeratorListPath = OperatingSystem.IsAndroid() ? Path.Combine(UnityEngine.Application.persistentDataPath, "TOHE-DATA", "Moderators.txt") : "./TOHE-DATA/Moderators.txt";
+    private static readonly string VIPListPath = OperatingSystem.IsAndroid() ? Path.Combine(UnityEngine.Application.persistentDataPath, "TOHE-DATA", "VIP-List.txt") : "./TOHE-DATA/VIP-List.txt";
+    private static readonly string WhiteListListPath = OperatingSystem.IsAndroid() ? Path.Combine(UnityEngine.Application.persistentDataPath, "TOHE-DATA", "WhiteList.txt") : "./TOHE-DATA/WhiteList.txt";
     //private static List<string> EACList = []; // Don't make it read-only
     public static List<string> TempBanWhiteList = []; //To prevent writing to ban list
     public static List<Dictionary<string, System.Text.Json.JsonElement>> EACDict = [];
@@ -30,11 +22,10 @@ public static class BanManager
     {
         try
         {
-#if ANDROID
-            Directory.CreateDirectory(Path.Combine(UnityEngine.Application.persistentDataPath, "TOHE-DATA"));
-#else
-            Directory.CreateDirectory("TOHE-DATA");
-#endif
+            if (OperatingSystem.IsAndroid())
+                Directory.CreateDirectory(Path.Combine(UnityEngine.Application.persistentDataPath, "TOHE-DATA"));
+            else
+                Directory.CreateDirectory("TOHE-DATA");
 
             if (!File.Exists(BanListPath))
             {
@@ -127,11 +118,11 @@ public static class BanManager
 
         try
         {
-#if ANDROID
-            Directory.CreateDirectory(Path.Combine(UnityEngine.Application.persistentDataPath, "TOHE-DATA"));
-#else
-            Directory.CreateDirectory("TOHE-DATA");
-#endif
+            if (OperatingSystem.IsAndroid())
+                Directory.CreateDirectory(Path.Combine(UnityEngine.Application.persistentDataPath, "TOHE-DATA"));
+            else
+                Directory.CreateDirectory("TOHE-DATA");
+            
             if (!File.Exists(DenyNameListPath)) File.Create(DenyNameListPath).Close();
             using StreamReader sr = new(DenyNameListPath);
             string line;
@@ -200,11 +191,11 @@ public static class BanManager
 
         try
         {
-#if ANDROID
-            Directory.CreateDirectory(Path.Combine(UnityEngine.Application.persistentDataPath, "TOHE-DATA"));
-#else
-            Directory.CreateDirectory("TOHE-DATA");
-#endif
+            if (OperatingSystem.IsAndroid())
+                Directory.CreateDirectory(Path.Combine(UnityEngine.Application.persistentDataPath, "TOHE-DATA"));
+            else
+                Directory.CreateDirectory("TOHE-DATA");
+            
             if (!File.Exists(BanListPath)) File.Create(BanListPath).Close();
             using StreamReader sr = new(BanListPath);
             string line;

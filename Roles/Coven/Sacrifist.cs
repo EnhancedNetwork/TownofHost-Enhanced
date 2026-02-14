@@ -87,7 +87,7 @@ internal class Sacrifist : CovenManager
     public override bool CanUseImpostorVentButton(PlayerControl pc) => true;
 
     // Sacrifist shouldn't be able to kill at all but if there's solo Sacrifist the game is unwinnable so they can kill when solo
-    public override bool CanUseKillButton(PlayerControl pc) => Main.AllAlivePlayerControls.Where(pc => pc.Is(Custom_Team.Coven)).Count() == 1;
+    public override bool CanUseKillButton(PlayerControl pc) => Main.EnumerateAlivePlayerControls().Count(pc => pc.Is(Custom_Team.Coven)) == 1;
     public override bool OnCheckMurderAsKiller(PlayerControl killer, PlayerControl target)
     {
         if (!CanUseKillButton(killer)) return false;
@@ -104,7 +104,7 @@ internal class Sacrifist : CovenManager
         DebuffID = (byte)rand.Next(0, 9);
         if (randPlayer == byte.MaxValue)
         {
-            randPlayer = Main.AllAlivePlayerControls.Where(x => !x.Is(Custom_Team.Coven) && !x.Is(CustomRoles.Enchanted)).ToList().RandomElement().PlayerId;
+            randPlayer = Main.EnumerateAlivePlayerControls().Where(x => !x.Is(Custom_Team.Coven) && !x.Is(CustomRoles.Enchanted)).ToList().RandomElement().PlayerId;
         }
         var randPlayerPC = GetPlayerById(randPlayer);
         var sacrifist = pc.PlayerId;
@@ -117,7 +117,7 @@ internal class Sacrifist : CovenManager
                 pc.SetRealKiller(pc);
                 pc.SetDeathReason(PlayerState.DeathReason.Suicide);
                 Logger.Info($"{pc.GetRealName()} Ultimate Sacrifice", "Sacrifist");
-                var covList = Main.AllAlivePlayerControls.Where(x => x.Is(Custom_Team.Coven) || x.Is(CustomRoles.Enchanted));
+                var covList = Main.EnumerateAlivePlayerControls().Where(x => x.Is(Custom_Team.Coven) || x.Is(CustomRoles.Enchanted));
                 foreach (var cov in covList)
                 {
                     Main.AllPlayerKillCooldown[cov.PlayerId] -= Main.AllPlayerKillCooldown[cov.PlayerId] * (NecroReducedCooldown.GetFloat() / 100);
@@ -268,7 +268,7 @@ internal class Sacrifist : CovenManager
             if (!Camouflage.IsCamouflage)
             {
                 PlayerControl pc =
-                    Main.AllAlivePlayerControls.FirstOrDefault(a => a.PlayerId == randPlayer);
+                    Main.EnumerateAlivePlayerControls().FirstOrDefault(a => a.PlayerId == randPlayer);
 
                 pc.SetNewOutfit(OriginalPlayerSkins[randPlayer], setName: true, setNamePlate: true);
             }
@@ -287,7 +287,7 @@ internal class Sacrifist : CovenManager
             if (!Camouflage.IsCamouflage)
             {
                 PlayerControl pc =
-                    Main.AllAlivePlayerControls.FirstOrDefault(a => a.PlayerId == sacrifist);
+                    Main.EnumerateAlivePlayerControls().FirstOrDefault(a => a.PlayerId == sacrifist);
 
                 pc.SetNewOutfit(OriginalPlayerSkins[sacrifist], setName: true, setNamePlate: true);
             }
@@ -297,7 +297,7 @@ internal class Sacrifist : CovenManager
     public static void SetVision(PlayerControl player, IGameOptions opt)
     {
         if (VisionChange.Any(a => a.Value.Contains(player.PlayerId) &&
-           Main.AllAlivePlayerControls.Any(b => b.PlayerId == a.Key)))
+           Main.EnumerateAlivePlayerControls().Any(b => b.PlayerId == a.Key)))
         {
             opt.SetVision(false);
             opt.SetFloat(FloatOptionNames.CrewLightMod, Vision.GetFloat());
@@ -328,7 +328,7 @@ internal class Sacrifist : CovenManager
         var votedForExiled = MeetingHud.Instance.playerStates.Where(a => a.VotedFor == exiled.PlayerId && a.TargetPlayerId != exiled.PlayerId).ToArray();
         foreach (var playerVote in votedForExiled)
         {
-            var crewPlayer = Main.AllPlayerControls.FirstOrDefault(a => a.PlayerId == playerVote.TargetPlayerId);
+            var crewPlayer = Main.EnumeratePlayerControls().FirstOrDefault(a => a.PlayerId == playerVote.TargetPlayerId);
             if (crewPlayer == null || crewPlayer.GetCustomRole().IsCoven() || crewPlayer.GetCustomRole().IsTNA()) return;
             killPotentials.Add(crewPlayer);
         }

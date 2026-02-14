@@ -2412,7 +2412,7 @@
 
   "Command.iconinfo": "→ Display info on in-meeting icons",
   "Command.iconhelp": "→ Display info on in-meeting icons to everyone",
-  "Command.Poll": "→ Start a poll with up-to 5 choices",
+  "Command.poll": "→ Start a poll with up-to 5 choices",
   "IconsTitle": "<color=#aaaaff>⚠<u>Icon Meanings</u>⚠</color>",
   "Remaining.ImpostorCount": "<color=#ff1919>Impostors</color> left: {0}",
   "Remaining.MadmateCount": "<color=#ff1919>Madmates</color> left: {0}",
@@ -2682,14 +2682,12 @@
 
   "Poll.Begin": "You may vote using /pv {answer}, ps: a number also works.",
   "Poll.TimeInfo": "The results will be final in 2 minutes",
-  "Poll.OnlyInLobby": "<#ab4f75>Sorry, this command may only be used in lobby</color>",
 
   "Poll.Inactive": "There isn't any active poll currently.",
   "Poll.AlreadyVoted": "You already cast your vote, so it won't be counted.",
 
   "Poll.VotingInfo": "Use /pv {answer} to vote, answer can be a character or a number.",
   "Poll.YouVoted": "You have voted for {0}, which has now {1} votes.",
-  "PollUsage": "To create a poll type \n<b>/poll {Question}? <size=55%>{Answer A} {Answer B} \n{Answer C (Optional)} {Answer D (Optional)} {Answer E (Optional)}</size></b>\n<size=50%>It is important you end the question with a ? </size>\n\n<size=75%>Use <b>/poll Replay</b> to replay the latest poll</size>",
   "Replay": "Replay",
 
   "EnableGadientTags": "Enable Gradient Tags <color=#ff0000>(can cause disconnect issues)</color>",
@@ -4417,10 +4415,11 @@
   "Commands.NoAccess.Time.InGame": "No Access: In Game Only",
   "Commands.NoAccess.Time.InMeeting": "No Access: In Meeting Only",
   "Commands.NoAccess.Time.AfterDeath": "No Access: Only When Dead",
-  "Commands.NoAccess.Time.AfterDeathOrLobby": "No Access: When Dead or In Lobby",
+  "Commands.NoAccess.Time.AfterDeathOrLobby": "No Access: When Dead or In Lobby Only",
 
   "Command.Dump": "dump|дамп|лог",
   "CommandDescription.Dump": "Dumps the log file",
+  "Dump.NoNewLogInfo": "No New Logging Since Last Dump",
 
   "Command.Version": "v|version|в|версия|versão",
   "CommandDescription.Version": "Sends the current mod version",
@@ -4656,5 +4655,60 @@
   "CommandDescription.Whisper": "Send a private message to someone",
   "CommandArgs.Whisper.Id": "Target Id",
   "CommandArgs.Whisper.Message": "Message to send",
-  "Whisper.ErrorDead": "Can't send message to dead people while alive or alive people while dead."
+  "Whisper.ErrorDead": "Can't send message to dead people while alive or alive people while dead.",
+
+  "Command.CustomSound": "cs",
+  "CommandDescription.CustomSound": "Play one of TOHE's custom sounds",
+  "CommandArgs.CustomSound.Sound": "Sound to Play",
+
+  "Command.CosmeticId": "cosid",
+  "CommandDescription.CosmeticId": "Prints your current cosmetics ids to log",
+
+  "Command.CallMeeting": "mt|hy",
+  "CommandDescription.CallMeeting": "Calls/Ends meeting",
+
+  "Command.Sound": "sd",
+  "CommandDescription.Sound": "Plays the specified vanilla sound",
+  "CommandArgs.Sound.SoundId": "Id (int) of sound to be played",
+
+  "Command.Poll": "poll",
+  "CommandDescription.Poll": "→ Start a poll with up-to 5 choices",
+  "CommandHelp.Poll": "To create a poll type \n<b>/poll {Question}? <size=55%>{Answer A} {Answer B} \n{Answer C (Optional)} {Answer D (Optional)} {Answer E (Optional)}</size></b>\n<size=50%>It is important you end the question with a ? </size>\n\n<size=75%>Use <b>/poll Replay</b> to replay the latest poll</size>",
+  "CommandArgs.Poll.Question": "Question or Replay",
+  "CommandArgs.Poll.AnswerA": "Answer A",
+  "CommandArgs.Poll.AnswerB": "Answer B",
+  "CommandArgs.Poll.AnswerC": "Answer C (Optional)",
+  "CommandArgs.Poll.AnswerD": "Answer D (Optional)",
+  "CommandArgs.Poll.AnswerE": "Answer E (Optional)",
+
+  "Command.PollVote": "pv",
+  "CommandDescription.PollVote": "Vote in the current poll",
+  "CommandArgs.PollVote.Vote": "A|B|C|D|E",
+
+  "Command.RPS": "rps",
+  "CommandDescription.RPS": "Rock Paper Scissors vs bot",
+  "CommandArgs.RPS.RPS": "0|1|2",
+
+  "Command.CoinFlip": "coinflip",
+  "CommandDescription.CoinFlip": "Flip a coin",
+
+  "Command.GNO": "gno",
+  "CommandDescription.GNO": "Guess what the random number is",
+  "CommandArgs.GNO.Guess": "Number from 0 - 99",
+
+  "Command.Rand": "rnd|rand",
+  "CommandDescription.Rand": "Get a random number between Min and Max (both inclusive)",
+  "CommandArgs.Rand.Min": "Min (inclusive)",
+  "CommandArgs.Rand.Max": "Max (inclusive)",
+
+  "Command.8Ball": "8ball",
+  "CommandDescription.8Ball": "Shake the 8 ball",
+
+  "Command.ModColor": "modcolor|modcolour",
+  "CommandDescription.ModColor": "Set your mod tag color, can use two colors for a gradient or enabled",
+  "CommandArgs.ModColor.Color": "Color", 
+  "CommandArgs.ModColor.GradientColor": "Second Color for gradient",
+
+  "Command.VipColor": "vipcolor|vipcolour",
+  "CommandDescription.VipColor": "Set your vip tag color, can use two colors for a gradient or enabled"
 }

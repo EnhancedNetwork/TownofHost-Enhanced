@@ -91,6 +91,17 @@ internal class Medic : RoleBase
         playerId.SetAbilityUseLimit(1);
         ProtectedPlayers[playerId] = [];
     }
+    public override void Remove(byte playerId)
+    {
+        if (ProtectedPlayers.TryGetValue(playerId, out var protectedList))
+        {
+            foreach (var protectedId in protectedList)
+            {
+                ProtectedPlayers[playerId].Remove(protectedId);
+                GlobalProtectedList.Remove(protectedId);
+            }
+        }
+    }
     private void SendRPC()
     {
         var writer = MessageWriter.Get(SendOption.Reliable);

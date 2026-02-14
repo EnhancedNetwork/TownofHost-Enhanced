@@ -1203,8 +1203,7 @@ public static class CustomRolesHelper
                 break;
 
             case CustomRoles.Unreportable:
-                if (pc.Is(CustomRoles.Randomizer)
-                    || pc.Is(CustomRoles.Solsticer)
+                if (pc.Is(CustomRoles.Solsticer)
                     || pc.Is(CustomRoles.Bait))
                     return false;
                 break;
@@ -1459,7 +1458,7 @@ public static class CustomRolesHelper
     {
         return role.GetStaticRoleClass().ThisRoleType;
     }
-    public static bool RoleExist(this CustomRoles role, bool countDead = false) => Main.AllPlayerControls.Any(x => x.Is(role) && (x.IsAlive() || countDead));
+    public static bool RoleExist(this CustomRoles role, bool countDead = false) => Main.EnumeratePlayerControls().Any(x => x.Is(role) && (x.IsAlive() || countDead));
     public static int GetCount(this CustomRoles role)
     {
         if (role.IsVanilla())

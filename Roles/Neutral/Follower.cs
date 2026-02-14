@@ -78,7 +78,7 @@ internal class Follower : RoleBase
             return;
         }
         float cd = BetCooldown.GetFloat();
-        cd += Main.AllPlayerControls.Count(x => !x.IsAlive()) * BetCooldownIncrese.GetFloat();
+        cd += Main.EnumeratePlayerControls().Count(x => !x.IsAlive()) * BetCooldownIncrese.GetFloat();
         cd = Math.Min(cd, MaxBetCooldown.GetFloat());
         Main.AllPlayerKillCooldown[id] = cd;
     }

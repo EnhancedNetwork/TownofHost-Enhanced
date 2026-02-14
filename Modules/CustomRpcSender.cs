@@ -23,6 +23,10 @@ public class CustomRpcSender
     public delegate void onSendDelegateType();
     public onSendDelegateType onSendDelegate;
 
+    // for logging
+    private RpcCalls? LastCall;
+    private readonly List<object> LastMessages = [];
+
     private readonly List<MessageWriter> doneStreams = [];
 
     public State CurrentState
@@ -172,7 +176,9 @@ public class CustomRpcSender
             else
                 throw new InvalidOperationException(errorMsg);
         }
-
+        Logger.Info($"Sending Rpc with id {LastCall} and values [{LastMessages.Join(delimiter: ", ")}]", "CustomRpcSender");
+        LastCall = null;
+        LastMessages.Clear();
         stream.EndMessage();
         currentState = State.InRootMessage;
         return this;
@@ -208,6 +214,7 @@ public class CustomRpcSender
             }
             this.StartMessage(targetClientId);
         }
+        LastCall = (RpcCalls)callId;
         this.StartRpc(targetNetId, callId);
 
         return this;
@@ -261,27 +268,27 @@ public class CustomRpcSender
 
     // Write
     #region PublicWriteMethods
-    public CustomRpcSender Write(float val) => Write(w => w.Write(val));
-    public CustomRpcSender Write(string val) => Write(w => w.Write(val));
-    public CustomRpcSender Write(ulong val) => Write(w => w.Write(val));
-    public CustomRpcSender Write(int val) => Write(w => w.Write(val));
-    public CustomRpcSender Write(uint val) => Write(w => w.Write(val));
-    public CustomRpcSender Write(ushort val) => Write(w => w.Write(val));
-    public CustomRpcSender Write(byte val) => Write(w => w.Write(val));
-    public CustomRpcSender Write(sbyte val) => Write(w => w.Write(val));
-    public CustomRpcSender Write(bool val) => Write(w => w.Write(val));
-    public CustomRpcSender Write(Il2CppStructArray<byte> bytes) => Write(w => w.Write(bytes));
-    public CustomRpcSender Write(Il2CppStructArray<byte> bytes, int offset, int length) => Write(w => w.Write(bytes, offset, length));
-    public CustomRpcSender WriteBytesAndSize(Il2CppStructArray<byte> bytes) => Write(w => w.WriteBytesAndSize(bytes));
-    public CustomRpcSender WritePacked(int val) => Write(w => w.WritePacked(val));
-    public CustomRpcSender WritePacked(uint val) => Write(w => w.WritePacked(val));
-    public CustomRpcSender WriteNetObject(InnerNetObject obj) => Write(w => w.WriteNetObject(obj));
-    public CustomRpcSender WriteMessageType(byte val) => Write(w => w.StartMessage(val));
-    public CustomRpcSender WriteEndMessage() => Write(w => w.EndMessage());
-    public CustomRpcSender WriteVector2(Vector2 vector2) => Write(w => NetHelpers.WriteVector2(vector2, w));
+    public CustomRpcSender Write(float val) => Write(w => w.Write(val), val);
+    public CustomRpcSender Write(string val) => Write(w => w.Write(val), val);
+    public CustomRpcSender Write(ulong val) => Write(w => w.Write(val), val);
+    public CustomRpcSender Write(int val) => Write(w => w.Write(val), val);
+    public CustomRpcSender Write(uint val) => Write(w => w.Write(val), val);
+    public CustomRpcSender Write(ushort val) => Write(w => w.Write(val), val);
+    public CustomRpcSender Write(byte val) => Write(w => w.Write(val), val);
+    public CustomRpcSender Write(sbyte val) => Write(w => w.Write(val), val);
+    public CustomRpcSender Write(bool val) => Write(w => w.Write(val), val);
+    public CustomRpcSender Write(Il2CppStructArray<byte> bytes) => Write(w => w.Write(bytes), bytes);
+    public CustomRpcSender Write(Il2CppStructArray<byte> bytes, int offset, int length) => Write(w => w.Write(bytes, offset, length), bytes);
+    public CustomRpcSender WriteBytesAndSize(Il2CppStructArray<byte> bytes) => Write(w => w.WriteBytesAndSize(bytes), bytes);
+    public CustomRpcSender WritePacked(int val) => Write(w => w.WritePacked(val), val);
+    public CustomRpcSender WritePacked(uint val) => Write(w => w.WritePacked(val), val);
+    public CustomRpcSender WriteNetObject(InnerNetObject obj) => Write(w => w.WriteNetObject(obj), obj);
+    public CustomRpcSender WriteMessageType(byte val) => Write(w => w.StartMessage(val), val);
+    public CustomRpcSender WriteEndMessage() => Write(w => w.EndMessage(), "[EndMessage]");
+    public CustomRpcSender WriteVector2(Vector2 vector2) => Write(w => NetHelpers.WriteVector2(vector2, w), vector2);
     #endregion
 
-    private CustomRpcSender Write(Action<MessageWriter> action)
+    private CustomRpcSender Write(Action<MessageWriter> action, object val)
     {
         if (currentState != State.InRpc)
         {
@@ -291,6 +298,7 @@ public class CustomRpcSender
             else
                 throw new InvalidOperationException(errorMsg);
         }
+        LastMessages.Add(val);
         action(stream);
 
         return this;
@@ -339,7 +347,7 @@ public static class CustomRpcSenderExtensions
                 Logger.Info($"Skipped setting name of {player.GetRealName()} for seer {saw} because it was the same as previous", "RpcSetName");
                 return;
             case true:
-                Main.AllPlayerControls.Do(x => Main.LastNotifyNames[(player.PlayerId, x.PlayerId)] = name);
+                Main.EnumeratePlayerControls().Do(x => Main.LastNotifyNames[(player.PlayerId, x.PlayerId)] = name);
                 break;
             default:
                 Main.LastNotifyNames[(player.PlayerId, seer.PlayerId)] = name;

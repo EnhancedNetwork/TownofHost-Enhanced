@@ -86,7 +86,7 @@ internal class Lawyer : RoleBase
 
             List<PlayerControl> targetList = [];
             var rand = IRandom.Instance;
-            foreach (var target in Main.AllPlayerControls)
+            foreach (var target in Main.EnumeratePlayerControls())
             {
                 if (playerId == target.PlayerId) continue;
                 else if (TargetList.Contains(target.PlayerId)) continue;

@@ -118,7 +118,7 @@ internal class Solsticer : RoleBase
     }
     private void ActiveWarning(PlayerControl pc)
     {
-        foreach (var target in Main.AllAlivePlayerControls.Where(x => IsSolsticerTarget(x, onlyKiller: true)).ToArray())
+        foreach (var target in Main.EnumerateAlivePlayerControls().Where(x => IsSolsticerTarget(x, onlyKiller: true)).ToArray())
         {
             TargetArrow.Add(target.PlayerId, pc.PlayerId);
         }
@@ -157,7 +157,7 @@ internal class Solsticer : RoleBase
     } //My idea is to encourage everyone to kill Solsticer and won't waste shoots on it, only resets cd.
     public override void AfterMeetingTasks()
     {
-        foreach (var pc in Main.AllAlivePlayerControls.Where(x => x.Is(CustomRoles.Solsticer)).ToArray())
+        foreach (var pc in Main.EnumerateAlivePlayerControls().Where(x => x.Is(CustomRoles.Solsticer)).ToArray())
         {
             Main.AllPlayerSpeed[pc.PlayerId] = SolsticerSpeed.GetFloat();
             ReportDeadBodyPatch.CanReport[pc.PlayerId] = true;
@@ -239,14 +239,14 @@ internal class Solsticer : RoleBase
         pc.RpcResetTasks(); //Let taskassign patch decide the tasks
         pc.RpcGuardAndKill();
         pc.Notify(GetString("SolsticerTasksReset"));
-        Main.AllPlayerControls.Do(x => TargetArrow.Remove(x.PlayerId, pc.PlayerId));
+        Main.EnumeratePlayerControls().Do(x => TargetArrow.Remove(x.PlayerId, pc.PlayerId));
         warningActived = false;
         SendRPC();
     }
     public static void SetShortTasksToAdd()
     {
         var TotalPlayer = Main.PlayerStates.Count(x => x.Value.Disconnected == false);
-        var AlivePlayer = Main.AllAlivePlayerControls.Length;
+        var AlivePlayer = Main.AllAlivePlayerControls.Count;
 
         AddShortTasks = (int)((TotalPlayer - AlivePlayer) * AddTasksPreDeadPlayer.GetFloat());
     }

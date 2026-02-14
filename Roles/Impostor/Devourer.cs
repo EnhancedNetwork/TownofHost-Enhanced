@@ -119,7 +119,7 @@ internal class Devourer : RoleBase
             if (!Camouflage.IsCamouflage)
             {
                 PlayerControl pc =
-                    Main.AllAlivePlayerControls.FirstOrDefault(a => a.PlayerId == player);
+                    Main.EnumerateAlivePlayerControls().FirstOrDefault(a => a.PlayerId == player);
                 if (pc == null) continue;
 
                 pc.SetNewOutfit(OriginalPlayerSkins[player], setName: false, setNamePlate: false);

@@ -122,7 +122,7 @@ internal class Fireworker : RoleBase
                 Logger.Info("One firework set up", "Fireworker");
 
                 FireworkerPosition[shapeshifterId].Add(shapeshifter.transform.position);
-                Fireworks.Add(new(shapeshifter.GetCustomPosition(), [.. Main.AllPlayerControls.Where(x => x.GetCountTypes() == CountTypes.Impostor).Select(x => x.PlayerId)], _state.PlayerId));
+                Fireworks.Add(new(shapeshifter.GetCustomPosition(), [.. Main.EnumeratePlayerControls().Where(x => x.GetCountTypes() == CountTypes.Impostor).Select(x => x.PlayerId)], _state.PlayerId));
                 nowFireworkerCount[shapeshifterId]--;
                 state[shapeshifterId] = nowFireworkerCount[shapeshifterId] == 0
                     ? Main.AliveImpostorCount <= 1 ? FireworkerState.ReadyFire : FireworkerState.WaitTime
@@ -136,7 +136,7 @@ internal class Fireworker : RoleBase
                 bool suicide = false;
                 Fireworks.Do(x => x.Despawn());
                 Fireworks.Clear();
-                foreach (var player in Main.AllAlivePlayerControls)
+                foreach (var player in Main.EnumerateAlivePlayerControls())
                 {
                     foreach (var pos in FireworkerPosition[shapeshifterId].ToArray())
                     {
@@ -158,7 +158,7 @@ internal class Fireworker : RoleBase
                 }
                 if (suicide)
                 {
-                    var totalAlive = Main.AllAlivePlayerControls.Length;
+                    var totalAlive = Main.AllAlivePlayerControls.Count;
                     if (totalAlive != 1)
                     {
                         shapeshifterId.SetDeathReason(PlayerState.DeathReason.Misfire);

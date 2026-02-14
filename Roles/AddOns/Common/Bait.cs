@@ -47,7 +47,7 @@ public class Bait : IAddon
     {
         if (MeetingStates.FirstMeeting && CustomRoles.Bait.RoleExist() && BaitNotification.GetBool())
         {
-            foreach (var pc in Main.AllAlivePlayerControls.Where(x => x.Is(CustomRoles.Bait) && !BaitAlive.Contains(x.PlayerId)).ToArray())
+            foreach (var pc in Main.EnumerateAlivePlayerControls().Where(x => x.Is(CustomRoles.Bait) && !BaitAlive.Contains(x.PlayerId)).ToArray())
             {
                 BaitAlive.Add(pc.PlayerId);
             }

@@ -141,7 +141,7 @@ internal class Berserker : RoleBase
         {
             Logger.Info("Bomb exploded", "Boom");
             CustomSoundsManager.RPCPlayCustomSoundAll("Boom");
-            foreach (var player in Main.AllAlivePlayerControls)
+            foreach (var player in Main.EnumerateAlivePlayerControls())
             {
                 if (!player.IsModded())
                     player.KillFlash();

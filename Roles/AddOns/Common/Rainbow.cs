@@ -77,7 +77,7 @@ public class Rainbow : IAddon
     }
     private static void ChangeAllColor()
     {
-        foreach (var player in Main.AllPlayerControls.Where(x => x.Is(CustomRoles.Rainbow) && x.IsAlive() && !x.inMovingPlat && !x.inVent && !x.walkingToVent && !x.onLadder))
+        foreach (var player in Main.EnumerateAlivePlayerControls().Where(x => x.Is(CustomRoles.Rainbow) && !x.inMovingPlat && !x.inVent && !x.walkingToVent && !x.onLadder))
         {
             ChangeColor(player);
         }

@@ -55,7 +55,7 @@ public static class NameColorManager
         // Coven
         if (seer.Is(Custom_Team.Coven) && target.Is(Custom_Team.Coven) && !Main.PlayerStates[seer.PlayerId].IsRandomizer && !Main.PlayerStates[target.PlayerId].IsRandomizer) color = Main.roleColors[CustomRoles.Coven];
         if (seer.Is(CustomRoles.Enchanted) && target.Is(Custom_Team.Coven) && Ritualist.EnchantedKnowsCoven.GetBool() && !Main.PlayerStates[target.PlayerId].IsRandomizer) color = Main.roleColors[CustomRoles.Coven];
-        // if (seer.Is(CustomRoles.Summoned) && target.Is(Custom_Team.Coven) && Summoner.KnowSummonedRoles.GetBool() && !Main.PlayerStates[target.PlayerId].IsRandomizer) color = Main.roleColors[CustomRoles.Coven];
+        if (seer.Is(CustomRoles.Summoned) && target.Is(Custom_Team.Coven) && Summoner.KnowSummonedRoles.GetBool() && !Main.PlayerStates[target.PlayerId].IsRandomizer) color = Main.roleColors[CustomRoles.Coven];
         if (Main.PlayerStates[seer.PlayerId].IsNecromancer && target.Is(Custom_Team.Coven) && !Main.PlayerStates[seer.PlayerId].IsRandomizer && !Main.PlayerStates[target.PlayerId].IsRandomizer) color = Main.roleColors[CustomRoles.Coven];
         if (Main.PlayerStates[target.PlayerId].IsNecromancer && seer.Is(Custom_Team.Coven) && !Main.PlayerStates[seer.PlayerId].IsRandomizer && !Main.PlayerStates[target.PlayerId].IsRandomizer) color = Main.roleColors[CustomRoles.Coven];
         if (seer.Is(Custom_Team.Coven) && target.Is(CustomRoles.Enchanted) && !Main.PlayerStates[seer.PlayerId].IsRandomizer) color = Main.roleColors[CustomRoles.Enchanted];

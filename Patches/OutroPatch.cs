@@ -145,13 +145,13 @@ class EndGamePatch
         //winnerListÒâ¬Òé╗ÒââÒâê
         EndGameResult.CachedWinners = new Il2CppSystem.Collections.Generic.List<CachedPlayerData>();
         var winner = new List<PlayerControl>();
-        foreach (var pc in Main.AllPlayerControls)
+        foreach (var pc in Main.EnumeratePlayerControls())
         {
             if (CustomWinnerHolder.WinnerIds.Contains(pc.PlayerId)) winner.Add(pc);
         }
         foreach (var team in CustomWinnerHolder.WinnerRoles.ToArray())
         {
-            winner.AddRange(Main.AllPlayerControls.Where(p => p.Is(team) && !winner.Contains(p)));
+            winner.AddRange(Main.EnumeratePlayerControls().Where(p => p.Is(team) && !winner.Contains(p)));
         }
 
         Main.winnerNameList.Clear();

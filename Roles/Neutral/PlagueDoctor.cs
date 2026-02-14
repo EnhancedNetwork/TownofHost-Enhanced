@@ -161,7 +161,7 @@ internal class PlagueDoctor : RoleBase
             var changed = false;
             var inVent = player.inVent;
             List<PlayerControl> updates = [];
-            foreach (PlayerControl target in Main.AllAlivePlayerControls)
+            foreach (PlayerControl target in Main.EnumerateAlivePlayerControls())
             {
                 // Plague doctors are excluded if they cannot infect themselves.
                 if (!CanInfect(target)) continue;
@@ -225,7 +225,7 @@ internal class PlagueDoctor : RoleBase
         if (!seer.Is(CustomRoles.PlagueDoctor) && seer.IsAlive()) return string.Empty;
 
         var str = new StringBuilder(40);
-        foreach (PlayerControl player in Main.AllAlivePlayerControls)
+        foreach (PlayerControl player in Main.EnumerateAlivePlayerControls())
         {
             if (!player.Is(CustomRoles.PlagueDoctor))
                 str.Append(GetInfectRateCharactor(player));
@@ -266,20 +266,20 @@ internal class PlagueDoctor : RoleBase
         // Invalid if someone's victory is being processed
         if (CustomWinnerHolder.WinnerTeam != CustomWinner.Default) return;
 
-        if (Main.AllAlivePlayerControls.All(p => p.Is(CustomRoles.PlagueDoctor) || IsInfected(p.PlayerId)))
+        if (Main.EnumerateAlivePlayerControls().All(p => p.Is(CustomRoles.PlagueDoctor) || IsInfected(p.PlayerId)))
         {
             InfectActive = false;
 
             if (!CustomWinnerHolder.CheckForConvertedWinner(_Player.PlayerId))
             {
                 CustomWinnerHolder.ResetAndSetWinner(CustomWinner.PlagueDoctor);
-                foreach (var plagueDoctor in Main.AllPlayerControls.Where(p => p.Is(CustomRoles.PlagueDoctor)).ToArray())
+                foreach (var plagueDoctor in Main.EnumeratePlayerControls().Where(p => p.Is(CustomRoles.PlagueDoctor)).ToArray())
                 {
                     CustomWinnerHolder.WinnerIds.Add(plagueDoctor.PlayerId);
                 }
             }
 
-            foreach (PlayerControl player in Main.AllAlivePlayerControls)
+            foreach (PlayerControl player in Main.EnumerateAlivePlayerControls())
             {
                 if (player.Is(CustomRoles.PlagueDoctor)) continue;
                 player.SetDeathReason(PlayerState.DeathReason.Infected);

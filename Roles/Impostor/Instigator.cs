@@ -46,7 +46,7 @@ internal class Instigator : RoleBase
         var votedForExiled = MeetingHud.Instance.playerStates.Where(a => a.VotedFor == exiled.PlayerId && a.TargetPlayerId != exiled.PlayerId).ToArray();
         foreach (var playerVote in votedForExiled)
         {
-            var crewPlayer = Main.AllPlayerControls.FirstOrDefault(a => a.PlayerId == playerVote.TargetPlayerId);
+            var crewPlayer = Main.EnumeratePlayerControls().FirstOrDefault(a => a.PlayerId == playerVote.TargetPlayerId);
 
             if (crewPlayer == null || crewPlayer.IsPlayerCrewmateTeam() == instigator.Is(CustomRoles.Narc) || !crewPlayer.IsAlive()) continue;
             killPotentials.Add(crewPlayer);

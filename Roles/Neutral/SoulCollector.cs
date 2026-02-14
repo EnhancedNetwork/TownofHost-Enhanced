@@ -179,7 +179,7 @@ internal class Death : RoleBase
 
         var deathList = new List<byte>();
         var death = _Player;
-        foreach (var pc in Main.AllAlivePlayerControls)
+        foreach (var pc in Main.EnumerateAlivePlayerControls())
         {
             if (pc.IsNeutralApocalypse() && !Main.PlayerStates[pc.PlayerId].IsFalseRole) continue;
             if (death.IsAlive())

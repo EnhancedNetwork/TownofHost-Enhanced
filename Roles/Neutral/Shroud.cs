@@ -111,7 +111,7 @@ internal class Shroud : RoleBase
             var shroudPos = shroud.transform.position;
             Dictionary<byte, float> targetDistance = [];
             float dis;
-            foreach (var target in Main.AllAlivePlayerControls)
+            foreach (var target in Main.EnumerateAlivePlayerControls())
             {
                 if (target.PlayerId != shroud.PlayerId && !target.Is(CustomRoles.Shroud) && !target.IsTransformedNeutralApocalypse())
                 {

@@ -44,13 +44,13 @@ internal class Pickpocket : RoleBase
 
     public override int AddRealVotesNum(PlayerVoteArea ps)
     {
-        return (int)(Main.AllPlayerControls.Count(x => x.GetRealKiller()?.PlayerId == ps.TargetPlayerId) * VotesPerKill.GetFloat());
+        return (int)(Main.EnumeratePlayerControls().Count(x => x.GetRealKiller()?.PlayerId == ps.TargetPlayerId) * VotesPerKill.GetFloat());
     }
     public override void AddVisualVotes(PlayerVoteArea votedPlayer, ref List<MeetingHud.VoterState> statesList)
     {
         if (HideAdditionalVotes.GetBool()) return;
 
-        var additionalVotes = (int)(Main.AllPlayerControls.Count(x => x.GetRealKiller()?.PlayerId == votedPlayer.TargetPlayerId) * VotesPerKill.GetFloat());
+        var additionalVotes = (int)(Main.EnumeratePlayerControls().Count(x => x.GetRealKiller()?.PlayerId == votedPlayer.TargetPlayerId) * VotesPerKill.GetFloat());
 
         for (var i = 0; i < additionalVotes; i++)
         {
@@ -68,7 +68,7 @@ internal class Pickpocket : RoleBase
         _ = new LateTask(() =>
         {
             killer.Notify(string.Format(GetString("PickpocketGetVote"),
-                ((Main.AllPlayerControls.Count(x => x.GetRealKiller()?.PlayerId == killer.PlayerId)) * VotesPerKill.GetFloat() + 1f)
+                (Main.EnumeratePlayerControls().Count(x => x.GetRealKiller()?.PlayerId == killer.PlayerId) * VotesPerKill.GetFloat() + 1f)
                 .ToString("0.0#####")));
         }, target.Is(CustomRoles.Burst) ? Burst.BurstKillDelay.GetFloat() : 0f, "BurstKillCheck");
     }

@@ -57,7 +57,7 @@ internal class Butcher : RoleBase
             CustomSoundsManager.RPCPlayCustomSoundAll("Congrats");
             CustomWinnerHolder.ResetAndSetWinner(CustomWinner.None);
 
-            var pcList = Main.AllAlivePlayerControls.Where(x => x.PlayerId != target.PlayerId); //No need to do extra check cause nobody is winning
+            var pcList = Main.EnumerateAlivePlayerControls().Where(x => x.PlayerId != target.PlayerId); // No need to do extra check cause nobody is winning
             pcList.Do(x =>
             {
                 x.SetDeathReason(PlayerState.DeathReason.Revenge);
@@ -77,7 +77,7 @@ internal class Butcher : RoleBase
                 {
                     target.MurderPlayer(target, ExtendedPlayerControl.ResultFlags);
                 }
-                Main.AllAlivePlayerControls.Where(x => x.PlayerId != target.PlayerId && !x.AmOwner)
+                Main.EnumerateAlivePlayerControls().Where(x => x.PlayerId != target.PlayerId && !x.AmOwner)
                 .Do(x => target.RpcSpecificMurderPlayer(target, x));
             }
         }, 0.2f, "Butcher Show Bodies"); //25 exactly takes over the whole screen

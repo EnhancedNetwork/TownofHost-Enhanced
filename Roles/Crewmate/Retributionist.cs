@@ -85,7 +85,7 @@ internal class Retributionist : RoleBase
             player.ShowInfoMessage(isUI, GetString("RetributionistKillDisable"));
             return;
         }
-        int playerCount = Main.AllAlivePlayerControls.Length;
+        int playerCount = Main.AllAlivePlayerControls.Count;
 
         if (playerCount <= MinimumPlayersAliveToRetri.GetInt() && !player.IsAlive())
         {
@@ -111,7 +111,7 @@ internal class Retributionist : RoleBase
         {
             bool canSeeRoles = PreventSeeRolesBeforeSkillUsedUp.GetBool();
             string txt = GetString("PlayerIdList");
-            foreach (var npc in Main.AllAlivePlayerControls)
+            foreach (var npc in Main.EnumerateAlivePlayerControls())
                 txt += $"\n{npc.PlayerId} → " + (canSeeRoles ? $"({npc.GetDisplayRoleAndSubName(npc, false, false)}) " : string.Empty) + npc.GetRealName();
             SendMessage(txt, player.PlayerId);
             return;

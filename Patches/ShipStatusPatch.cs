@@ -261,7 +261,7 @@ class ShipStatusBeginPatch
                 max = min;
             }
 
-            var playerIds = Main.AllPlayerControls
+            var playerIds = Main.EnumeratePlayerControls()
                 .Select(pc => pc.PlayerId)
                 .ToList();
 
@@ -379,7 +379,7 @@ class ShipStatusSerializePatch
 
             if (GameStates.IsInGame)
             {
-                foreach (var pc in Main.AllAlivePlayerControls)
+                foreach (var pc in Main.EnumerateAlivePlayerControls())
                 {
                     if (pc.BlockVentInteraction())
                     {

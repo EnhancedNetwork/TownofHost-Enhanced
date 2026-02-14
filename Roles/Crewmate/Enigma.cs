@@ -318,7 +318,7 @@ internal class Enigma : RoleBase
 
         private string GetRandomLetter(PlayerControl killer, string letter)
         {
-            var alivePlayers = Main.AllAlivePlayerControls.Where(a => a.PlayerId != killer.PlayerId).ToList();
+            var alivePlayers = Main.EnumerateAlivePlayerControls().Where(a => a.PlayerId != killer.PlayerId).ToList();
             var rndPlayer = alivePlayers.RandomElement();
             string rndPlayerName = rndPlayer.GetRealName().Replace(letter, "");
             string letter2 = rndPlayerName[rd.Next(0, rndPlayerName.Length)].ToString().ToLower();

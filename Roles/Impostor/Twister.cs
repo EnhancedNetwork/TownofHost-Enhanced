@@ -52,14 +52,14 @@ internal class Twister : RoleBase
         changePositionPlayers.Add(shapeshifter.PlayerId);
 
         var rd = IRandom.Instance;
-        foreach (var pc in Main.AllAlivePlayerControls)
+        foreach (var pc in Main.EnumerateAlivePlayerControls())
         {
             if (changePositionPlayers.Contains(pc.PlayerId) || !pc.CanBeTeleported())
             {
                 continue;
             }
 
-            var filtered = Main.AllAlivePlayerControls.Where(a =>
+            var filtered = Main.EnumerateAlivePlayerControls().Where(a =>
                 a.CanBeTeleported() && a.PlayerId != pc.PlayerId && !changePositionPlayers.Contains(a.PlayerId)).ToList();
 
             if (filtered.Count == 0) return false;

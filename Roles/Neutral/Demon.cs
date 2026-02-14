@@ -55,7 +55,7 @@ internal class Demon : RoleBase
     {
         DemonHealth.Add(playerId, SelfHealthMax.GetInt());
 
-        foreach (var pc in Main.AllAlivePlayerControls)
+        foreach (var pc in Main.EnumerateAlivePlayerControls())
             PlayerHealth[pc.PlayerId] = HealthMax.GetInt();
     }
     public override void Remove(byte playerId)

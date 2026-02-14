@@ -141,7 +141,7 @@ internal class Seeker : RoleBase
 
         var playerId = _Player.PlayerId;
 
-        var cTargets = new List<PlayerControl>(Main.AllAlivePlayerControls.Where(pc => !pc.Is(CustomRoles.Seeker) && !pc.Is(CustomRoles.Solsticer)));
+        var cTargets = new List<PlayerControl>(Main.EnumerateAlivePlayerControls().Where(pc => !pc.Is(CustomRoles.Seeker) && !pc.Is(CustomRoles.Solsticer)));
 
         if (cTargets.Count >= 2)
             cTargets.RemoveAll(x => x.PlayerId == Target);

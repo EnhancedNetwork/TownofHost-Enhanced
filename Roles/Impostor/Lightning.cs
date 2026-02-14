@@ -124,7 +124,7 @@ internal class Lightning : RoleBase
                 deList.Add(gs.PlayerId);
                 continue;
             }
-            var allAlivePlayerControls = Main.AllAlivePlayerControls.Where(x => x.PlayerId != gs.PlayerId && x.IsAlive() && !x.Is(CustomRoles.Lightning) && !IsGhost(x) && !Pelican.IsEaten(x.PlayerId)).ToArray();
+            var allAlivePlayerControls = Main.EnumerateAlivePlayerControls().Where(x => x.PlayerId != gs.PlayerId && x.IsAlive() && !x.Is(CustomRoles.Lightning) && !IsGhost(x) && !Pelican.IsEaten(x.PlayerId)).ToArray();
             foreach (var pc in allAlivePlayerControls)
             {
                 var pos = gs.transform.position;

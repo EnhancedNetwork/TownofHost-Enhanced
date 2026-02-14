@@ -94,8 +94,8 @@ public abstract class CovenManager : RoleBase // NO, THIS IS NOT A ROLE
     public static void GiveNecronomicon()
     {
         // Exclude Summoned players and Randomizer from the eligible list
-        var pcList = Main.AllAlivePlayerControls
-            .Where(pc => pc.IsPlayerCoven() && pc.IsAlive() && !pc.Is(CustomRoles.Summoned) && !Main.PlayerStates[pc.PlayerId].IsRandomizer)
+        var pcList = Main.EnumerateAlivePlayerControls()
+            .Where(pc => pc.IsPlayerCoven() && !pc.Is(CustomRoles.Summoned) && !Main.PlayerStates[pc.PlayerId].IsRandomizer)
             .ToList();
 
         if (pcList.Any())

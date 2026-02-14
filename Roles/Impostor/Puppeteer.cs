@@ -108,7 +108,7 @@ internal class Puppeteer : RoleBase
             Dictionary<byte, float> targetDistance = [];
             float dis;
 
-            foreach (var target in Main.AllAlivePlayerControls)
+            foreach (var target in Main.EnumerateAlivePlayerControls())
             {
                 if (target.PlayerId != puppet.PlayerId && !(target.Is(Custom_Team.Impostor) || target.IsTransformedNeutralApocalypse()))
                 {

@@ -97,8 +97,8 @@ internal class Kamikaze : RoleBase
         }
         else
         {
-            var deathList = new List<byte>();;
-            foreach (var pc in Main.AllAlivePlayerControls)
+            var deathList = new List<byte>();
+            foreach (var pc in Main.EnumerateAlivePlayerControls())
             {
                 if (kList.Contains(pc.PlayerId))
                 {

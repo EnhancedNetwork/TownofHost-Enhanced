@@ -180,7 +180,7 @@ static class ExtendedPlayerControl
         // sender => player clientid
         if (newCustomRole.IsDesyncRole())
         {
-            foreach (var target in Main.AllPlayerControls)
+            foreach (var target in Main.EnumeratePlayerControls())
             {
                 if (target.PlayerId == player.PlayerId)
                 {
@@ -214,7 +214,7 @@ static class ExtendedPlayerControl
         }
         else
         {
-            foreach (var target in Main.AllPlayerControls)
+            foreach (var target in Main.EnumeratePlayerControls())
             {
                 if (target.PlayerId == player.PlayerId)
                 {
@@ -260,7 +260,7 @@ static class ExtendedPlayerControl
         var customRole = player.GetCustomRole();
         player.RpcSetRole(roleType, canOverrideRole: true);
 
-        foreach (var seer in Main.AllPlayerControls)
+        foreach (var seer in Main.EnumeratePlayerControls())
         {
             RpcSetRoleReplacer.RoleMap[(seer.PlayerId, player.PlayerId)] = (roleType, customRole);
         }
@@ -324,7 +324,7 @@ static class ExtendedPlayerControl
     {
         if (!GameStates.IsMeeting)
         {
-            Logger.Info($"Cancelled RpcCastVote for {player?.Data.PlayerName} because there is no meeting", "ExtendedPlayerControls..RPCCastVote");
+            Logger.Info($"Cancelled RpcCastVote for {player?.Data.PlayerName} because there is no meeting", "ExtendedPlayerControls.RPCCastVote");
             return;
         }
         if (player == null) return;
@@ -366,7 +366,7 @@ static class ExtendedPlayerControl
     public static void RpcSetNameEx(this PlayerControl player, string name)
     {
         name = name.Replace("color=", string.Empty);
-        foreach (var seer in Main.AllPlayerControls)
+        foreach (var seer in Main.EnumeratePlayerControls())
         {
             Main.LastNotifyNames[(player.PlayerId, seer.PlayerId)] = name;
         }
@@ -630,7 +630,7 @@ static class ExtendedPlayerControl
     public static void RpcSpecificRejectShapeshift(this PlayerControl player, PlayerControl target, bool shouldAnimate)
     {
         if (!AmongUsClient.Instance.AmHost) return;
-        foreach (var seer in Main.AllPlayerControls)
+        foreach (var seer in Main.EnumeratePlayerControls())
         {
             if (seer != player)
             {
@@ -844,7 +844,7 @@ static class ExtendedPlayerControl
 
     public static void RpcTeleportAllPlayers(Vector2 location)
     {
-        foreach (var pc in Main.AllAlivePlayerControls)
+        foreach (var pc in Main.EnumerateAlivePlayerControls())
         {
             pc.RpcTeleport(location);
         }
@@ -1453,9 +1453,9 @@ static class ExtendedPlayerControl
         else if (Madmate.ImpKnowWhosMadmate.GetBool() && target.Is(CustomRoles.Madmate) && seer.CheckImpCanSeeAllies(CheckAsSeer: true)) return LogKnowRole(true);
         else if (seer.CheckImpCanSeeAllies(CheckAsSeer: true) && target.GetCustomRole().IsGhostRole() && target.GetCustomRole().IsImpostor() && !Main.PlayerStates[target.PlayerId].IsNecromancer) return LogKnowRole(true);
         else if (seer.IsNeutralApocalypse() && target.IsNeutralApocalypse() && !Main.PlayerStates[seer.PlayerId].IsFalseRole && !Main.PlayerStates[target.PlayerId].IsFalseRole) return LogKnowRole(true);
-        // else if (Ritualist.EnchantedKnowsCoven.GetBool() && seer.Is(CustomRoles.Enchanted) && ( target.Is(Custom_Team.Coven) || (Summoner.KnowSummonedRoles.GetBool() && target.Is(CustomRoles.Summoned))) && !Main.PlayerStates[target.PlayerId].IsRandomizer) return LogKnowRole(true);
-        // else if (target.Is(CustomRoles.Enchanted) && (seer.Is(Custom_Team.Coven) || (Summoner.KnowSummonedRoles.GetBool() && seer.Is(CustomRoles.Summoned))) && !Main.PlayerStates[seer.PlayerId].IsRandomizer) return LogKnowRole(true);
-        // else if ((target.Is(Custom_Team.Coven) || (Summoner.KnowSummonedRoles.GetBool() && target.Is(CustomRoles.Summoned))) && (seer.Is(Custom_Team.Coven) || (Summoner.KnowSummonedRoles.GetBool() && seer.Is(CustomRoles.Summoned))) && !Main.PlayerStates[seer.PlayerId].IsRandomizer && !Main.PlayerStates[target.PlayerId].IsRandomizer) return LogKnowRole(true);
+        else if (Ritualist.EnchantedKnowsCoven.GetBool() && seer.Is(CustomRoles.Enchanted) && ( target.Is(Custom_Team.Coven) || (Summoner.KnowSummonedRoles.GetBool() && target.Is(CustomRoles.Summoned))) && !Main.PlayerStates[target.PlayerId].IsRandomizer) return LogKnowRole(true);
+        else if (target.Is(CustomRoles.Enchanted) && (seer.Is(Custom_Team.Coven) || (Summoner.KnowSummonedRoles.GetBool() && seer.Is(CustomRoles.Summoned))) && !Main.PlayerStates[seer.PlayerId].IsRandomizer) return LogKnowRole(true);
+        else if ((target.Is(Custom_Team.Coven) || (Summoner.KnowSummonedRoles.GetBool() && target.Is(CustomRoles.Summoned))) && (seer.Is(Custom_Team.Coven) || (Summoner.KnowSummonedRoles.GetBool() && seer.Is(CustomRoles.Summoned))) && !Main.PlayerStates[seer.PlayerId].IsRandomizer && !Main.PlayerStates[target.PlayerId].IsRandomizer) return LogKnowRole(true);
         else if (target.GetRoleClass().KnowRoleTarget(seer, target)) return LogKnowRole(true);
         else if (seer.GetRoleClass().KnowRoleTarget(seer, target)) return LogKnowRole(true);
         else if (PotionMaster.CovenKnowRoleTarget(seer, target)) return LogKnowRole(true);
@@ -1723,7 +1723,7 @@ static class ExtendedPlayerControl
     {
         if (pc == null || !AmongUsClient.Instance.AmHost || pc.IsModded()) return;
 
-        if (GameStates.IsMeeting || ExileController.Instance || AntiBlackout.SkipTasks || pc.inVent || pc.inMovingPlat || pc.onLadder || !Main.AllPlayerControls.FindFirst(x => !x.IsAlive(), out var dummyGhost))
+        if (GameStates.IsMeeting || ExileController.Instance || AntiBlackout.SkipTasks || pc.inVent || pc.inMovingPlat || pc.onLadder || !Main.EnumeratePlayerControls().FindFirst(x => !x.IsAlive(), out var dummyGhost))
         {
             if (BlackScreenWaitingPlayers.Add(pc.PlayerId))
                 Main.Instance.StartCoroutine(Wait());
@@ -1734,7 +1734,7 @@ static class ExtendedPlayerControl
             {
                 Logger.Warn($"FixBlackScreen was called for {pc.GetNameWithRole()}, but the conditions are not met to execute this code right now, waiting until it becomes possible to do so", "FixBlackScreen");
 
-                while (GameStates.InGame && !GameStates.IsEnded && !CancelBlackScreenFix.Contains(pc.PlayerId) && (GameStates.IsMeeting || ExileController.Instance || AntiBlackout.SkipTasks || Main.AllPlayerControls.All(x => x.IsAlive())))
+                while (GameStates.InGame && !GameStates.IsEnded && !CancelBlackScreenFix.Contains(pc.PlayerId) && (GameStates.IsMeeting || ExileController.Instance || AntiBlackout.SkipTasks || Main.EnumeratePlayerControls().All(x => x.IsAlive())))
                     yield return null;
 
                 if (CancelBlackScreenFix.Remove(pc.PlayerId))

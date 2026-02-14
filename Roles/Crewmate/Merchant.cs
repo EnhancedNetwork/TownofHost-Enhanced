@@ -117,7 +117,7 @@ internal class Merchant : RoleBase
         // CustomRoles addon = addons.RandomElement();
 
         var AllAlivePlayer =
-            Main.AllAlivePlayerControls
+            Main.EnumerateAlivePlayerControls()
                 .Where(x => x.PlayerId != player.PlayerId)
                 .ToList()
                 .GetAssignableAddons(addons, OptionCanTargetCrew.GetBool(), OptionCanTargetImpostor.GetBool(), OptionCanTargetNeutral.GetBool(), OptionCanTargetCoven.GetBool())

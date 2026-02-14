@@ -98,7 +98,7 @@ internal class Warlock : RoleBase
                 Dictionary<PlayerControl, float> cpdistance = [];
                 float dis;
 
-                foreach (PlayerControl p in Main.AllAlivePlayerControls)
+                foreach (PlayerControl p in Main.EnumerateAlivePlayerControls())
                 {
                     if (p.PlayerId == cp.PlayerId) continue;
                     if (!WarlockCanKillSelf.GetBool() && p.PlayerId == shapeshifter.PlayerId) continue;

@@ -151,7 +151,7 @@ public static class Camouflage
 
         if (oldIsCamouflage != IsCamouflage)
         {
-            foreach (var pc in Main.AllPlayerControls)
+            foreach (var pc in Main.EnumeratePlayerControls())
             {
                 RpcSetSkin(pc);
 

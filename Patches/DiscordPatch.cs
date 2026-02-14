@@ -20,7 +20,8 @@ namespace TOHE.Patches
 
             activity.Assets = new ActivityAssets
             {
-                LargeImage = "https://tohe.weareten.ca/logo.png"
+                LargeImage = "https://tohe.weareten.ca/logo.png",
+                SmallImage = "https://tohe.weareten.ca/logo.png"
             };
 
             try

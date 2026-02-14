@@ -80,7 +80,7 @@ internal class Spiritualist : RoleBase
         LastGhostArrowShowTime[player.PlayerId] = 0;
         ShowGhostArrowUntil[player.PlayerId] = 0;
 
-        PlayerControl target = Main.AllPlayerControls.FirstOrDefault(a => a.PlayerId == SpiritualistTarget);
+        PlayerControl target = Main.EnumeratePlayerControls().FirstOrDefault(a => a.PlayerId == SpiritualistTarget);
 
         if (target == null) return;
 
@@ -120,7 +120,7 @@ internal class Spiritualist : RoleBase
         if (SpiritualistTarget != player) return;
 
         if (AmongUsClient.Instance.AmHost)
-            foreach (var spiritualist in Main.AllPlayerControls.Where(x => x.Is(CustomRoles.Spiritualist)).Select(x => x.PlayerId).ToList())
+            foreach (var spiritualist in Main.EnumeratePlayerControls().Where(x => x.Is(CustomRoles.Spiritualist)).Select(x => x.PlayerId).ToList())
             {
                 TargetArrow.Remove(spiritualist, SpiritualistTarget);
             }

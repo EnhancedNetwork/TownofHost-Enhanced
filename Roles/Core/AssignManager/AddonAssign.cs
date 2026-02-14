@@ -134,7 +134,7 @@ public static class AddonAssign
     {
         try
         {
-            var checkAllPlayers = Main.AllAlivePlayerControls.Where(x => CustomRolesHelper.CheckAddonConfilct(role, x));
+            var checkAllPlayers = Main.EnumerateAlivePlayerControls().Where(x => CustomRolesHelper.CheckAddonConfilct(role, x));
             var allPlayers = checkAllPlayers.ToList();
             if (!allPlayers.Any()) return;
             var count = Math.Clamp(RawCount, 0, allPlayers.Count);

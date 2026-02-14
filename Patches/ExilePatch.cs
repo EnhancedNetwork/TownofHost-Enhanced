@@ -84,7 +84,7 @@ class ExileControllerWrapUpPatch
                 MapNames.Fungle => new RandomSpawn.FungleSpawnMap(),
                 _ => null,
             };
-            if (spawnMap != null) Main.AllPlayerControls.Do(spawnMap.RandomTeleport);
+            if (spawnMap != null) Main.EnumeratePlayerControls().Do(spawnMap.RandomTeleport);
         }
     }
     private static void WrapUpPostfix(NetworkedPlayerInfo exiled)
@@ -130,7 +130,7 @@ class ExileControllerWrapUpPatch
         }
 
 
-        foreach (var player in Main.AllPlayerControls)
+        foreach (var player in Main.EnumeratePlayerControls())
         {
             player.GetRoleClass()?.OnPlayerExiled(player, exiled);
 
@@ -211,7 +211,7 @@ class ExileControllerWrapUpPatch
 
                 _ = new LateTask(() =>
                 {
-                    foreach (var player in Main.AllAlivePlayerControls)
+                    foreach (var player in Main.EnumerateAlivePlayerControls())
                     {
                         if (player.GetRoleClass() is not DefaultSetup)
                         {

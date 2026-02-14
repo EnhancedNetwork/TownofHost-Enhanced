@@ -133,10 +133,9 @@ internal class Hater : RoleBase
 
     public static bool HasWon()
     {
-        var hatedAlive = Main.AllAlivePlayerControls.Any(x => IsHated(x));
+        var hatedAlive = Main.EnumerateAlivePlayerControls().Any(IsHated);
 
-
-        return true;
+        return !hatedAlive;
     }
 
     public static bool IsHated(PlayerControl player) 

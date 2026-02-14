@@ -96,7 +96,7 @@ internal class Psychic : RoleBase
     {
         if (_Player == null || !_Player.IsAlive() || !AmongUsClient.Instance.AmHost) return;
 
-        List<PlayerControl> BadListPc = [.. Main.AllAlivePlayerControls.Where(x => Illusionist.IsNonCovIllusioned(x.PlayerId) ||
+        List<PlayerControl> BadListPc = [.. Main.EnumerateAlivePlayerControls().Where(x => Illusionist.IsNonCovIllusioned(x.PlayerId) ||
         (x.Is(Custom_Team.Impostor) && !x.Is(CustomRoles.Trickster) && !x.Is(CustomRoles.Admired) && !x.Is(CustomRoles.Narc)) ||
         x.IsAnySubRole(x => x.IsConverted()) ||
         (x.GetCustomRole().IsCrewKiller() && CkshowEvil.GetBool()) ||
@@ -110,7 +110,7 @@ internal class Psychic : RoleBase
 
         var randomBadPlayer = BadListPc.RandomElement();
         List<byte> AllList = [];
-        Main.AllAlivePlayerControls.Where(x => randomBadPlayer.PlayerId != x.PlayerId && x.PlayerId != _Player.PlayerId).Do(x => AllList.Add(x.PlayerId));
+        Main.EnumerateAlivePlayerControls().Where(x => randomBadPlayer.PlayerId != x.PlayerId && x.PlayerId != _Player.PlayerId).Do(x => AllList.Add(x.PlayerId));
 
         int CountRed = CanSeeNum.GetInt() - 1;
         RedPlayer.Add(randomBadPlayer.PlayerId);

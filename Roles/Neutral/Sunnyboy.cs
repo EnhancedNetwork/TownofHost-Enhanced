@@ -37,5 +37,5 @@ internal class Sunnyboy : RoleBase
     public override bool HasTasks(NetworkedPlayerInfo player, CustomRoles role, bool ForRecompute) => false;
 
     public static bool CheckGameEnd()
-        => CustomRoles.Sunnyboy.RoleExist() && Main.AllAlivePlayerControls.Length > 1;
+        => CustomRoles.Sunnyboy.RoleExist() && Main.AllAlivePlayerControls.Count > 1;
 }

@@ -134,7 +134,7 @@ internal class Necromancer : CovenManager
             nm.Notify(GetString("NecromancerRevengeInProgress"));
             return;
         }
-        var deadPlayers = Main.AllPlayerControls.Where(x => !x.IsAlive());
+        var deadPlayers = Main.EnumeratePlayerControls().Where(x => !x.IsAlive());
         List<CustomRoles> deadRoles = [];
         foreach (var deadPlayer in deadPlayers)
         {
@@ -262,7 +262,7 @@ internal class Necromancer : CovenManager
     public static void UnAfterMeetingTasks()
     {
         AbilityTimer = 0;
-        foreach (var nm in Main.AllPlayerControls.Where(x => Main.PlayerStates[x.PlayerId].IsNecromancer))
+        foreach (var nm in Main.EnumeratePlayerControls().Where(x => Main.PlayerStates[x.PlayerId].IsNecromancer))
         {
             if (nm.GetCustomRole() != CustomRoles.Necromancer)
             {
