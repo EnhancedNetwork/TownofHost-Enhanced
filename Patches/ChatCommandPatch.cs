@@ -423,7 +423,6 @@ internal class ChatCommands
 
                 Utils.SendMessage(text.Insert(0, new('\n', name.Count(x => x == '\n'))), title: name, addToHistory: false, noSplit: true);
 
-                // canceled = true;
                 __instance.freeChatField.textArea.Clear();
                 __instance.freeChatField.textArea.SetText(string.Empty);
             }
@@ -510,9 +509,8 @@ internal class ChatCommands
                     break;
                 }
 
-                // if (command.AlwaysHidden) ChatManager.SendPreviousMessagesToAll();
                 command.Action(player, key, text, args);
-                if (command.IsCanceled) canceled = command.AlwaysHidden /*|| !Options.HostSeesCommandsEnteredByOthers.GetBool()*/;
+                if (command.IsCanceled) canceled = command.AlwaysHidden;
                 break;
             }
         }
@@ -520,7 +518,6 @@ internal class ChatCommands
         if (ExileController.Instance)
         {
             canceled = true;
-            // HasMessageDuringEjectionScreen = true;
         }
 
         if (!canceled) ChatManager.SendMessage(player, text);
