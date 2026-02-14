@@ -69,7 +69,7 @@ internal class ChiefOfPolice : RoleBase
 
         if (target.IsPlayerCrewmateTeam())
         {
-            if (PreventRecruitNonKiller.GetBool() && !target.CanUseKillButton())
+            if (PreventRecruitNonKiller.GetBool() && !target.CanUseKillButton() || target.Is(CustomRoles.Loyal))
             {
                 suidice = true;
             }
