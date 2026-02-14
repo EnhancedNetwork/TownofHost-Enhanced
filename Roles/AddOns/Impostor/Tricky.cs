@@ -38,11 +38,11 @@ public class Tricky : IAddon
     }
     public static void AfterPlayerDeathTasks(PlayerControl target)
     {
-        if (target == null) return;
+        if (!target) return;
         _ = new LateTask(() =>
         {
             var killer = target.GetRealKiller();
-            if (killer == null || !killer.Is(CustomRoles.Tricky)) return;
+            if (!killer || !killer.Is(CustomRoles.Tricky)) return;
 
             var randomDeathReason = ChangeRandomDeath();
             Main.PlayerStates[target.PlayerId].deathReason = randomDeathReason;

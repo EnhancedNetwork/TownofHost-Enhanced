@@ -53,7 +53,7 @@ public class Glow : IAddon
     }
     public static void ApplyGameOptions(IGameOptions opt, PlayerControl player)
     {
-        if (!InRadius.Any() || player == null) return;
+        if (!InRadius.Any() || !player) return;
         if (!Utils.IsActive(SystemTypes.Electrical)) return;
 
         if (!player.Is(CustomRoles.Glow))
@@ -77,7 +77,7 @@ public class Glow : IAddon
 
     public void OnFixedUpdateLowLoad(PlayerControl player)
     {
-        if (!IsEnable || player == null || !player.Is(CustomRoles.Glow)) return;
+        if (!IsEnable || !player || !player.Is(CustomRoles.Glow)) return;
         if (!Utils.IsActive(SystemTypes.Electrical))
         {
             InRadius[player.PlayerId].Clear();
@@ -86,7 +86,7 @@ public class Glow : IAddon
         }
         var prevList = InRadius.GetValueOrDefault(player.PlayerId);
         InRadius[player.PlayerId] = [.. Main.EnumerateAlivePlayerControls()
-            .Where(target => target != null
+            .Where(target => target
                 && !target.Is(CustomRoles.Glow)
                 && Utils.GetDistance(player.GetCustomPosition(), target.GetCustomPosition()) <= GlowRadius.GetFloat())
             .Select(target => target.PlayerId)];

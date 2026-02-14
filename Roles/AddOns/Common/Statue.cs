@@ -70,7 +70,7 @@ public class Statue : IAddon
     public void OnFixedUpdate(PlayerControl victim)
     {
         if (!victim.Is(CustomRoles.Statue)) return;
-        if (!victim.IsAlive() && victim != null)
+        if (!victim.IsAlive() && victim)
         {
             var currentSpeed = Main.AllPlayerSpeed[victim.PlayerId];
             var normalSpeed = Main.RealOptionsData.GetFloat(FloatOptionNames.PlayerSpeedMod);

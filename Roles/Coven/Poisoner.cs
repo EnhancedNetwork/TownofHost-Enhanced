@@ -87,7 +87,7 @@ internal class Poisoner : CovenManager
     }
     private static void SetPoisoned(PlayerControl killer, PlayerControl target)
     {
-        if (killer == null || target == null) return;
+        if (!killer || !target) return;
         RoleblockedPlayers[killer.PlayerId].Add(target.PlayerId);
         killer.ResetKillCooldown();
         killer.SetKillCooldown();
@@ -117,7 +117,7 @@ internal class Poisoner : CovenManager
     }
     private static void KillPoisoned(PlayerControl poisoner, PlayerControl target, bool isButton = false)
     {
-        if (poisoner == null || target == null || target.Data.Disconnected) return;
+        if (!poisoner || !target || target.Data.Disconnected) return;
         if (target.IsAlive() && !target.IsTransformedNeutralApocalypse())
         {
             target.SetDeathReason(PlayerState.DeathReason.Poison);
@@ -163,7 +163,7 @@ internal class Poisoner : CovenManager
     }
     public override bool CheckMurderOnOthersTarget(PlayerControl pc, PlayerControl _)  // Target of Pursuer attempt to murder someone
     {
-        if (pc == null) return false;
+        if (!pc) return false;
         if (IsRoleblocked(pc.PlayerId))
         {
             if (pc.GetCustomRole() is

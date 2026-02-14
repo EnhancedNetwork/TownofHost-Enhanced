@@ -55,7 +55,7 @@ internal class Hawk : RoleBase
     }
     public override void OnReportDeadBody(PlayerControl reporter, NetworkedPlayerInfo target)
     {
-        if (_Player == null) return;
+        if (!_Player) return;
         int ThisCount = 0;
         foreach (var pc in Main.EnumeratePlayerControls())
         {
@@ -107,7 +107,7 @@ internal class Hawk : RoleBase
     {
         var rnd = IRandom.Instance;
 
-        return target != null && Main.AllAlivePlayerControls.Count >= MinimumPlayersAliveToKill.GetInt()
+        return target && Main.AllAlivePlayerControls.Count >= MinimumPlayersAliveToKill.GetInt()
             && _Player.GetAbilityUseLimit() > 0
             && rnd.Next(100) >= KillerChanceMiss[target.PlayerId]
             && !target.IsNeutralApocalypse()

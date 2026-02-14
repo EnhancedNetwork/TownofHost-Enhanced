@@ -92,7 +92,7 @@ internal class Medusa : CovenManager
     */
     public override bool OnCheckMurderAsKiller(PlayerControl killer, PlayerControl target)
     {
-        if (killer == null || target == null) return false;
+        if (!killer || !target) return false;
         if (killer.CheckDoubleTrigger(target, () => { SetStoned(killer, target); }))
         {
             if (HasNecronomicon(killer) && (!target.GetCustomRole().IsCovenTeam() || (Main.PlayerStates[killer.PlayerId].IsRandomizer || Main.PlayerStates[target.PlayerId].IsRandomizer)))
@@ -109,7 +109,7 @@ internal class Medusa : CovenManager
     }
     private void SetStoned(PlayerControl killer, PlayerControl target)
     {
-        if (killer == null || target == null) return;
+        if (!killer || !target) return;
         StonedPlayers[killer.PlayerId].Add(target.PlayerId);
         SendRPC(killer, target);
         killer.ResetKillCooldown();
@@ -152,7 +152,7 @@ internal class Medusa : CovenManager
     public override string GetMark(PlayerControl seer, PlayerControl seen = null, bool isForMeeting = false) => IsStoned(seer.PlayerId, seen.PlayerId) ? ColorString(GetRoleColor(CustomRoles.Medusa), "♻") : string.Empty;
     public override string GetMarkOthers(PlayerControl seer, PlayerControl target, bool isForMeeting = false)
     {
-        if (_Player == null) return string.Empty;
+        if (!_Player) return string.Empty;
         if (IsStoned(seer.PlayerId, target.PlayerId) && ((seer.GetCustomRole().IsCovenTeam() && seer.PlayerId != _Player.PlayerId) || !seer.IsAlive() && seer.PlayerId != _Player.PlayerId))
         {
             return ColorString(GetRoleColor(CustomRoles.Medusa), "♻");

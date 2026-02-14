@@ -143,7 +143,7 @@ internal class Ghastly : RoleBase
 
         return false;
     }
-    private bool CheckConflicts(PlayerControl target) => target != null && (!GhastlyKillAllies.GetBool() || target.GetCountTypes() != _Player.GetCountTypes());
+    private bool CheckConflicts(PlayerControl target) => target && (!GhastlyKillAllies.GetBool() || target.GetCountTypes() != _Player.GetCountTypes());
 
     public override void OnFixedUpdate(PlayerControl player, bool lowLoad, long nowTime, int timerLowLoad)
     {

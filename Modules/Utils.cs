@@ -1366,12 +1366,12 @@ public static class Utils
         { "black",  (  0,   0,   0) }
     };
 
-    public static void SendMultipleMessages(this IEnumerable<Message> messages, SendOption sendOption = SendOption.Reliable)
+    public static void SendMultipleMessages(this IEnumerable<Message> messages, MessageImportance importance = MessageImportance.Medium)
     {
-        messages.Do(x => SendMessage(x.Text, x.SendTo, x.Title, sendOption: sendOption));
+        messages.Do(x => SendMessage(x.Text, x.SendTo, x.Title, importance: importance));
     }
 
-    public static CustomRpcSender SendMessage(string text, byte sendTo = byte.MaxValue, string title = "", bool noSplit = false, CustomRpcSender writer = null, bool final = false, bool multiple = false, SendOption sendOption = SendOption.Reliable, bool addToHistory = true, bool force = false, bool noNumberSplit = false, bool numberSplitFinal = false, [CallerFilePath] string callerFilePath = "", [CallerLineNumber] int callerLineNumber = 0)
+    public static CustomRpcSender SendMessage(string text, byte sendTo = byte.MaxValue, string title = "", bool noSplit = false, CustomRpcSender writer = null, bool final = false, bool multiple = false, MessageImportance importance = MessageImportance.Medium, bool addToHistory = true, bool force = false, bool noNumberSplit = false, bool numberSplitFinal = false, [CallerFilePath] string callerFilePath = "", [CallerLineNumber] int callerLineNumber = 0)
     {
         try
         {
@@ -1388,7 +1388,34 @@ public static class Utils
                 return writer;
             }
 
-            if (title == string.Empty) title = GetString("DefaultSystemMessageTitle");
+            // if (title == string.Empty) title = GetString("DefaultSystemMessageTitle");
+
+            // if (title.Count(x => x == '\u2605') == 2 && !title.Contains('\n'))
+            // {
+            //     if (title.Contains('<') && title.Contains('>') && title.Contains('#'))
+            //         title = $"{title[..(title.IndexOf('>') + 1)]}\u27a1{title.Replace("\u2605", "")[..(title.LastIndexOf('<') - 2)]}\u2b05";
+            //     else
+            //         title = "\u27a1" + title.Replace("\u2605", "") + "\u2b05";
+            // }
+
+            text = text.Replace("color=#", "#");
+            title = title.Replace("color=", string.Empty);
+
+            SendOption sendOption = SendOption.Reliable;
+
+            if (GameStates.IsVanillaServer)
+            {
+                if (importance != MessageImportance.High && GameStates.InGame && !title.Contains("#ffff00") && !title.Contains('⚠') && !text.Contains('⚠') && title != GetString("NoSpamAnymoreUseCmd"))
+                    sendOption = SendOption.None;
+
+                text = ReplaceHexColorsWithSafeColors(text);
+                text = ReplaceDigitsOutsideRichText(text);
+            }
+
+            if (importance == MessageImportance.Low)
+                sendOption = SendOption.None;
+            
+            if (title == "") title = GetString("DefaultSystemMessageTitle");
 
             if (title.Count(x => x == '\u2605') == 2 && !title.Contains('\n'))
             {
@@ -1396,15 +1423,6 @@ public static class Utils
                     title = $"{title[..(title.IndexOf('>') + 1)]}\u27a1{title.Replace("\u2605", "")[..(title.LastIndexOf('<') - 2)]}\u2b05";
                 else
                     title = "\u27a1" + title.Replace("\u2605", "") + "\u2b05";
-            }
-
-            text = text.Replace("color=#", "#");
-            title = title.Replace("color=", string.Empty);
-
-            if (GameStates.IsVanillaServer)
-            {
-                text = ReplaceHexColorsWithSafeColors(text);
-                text = ReplaceDigitsOutsideRichText(text);
             }
 
             PlayerControl sender = !addToHistory || GameStates.IsVanillaServer ? PlayerControl.LocalPlayer : Main.EnumerateAlivePlayerControls().MinBy(x => x.PlayerId) ?? Main.EnumerateAlivePlayerControls().MinBy(x => x.PlayerId) ?? PlayerControl.LocalPlayer;
@@ -1417,7 +1435,7 @@ public static class Utils
                 return writer;
             }
 
-            Logger.Info($"sender owner: {sender.AmOwner}; sender dead: {sender.Data.IsDead}; sender alive: {sender.IsAlive()}", "SendMessage CheckTempReviveHost");
+            // Logger.Info($"sender owner: {sender.AmOwner}; sender dead: {sender.Data.IsDead}; sender alive: {sender.IsAlive()}", "SendMessage CheckTempReviveHost");
             if (sender.AmOwner && sender.Data.IsDead)
             {
                 bool delayMessage = false;
@@ -1442,7 +1460,7 @@ public static class Utils
                     IEnumerator DelaySend()
                     {
                         yield return new WaitForSecondsRealtime(0.3f);
-                        SendMessage(text, sendTo, title, noSplit, writer, final, multiple, sendOption, addToHistory);
+                        SendMessage(text, sendTo, title, noSplit, writer, final, multiple, importance, addToHistory);
                     }
                 }
                 
@@ -1483,8 +1501,8 @@ public static class Utils
 
                 if (parts.Count > 1)
                 {
-                    writer = parts.Take(parts.Count - 1).Aggregate(writer, (current, part) => SendMessage(part, sendTo, title, writer: current, final: false, multiple: true, sendOption: sendOption, addToHistory: addToHistory, noNumberSplit: true));
-                    return SendMessage(parts[^1], sendTo, title, false, writer, final, multiple, sendOption, addToHistory, noNumberSplit: true, numberSplitFinal: true);
+                    writer = parts.Take(parts.Count - 1).Aggregate(writer, (current, part) => SendMessage(part, sendTo, title, writer: current, final: false, multiple: true, importance: importance, addToHistory: addToHistory, noNumberSplit: true));
+                    return SendMessage(parts[^1], sendTo, title, false, writer, final, multiple, importance, addToHistory, noNumberSplit: true, numberSplitFinal: true);
                 }
             }
 
@@ -1627,8 +1645,8 @@ public static class Utils
                     }
 
                     writer = shortenedText.Length * 2 >= textRpcSizeLimit
-                        ? shortenedText.Chunk(textRpcSizeLimit).Aggregate(writer, (current, chunk) => SendMessage(new(chunk), sendTo, title, true, current, sendOption: sendOption))
-                        : SendMessage(shortenedText, sendTo, title, true, writer, sendOption: sendOption);
+                        ? shortenedText.Chunk(textRpcSizeLimit).Aggregate(writer, (current, chunk) => SendMessage(new(chunk), sendTo, title, true, current, importance: importance))
+                        : SendMessage(shortenedText, sendTo, title, true, writer, importance: importance);
 
                     string sentText = shortenedText;
                     shortenedText = line + "\n";
@@ -1640,7 +1658,7 @@ public static class Utils
                     }
                 }
 
-                if (shortenedText.Length > 0 && !shortenedText.IsNullOrWhiteSpace()) writer = SendMessage(shortenedText, sendTo, title, true, writer, true, sendOption: sendOption);
+                if (shortenedText.Length > 0 && !shortenedText.IsNullOrWhiteSpace()) writer = SendMessage(shortenedText, sendTo, title, true, writer, true, importance: importance);
                 else
                 {
                     Logger.Info($"Set sender name to {sender.GetRealName()}; Shortened", "SendMessage");
@@ -1650,7 +1668,7 @@ public static class Utils
                         .EndRpc();
 
                     if (!multiple) writer.SendMessage();
-                    else RestartMessageIfTooLong();
+                    else RestartMessageIfTooLong(sendOption);
                 }
 
                 return writer;
@@ -1701,17 +1719,17 @@ public static class Utils
                     .EndRpc();
 
                 if (!multiple) writer.SendMessage();
-                else RestartMessageIfTooLong();
+                else RestartMessageIfTooLong(sendOption);
             }
             else
-                RestartMessageIfTooLong();
+                RestartMessageIfTooLong(sendOption);
         }
         catch (Exception e) { ThrowException(e); }
 
         if (addToHistory) ChatUpdatePatch.LastMessages.Add((text, sendTo, title, TimeStamp));
         return writer;
 
-        void RestartMessageIfTooLong()
+        void RestartMessageIfTooLong(SendOption sendOption)
         {
             if (writer.stream.Length > 500)
             {
@@ -3766,4 +3784,11 @@ public class Message(string text, byte sendTo = byte.MaxValue, string title = ""
     public string Text { get; } = text;
     public byte SendTo { get; } = sendTo;
     public string Title { get; } = title;
+}
+
+public enum MessageImportance
+{
+    Low,
+    Medium,
+    High
 }

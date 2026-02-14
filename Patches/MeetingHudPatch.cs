@@ -1257,8 +1257,8 @@ class MeetingHudStartPatch
 
         LateTask.New(() =>
         {
-            TemplateManager.SendTemplate("OnMeeting", noErr: true, sendOption: SendOption.None);
-            if (MeetingStates.FirstMeeting) TemplateManager.SendTemplate("OnFirstMeeting", noErr: true, sendOption: SendOption.None);
+            TemplateManager.SendTemplate("OnMeeting", noErr: true, importance: MessageImportance.Low);
+            if (MeetingStates.FirstMeeting) TemplateManager.SendTemplate("OnFirstMeeting", noErr: true, importance: MessageImportance.Low);
         }, 6f, shoudLog: false);
 
         try

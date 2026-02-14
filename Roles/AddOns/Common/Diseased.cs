@@ -59,8 +59,7 @@ public class Diseased : IAddon
             {
                 KilledDiseased[pid] = 0;
                 var kdpc = Utils.GetPlayerById(pid);
-                if (kdpc == null) continue;
-                kdpc.ResetKillCooldown();
+                kdpc?.ResetKillCooldown();
             }
             KilledDiseased.Clear();
         }

@@ -62,7 +62,7 @@ public class Antidote : IAddon
             {
                 KilledAntidote[pid] = 0;
                 var kapc = Utils.GetPlayerById(pid);
-                if (kapc == null) continue;
+                if (!kapc) continue;
                 kapc.ResetKillCooldown();
             }
             KilledAntidote.Clear();

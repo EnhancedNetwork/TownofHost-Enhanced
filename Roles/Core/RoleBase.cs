@@ -120,7 +120,7 @@ public abstract class RoleBase
     /// <summary>
     /// When the Player presses the Sabotage button
     /// </summary>
-    public virtual bool OnSabotage(PlayerControl pc) => pc != null;
+    public virtual bool OnSabotage(PlayerControl pc) => pc;
     /// <summary>
     /// When Player is Engineer base but should not move in Vents
     /// </summary>
@@ -168,16 +168,16 @@ public abstract class RoleBase
     /// <summary>
     /// A generic method to check a Guardian Angel protecting someone.
     /// </summary>
-    public virtual bool OnCheckProtect(PlayerControl angel, PlayerControl target) => angel != null && target != null;
+    public virtual bool OnCheckProtect(PlayerControl angel, PlayerControl target) => angel && target;
 
     /// <summary>
     /// When Role need force boot from Vent
     /// </summary>
-    public virtual bool CheckBootFromVent(PlayerPhysics physics, int ventId) => physics == null;
+    public virtual bool CheckBootFromVent(PlayerPhysics physics, int ventId) => !physics;
     /// <summary>
     /// A method for activating actions where the others Roles starts playing an animation when entering a Vent
     /// </summary>
-    public virtual bool OnCoEnterVentOthers(PlayerPhysics physics, int ventId) => physics == null;
+    public virtual bool OnCoEnterVentOthers(PlayerPhysics physics, int ventId) => !physics;
     /// <summary>
     /// A method for activating actions where the Role starts playing an animation when entering a Vent
     /// </summary>
@@ -208,21 +208,21 @@ public abstract class RoleBase
     /// <summary>
     ///  When Role based on Impostors need force check target
     /// </summary>
-    public virtual bool ForcedCheckMurderAsKiller(PlayerControl killer, PlayerControl target) => target != null && killer != null;
+    public virtual bool ForcedCheckMurderAsKiller(PlayerControl killer, PlayerControl target) => target && killer;
     /// <summary>
     /// When Role the Target requires a kill check
     /// </summary>
     /// <returns>If the target doesn't require a kill cancel, always use "return true"</returns>
-    public virtual bool OnCheckMurderAsTarget(PlayerControl killer, PlayerControl target) => target != null && killer != null;
+    public virtual bool OnCheckMurderAsTarget(PlayerControl killer, PlayerControl target) => target && killer;
     /// <summary>
     /// When Role the Target requires a kill check
     /// </summary>
     /// <returns>If the target needs to cancel kill, always use "return true"</returns>
-    public virtual bool CheckMurderOnOthersTarget(PlayerControl killer, PlayerControl target) => target == null || killer == null;
+    public virtual bool CheckMurderOnOthersTarget(PlayerControl killer, PlayerControl target) => !target || !killer;
     /// <summary>
     ///  When Role the Killer requires a kill check
     /// </summary>
-    public virtual bool OnCheckMurderAsKiller(PlayerControl killer, PlayerControl target) => target != null && killer != null;
+    public virtual bool OnCheckMurderAsKiller(PlayerControl killer, PlayerControl target) => target && killer;
 
     /// <summary>
     /// When the Killer murders Target
@@ -297,17 +297,17 @@ public abstract class RoleBase
     /// <summary>
     /// When Guesser need check guess (check limit or cannot guess а Role/Add-on)
     /// </summary>
-    public virtual bool GuessCheck(bool isUI, PlayerControl guesser, PlayerControl target, CustomRoles role, ref bool guesserSuicide) => target == null;
+    public virtual bool GuessCheck(bool isUI, PlayerControl guesser, PlayerControl target, CustomRoles role, ref bool guesserSuicide) => !target;
     /// <summary>
     /// When Guesser trying guess Target as a Role
     /// Target need to check whether misguessed so it wont cancel misguesses
     /// </summary>
-    public virtual bool OnRoleGuess(bool isUI, PlayerControl target, PlayerControl guesser, CustomRoles role, ref bool guesserSuicide) => target == null;
+    public virtual bool OnRoleGuess(bool isUI, PlayerControl target, PlayerControl guesser, CustomRoles role, ref bool guesserSuicide) => !target;
 
     /// <summary>
     /// When Guesser misguessed
     /// </summary>
-    public virtual bool CheckMisGuessed(bool isUI, PlayerControl guesser, PlayerControl target, CustomRoles role, ref bool guesserSuicide) => target == null;
+    public virtual bool CheckMisGuessed(bool isUI, PlayerControl guesser, PlayerControl target, CustomRoles role, ref bool guesserSuicide) => !target;
 
     /// <summary>
     /// Check exile Role
@@ -380,7 +380,7 @@ public abstract class RoleBase
     /// If Role wants to return the vote to the Player during meeting. Can also work to check any abilities during meeting
     /// </summary>
     [Obfuscation(Exclude = true)]
-    public virtual bool CheckVote(PlayerControl voter, PlayerControl target) => voter != null && target != null;
+    public virtual bool CheckVote(PlayerControl voter, PlayerControl target) => voter && target;
 
     /// <summary>
     /// A check for any Role abilites of the Player which voted, when the vote hasn't been canceled by any other means

@@ -110,7 +110,7 @@ internal class Bloodmoon : RoleBase
 
     private void OnFixedUpdateOther(PlayerControl player, bool lowLoad, long nowTime)
     {
-        if (lowLoad || _Player == null) return;
+        if (lowLoad || !_Player) return;
 
         var playerid = player.PlayerId;
         if (LastTime.TryGetValue(playerid, out var lastTime) && lastTime + 1 <= nowTime)

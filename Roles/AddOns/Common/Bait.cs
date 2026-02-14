@@ -55,7 +55,7 @@ public class Bait : IAddon
             foreach (var whId in BaitAlive.ToArray())
             {
                 PlayerControl whpc = whId.GetPlayer();
-                if (whpc == null) continue;
+                if (!whpc) continue;
                 baitAliveList.Add(whpc.GetRealName());
             }
             string separator = TranslationController.Instance.currentLanguage.languageID is SupportedLangs.English or SupportedLangs.Russian ? "], [" : "】, 【";
@@ -66,7 +66,7 @@ public class Bait : IAddon
     {
         if (killer.PlayerId == target.PlayerId)
         {
-            if (target.GetRealKiller() != null)
+            if (target.GetRealKiller())
             {
                 if (!target.GetRealKiller().IsAlive()) return;
                 killer = target.GetRealKiller();

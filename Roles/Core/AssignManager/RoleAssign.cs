@@ -162,7 +162,7 @@ public class RoleAssign
         Roles[RoleAssignType.Coven] = [];
         Roles[RoleAssignType.Crewmate] = [];
 
-        foreach (var id in SetRoles.Keys.Where(id => Utils.GetPlayerById(id) == null).ToArray()) SetRoles.Remove(id);
+        foreach (var id in SetRoles.Keys.Where(id => !Utils.GetPlayerById(id)).ToArray()) SetRoles.Remove(id);
 
         foreach (var role in Main.CustomRoleValues)
         {
@@ -289,7 +289,7 @@ public class RoleAssign
 
         foreach (var player in Main.EnumeratePlayerControls())
         {
-            if (player == null) continue;
+            if (!player) continue;
 
             if (TagManager.AssignGameMaster(player.FriendCode))
             {
@@ -310,7 +310,7 @@ public class RoleAssign
         foreach (var item in SetRoles)
         {
             PlayerControl pc = Utils.GetPlayerById(item.Key);
-            if (pc == null) continue;
+            if (!pc) continue;
 
             RoleResult[item.Key] = item.Value;
             AllPlayers.Remove(pc);

@@ -85,10 +85,10 @@ public class Rebirth : IAddon
             list = [.. VotedCount[pc.PlayerId].Select(x => GetPlayerById(x))];
         }
 
-        var ViablePlayer = list.Where(x => x != null && x.PlayerId != pc.PlayerId).Shuffle()
+        var ViablePlayer = list.Where(x => x && x.PlayerId != pc.PlayerId).Shuffle()
             .FirstOrDefault(IsViableSwapTarget);
 
-        if (ViablePlayer == null)
+        if (!ViablePlayer)
         {
             var tytyl = ColorString(GetRoleColor(CustomRoles.Rebirth), GetString("Rebirth").ToUpper());
             SendMessage(GetString("RebirthFailed"), pc.PlayerId, title: tytyl);

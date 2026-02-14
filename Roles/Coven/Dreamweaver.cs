@@ -206,7 +206,7 @@ internal class Dreamweaver : CovenManager
         foreach (var target in InsomniaList[player.PlayerId])
         {
             var targetPc = GetPlayerById(target);
-            if (targetPc == null || !targetPc.IsAlive())
+            if (!targetPc || !targetPc.IsAlive())
             {
                 InsomniaList[player.PlayerId].Remove(target);
                 continue;

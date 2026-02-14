@@ -120,7 +120,7 @@ public static class DraftAssign
 
         foreach (var player in Main.EnumeratePlayerControls())
         {
-            if (player == null) continue;
+            if (!player) continue;
 
             if (TagManager.AssignGameMaster(player.FriendCode))
             {
@@ -141,7 +141,7 @@ public static class DraftAssign
         foreach (var item in RoleAssign.SetRoles)
         {
             PlayerControl pc = Utils.GetPlayerById(item.Key);
-            if (pc == null) continue;
+            if (!pc) continue;
 
             DraftedRoles[item.Key] = item.Value;
             AllPlayers.Remove(pc);
@@ -738,9 +738,9 @@ public static class DraftAssign
 
         List<CustomRoles> FinalRolesList = [];
 
-        foreach (var id in DraftedRoles.Keys.Where(id => Utils.GetPlayerById(id) == null).ToArray()) DraftedRoles.Remove(id);
+        foreach (var id in DraftedRoles.Keys.Where(id => !Utils.GetPlayerById(id)).ToArray()) DraftedRoles.Remove(id);
 
-        foreach (var id in AssignedSlots.Keys.Where(id => Utils.GetPlayerById(id) == null).ToArray())
+        foreach (var id in AssignedSlots.Keys.Where(id => !Utils.GetPlayerById(id)).ToArray())
         {
             var pool = DraftPools[id];
             UnassignedDraftPools.Add(new(AssignedSlots[id], pool));

@@ -26,7 +26,7 @@ public class Mundane : IAddon
 
     public static bool OnGuess(PlayerControl pc)
     {
-        if (pc == null || !pc.Is(CustomRoles.Mundane)) return true;
+        if (!pc || !pc.Is(CustomRoles.Mundane)) return true;
 
         return pc.GetPlayerTaskState().IsTaskFinished;
     }

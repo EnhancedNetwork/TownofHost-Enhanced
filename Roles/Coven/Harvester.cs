@@ -72,7 +72,7 @@ internal class Harvester : CovenManager
             shapeshifter.Notify(GetString("Harvester.SwapListFull"));
             return false;
         }
-        if (shapeshifter == null || target == null) return false;
+        if (!shapeshifter || !target) return false;
 
         if (SwapPlayers[shapeshifter.PlayerId].Count == 0)
         {
@@ -91,9 +91,9 @@ internal class Harvester : CovenManager
     private void OnPlayerDead(PlayerControl killer, PlayerControl deadPlayer, bool inMeeting)
     {
         if (!CustomRoles.Harvester.RoleExist()) return;
-        if (killer == null || deadPlayer == null || deadPlayer.IsDisconnected()) return;
+        if (!killer || !deadPlayer || deadPlayer.IsDisconnected()) return;
         var harvester = GetPlayerById(SwapPlayers.Keys.First());
-        if (harvester == null) return;
+        if (!harvester) return;
         if (!harvester.IsAlive()) return;
         // this code is so bad, but it works
         bool stealRecruiting = CanStealRecruiting.GetBool();
@@ -147,7 +147,7 @@ internal class Harvester : CovenManager
     private void SwapAddons(PlayerControl player1, PlayerControl player2)
     {
         if (SwapPlayers[_Player.PlayerId].Count != 2) return;
-        if (player1 == null || player2 == null) return;
+        if (!player1 || !player2) return;
         bool swapRecruiting = CanSwapRecruiting.GetBool();
         List<CustomRoles> addons1 = [.. player1.GetCustomSubRoles().Where(x => (swapRecruiting || !x.IsAddonAssignedMidGame()) && !x.IsImpOnlyAddon())];
         List<CustomRoles> addons2 = [.. player2.GetCustomSubRoles().Where(x => (swapRecruiting || !x.IsAddonAssignedMidGame()) && !x.IsImpOnlyAddon())];

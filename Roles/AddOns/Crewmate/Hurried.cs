@@ -26,7 +26,7 @@ public class Hurried : IAddon
     { }
     public static bool CheckWinState(PlayerControl pc)
     {
-        if (pc == null) return false;
+        if (!pc) return false;
         if (!pc.Is(CustomRoles.Hurried)) return true;
         if (!pc.GetCustomRole().IsCrewmate() && !pc.Is(CustomRoles.Madmate)) return true;
 

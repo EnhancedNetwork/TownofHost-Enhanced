@@ -55,7 +55,7 @@ public class Ghoul : IAddon
         {
             var killer = player.GetRealKiller();
 
-            if (killer != null && !killer.IsTransformedNeutralApocalypse())
+            if (killer && !killer.IsTransformedNeutralApocalypse())
             {
                 killer.SetDeathReason(PlayerState.DeathReason.Kill);
                 player.RpcMurderPlayer(killer);

@@ -141,7 +141,7 @@ internal class Illusionist : CovenManager
     public override string GetMark(PlayerControl seer, PlayerControl seen = null, bool isForMeeting = false) => (IllusionedPlayers.TryGetValue(seer.PlayerId, out var Targets) && Targets.Contains(seen.PlayerId)) ? ColorString(GetRoleColor(CustomRoles.Illusionist), "ø") : string.Empty;
     public override string GetMarkOthers(PlayerControl seer, PlayerControl target, bool isForMeeting = false)
     {
-        if (_Player == null) return string.Empty;
+        if (!_Player) return string.Empty;
         if ((IsCovIllusioned(target.PlayerId) || IsNonCovIllusioned(target.PlayerId)) && ((seer.GetCustomRole().IsCovenTeam() && seer.PlayerId != _Player.PlayerId) || !seer.IsAlive()))
         {
             return ColorString(GetRoleColor(CustomRoles.Illusionist), "ø");

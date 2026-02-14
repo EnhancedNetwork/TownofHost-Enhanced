@@ -31,15 +31,15 @@ public class Sleuth : IAddon
 
     public static void OnReportDeadBody(PlayerControl reporter, NetworkedPlayerInfo deadBody)
     {
-        if (reporter.Is(CustomRoles.Sleuth) && deadBody != null && deadBody.Object != null && !deadBody.Object.IsAlive() && reporter.PlayerId != deadBody.PlayerId)
+        if (reporter.Is(CustomRoles.Sleuth) && deadBody && deadBody.Object && !deadBody.Object.IsAlive() && reporter.PlayerId != deadBody.PlayerId)
         {
             string msg;
             msg = string.Format(Translator.GetString("SleuthNoticeVictim"), deadBody.Object.GetRealName(), deadBody.Object.GetDisplayRoleAndSubName(deadBody.Object, false, false));
             if (SleuthCanKnowKillerRole.GetBool())
             {
                 var realKiller = deadBody.Object.GetRealKiller();
-                if (realKiller == null) msg += "；" + Translator.GetString("SleuthNoticeKillerNotFound");
-                else msg += "；" + string.Format(Translator.GetString("SleuthNoticeKiller"), realKiller.GetDisplayRoleAndSubName(realKiller, false, false));
+                if (!realKiller) msg += "; " + Translator.GetString("SleuthNoticeKillerNotFound");
+                else msg += "; " + string.Format(Translator.GetString("SleuthNoticeKiller"), realKiller.GetDisplayRoleAndSubName(realKiller, false, false));
             }
             SleuthNotify.Add(reporter.PlayerId, msg);
         }
