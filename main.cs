@@ -57,8 +57,8 @@ public class Main : BasePlugin
 
     public const string PluginGuid = "com.0xdrmoe.townofhostenhanced";
     public const string PluginGuid4 = "90759289-1d0d-494b-b36c-839f93ae0df1"; // for matchmaking token
-    public const string PluginVersion = "2026.0213.300.00028"; // YEAR.MMDD.VERSION.CANARYDEV
-    public const string PluginDisplayVersion = "3.0.0 Alpha 28";
+    public const string PluginVersion = "2026.0213.300.00029"; // YEAR.MMDD.VERSION.CANARYDEV
+    public const string PluginDisplayVersion = "3.0.0 Alpha 29";
     public static readonly List<(int year, int month, int day, int revision)> SupportedVersionAU =
     [
         (2025, 11, 18, 0) // 2025.11.18 & 17.1
@@ -68,7 +68,7 @@ public class Main : BasePlugin
     public static readonly Release RELEASE = Release.ALPHA;
 
 #pragma warning disable IDE1006 // Naming Styles
-    public static bool devRelease => RELEASE == Release.ALPHA; // Latest: v3.0.0 Alpha 28
+    public static bool devRelease => RELEASE == Release.ALPHA; // Latest: v3.0.0 Alpha 29
     public static bool canaryRelease => RELEASE == Release.BETA; // Latest: V2.4.2 Beta 3
     public static bool fullRelease => RELEASE == Release.RELEASE; // Latest: V2.4.1 hotfix 1
 #pragma warning restore IDE1006 // Naming Styles
@@ -692,7 +692,7 @@ public class Main : BasePlugin
 [Obfuscation(Exclude = true)]
 public enum CustomRoles
 {
-    // Crewmate(Vanilla)
+#region Crewmate(Vanilla)
     Crewmate = 0,
     Engineer,
     GuardianAngel,
@@ -700,14 +700,14 @@ public enum CustomRoles
     Scientist,
     Tracker,
     Detective,
-
-    // Impostor(Vanilla)
+#endregion
+#region Impostor(Vanilla)
     Impostor,
     Phantom,
     Shapeshifter,
     Viper,
-
-    // Crewmate Vanilla Remakes
+#endregion
+#region Crewmate Vanilla Remakes
     CrewmateTOHE,
     EngineerTOHE,
     GuardianAngelTOHE,
@@ -715,19 +715,19 @@ public enum CustomRoles
     ScientistTOHE,
     TrackerTOHE,
     DetectiveTOHE,
-
-    // Impostor Vanilla Remakes
+#endregion
+#region Impostor Vanilla Remakes
     ImpostorTOHE,
     PhantomTOHE,
     ShapeshifterTOHE,
     ViperTOHE,
-
-    // Impostor Ghost
+#endregion
+#region Impostor Ghost
     Bloodmoon,
     Minion,
     Possessor,
-
-    //Impostor
+#endregion
+#region Impostor
     Abyssbringer,
     Anonymous,
     AntiAdminer,
@@ -803,13 +803,13 @@ public enum CustomRoles
     Wildling,
     Witch,
     Zombie,
-
-    //Crewmate Ghost
+#endregion
+#region Crewmate Ghost
     Ghastly,
     Hawk,
     Warden,
-
-    //Crewmate
+#endregion
+#region Crewmate
     Addict,
     Admirer,
     Alchemist,
@@ -884,8 +884,8 @@ public enum CustomRoles
     Veteran,
     Vigilante,
     Witness,
-
-    //Neutral
+#endregion
+#region Neutral
     Agitater,
     Amnesiac,
     Apocalypse,
@@ -963,8 +963,8 @@ public enum CustomRoles
     Werewolf,
     Workaholic,
     Wraith,
-
-    //Coven
+#endregion
+#region Coven
     Coven,
     Conjurer,
     CovenLeader,
@@ -984,7 +984,8 @@ public enum CustomRoles
     Summoned,
     Sorceress,
     VoodooMaster,
-
+#endregion
+#region Other
     //two-way camp
     Mini,
 
@@ -996,11 +997,11 @@ public enum CustomRoles
 
     // Speed run
     Runner,
-
+#endregion
     // Sub-role after 500
     NotAssigned = 500,
 
-    // Add-ons
+#region Add-ons
     Admired,
     Antidote,
     Autopsy,
@@ -1082,6 +1083,7 @@ public enum CustomRoles
     Watcher,
     Workhorse,
     Youtuber
+#endregion
 }
 //WinData
 [Obfuscation(Exclude = true)]
