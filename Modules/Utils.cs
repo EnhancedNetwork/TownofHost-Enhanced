@@ -1388,16 +1388,6 @@ public static class Utils
                 return writer;
             }
 
-            // if (title == string.Empty) title = GetString("DefaultSystemMessageTitle");
-
-            // if (title.Count(x => x == '\u2605') == 2 && !title.Contains('\n'))
-            // {
-            //     if (title.Contains('<') && title.Contains('>') && title.Contains('#'))
-            //         title = $"{title[..(title.IndexOf('>') + 1)]}\u27a1{title.Replace("\u2605", "")[..(title.LastIndexOf('<') - 2)]}\u2b05";
-            //     else
-            //         title = "\u27a1" + title.Replace("\u2605", "") + "\u2b05";
-            // }
-
             text = text.Replace("color=#", "#");
             title = title.Replace("color=", string.Empty);
 

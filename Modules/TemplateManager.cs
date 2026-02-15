@@ -163,7 +163,6 @@ public static class TemplateManager
     {
         CreateIfNotExists();
         using StreamReader sr = new(TEMPLATE_FILE_PATH, Encoding.GetEncoding("UTF-8"));
-        string text;
         string[] tmp = [];
         List<string> sendList = [];
         HashSet<string> tags = [];
@@ -176,7 +175,7 @@ public static class TemplateManager
         _replaceDictionaryNormalOptions["PlayerName"] = playerName;
         _replaceDictionaryHideNSeekOptions["PlayerName"] = playerName;
 
-        while ((text = sr.ReadLine()) != null)
+        while (sr.ReadLine() is { } text)
         {
             tmp = text.Split(":");
             if (tmp.Length > 1 && tmp[1] != "")
