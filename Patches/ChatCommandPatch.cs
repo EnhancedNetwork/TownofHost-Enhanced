@@ -1877,7 +1877,6 @@ internal class ChatCommands
         {
             if (rl.IsVanilla()) continue;
             var roleName = GetString(rl.ToString()).ToLower().Trim().TrimStart('*').Replace(" ", string.Empty);
-            //Logger.Info(roleName, "2");
             if (setRole == roleName)
             {
                 player.GetRoleClass()?.OnRemove(player.PlayerId);
@@ -1894,7 +1893,7 @@ internal class ChatCommands
 
     private static void DeckCommand(PlayerControl player, string commandKey, string text, string[] args)
     {
-        // return;
+        return;
         if (!AmongUsClient.Instance.AmHost)
         {
             RequestCommandProcessingFromHost(text, commandKey);
@@ -1906,7 +1905,7 @@ internal class ChatCommands
 
     private static void DraftCommand(PlayerControl player, string commandKey, string text, string[] args)
     {
-        // return;
+        return;
         if (!AmongUsClient.Instance.AmHost)
         {
             RequestCommandProcessingFromHost(text, commandKey);

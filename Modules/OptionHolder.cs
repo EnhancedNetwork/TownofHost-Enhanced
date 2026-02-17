@@ -1417,20 +1417,24 @@ public static class Options
         // Draft Mode
         DraftHeader = TextOptionItem.Create(10000033, "MenuTitle.Draft", TabGroup.ModSettings)
             .SetGameMode(CustomGameMode.Standard)
-            .SetColor(new Color32(255, 238, 232, byte.MaxValue));
+            .SetColor(new Color32(255, 238, 232, byte.MaxValue))
+            .SetHidden(true);
 
         DraftMode = BooleanOptionItem.Create(61000, "UseDraftMode", true, TabGroup.ModSettings, false)
             .SetGameMode(CustomGameMode.Standard)
-            .SetHeader(true);
+            .SetHeader(true)
+            .SetHidden(true);
 
         DraftableCount = IntegerOptionItem.Create(61001, "DraftableCount", new(1, 10, 1), 3, TabGroup.ModSettings, false)
             .SetGameMode(CustomGameMode.Standard)
-            .SetParent(DraftMode);
+            .SetParent(DraftMode)
+            .SetHidden(true);
 
         DraftAssign.LoadRoleDecks();
-        DraftDeck = StringOptionItem.Create(61002, "DraftDeck", DraftAssign.RoleDecks.Keys.ToArray(), 0, TabGroup.ModSettings, false, useGetString: false)
+        DraftDeck = StringOptionItem.Create(61002, "DraftDeck", [.. DraftAssign.RoleDecks.Keys], 0, TabGroup.ModSettings, false, useGetString: false)
             .SetGameMode(CustomGameMode.Standard)
-            .SetParent(DraftMode);
+            .SetParent(DraftMode)
+            .SetHidden(true);
 
         Logger.Info("Draft Bucket Options set up", "OptionsHolder.CoLoadOptions");
 

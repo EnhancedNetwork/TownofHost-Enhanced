@@ -57,15 +57,15 @@ public class Main : BasePlugin
 
     public const string PluginGuid = "com.0xdrmoe.townofhostenhanced";
     public const string PluginGuid4 = "90759289-1d0d-494b-b36c-839f93ae0df1"; // for matchmaking token
-    public const string PluginVersion = "2026.0213.300.00030"; // YEAR.MMDD.VERSION.CANARYDEV
-    public const string PluginDisplayVersion = "3.0.0 Alpha 30";
+    public const string PluginVersion = "2026.0213.242.00400"; // YEAR.MMDD.VERSION.CANARYDEV
+    public const string PluginDisplayVersion = "2.4.2 Beta 4";
     public static readonly List<(int year, int month, int day, int revision)> SupportedVersionAU =
     [
         (2025, 11, 18, 0) // 2025.11.18 & 17.1
     ];
 
     // Change this to change alpha/beta/full release
-    public static readonly Release RELEASE = Release.ALPHA;
+    public static readonly Release RELEASE = Release.BETA;
 
 #pragma warning disable IDE1006 // Naming Styles
     public static bool devRelease => RELEASE == Release.ALPHA; // Latest: v3.0.0 Alpha 30
