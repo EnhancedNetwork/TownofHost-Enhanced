@@ -292,8 +292,8 @@ internal class ChatCommands
         Command.Create("Command.FixNames", "", "CommandDescription.FixNames", Command.UsageLevels.Everyone, Command.UsageTimes.InGame, FixNamesCommand, false); // ["xf", "修复", "修"]
         Command.Create("Command.ChangeRole", "{role}", "CommandDescription.ChangeRole", Command.UsageLevels.Debug, Command.UsageTimes.InGame, ChangeRoleCommand, true, ["CommandArgs.ChangeRole.Role"]); // ["changerole", "mudarfunção", "改变职业", "修改职业"]
         Command.Create("Command.Deck", "", "CommandDescription.Deck", Command.UsageLevels.Everyone, Command.UsageTimes.InLobby, DeckCommand, false); // ["deck"]
-        Command.Create("Command.Draft", "[start|desc|add|reset|number]", "CommandDescription.Draft", Command.UsageLevels.Everyone, Command.UsageTimes.InLobby, DraftCommand, false, ["CommandArgs.Draft.Arg1"]); // ["draft"]
-        Command.Create("Command.DraftDesc", "{number}", "CommandDescription.DraftDesc", Command.UsageLevels.Everyone, Command.UsageTimes.InLobby, DraftDescCommand, false, ["CommandArgs.DraftDesc.Number"]); //["dd", "draftdescription"]
+        // Command.Create("Command.Draft", "[start|desc|add|reset|number]", "CommandDescription.Draft", Command.UsageLevels.Everyone, Command.UsageTimes.InLobby, DraftCommand, false, ["CommandArgs.Draft.Arg1"]); // ["draft"]
+        // Command.Create("Command.DraftDesc", "{number}", "CommandDescription.DraftDesc", Command.UsageLevels.Everyone, Command.UsageTimes.InLobby, DraftDescCommand, false, ["CommandArgs.DraftDesc.Number"]); //["dd", "draftdescription"]
         Command.Create("Command.Whisper", "{id} {message}", "CommandDescription.Whisper", Command.UsageLevels.Everyone, Command.UsageTimes.Always, WhisperCommand, true, ["CommandArgs.Whisper.Id", "CommandArgs.Whisper.Message"]);
         Command.Create("Command.CustomSound", "{sound}", "CommandDescription.CustomSound", Command.UsageLevels.Modded, Command.UsageTimes.Always, CustomSoundCommand, false, ["CommandArgs.CustomSound.Sound"]);
         Command.Create("Command.CosmeticId", "", "CommandDescription.CosmeticId", Command.UsageLevels.Modded, Command.UsageTimes.Always, CosmeticIdCommand, false);
