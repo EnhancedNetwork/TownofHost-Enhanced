@@ -153,7 +153,7 @@ public static class NameColorManager
         if (colorCode == "")
         {
             var target = targetId.GetPlayer();
-            if (target == null) return;
+            if (!target) return;
             colorCode = target.GetRoleColorCode();
         }
 

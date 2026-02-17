@@ -24,14 +24,14 @@ class CreateOptionsPickerPatch
 
             if (AllMapButton != null)
             {
-                GameObject dlekS_ehT = UnityEngine.Object.Instantiate(AllMapButton[0].gameObject, __instance.transform);
+                GameObject dlekS_ehT = Object.Instantiate(AllMapButton[0].gameObject, __instance.transform);
                 dlekS_ehT.transform.position = AllMapButton[DleksPos].transform.position;
                 dlekS_ehT.transform.SetSiblingIndex(DleksPos + 2);
                 MapSelectButton dlekS_ehT_MapButton = dlekS_ehT.GetComponent<MapSelectButton>();
                 DleksButton = dlekS_ehT_MapButton;
                 foreach (var icon in dlekS_ehT_MapButton.MapIcon)
                 {
-                    if (icon == null || icon.transform == null) continue;
+                    if (!icon || !icon.transform) continue;
                     icon.flipX = true;
                 }
                 dlekS_ehT_MapButton.Button.OnClick.RemoveAllListeners();
@@ -64,7 +64,7 @@ class CreateOptionsPickerPatch
                     AllMapButton[i].transform.localPosition += new Vector3(0.625f, 0f, 0f);
                 }
 
-                if (DleksButton != null)
+                if (DleksButton)
                 {
                     if (SetDleks)
                     {
@@ -95,11 +95,11 @@ class CreateOptionsPickerPatch
         [Obfuscation(Exclude = true)]
         public static bool Prefix_FixedUpdate(GameOptionsMapPicker __instance)
         {
-            if (__instance == null) return true;
+            if (!__instance) return true;
 
-            if (__instance.MapName == null) return false;
+            if (!__instance.MapName) return false;
 
-            if (DleksButton != null)
+            if (DleksButton)
             {
                 if (__instance.selectedMapId == 3)
                 {

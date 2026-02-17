@@ -80,7 +80,7 @@ internal class Conjurer : CovenManager
     {
         resetCooldown = true;
         var shapeshifterId = shapeshifter.PlayerId;
-        if (target != null && shapeshifterId == target.PlayerId) return false;
+        if (target && shapeshifterId == target.PlayerId) return false;
 
         if (state[shapeshifterId] != ConjState.NecroBomb && state[shapeshifterId] != ConjState.NormalBomb)
             state[shapeshifterId] = HasNecronomicon(shapeshifterId) ? ConjState.NecroMark : ConjState.NormalMark;
@@ -118,7 +118,7 @@ internal class Conjurer : CovenManager
                 CustomSoundsManager.RPCPlayCustomSoundAll("Boom");
                 break;
             case ConjState.NecroMark:
-                if (target == null)
+                if (!target)
                 {
                     Logger.Info("target is null", "ConjState.NecroMark");
                     return false;
@@ -129,7 +129,7 @@ internal class Conjurer : CovenManager
                 break;
             case ConjState.NecroBomb:
                 var necroBombHolder = NecroBombHolder.GetPlayer();
-                if (necroBombHolder == null)
+                if (!necroBombHolder)
                 {
                     Logger.Info("NecroBombHolder is null", "ConjState.NecroBomb");
                     return false;

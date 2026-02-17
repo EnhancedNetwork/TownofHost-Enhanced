@@ -12,7 +12,7 @@ static class PerformVentOpPatch
     public static bool Prefix(VentilationSystem __instance, [HarmonyArgument(0)] byte playerId, [HarmonyArgument(1)] VentilationSystem.Operation op/*, [HarmonyArgument(2)] byte ventId*/, [HarmonyArgument(3)] SequenceBuffer<VentilationSystem.VentMoveInfo> seqBuffer)
     {
         if (!AmongUsClient.Instance.AmHost) return true;
-        if (Utils.GetPlayerById(playerId) == null) return true;
+        if (!Utils.GetPlayerById(playerId)) return true;
         switch (op)
         {
             case VentilationSystem.Operation.Move:
@@ -82,7 +82,7 @@ static class VentSystemDeterioratePatch
     {
         foreach (var pc in Main.EnumerateAlivePlayerControls())
         {
-            if (pc.AmOwner || (player != null && pc != player)) continue;
+            if (pc.AmOwner || (player && pc != player)) continue;
 
             if (pc.BlockVentInteraction())
             {
@@ -117,7 +117,7 @@ static class VentSystemDeterioratePatch
                 List<NetworkedPlayerInfo> AllPlayers = [];
                 foreach (var playerInfo in GameData.Instance.AllPlayers.GetFastEnumerator())
                 {
-                    if (playerInfo != null && !playerInfo.Disconnected)
+                    if (playerInfo && !playerInfo.Disconnected)
                         AllPlayers.Add(playerInfo);
                 }
                 int maxVents = Math.Min(vents, AllPlayers.Count);

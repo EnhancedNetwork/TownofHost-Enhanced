@@ -9,7 +9,7 @@ public static class HauntMenuMinigameSetFilterTextPatch
 {
     public static bool Prefix(HauntMenuMinigame __instance)
     {
-        if (__instance.HauntTarget != null && DeadKnowRole(PlayerControl.LocalPlayer) && GameStates.IsNormalGame)
+        if (__instance.HauntTarget && DeadKnowRole(PlayerControl.LocalPlayer) && GameStates.IsNormalGame)
         {
             // Override job title display with custom role name
             __instance.FilterText.text = Utils.GetDisplayRoleAndSubName(PlayerControl.LocalPlayer.PlayerId, __instance.HauntTarget.PlayerId, false, false);

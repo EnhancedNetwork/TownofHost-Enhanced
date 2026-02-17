@@ -18,7 +18,7 @@ public class ErrorText : MonoBehaviour
 
     private void Awake()
     {
-        if (_instance != null)
+        if (_instance)
         {
             Destroy(this.gameObject);
         }
@@ -67,9 +67,9 @@ public class ErrorText : MonoBehaviour
     {
         if (!Text.enabled) return;
 
-        if (Camera == null) Camera = !HudManager.InstanceExists ? Camera.main : HudManager.Instance.PlayerCam.GetComponent<Camera>();
+        if (!Camera) Camera = !HudManager.InstanceExists ? Camera.main : HudManager.Instance.PlayerCam.GetComponent<Camera>();
 
-        if (Camera != null)
+        if (Camera)
         {
             transform.position = AspectPosition.ComputeWorldPosition(Camera, AspectPosition.EdgeAlignments.Top, TextOffset);
         }

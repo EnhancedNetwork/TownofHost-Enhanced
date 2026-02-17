@@ -11,7 +11,7 @@ class CustomTaskCountsPatch
         __instance.CompletedTasks = 0;
         foreach (var p in __instance.AllPlayers)
         {
-            if (p == null) continue;
+            if (!p) continue;
             var hasTasks = Utils.HasTasks(p) && Main.PlayerStates[p.PlayerId].TaskState.AllTasksCount > 0;
             if (hasTasks)
             {

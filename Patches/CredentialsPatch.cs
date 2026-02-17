@@ -173,14 +173,14 @@ class VersionShowerStartPatch
         credentials.fontSize = credentials.fontSizeMax = credentials.fontSizeMin = 2f;
 
         ErrorText.Create(__instance.text);
-        if (Main.hasArgumentException && ErrorText.Instance != null)
+        if (Main.hasArgumentException && ErrorText.Instance)
         {
             ErrorText.Instance.AddError(ErrorCode.Main_DictionaryError);
         }
 
         VersionChecker.Check();
 
-        if (SpecialEventText == null && MainMenuManagerStartPatch.ToheLogo != null)
+        if (!SpecialEventText && MainMenuManagerStartPatch.ToheLogo)
         {
             SpecialEventText = Object.Instantiate(__instance.text, MainMenuManagerStartPatch.ToheLogo.transform);
             SpecialEventText.name = "SpecialEventText";
@@ -190,9 +190,9 @@ class VersionShowerStartPatch
             SpecialEventText.alignment = TextAlignmentOptions.Center;
             SpecialEventText.transform.localPosition = new Vector3(0f, 0.8f, 0f);
         }
-        if (SpecialEventText != null)
+        if (SpecialEventText)
         {
-            SpecialEventText.enabled = MainMenuManagerStartPatch.amongUsLogo != null;
+            SpecialEventText.enabled = MainMenuManagerStartPatch.amongUsLogo;
         }
         if (Main.IsInitialRelease)
         {

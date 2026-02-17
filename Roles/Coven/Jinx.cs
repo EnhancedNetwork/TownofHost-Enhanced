@@ -86,7 +86,7 @@ internal class Jinx : CovenManager
     }
     public override bool OnCheckMurderAsKiller(PlayerControl killer, PlayerControl target)
     {
-        if (killer == null || target == null) return false;
+        if (!killer || !target) return false;
         if (killer.CheckDoubleTrigger(target, () => { JinxPlayer(killer, target); }))
         {
             if (HasNecronomicon(killer))
@@ -175,7 +175,7 @@ internal class Jinx : CovenManager
         => IsJinxed(seen.PlayerId) ? ColorString(GetRoleColor(CustomRoles.Jinx), "⌘") : string.Empty;
     public override string GetMarkOthers(PlayerControl seer, PlayerControl target, bool isForMeeting = false)
     {
-        if (_Player == null) return string.Empty;
+        if (!_Player) return string.Empty;
         if (IsJinxed(target.PlayerId) && ((seer.GetCustomRole().IsCovenTeam() && seer.PlayerId != _Player.PlayerId) || !seer.IsAlive() && seer.PlayerId != _Player.PlayerId))
         {
             return ColorString(GetRoleColor(CustomRoles.Jinx), "⌘");

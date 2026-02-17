@@ -22,8 +22,8 @@ public static class GhostRoleAssign
     {
         if (GameStates.IsHideNSeek
             || Options.CurrentGameMode != CustomGameMode.Standard
-            || player == null
-            || player.Data == null
+            || !player
+            || !player.Data
             || player.Data.Disconnected
             || GhostGetPreviousRole.ContainsKey(player.PlayerId)) return;
 

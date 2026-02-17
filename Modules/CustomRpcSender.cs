@@ -9,6 +9,7 @@ using TOHE.Roles.Crewmate;
 using TOHE.Roles.Neutral;
 using TOHE.Modules;
 using UnityEngine;
+using System.Runtime.CompilerServices;
 
 namespace TOHE;
 
@@ -25,7 +26,8 @@ public class CustomRpcSender
 
     // for logging
     private RpcCalls? LastCall;
-    private readonly List<object> LastMessages = [];
+    private readonly List<string> LastRpcs = [];
+    private readonly List<object> LastWriten = [];
 
     private readonly List<MessageWriter> doneStreams = [];
 
@@ -57,7 +59,7 @@ public class CustomRpcSender
         this.isUnsafe = isUnsafe;
         this.shouldLog = log;
         this.currentRpcTarget = -2;
-        onSendDelegate = () => {if(this.shouldLog) Logger.Info($"{this.name}'s onSendDelegate =>", "CustomRpcSender");};
+        onSendDelegate = () => {};
 
         currentState = State.Ready;
         messages = 0;
@@ -127,7 +129,10 @@ public class CustomRpcSender
         {
             doneStreams.Add(stream);
             stream = MessageWriter.Get(sendOption);
+            messages = 0;
         }
+
+        Logger.Info($"Sending Message with rpcs: [{LastRpcs.Join(delimiter: ", ")}] ; Extra?: [{LastWriten.Join(delimiter: ", ")}]", "CustomRpcSender");
 
         currentRpcTarget = -2;
         currentState = State.Ready;
@@ -144,7 +149,7 @@ public class CustomRpcSender
     {
         if (currentState != State.InRootMessage)
         {
-            string errorMsg = $"RPCを開始しようとしましたが、StateがInRootMessageではありません (in: \"{name}\")";
+            string errorMsg = $"Tried to start RPC but State is not InRootMessage (in: \"{name}\")";
             if (isUnsafe)
                 Logger.Warn(errorMsg, "CustomRpcSender.Warn");
             else
@@ -170,15 +175,19 @@ public class CustomRpcSender
     {
         if (currentState != State.InRpc)
         {
-            string errorMsg = $"RPCを終了しようとしましたが、StateがInRpcではありません (in: \"{name}\")";
+            string errorMsg = $"Tried to terminate RPC but State is not InRpc (in: \"{name}\")";
             if (isUnsafe)
                 Logger.Warn(errorMsg, "CustomRpcSender.Warn");
             else
                 throw new InvalidOperationException(errorMsg);
         }
-        Logger.Info($"Sending Rpc with id {LastCall} and values [{LastMessages.Join(delimiter: ", ")}]", "CustomRpcSender");
+
+        string rpc = $"{LastCall} and values [{LastWriten.Join(delimiter: ", ")}]";
+        Logger.Info($"Sending Rpc with id {rpc}", "CustomRpcSender");
         LastCall = null;
-        LastMessages.Clear();
+        LastWriten.Clear();
+        LastRpcs.Add(rpc);
+
         stream.EndMessage();
         currentState = State.InRootMessage;
         return this;
@@ -187,16 +196,20 @@ public class CustomRpcSender
     public CustomRpcSender AutoStartRpc(
         uint targetNetId,
         RpcCalls callId,
-        int targetClientId = -1) => AutoStartRpc(targetNetId, (byte) callId, targetClientId);
+        int targetClientId = -1, 
+        [CallerFilePath] string callerPath = "",
+        [CallerLineNumber] int callerLine = 0) => AutoStartRpc(targetNetId, (byte) callId, targetClientId, callerPath, callerLine);
     public CustomRpcSender AutoStartRpc(
         uint targetNetId,
         byte callId,
-        int targetClientId = -1)
+        int targetClientId = -1,
+        [CallerFilePath] string callerPath = "",
+        [CallerLineNumber] int callerLine = 0)
     {
         if (targetClientId == -2) targetClientId = -1;
         if (currentState is not State.Ready and not State.InRootMessage)
         {
-            string errorMsg = $"RPCを自動で開始しようとしましたが、StateがReadyまたはInRootMessageではありません (in: \"{name}\")";
+            string errorMsg = $"Tried to start RPC automatically, but State is not Ready or InRootMessage (in: \"{name}\", state: {currentState}) (called from {callerPath}:{callerLine})";
             if (isUnsafe)
                 Logger.Warn(errorMsg, "CustomRpcSender.Warn");
             else
@@ -234,7 +247,7 @@ public class CustomRpcSender
         }
 
         if (stream.Length >= 1400 && sendOption == SendOption.Reliable && !dispose) Logger.Warn($"Large reliable packet \"{name}\" is sending ({stream.Length} bytes)", "CustomRpcSender");
-        else if (stream.Length > 3) Logger.Info($"\"{name}\" is finished (Length: {stream.Length}, dispose: {dispose}, sendOption: {sendOption})", "CustomRpcSender");
+        else if (shouldLog || stream.Length > 3) Logger.Info($"\"{name}\" is finished (Length: {stream.Length}, dispose: {dispose}, sendOption: {sendOption})", "CustomRpcSender");
 
         if (!dispose)
         {
@@ -245,7 +258,7 @@ public class CustomRpcSender
                 doneStreams.ForEach(x =>
                 {
                     if (x.Length >= 1400 && sendOption == SendOption.Reliable) Logger.Warn($"Large reliable packet \"{name}\" is sending ({x.Length} bytes)", "CustomRpcSender");
-                    else if (x.Length > 3) sb.Append($" | {x.Length}");
+                    else if (shouldLog || x.Length > 3) sb.Append($" | {x.Length}");
 
                     AmongUsClient.Instance.SendOrDisconnect(x);
                     x.Recycle();
@@ -298,7 +311,7 @@ public class CustomRpcSender
             else
                 throw new InvalidOperationException(errorMsg);
         }
-        LastMessages.Add(val);
+        LastWriten.Add(val);
         action(stream);
 
         return this;
@@ -333,7 +346,7 @@ public static class CustomRpcSenderExtensions
 
     public static void RpcSetName(this CustomRpcSender sender, PlayerControl player, string name, PlayerControl seer = null)
     {
-        bool seerIsNull = seer == null;
+        bool seerIsNull = seer;
         int targetClientId = seerIsNull ? -1 : seer.OwnerId;
 
         name = name.Replace("color=", string.Empty);

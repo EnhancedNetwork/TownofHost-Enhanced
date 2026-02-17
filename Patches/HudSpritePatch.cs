@@ -21,7 +21,7 @@ public static class HudSpritePatch
     private static Sprite OriginalSabotage;
     public static void Postfix(HudManager __instance, [HarmonyArgument(0)] PlayerControl localPlayer, [HarmonyArgument(2)] bool isActive)
     {
-        if (!Main.EnableCustomButton.Value || __instance == null || !isActive || !localPlayer.IsAlive()) return;
+        if (!Main.EnableCustomButton.Value || !__instance || !isActive || !localPlayer.IsAlive()) return;
         if (GameStates.IsEnded || GameStates.IsLobby || GameStates.IsHideNSeek || !GameStates.IsModHost) return;
 
         if (!AmongUsClient.Instance.IsGameStarted || !Main.IntroDestroyed)

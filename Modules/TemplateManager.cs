@@ -159,11 +159,10 @@ public static class TemplateManager
         return reader.ReadToEnd();
     }
 
-    public static void SendTemplate(string str = "", byte playerId = 0xff, bool noErr = false, SendOption sendOption = SendOption.Reliable)
+    public static void SendTemplate(string str = "", byte playerId = 0xff, bool noErr = false, MessageImportance importance = MessageImportance.Medium)
     {
         CreateIfNotExists();
         using StreamReader sr = new(TEMPLATE_FILE_PATH, Encoding.GetEncoding("UTF-8"));
-        string text;
         string[] tmp = [];
         List<string> sendList = [];
         HashSet<string> tags = [];
@@ -176,7 +175,7 @@ public static class TemplateManager
         _replaceDictionaryNormalOptions["PlayerName"] = playerName;
         _replaceDictionaryHideNSeekOptions["PlayerName"] = playerName;
 
-        while ((text = sr.ReadLine()) != null)
+        while (sr.ReadLine() is { } text)
         {
             tmp = text.Split(":");
             if (tmp.Length > 1 && tmp[1] != "")
@@ -189,7 +188,7 @@ public static class TemplateManager
         {
             if (playerId == 0xff)
                 HudManager.Instance.Chat.AddChat(PlayerControl.LocalPlayer, string.Format(GetString("Message.TemplateNotFoundHost"), str, tags.Join(delimiter: ", ")));
-            else Utils.SendMessage(string.Format(GetString("Message.TemplateNotFoundClient"), str), playerId, addToHistory: false, noSplit: true, sendOption: sendOption);
+            else Utils.SendMessage(string.Format(GetString("Message.TemplateNotFoundClient"), str), playerId, addToHistory: false, noSplit: true, importance: importance);
         }
         else foreach (string x in sendList.ToArray())
         {
@@ -202,7 +201,7 @@ public static class TemplateManager
                 rmv = rmv.Replace("</title>", "");
             }
 
-            Utils.SendMessage(ApplyReplaceDictionary(rmv), playerId, title, addToHistory: false, sendOption: sendOption);
+            Utils.SendMessage(ApplyReplaceDictionary(rmv), playerId, title, addToHistory: false, importance: importance);
         }
     }
 

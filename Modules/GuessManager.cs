@@ -100,7 +100,7 @@ public static class GuessManager
         var originMsg = msg;
 
         if (!AmongUsClient.Instance.AmHost) return false;
-        if (!GameStates.IsMeeting || pc == null || GameStates.IsExilling) return false;
+        if (!GameStates.IsMeeting || !pc || GameStates.IsExilling) return false;
         if (!pc.Is(CustomRoles.NiceGuesser)
             && !pc.Is(CustomRoles.EvilGuesser)
             && !pc.Is(CustomRoles.Doomsayer)
@@ -176,7 +176,7 @@ public static class GuessManager
             return true;
         }
 
-        if (target != null)
+        if (target)
         {
 
             if (target.Is(CustomRoles.VoodooMaster) && VoodooMaster.Dolls[target.PlayerId].Count > 0)
@@ -453,7 +453,7 @@ public static class GuessManager
             PlayerVoteArea voteArea = MeetingHud.Instance.playerStates.First(
                 x => x.TargetPlayerId == pc.PlayerId
             );
-            if (voteArea == null) return;
+            if (!voteArea) return;
             if (voteArea.DidVote) voteArea.UnsetVote();
             voteArea.AmDead = true;
             voteArea.Overlay.gameObject.SetActive(true);
@@ -508,7 +508,7 @@ public static class GuessManager
             x => x.TargetPlayerId == pc.PlayerId
         );
         //pc.Die(DeathReason.Kill);
-        if (voteArea == null) return;
+        if (!voteArea) return;
         if (voteArea.DidVote) voteArea.UnsetVote();
         voteArea.AmDead = true;
         voteArea.Overlay.gameObject.SetActive(true);
@@ -558,7 +558,7 @@ public static class GuessManager
 
         //判断选择的玩家是否合理
         PlayerControl target = Utils.GetPlayerById(id);
-        if (target == null || !target.IsAlive())
+        if (!target || !target.IsAlive())
         {
             error = GetString("GuessNull");
             role = new();
@@ -633,7 +633,7 @@ public static class GuessManager
         foreach (var pva in __instance.playerStates.ToArray())
         {
             var pc = Utils.GetPlayerById(pva.TargetPlayerId);
-            if (pc == null || !pc.IsAlive()) continue;
+            if (!pc || !pc.IsAlive()) continue;
             GameObject template = pva.Buttons.transform.Find("CancelButton").gameObject;
             GameObject targetBox = UnityEngine.Object.Instantiate(template, pva.transform);
             targetBox.name = "ShootButton";
@@ -663,7 +663,7 @@ public static class GuessManager
             int index = 0;
             foreach (var RoleBtn in RoleButton.Value.ToArray())
             {
-                if (RoleBtn == null) continue;
+                if (!RoleBtn) continue;
                 index++;
                 if (index <= (Page - 1) * 40) { RoleBtn.gameObject.SetActive(false); continue; }
                 if ((Page * 40) < index) { RoleBtn.gameObject.SetActive(false); continue; }
@@ -672,7 +672,7 @@ public static class GuessManager
         }
         foreach (var RoleButton in RoleSelectButtons)
         {
-            if (RoleButton.Value == null) continue;
+            if (!RoleButton.Value) continue;
             RoleButton.Value.color = new(0, 0, 0, RoleButton.Key == Role ? 1 : 0.25f);
         }
     }
@@ -681,7 +681,7 @@ public static class GuessManager
     static void GuesserOnClick(byte playerId, MeetingHud __instance)
     {
         var pc = Utils.GetPlayerById(playerId);
-        if (pc == null || !pc.IsAlive() || guesserUI != null || !GameStates.IsVoting) return;
+        if (!pc || !pc.IsAlive() || guesserUI || !GameStates.IsVoting) return;
 
         try
         {
@@ -700,8 +700,8 @@ public static class GuessManager
             var maskTemplate = __instance.playerStates[0].transform.FindChild("MaskArea");
             var smallButtonTemplate = __instance.playerStates[0].Buttons.transform.Find("CancelButton");
             textTemplate.enabled = true;
-            if (textTemplate.transform.FindChild("RoleTextMeeting") != null) UnityEngine.Object.Destroy(textTemplate.transform.FindChild("RoleTextMeeting").gameObject);
-            if (textTemplate.transform.FindChild("DeathReasonTextMeeting") != null) UnityEngine.Object.Destroy(textTemplate.transform.FindChild("DeathReasonTextMeeting").gameObject);
+            if (textTemplate.transform.FindChild("RoleTextMeeting")) UnityEngine.Object.Destroy(textTemplate.transform.FindChild("RoleTextMeeting").gameObject);
+            if (textTemplate.transform.FindChild("DeathReasonTextMeeting")) UnityEngine.Object.Destroy(textTemplate.transform.FindChild("DeathReasonTextMeeting").gameObject);
 
             Transform exitButtonParent = new GameObject().transform;
             exitButtonParent.SetParent(container);
@@ -1087,7 +1087,7 @@ public static class GuessManager
     {
         public static void Postfix(MeetingHud __instance)
         {
-            if (__instance == null || textTemplate == null)
+            if (!__instance || !textTemplate)
             {
                 return;
             }

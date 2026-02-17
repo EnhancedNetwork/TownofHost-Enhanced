@@ -60,7 +60,7 @@ class SetHudActivePatch
         IsActive = isActive;
 
         if (GameStates.IsLobby || !isActive) return;
-        if (player == null) return;
+        if (!player) return;
 
         if (player.Is(CustomRoles.Oblivious) || player.Is(CustomRoles.KillingMachine) || Options.CurrentGameMode != CustomGameMode.Standard)
             __instance.ReportButton.ToggleVisible(false);
@@ -84,7 +84,7 @@ class VentButtonDoClickPatch
 
         var pc = PlayerControl.LocalPlayer;
         {
-            if (pc.inVent || __instance.currentTarget == null || !pc.CanMove || !__instance.isActiveAndEnabled) return true;
+            if (pc.inVent || !__instance.currentTarget || !pc.CanMove || !__instance.isActiveAndEnabled) return true;
             if (!pc.Is(CustomRoles.Swooper) && !pc.Is(CustomRoles.Wraith) && !pc.Is(CustomRoles.Chameleon)) return true;
             pc?.MyPhysics?.RpcEnterVent(__instance.currentTarget.Id);
             return false;
@@ -128,7 +128,7 @@ class TaskPanelBehaviourPatch
         var taskText = __instance.taskText.text;
         if (taskText == "None") return;
 
-        if (player == null) return;
+        if (!player) return;
 
         // Display Description
         if (!player.GetCustomRole().IsVanilla())

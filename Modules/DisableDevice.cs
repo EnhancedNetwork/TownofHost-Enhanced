@@ -165,7 +165,7 @@ public class RemoveDisableDevicesPatch
         var consoles = UnityEngine.Object.FindObjectsOfType<SystemConsole>(true);
         if (admins == null || consoles == null) return;
 
-        switch (Utils.GetActiveMapId())
+        switch (GetActiveMapId())
         {
             case 0:
             case 3:

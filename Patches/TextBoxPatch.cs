@@ -190,7 +190,7 @@ public static class TextBoxPatch
             IsInvalidCommand = false;
             HudManager hud = HudManager.Instance;
 
-            if (PlaceHolderText == null)
+            if (!PlaceHolderText)
             {
                 PlaceHolderText = UnityEngine.Object.Instantiate(__instance.outputText, __instance.outputText.transform.parent);
                 PlaceHolderText.name = "PlaceHolderText";
@@ -198,7 +198,7 @@ public static class TextBoxPatch
                 PlaceHolderText.transform.localPosition = __instance.outputText.transform.localPosition;
             }
 
-            if (CommandInfoText == null)
+            if (!CommandInfoText)
             {
                 CommandInfoText = UnityEngine.Object.Instantiate(hud.KillButton.cooldownTimerText, hud.transform.parent, true);
                 CommandInfoText.name = "CommandInfoText";
@@ -213,7 +213,7 @@ public static class TextBoxPatch
                 CommandInfoText.transform.SetAsLastSibling();
             }
 
-            if (AdditionalInfoText == null)
+            if (!AdditionalInfoText)
             {
                 AdditionalInfoText = UnityEngine.Object.Instantiate(hud.KillButton.cooldownTimerText, hud.transform.parent, true);
                 AdditionalInfoText.name = "AdditionalInfoText";
@@ -339,10 +339,10 @@ public static class TextBoxPatch
 
         void Destroy()
         {
-            if (PlaceHolderText != null) PlaceHolderText.enabled = false;
-            if (CommandInfoText != null) CommandInfoText.enabled = false;
+            if (PlaceHolderText) PlaceHolderText.enabled = false;
+            if (CommandInfoText) CommandInfoText.enabled = false;
 
-            if (AdditionalInfoText != null)
+            if (AdditionalInfoText)
             {
                 bool showLobbyCode = HudManager.Instance?.Chat?.IsOpenOrOpening == true && GameStates.IsLobby && Options.GetSuffixMode() == SuffixModes.Streaming && !Options.HideGameSettings.GetBool() && !DataManager.Settings.Gameplay.StreamerMode;
                 AdditionalInfoText.enabled = showLobbyCode;
@@ -353,12 +353,12 @@ public static class TextBoxPatch
 
     public static void OnTabPress(ChatController __instance)
     {
-        if (PlaceHolderText == null || PlaceHolderText.text == "") return;
+        if (!PlaceHolderText || PlaceHolderText.text == "") return;
 
         __instance.freeChatField.textArea.SetText(PlaceHolderText.text);
         __instance.freeChatField.textArea.compoText = "";
 
-        if (AdditionalInfoText != null && AdditionalInfoText.text != "")
+        if (AdditionalInfoText && AdditionalInfoText.text != "")
             OptionShower.currentPage = 0;
     }
 

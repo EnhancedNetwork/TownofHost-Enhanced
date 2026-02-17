@@ -500,7 +500,7 @@ public static class Utils
         // If a player is possessed by the Dollmaster swap each other's role and add-ons for display for every other client other than Dollmaster and target.
         if (DollMaster.IsControllingPlayer)
         {
-            if (!(DollMaster.DollMasterTarget == null || DollMaster.controllingTarget == null))
+            if (DollMaster.DollMasterTarget && DollMaster.controllingTarget)
             {
                 if (seerId != DollMaster.DollMasterTarget.PlayerId && targetId == DollMaster.DollMasterTarget.PlayerId)
                     targetSubRoles = Main.PlayerStates[DollMaster.controllingTarget.PlayerId].SubRoles;
@@ -524,7 +524,7 @@ public static class Utils
                 var seer = GetPlayerById(seerId);
                 var target = GetPlayerById(targetId);
 
-                if (seer == null || target == null) return (RoleText.ToString(), RoleColor);
+                if (!seer || !target) return (RoleText.ToString(), RoleColor);
 
                 var oldRoleText = RoleText.ToString();
 
@@ -643,9 +643,9 @@ public static class Utils
         if (GameStates.IsLobby) return false;
 
         //Tasks may be null, in which case no task is assumed
-        if (playerData == null) return false;
+        if (!playerData) return false;
         if (playerData.Tasks == null) return false;
-        if (playerData.Role == null) return false;
+        if (!playerData.Role) return false;
 
         var hasTasks = true;
         if (!Main.PlayerStates.TryGetValue(playerData.PlayerId, out var States))
@@ -1274,7 +1274,7 @@ public static class Utils
     public static void ShowHelp(byte ID)
     {
         PlayerControl pc = ID.GetPlayer();
-        if (pc == null) return;
+        if (!pc) return;
 
         List<Command> commands = [.. Command.AllCommands.Values.OrderBy(x => x.UsageLevel).ThenBy(x => x.UsageTime)];
 
@@ -1366,19 +1366,19 @@ public static class Utils
         { "black",  (  0,   0,   0) }
     };
 
-    public static void SendMultipleMessages(this IEnumerable<Message> messages, SendOption sendOption = SendOption.Reliable)
+    public static void SendMultipleMessages(this IEnumerable<Message> messages, MessageImportance importance = MessageImportance.Medium)
     {
-        messages.Do(x => SendMessage(x.Text, x.SendTo, x.Title, sendOption: sendOption));
+        messages.Do(x => SendMessage(x.Text, x.SendTo, x.Title, importance: importance));
     }
 
-    public static CustomRpcSender SendMessage(string text, byte sendTo = byte.MaxValue, string title = "", bool noSplit = false, CustomRpcSender writer = null, bool final = false, bool multiple = false, SendOption sendOption = SendOption.Reliable, bool addToHistory = true, bool force = false, bool noNumberSplit = false, bool numberSplitFinal = false, [CallerFilePath] string callerFilePath = "", [CallerLineNumber] int callerLineNumber = 0)
+    public static CustomRpcSender SendMessage(string text, byte sendTo = byte.MaxValue, string title = "", bool noSplit = false, CustomRpcSender writer = null, bool final = false, bool multiple = false, MessageImportance importance = MessageImportance.Medium, bool addToHistory = true, bool force = false, bool noNumberSplit = false, bool numberSplitFinal = false, [CallerFilePath] string callerFilePath = "", [CallerLineNumber] int callerLineNumber = 0)
     {
         try
         {
             Logger.Info($"SendMessage called from {callerFilePath.Split('\\')[^1]} at line {callerLineNumber}", "SendMessage");
 
             PlayerControl receiver = GetPlayerById(sendTo, false);
-            if (sendTo != byte.MaxValue && receiver == null || !force && title.RemoveHtmlTags().Trim().Length == 0 && text.RemoveHtmlTags().Trim().Length == 0) return writer;
+            if (sendTo != byte.MaxValue && !receiver || !force && title.RemoveHtmlTags().Trim().Length == 0 && text.RemoveHtmlTags().Trim().Length == 0) return writer;
 
             if (!AmongUsClient.Instance.AmHost)
             {
@@ -1388,7 +1388,24 @@ public static class Utils
                 return writer;
             }
 
-            if (title == string.Empty) title = GetString("DefaultSystemMessageTitle");
+            text = text.Replace("color=#", "#");
+            title = title.Replace("color=", string.Empty);
+
+            SendOption sendOption = SendOption.Reliable;
+
+            if (GameStates.IsVanillaServer)
+            {
+                if (importance != MessageImportance.High && GameStates.InGame && !title.Contains("#ffff00") && !title.Contains('⚠') && !text.Contains('⚠') && title != GetString("NoSpamAnymoreUseCmd"))
+                    sendOption = SendOption.None;
+
+                text = ReplaceHexColorsWithSafeColors(text);
+                text = ReplaceDigitsOutsideRichText(text);
+            }
+
+            if (importance == MessageImportance.Low)
+                sendOption = SendOption.None;
+            
+            if (title == "") title = GetString("DefaultSystemMessageTitle");
 
             if (title.Count(x => x == '\u2605') == 2 && !title.Contains('\n'))
             {
@@ -1396,15 +1413,6 @@ public static class Utils
                     title = $"{title[..(title.IndexOf('>') + 1)]}\u27a1{title.Replace("\u2605", "")[..(title.LastIndexOf('<') - 2)]}\u2b05";
                 else
                     title = "\u27a1" + title.Replace("\u2605", "") + "\u2b05";
-            }
-
-            text = text.Replace("color=#", "#");
-            title = title.Replace("color=", string.Empty);
-
-            if (GameStates.IsVanillaServer)
-            {
-                text = ReplaceHexColorsWithSafeColors(text);
-                text = ReplaceDigitsOutsideRichText(text);
             }
 
             PlayerControl sender = !addToHistory || GameStates.IsVanillaServer ? PlayerControl.LocalPlayer : Main.EnumerateAlivePlayerControls().MinBy(x => x.PlayerId) ?? Main.EnumerateAlivePlayerControls().MinBy(x => x.PlayerId) ?? PlayerControl.LocalPlayer;
@@ -1417,7 +1425,7 @@ public static class Utils
                 return writer;
             }
 
-            Logger.Info($"sender owner: {sender.AmOwner}; sender dead: {sender.Data.IsDead}; sender alive: {sender.IsAlive()}", "SendMessage CheckTempReviveHost");
+            // Logger.Info($"sender owner: {sender.AmOwner}; sender dead: {sender.Data.IsDead}; sender alive: {sender.IsAlive()}", "SendMessage CheckTempReviveHost");
             if (sender.AmOwner && sender.Data.IsDead)
             {
                 bool delayMessage = false;
@@ -1442,7 +1450,7 @@ public static class Utils
                     IEnumerator DelaySend()
                     {
                         yield return new WaitForSecondsRealtime(0.3f);
-                        SendMessage(text, sendTo, title, noSplit, writer, final, multiple, sendOption, addToHistory);
+                        SendMessage(text, sendTo, title, noSplit, writer, final, multiple, importance, addToHistory);
                     }
                 }
                 
@@ -1483,8 +1491,8 @@ public static class Utils
 
                 if (parts.Count > 1)
                 {
-                    writer = parts.Take(parts.Count - 1).Aggregate(writer, (current, part) => SendMessage(part, sendTo, title, writer: current, final: false, multiple: true, sendOption: sendOption, addToHistory: addToHistory, noNumberSplit: true));
-                    return SendMessage(parts[^1], sendTo, title, false, writer, final, multiple, sendOption, addToHistory, noNumberSplit: true, numberSplitFinal: true);
+                    writer = parts.Take(parts.Count - 1).Aggregate(writer, (current, part) => SendMessage(part, sendTo, title, writer: current, final: false, multiple: true, importance: importance, addToHistory: addToHistory, noNumberSplit: true));
+                    return SendMessage(parts[^1], sendTo, title, false, writer, final, multiple, importance, addToHistory, noNumberSplit: true, numberSplitFinal: true);
                 }
             }
 
@@ -1627,8 +1635,8 @@ public static class Utils
                     }
 
                     writer = shortenedText.Length * 2 >= textRpcSizeLimit
-                        ? shortenedText.Chunk(textRpcSizeLimit).Aggregate(writer, (current, chunk) => SendMessage(new(chunk), sendTo, title, true, current, sendOption: sendOption))
-                        : SendMessage(shortenedText, sendTo, title, true, writer, sendOption: sendOption);
+                        ? shortenedText.Chunk(textRpcSizeLimit).Aggregate(writer, (current, chunk) => SendMessage(new(chunk), sendTo, title, true, current, importance: importance))
+                        : SendMessage(shortenedText, sendTo, title, true, writer, importance: importance);
 
                     string sentText = shortenedText;
                     shortenedText = line + "\n";
@@ -1640,7 +1648,7 @@ public static class Utils
                     }
                 }
 
-                if (shortenedText.Length > 0 && !shortenedText.IsNullOrWhiteSpace()) writer = SendMessage(shortenedText, sendTo, title, true, writer, true, sendOption: sendOption);
+                if (shortenedText.Length > 0 && !shortenedText.IsNullOrWhiteSpace()) writer = SendMessage(shortenedText, sendTo, title, true, writer, true, importance: importance);
                 else
                 {
                     Logger.Info($"Set sender name to {sender.GetRealName()}; Shortened", "SendMessage");
@@ -1650,7 +1658,7 @@ public static class Utils
                         .EndRpc();
 
                     if (!multiple) writer.SendMessage();
-                    else RestartMessageIfTooLong();
+                    else RestartMessageIfTooLong(sendOption);
                 }
 
                 return writer;
@@ -1701,17 +1709,17 @@ public static class Utils
                     .EndRpc();
 
                 if (!multiple) writer.SendMessage();
-                else RestartMessageIfTooLong();
+                else RestartMessageIfTooLong(sendOption);
             }
             else
-                RestartMessageIfTooLong();
+                RestartMessageIfTooLong(sendOption);
         }
         catch (Exception e) { ThrowException(e); }
 
         if (addToHistory) ChatUpdatePatch.LastMessages.Add((text, sendTo, title, TimeStamp));
         return writer;
 
-        void RestartMessageIfTooLong()
+        void RestartMessageIfTooLong(SendOption sendOption)
         {
             if (writer.stream.Length > 500)
             {
@@ -1988,7 +1996,7 @@ public static class Utils
     public static void ApplySuffix(PlayerControl player)
     {
         // Only host
-        if (!AmongUsClient.Instance.AmHost || player == null) return;
+        if (!AmongUsClient.Instance.AmHost || !player) return;
         // Check invalid color
         if (player.Data.DefaultOutfit.ColorId < 0 || Palette.PlayerColors.Length <= player.Data.DefaultOutfit.ColorId) return;
 
@@ -2277,7 +2285,7 @@ public static class Utils
     // If not a Desync Role remove team display
     public static void SetCustomIntro(this PlayerControl player)
     {
-        if (!SetUpRoleTextPatch.IsInIntro || player == null || player.IsModded()) return;
+        if (!SetUpRoleTextPatch.IsInIntro || !player || player.IsModded()) return;
 
         //Get role info font size based on the length of the role info
         static int GetInfoSize(string RoleInfo)
@@ -2354,11 +2362,11 @@ public static class Utils
         try
         {
             if (!AmongUsClient.Instance.AmHost) return;
-            if (!SetUpRoleTextPatch.IsInIntro && ((SpecifySeer != null && SpecifySeer.IsModded() && (Options.CurrentGameMode == CustomGameMode.Standard || SpecifySeer.IsHost())) || (GameStates.IsMeeting && !isForMeeting) || GameStates.IsLobby)) return;
+            if (!SetUpRoleTextPatch.IsInIntro && ((SpecifySeer && SpecifySeer.IsModded() && (Options.CurrentGameMode == CustomGameMode.Standard || SpecifySeer.IsHost())) || (GameStates.IsMeeting && !isForMeeting) || GameStates.IsLobby)) return;
 
             var apc = Main.EnumeratePlayerControls();
-            var seerList = SpecifySeer != null ? [SpecifySeer] : apc;
-            var targetList = SpecifyTarget != null ? [SpecifyTarget] : apc;
+            var seerList = SpecifySeer ? [SpecifySeer] : apc;
+            var targetList = SpecifyTarget ? [SpecifyTarget] : apc;
 
             var sender = CustomRpcSender.Create("NotifyRoles", SendOption, log: false);
             var hasValue = false;
@@ -2406,11 +2414,11 @@ public static class Utils
 
         //var logger = Logger.Handler("DoNotifyRoles");
 
-        var seerList = SpecifySeer != null
+        var seerList = SpecifySeer
             ? [SpecifySeer]
             : Main.EnumeratePlayerControls();
 
-        var targetList = SpecifyTarget != null
+        var targetList = SpecifyTarget
             ? [SpecifyTarget]
             : Main.EnumeratePlayerControls();
 
@@ -2426,7 +2434,7 @@ public static class Utils
         foreach (var seer in seerList)
         {
             // Do nothing when the seer is not present in the game
-            if (seer == null || seer.notRealPlayer) continue;
+            if (!seer || seer.notRealPlayer) continue;
 
             // Only non-modded players or player left
             if (seer.IsModded() || seer.PlayerId == OnPlayerLeftPatch.LeftPlayerId || seer.Data.Disconnected) continue;
@@ -2585,7 +2593,7 @@ public static class Utils
                 foreach (var realTarget in targetList)
                 {
                     // if the target is the seer itself, do nothing
-                    if (realTarget == null || (realTarget.PlayerId == seer.PlayerId) || realTarget.PlayerId == OnPlayerLeftPatch.LeftPlayerId || realTarget.Data.Disconnected || realTarget.notRealPlayer) continue;
+                    if (!realTarget || (realTarget.PlayerId == seer.PlayerId) || realTarget.PlayerId == OnPlayerLeftPatch.LeftPlayerId || realTarget.Data.Disconnected || realTarget.notRealPlayer) continue;
 
                     var target = realTarget;
 
@@ -2795,7 +2803,7 @@ public static class Utils
 
         try
         {
-            if (seer == null || seer.Data.Disconnected || (seer.IsModded() && (seer.IsHost() || Options.CurrentGameMode == CustomGameMode.Standard)) || (!SetUpRoleTextPatch.IsInIntro && GameStates.IsLobby))
+            if (!seer || seer.Data.Disconnected || (seer.IsModded() && (seer.IsHost() || Options.CurrentGameMode == CustomGameMode.Standard)) || (!SetUpRoleTextPatch.IsInIntro && GameStates.IsLobby))
                 return false;
 
             sender ??= CustomRpcSender.Create("NotifyRoles", sendOption);
@@ -2956,7 +2964,7 @@ public static class Utils
                     try
                     {
                         // if the target is the seer itself, do nothing
-                        if (realTarget == null || (realTarget.PlayerId == seer.PlayerId) || realTarget.PlayerId == OnPlayerLeftPatch.LeftPlayerId || realTarget.Data.Disconnected || realTarget.notRealPlayer) continue;
+                        if (!realTarget || (realTarget.PlayerId == seer.PlayerId) || realTarget.PlayerId == OnPlayerLeftPatch.LeftPlayerId || realTarget.Data.Disconnected || realTarget.notRealPlayer) continue;
 
                         var target = realTarget;
 
@@ -3435,7 +3443,7 @@ public static class Utils
         string name = "invalid";
         var player = GetPlayerById(num);
         var playerCount = Main.AllPlayerControls.Count;
-        if (num < playerCount && player != null) name = player?.GetNameWithRole();
+        if (num < playerCount && player) name = player?.GetNameWithRole();
         if (num == 252) name = "Dead";
         if (num == 253) name = "Skip";
         if (num == 254) name = "MissedVote";
@@ -3469,7 +3477,7 @@ public static class Utils
 
         if (n == 0)
         {
-            if (PlayerControl.LocalPlayer != null)
+            if (PlayerControl.LocalPlayer)
                 HudManager.Instance?.Chat?.AddChat(PlayerControl.LocalPlayer, GetString("Dump.NoNewLogInfo"));
             return;
         }
@@ -3479,7 +3487,7 @@ public static class Utils
 
         if (!open) return;
 
-        if (PlayerControl.LocalPlayer != null)
+        if (PlayerControl.LocalPlayer)
             HudManager.Instance?.Chat?.AddChat(PlayerControl.LocalPlayer, string.Format(GetString("Message.DumpfileSaved"), $"TOHE - v{Main.PluginVersion}-{t}.log"));
 
         SendMessage(string.Format(GetString("Message.DumpcmdUsed"), PlayerControl.LocalPlayer.GetNameWithRole()));
@@ -3555,9 +3563,9 @@ public static class Utils
     public static void FlashColor(Color color, float duration = 1f)
     {
         var hud = DestroyableSingleton<HudManager>.Instance;
-        if (hud.FullScreen == null) return;
+        if (!hud.FullScreen) return;
         var obj = hud.transform.FindChild("FlashColor_FullScreen")?.gameObject;
-        if (obj == null)
+        if (!obj)
         {
             obj = UnityEngine.Object.Instantiate(hud.FullScreen.gameObject, hud.transform);
             obj.name = "FlashColor_FullScreen";
@@ -3766,4 +3774,11 @@ public class Message(string text, byte sendTo = byte.MaxValue, string title = ""
     public string Text { get; } = text;
     public byte SendTo { get; } = sendTo;
     public string Title { get; } = title;
+}
+
+public enum MessageImportance
+{
+    Low,
+    Medium,
+    High
 }

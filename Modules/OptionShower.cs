@@ -28,9 +28,9 @@ public class OptionShower : MonoBehaviour
     }
     public void Update()
     {
-        if (text == null)
+        if (!text)
         {
-            if (hudManager.AbilityButton != null && hudManager.AbilityButton.cooldownTimerText != null)
+            if (hudManager.AbilityButton && hudManager.AbilityButton.cooldownTimerText)
             {
                 text = Instantiate(hudManager.AbilityButton.cooldownTimerText, hudManager.transform);
                 text.name = "OptionShowerText";
@@ -45,9 +45,9 @@ public class OptionShower : MonoBehaviour
             }
         }
 
-        if (Camera == null || text == null) return;
+        if (!Camera || !text) return;
 
-        if (PlayerControl.LocalPlayer == null || !GameStates.IsLobby)
+        if (!PlayerControl.LocalPlayer || !GameStates.IsLobby)
         {
             text.text = "";
             return;

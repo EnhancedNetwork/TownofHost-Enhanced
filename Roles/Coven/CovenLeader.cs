@@ -54,7 +54,7 @@ internal class CovenLeader : CovenManager
     public override void SetKillCooldown(byte id) => RetrainCooldown.GetFloat();
     public override bool OnCheckMurderAsKiller(PlayerControl killer, PlayerControl target)
     {
-        if (killer == null || target == null) return false;
+        if (!killer || !target) return false;
         if (killer.CheckDoubleTrigger(target, () => { Retrain(killer, target); }))
         {
             if (HasNecronomicon(killer) && (!target.GetCustomRole().IsCovenTeam() || Main.PlayerStates[killer.PlayerId].IsRandomizer || Main.PlayerStates[target.PlayerId].IsRandomizer))

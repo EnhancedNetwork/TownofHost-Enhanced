@@ -10,7 +10,7 @@ namespace TOHE.Modules.Rpc
         public RpcGuardAndKill(PlayerControl player, PlayerControl target = null)
         {
             this.netId = player.NetId;
-            this.targetNetId = target != null ? target.NetId : player.NetId;
+            this.targetNetId = target ? target.NetId : player.NetId;
 
             var optionsender = PlayerGameOptionsSender.AllSenders.OfType<PlayerGameOptionsSender>().FirstOrDefault(x => x.player.PlayerId == player.PlayerId);
             if (optionsender == null)

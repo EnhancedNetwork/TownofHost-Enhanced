@@ -189,7 +189,7 @@ internal class ControllerManagerUpdatePatch
             }
 
             // Get Position
-            if (Input.GetKeyDown(KeyCode.P) && PlayerControl.LocalPlayer != null)
+            if (Input.GetKeyDown(KeyCode.P) && PlayerControl.LocalPlayer)
             {
                 Logger.Info(PlayerControl.LocalPlayer.GetTruePosition().ToString(), "GetLocalPlayerPos GetTruePosition()");
                 Logger.Info(PlayerControl.LocalPlayer.transform.position.ToString(), "GetLocalPlayerPos transform.position");
@@ -215,7 +215,7 @@ internal class ControllerManagerUpdatePatch
             }
 
             // Search Bar in Menu "Press Enter" alternative function
-            if (GetKeysDown(KeyCode.Return) && GameSettingMenuPatch.Instance != null && GameSettingMenuPatch.Instance.isActiveAndEnabled == true)
+            if (GetKeysDown(KeyCode.Return) && GameSettingMenuPatch.Instance && GameSettingMenuPatch.Instance.isActiveAndEnabled == true)
             {
                 GameSettingMenuPatch._SearchForOptions?.Invoke();
             }
@@ -229,7 +229,7 @@ internal class ControllerManagerUpdatePatch
                 {
                     foreach (var pva in MeetingHud.Instance.playerStates)
                     {
-                        if (pva == null) continue;
+                        if (!pva) continue;
 
                         if (pva.VotedFor < 253)
                             MeetingHud.Instance.RpcClearVote(pva.TargetPlayerId);

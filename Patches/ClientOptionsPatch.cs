@@ -32,7 +32,7 @@ public static class OptionsMenuBehaviourStartPatch
 
     public static void Postfix(OptionsMenuBehaviour __instance)
     {
-        if (__instance.DisableMouseMovement == null) return;
+        if (!__instance.DisableMouseMovement) return;
 
         Main.SwitchVanilla.Value = false;
         if (Main.ResetOptions || !DebugModeManager.AmDebugger)
@@ -48,7 +48,7 @@ public static class OptionsMenuBehaviourStartPatch
 #endif
 
 #if !ANDROID
-        if (UnlockFPS == null || UnlockFPS.ToggleButton == null)
+        if (UnlockFPS == null || !UnlockFPS.ToggleButton)
         {
             UnlockFPS = ClientOptionItem.Create("UnlockFPS", Main.UnlockFPS, __instance, UnlockFPSButtonToggle);
             static void UnlockFPSButtonToggle()
@@ -59,15 +59,15 @@ public static class OptionsMenuBehaviourStartPatch
         }
 #endif
 
-        if (ShowFPS == null || ShowFPS.ToggleButton == null)
+        if (ShowFPS == null || !ShowFPS.ToggleButton)
         {
             ShowFPS = ClientOptionItem.Create("ShowFPS", Main.ShowFPS, __instance);
         }
-        if (EnableGM == null || EnableGM.ToggleButton == null)
+        if (EnableGM == null || !EnableGM.ToggleButton)
         {
             EnableGM = ClientOptionItem.Create("GM", Main.EnableGM, __instance);
         }
-        if (AutoStart == null || AutoStart.ToggleButton == null)
+        if (AutoStart == null || !AutoStart.ToggleButton)
         {
             AutoStart = ClientOptionItem.Create("AutoStart", Main.AutoStart, __instance, AutoStartButtonToggle);
             static void AutoStartButtonToggle()
@@ -79,23 +79,23 @@ public static class OptionsMenuBehaviourStartPatch
                 }
             }
         }
-        if (DarkTheme == null || DarkTheme.ToggleButton == null)
+        if (DarkTheme == null || !DarkTheme.ToggleButton)
         {
             DarkTheme = ClientOptionItem.Create("DarkTheme", Main.DarkTheme, __instance);
         }
-        if (DisableLobbyMusic == null || DisableLobbyMusic.ToggleButton == null)
+        if (DisableLobbyMusic == null || !DisableLobbyMusic.ToggleButton)
         {
             DisableLobbyMusic = ClientOptionItem.Create("DisableLobbyMusic", Main.DisableLobbyMusic, __instance);
         }
-        if (ShowTextOverlay == null || ShowTextOverlay.ToggleButton == null)
+        if (ShowTextOverlay == null || !ShowTextOverlay.ToggleButton)
         {
             ShowTextOverlay = ClientOptionItem.Create("ShowTextOverlay", Main.ShowTextOverlay, __instance);
         }
-        if (ShowModdedClientText == null || ShowModdedClientText.ToggleButton == null)
+        if (ShowModdedClientText == null || !ShowModdedClientText.ToggleButton)
         {
             ShowModdedClientText = ClientOptionItem.Create("ShowModdedClientText", Main.ShowModdedClientText, __instance);
         }
-        if (HorseMode == null || HorseMode.ToggleButton == null)
+        if (HorseMode == null || !HorseMode.ToggleButton)
         {
             HorseMode = ClientOptionItem.Create("HorseMode", Main.HorseMode, __instance, SwitchHorseMode);
 
@@ -113,7 +113,7 @@ public static class OptionsMenuBehaviourStartPatch
             }
         }
 
-        if (LongMode == null || LongMode.ToggleButton == null)
+        if (LongMode == null || !LongMode.ToggleButton)
         {
             LongMode = ClientOptionItem.Create("LongMode", Main.LongMode, __instance, SwitchLongMode);
 
@@ -130,31 +130,31 @@ public static class OptionsMenuBehaviourStartPatch
                 }
             }
         }
-        if (EnableCommandHelper == null || EnableCommandHelper.ToggleButton == null)
+        if (EnableCommandHelper == null || !EnableCommandHelper.ToggleButton)
             EnableCommandHelper = ClientOptionItem.Create("EnableCommandHelper", Main.EnableCommandHelper, __instance);
-        if (ForceOwnLanguage == null || ForceOwnLanguage.ToggleButton == null)
+        if (ForceOwnLanguage == null || !ForceOwnLanguage.ToggleButton)
         {
             ForceOwnLanguage = ClientOptionItem.Create("ForceOwnLanguage", Main.ForceOwnLanguage, __instance);
         }
-        if (ForceOwnLanguageRoleName == null || ForceOwnLanguageRoleName.ToggleButton == null)
+        if (ForceOwnLanguageRoleName == null || !ForceOwnLanguageRoleName.ToggleButton)
         {
             ForceOwnLanguageRoleName = ClientOptionItem.Create("ForceOwnLanguageRoleName", Main.ForceOwnLanguageRoleName, __instance);
         }
-        if (EnableCustomButton == null || EnableCustomButton.ToggleButton == null)
+        if (EnableCustomButton == null || !EnableCustomButton.ToggleButton)
         {
             EnableCustomButton = ClientOptionItem.Create("EnableCustomButton", Main.EnableCustomButton, __instance);
         }
-        if (EnableCustomSoundEffect == null || EnableCustomSoundEffect.ToggleButton == null)
+        if (EnableCustomSoundEffect == null || !EnableCustomSoundEffect.ToggleButton)
         {
             EnableCustomSoundEffect = ClientOptionItem.Create("EnableCustomSoundEffect", Main.EnableCustomSoundEffect, __instance);
         }
-        if (EnableCustomDecorations == null || EnableCustomDecorations.ToggleButton == null)
+        if (EnableCustomDecorations == null || !EnableCustomDecorations.ToggleButton)
         {
             EnableCustomDecorations = ClientOptionItem.Create("EnableCustomDecorations", Main.EnableCustomDecorations, __instance);
         }
 
 #if !ANDROID
-        if (SwitchVanilla == null || SwitchVanilla.ToggleButton == null)
+        if (SwitchVanilla == null || !SwitchVanilla.ToggleButton)
         {
             SwitchVanilla = ClientOptionItem.Create("SwitchVanilla", Main.SwitchVanilla, __instance, SwitchVanillaButtonToggle);
             static void SwitchVanillaButtonToggle()
@@ -168,15 +168,15 @@ public static class OptionsMenuBehaviourStartPatch
 #if DEBUG
         if (EOSManager.Instance.friendCode.GetDevUser().DeBug)
         {
-            if ((VersionCheat == null || VersionCheat.ToggleButton == null) && DebugModeManager.AmDebugger)
+            if ((VersionCheat == null || !VersionCheat.ToggleButton) && DebugModeManager.AmDebugger)
             {
                 VersionCheat = ClientOptionItem.Create("VersionCheat", Main.VersionCheat, __instance);
             }
-            if ((GodMode == null || GodMode.ToggleButton == null) && DebugModeManager.AmDebugger)
+            if ((GodMode == null || !GodMode.ToggleButton) && DebugModeManager.AmDebugger)
             {
                 GodMode = ClientOptionItem.Create("GodMode", Main.GodMode, __instance);
             }
-            if ((AutoRehost == null || AutoRehost.ToggleButton == null) && DebugModeManager.AmDebugger)
+            if ((AutoRehost == null || !AutoRehost.ToggleButton) && DebugModeManager.AmDebugger)
             {
                 AutoRehost = ClientOptionItem.Create("AutoRehost", Main.AutoRehost, __instance);
             }

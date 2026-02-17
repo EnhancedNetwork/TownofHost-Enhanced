@@ -96,7 +96,7 @@ internal class Necromancer : CovenManager
     }
     public override bool OnCheckMurderAsKiller(PlayerControl killer, PlayerControl target)
     {
-        if (killer == null || target == null || !killer.IsAlive()) return false;
+        if (!killer || !target || !killer.IsAlive()) return false;
 
         if (!IsRevenge) return true;
         else if (target == Killer)
@@ -123,7 +123,7 @@ internal class Necromancer : CovenManager
     }
     public override void UnShapeShiftButton(PlayerControl nm)
     {
-        if (nm == null) return;
+        if (!nm) return;
         if (!canUseAbility)
         {
             nm.Notify(GetString("NecromancerCooldownNotDone"));
@@ -178,7 +178,7 @@ internal class Necromancer : CovenManager
     }
     private static void RevertRole(PlayerControl nm, CustomRoles role)
     {
-        if (nm == null) return;
+        if (!nm) return;
         if (nm.GetCustomRole() != CustomRoles.Necromancer)
         {
             nm.GetRoleClass()?.OnRemove(nm.PlayerId);

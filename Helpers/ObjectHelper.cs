@@ -7,7 +7,7 @@ public static class ObjectHelper
     public static void DestroyTranslator(this GameObject obj)
     {
         var translator = obj.GetComponent<TextTranslatorTMP>();
-        if (translator != null)
+        if (translator)
         {
             Object.Destroy(translator);
         }
@@ -21,7 +21,7 @@ public static class ObjectHelper
         int pathIndex = pathParts.Length - 1;
         Transform current = obj.transform;
 
-        while (current != null)
+        while (current)
         {
             if (current.name == pathParts[pathIndex])
             {

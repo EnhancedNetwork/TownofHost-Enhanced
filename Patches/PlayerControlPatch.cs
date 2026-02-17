@@ -151,7 +151,7 @@ class CheckMurderPatch
         }
 
         // Is the target in a killable state?
-        if (target.Data == null // Check if PlayerData is null
+        if (!target.Data // Check if PlayerData is null
             || target.inVent
             || target.onLadder
             || target.inMovingPlat // Moving Platform on Airhip and Zipline on Fungle
@@ -169,7 +169,7 @@ class CheckMurderPatch
             return false;
         }
         // Checking during the meeting
-        if (MeetingHud.Instance != null)
+        if (MeetingHud.Instance)
         {
             Logger.Info("In the meeting, the kill was canceled", "CheckMurder");
             return false;
@@ -249,8 +249,8 @@ class CheckMurderPatch
 
         Logger.Info($"check: {check}", "RpcCheckAndMurder");
 
-        if (target == null) target = killer;
-        if (killer == null)
+        if (!target) target = killer;
+        if (!killer)
         {
             Logger.Info($"Killer: {killer == null} or Target: {target == null} is null", "RpcCheckAndMurder");
             return false;
@@ -625,7 +625,7 @@ public static class CheckShapeshiftPatch
     {
         logger.Info($"Checking shapeshift {instance.GetNameWithRole()} -> {(target == null || target.Data == null ? "(null)" : target.GetNameWithRole().RemoveHtmlTags())}");
 
-        if (!target || target.Data == null)
+        if (!target || !target.Data)
         {
             logger.Info("Cancel shapeshifting because target is null");
             return false;
@@ -779,7 +779,7 @@ class ReportDeadBodyPatch
             var killer = target?.Object?.GetRealKiller();
             var killerRole = killer?.GetCustomRole();
 
-            if (target == null) //Meeting
+            if (!target) //Meeting
             {
                 var playerRoleClass = __instance.GetRoleClass();
 
@@ -796,7 +796,7 @@ class ReportDeadBodyPatch
                     return false;
                 }
             }
-            if (target != null) // Report dead body
+            else // Report dead body
             {
                 // Guessed player cannot report
                 if (Main.PlayerStates[target.PlayerId].deathReason == PlayerState.DeathReason.Gambled) return false;
@@ -843,7 +843,7 @@ class ReportDeadBodyPatch
 
                 var tar = Utils.GetPlayerById(target.PlayerId);
 
-                if (__instance.Is(CustomRoles.Unlucky) && (target?.Object == null || !target.Object.Is(CustomRoles.Bait)))
+                if (__instance.Is(CustomRoles.Unlucky) && (!target?.Object || !target.Object.Is(CustomRoles.Bait)))
                 {
                     if (Unlucky.SuicideRand(__instance, Unlucky.StateSuicide.ReportDeadBody))
                         return false;
@@ -851,7 +851,7 @@ class ReportDeadBodyPatch
                 }
             }
 
-            if (Options.SyncButtonMode.GetBool() && target == null)
+            if (Options.SyncButtonMode.GetBool() && !target)
             {
                 Logger.Info($"Option: {Options.SyncedButtonCount.GetInt()}, has button count: {Options.UsedButtonCount}", "ReportDeadBody");
                 if (Options.SyncedButtonCount.GetFloat() <= Options.UsedButtonCount)
@@ -866,7 +866,7 @@ class ReportDeadBodyPatch
                     Logger.Info("The maximum number of meeting buttons has been reached", "ReportDeadBody");
                 }
             }
-            else if (target == null)
+            else if (!target)
             {
                 Logger.Info($"player called meeting with {__instance.RemainingEmergencies} buttons left", "ReportDeadBody");
                 if (__instance.RemainingEmergencies <= 0)
@@ -1023,7 +1023,7 @@ class FixedUpdateInNormalGamePatch
 
     public static void Postfix(PlayerControl __instance, bool lowLoad)
     {
-        if (__instance == null || __instance.PlayerId >= 254) return;
+        if (!__instance || __instance.PlayerId >= 254) return;
 
         CheckMurderPatch.Update(__instance.PlayerId);
 
@@ -1081,7 +1081,7 @@ class FixedUpdateInNormalGamePatch
         var localPlayer = PlayerControl.LocalPlayer;
         byte localPlayerId = localPlayer.PlayerId;
         var player = __instance;
-        if (player == null)
+        if (!player)
         {
             Logger.Warn("player was null", "FixedUpdateInNormalGamePatch");
             return;
@@ -1092,7 +1092,7 @@ class FixedUpdateInNormalGamePatch
         bool alive = player.IsAlive();
 
         var playerData = player.Data;
-        if (playerData == null) return;
+        if (!playerData) return;
 
         var playerClientId = player?.GetClientId() ?? byte.MaxValue;
 
@@ -1156,7 +1156,7 @@ class FixedUpdateInNormalGamePatch
             RoleTextCache[playerId] = roleText;
         }
 
-        if (lowLoad || roleText == null || player == null) return;
+        if (lowLoad || !roleText || !player) return;
 
         RefreshNameText(inLobby, player, playerClientId, playerData, inGame, localPlayer, localPlayerId, playerId, roleText, playerAmOwner, amongUsClient, isInTask);
     }
@@ -1585,7 +1585,7 @@ class PlayerClientInitializePatch
         public IEnumerator GetEnumerator()
         {
             instance.Visible = false;
-            if (instance.Data != null)
+            if (instance.Data)
             {
                 NetworkedPlayerInfo.PlayerOutfit defaultOutfit = instance.Data.DefaultOutfit;
                 instance.SetName(defaultOutfit.PlayerName);
@@ -1711,7 +1711,7 @@ class CoEnterVentPatch
             var vent = ShipStatus.Instance.AllVents.First(v => v.Id == id);
             foreach (var nextvent in vent.NearbyVents.ToList())
             {
-                if (nextvent == null) continue;
+                if (!nextvent) continue;
                 // Skip current vent or ventid 5 in Dleks to prevent stuck
                 if (nextvent.Id == id || (GameStates.DleksIsActive && id is 5 && nextvent.Id is 6)) continue;
                 CustomRoleManager.BlockedVentsList[instance.myPlayer.PlayerId].Add(nextvent.Id);
@@ -1807,7 +1807,7 @@ class PlayerControlCompleteTaskPatch
 
         var player = __instance;
         var playerTask = player.myTasks?.ToArray().FirstOrDefault(task => task.Id == idx);
-        var taskType = playerTask != null ? playerTask.TaskType : TaskTypes.None;
+        var taskType = playerTask ? playerTask.TaskType : TaskTypes.None;
 
         Logger.Info($"Task Complete: {player.GetNameWithRole()} - Task id: {idx} Type: {taskType}", "CompleteTask.Prefix");
         var taskState = player.GetPlayerTaskState();
@@ -1843,7 +1843,7 @@ class PlayerControlCompleteTaskPatch
             }
 
             // Check others complete task
-            if (playerTask != null)
+            if (playerTask)
                 CustomRoleManager.OthersCompleteThisTask(player, playerTask, playerIsOverridden, __instance);
 
             if (playerIsOverridden)
@@ -1952,7 +1952,7 @@ class PlayerControlCheckNamePatch
         Logger.Info($"PlayerId: {__instance.PlayerId} - playerName: {playerName} => {name}", "Name player");
 
         RPC.SyncAllPlayerNames();
-        if (__instance != null && !name.Equals(playerName))
+        if (__instance && !name.Equals(playerName))
         {
             Logger.Warn($"Standard nickname: {playerName} => {name}", "Name Format");
             __instance.RpcSetName(name);
@@ -1960,7 +1960,7 @@ class PlayerControlCheckNamePatch
 
         _ = new LateTask(() =>
         {
-            if (__instance != null && !__instance.Data.Disconnected && !__instance.IsModded())
+            if (__instance && !__instance.Data.Disconnected && !__instance.IsModded())
             {
                 var message = new RpcRequestRetryVersionCheck(PlayerControl.LocalPlayer.NetId);
                 RpcUtils.LateSpecificSendMessage(message, __instance.OwnerId);
@@ -1969,7 +1969,7 @@ class PlayerControlCheckNamePatch
             var sender = CustomRpcSender.Create("LobbyTagsSender", SendOption.Reliable);
             foreach (var player in Main.EnumeratePlayerControls())
             {
-                if (player == null || player.PlayerId == __instance.PlayerId || player.Data == null || player.Data.Disconnected) continue;
+                if (!player || player.PlayerId == __instance.PlayerId || !player.Data || player.Data.Disconnected) continue;
 
                 Main.AllClientRealNames.TryGetValue(player.OwnerId, out var rName);
 
@@ -2004,7 +2004,7 @@ class RpcSetColorPatch
 {
     public static void Postfix(PlayerControl __instance, byte bodyColor)
     {
-        if (Main.IntroDestroyed || __instance == null) return;
+        if (Main.IntroDestroyed || !__instance) return;
 
         Logger.Info($"PlayerId: {__instance.PlayerId} - playerColor: {bodyColor}", "RpcSetColor");
         if (bodyColor == 255) return;
@@ -2104,7 +2104,7 @@ public static class PlayerControlDiePatch
 {
     public static void Old_Postfix(PlayerControl __instance, DeathReason reason)
     {
-        if (!AmongUsClient.Instance.AmHost || __instance == null) return;
+        if (!AmongUsClient.Instance.AmHost || !__instance) return;
         var playerId = __instance.PlayerId;
         // Skip Tasks while Anti Blackout but not for real exiled
         if (AntiBlackout.SkipTasks && AntiBlackout.ExilePlayerId != playerId) return;
@@ -2125,7 +2125,7 @@ public static class PlayerControlDiePatch
 
     public static void Postfix(PlayerControl __instance)
     {
-        if (!AmongUsClient.Instance.AmHost || __instance == null) return;
+        if (!AmongUsClient.Instance.AmHost || !__instance) return;
 
         __instance.RpcRemovePet();
 
@@ -2149,7 +2149,7 @@ static class PlayerControlRevivePatch
 {
     public static void Postfix(PlayerControl __instance)
     {
-        if (!AmongUsClient.Instance.AmHost || __instance == null) return;
+        if (!AmongUsClient.Instance.AmHost || !__instance) return;
 
         LateTask.New(() =>
         {
@@ -2176,7 +2176,7 @@ class PlayerControlSetRolePatch
         if (RpcSetRoleReplacer.BlockSetRole || GameStates.IsHideNSeek) return true;
 
         canOverrideRole = true;
-        if (GameStates.IsHideNSeek || __instance == null) return true;
+        if (GameStates.IsHideNSeek || !__instance) return true;
         if (!ShipStatus.Instance.enabled || !AmongUsClient.Instance.AmHost) return true;
 
         var target = __instance;
@@ -2245,7 +2245,7 @@ class PlayerControlSetRolePatch
             {
                 foreach ((var seer, var role) in GhostRoles)
                 {
-                    if (seer == null || target == null) continue;
+                    if (!seer || !target) continue;
                     Logger.Info($"Desync {targetName} => {role} for {seer.GetNameWithRole().RemoveHtmlTags()}", "PlayerControl.RpcSetRole");
                     target.RpcSetRoleDesync(role, seer.GetClientId());
                 }
@@ -2257,7 +2257,7 @@ class PlayerControlSetRolePatch
     }
     public static void Postfix(PlayerControl __instance, [HarmonyArgument(0)] RoleTypes roleType, bool __runOriginal)
     {
-        if (!AmongUsClient.Instance.AmHost || __instance == null) return;
+        if (!AmongUsClient.Instance.AmHost || !__instance) return;
 
         try
         {

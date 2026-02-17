@@ -274,7 +274,7 @@ public static class GameOptionsMenuPatch
         {
             if (!GameStates.IsLobby) return;
             var hostButtons = GameObject.Find("Host Buttons");
-            if (hostButtons == null) return;
+            if (!hostButtons) return;
             hostButtons.transform.FindChild("Edit").GetComponent<PassiveButton>().ReceiveClickDown();
         }, 0.1f, "Click Edit Button");
 
@@ -285,7 +285,7 @@ public static class GameOptionsMenuPatch
         // Change tab to Original Tab
         _ = new LateTask(() =>
         {
-            if (!GameStates.IsLobby || GameSettingMenu.Instance == null) return;
+            if (!GameStates.IsLobby || !GameSettingMenu.Instance) return;
             GameSettingMenu.Instance.ChangeTab(index, Controller.currentTouchType == Controller.TouchType.Joystick);
         }, 0.28f, "Change Tab");
 
@@ -293,7 +293,7 @@ public static class GameOptionsMenuPatch
     [HarmonyPatch(nameof(GameOptionsMenu.ValueChanged)), HarmonyPrefix]
     private static bool ValueChangedPrefix(GameOptionsMenu __instance, OptionBehaviour option)
     {
-        if (__instance == null || ModGameOptionsMenu.TabIndex < 3) return true;
+        if (!__instance || ModGameOptionsMenu.TabIndex < 3) return true;
 
         if (ModGameOptionsMenu.OptionList.TryGetValue(option.GetInstanceID(), out var index))
         {
@@ -402,7 +402,7 @@ public static class GameOptionsMenuPatch
             _ => null
         };
 
-        if (baseGameSetting != null)
+        if (baseGameSetting)
         {
             baseGameSetting.Title = StringNames.Accept;
         }

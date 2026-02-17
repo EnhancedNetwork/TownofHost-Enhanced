@@ -27,7 +27,7 @@ public class ClientOptionItem
             var mouseMoveToggle = optionsMenuBehaviour.DisableMouseMovement;
 
             // 1つ目のボタンの生成時に背景も生成
-            if (CustomBackground == null)
+            if (!CustomBackground)
             {
                 CustomBackground = Object.Instantiate(optionsMenuBehaviour.Background, optionsMenuBehaviour.transform);
                 CustomBackground.name = "CustomBackground";
@@ -53,7 +53,7 @@ public class ClientOptionItem
                 PassiveButton returnButton = null;
                 foreach (var button in selectableButtons)
                 {
-                    if (button == null) continue;
+                    if (!button) continue;
 
                     if (button.name == "LeaveGameButton")
                         leaveButton = button.GetComponent<PassiveButton>();
@@ -75,9 +75,9 @@ public class ClientOptionItem
                     CustomBackground.gameObject.SetActive(true);
                 }));
 
-                if (leaveButton != null)
+                if (leaveButton)
                     leaveButton.transform.localPosition = new(-1.35f, -2.411f, -1f);
-                if (returnButton != null)
+                if (returnButton)
                     returnButton.transform.localPosition = new(1.35f, -2.411f, -1f);
 
                 OptionButtons = [];
@@ -133,7 +133,7 @@ public class ClientOptionItem
         for (int i = 0; i < OptionButtons.Count; i++)
         {
             var button = OptionButtons[i];
-            if (button == null) continue;
+            if (!button) continue;
 
             int row = i / 3;
             int col = i % 3;
@@ -148,7 +148,7 @@ public class ClientOptionItem
 
     public void UpdateToggle()
     {
-        if (ToggleButton == null) return;
+        if (!ToggleButton) return;
 
         var color = (Config != null && Config.Value) ? new Color32(255, 192, 203, byte.MaxValue) : new Color32(77, 77, 77, byte.MaxValue);
         ToggleButton.Background.color = color;

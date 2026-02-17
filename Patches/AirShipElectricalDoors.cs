@@ -17,7 +17,7 @@ public class AirshipElectricalDoors
         for (byte i = 0; i < Instance.Doors.Count; i++)
         {
             var door = Instance.Doors[i];
-            if (door != null && !door.IsOpen)
+            if (door && !door.IsOpen)
                 DoorsArray.Add(i);
         }
         return DoorsArray?.ToArray();

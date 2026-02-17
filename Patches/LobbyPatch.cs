@@ -33,7 +33,7 @@ public class LobbyStartPatch
         static System.Collections.IEnumerator CoLoadDecorations()
         {
             var LeftBox = GameObject.Find("Leftbox");
-            if (LeftBox != null)
+            if (LeftBox)
             {
                 LobbyPaintObject = Object.Instantiate(LeftBox, LeftBox.transform.parent.transform);
                 LobbyPaintObject.name = "Lobby Paint";
@@ -47,7 +47,7 @@ public class LobbyStartPatch
             if (Main.EnableCustomDecorations.Value)
             {
                 var Dropship = GameObject.Find("SmallBox");
-                if (Dropship != null)
+                if (Dropship)
                 {
                     DropshipDecorationsObject = Object.Instantiate(Dropship, Object.FindAnyObjectByType<LobbyBehaviour>().transform);
                     DropshipDecorationsObject.name = "Lobby_Decorations";

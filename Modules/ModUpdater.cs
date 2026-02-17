@@ -157,7 +157,7 @@ public class ModUpdater
     }
     public static void ResetUpdateButton()
     {
-        if (updateButton == null)
+        if (!updateButton)
         {
             updateButton = MainMenuManagerPatch.CreateButton(
                 "updateButton",
@@ -234,12 +234,9 @@ public class ModUpdater
         else
         {
             string[] tag = data["tag_name"]?.ToString()[1..].Split(".");
-            
-            var betaNum = int.Parse(Main.PluginVersion.Substring(14, 3), CultureInfo.InvariantCulture);
-            betaNum = betaNum == 0 ? 999 : betaNum;
 
-            var pluginNum = int.Parse(Main.PluginVersion.Substring(10, 1)) * 10000000 + int.Parse(Main.PluginVersion.Substring(11, 1)) * 1000000 + int.Parse(Main.PluginVersion.Substring(12, 1)) * 100000 + betaNum * 100;
-            var versionNum = int.Parse(tag[0]) * 10000000 + int.Parse(tag[1]) * 1000000 + int.Parse($"{tag[2][0]}") * 100000 + (tag[2].Length > 2 && tag[2][1] == 'b' ? int.Parse(tag[2][2..]) : 999) * 100 + (tag[2].Length > 2 && tag[2][1] == 'a' ? int.Parse(tag[2][2..]) : 99);
+            var pluginNum = int.Parse(Main.PluginVersion.Substring(10, 1)) * 10000 + int.Parse(Main.PluginVersion.Substring(11, 1)) * 1000 + int.Parse(Main.PluginVersion.Substring(12, 1)) * 100;
+            var versionNum = int.Parse(tag[0]) * 10000 + int.Parse(tag[1]) * 1000 + int.Parse($"{tag[2][0]}") * 100 + (tag[2].Length > 2 && tag[2][1] == 'b' ? int.Parse(tag[2][2..]) : 999);
 
             Logger.Info($"Found local version: {pluginNum}; github version: {versionNum}", "CheckRelease");
 
@@ -452,11 +449,11 @@ public class ModUpdater
     }
     private static void ShowPopup(string message, StringNames buttonText, bool showButton = false, Action onClick = null)
     {
-        if (InfoPopup != null)
+        if (InfoPopup)
         {
             InfoPopup.Show(message);
             var button = InfoPopup.transform.FindChild("ExitGame");
-            if (button != null)
+            if (button)
             {
                 button.gameObject.SetActive(showButton);
                 button.GetChild(0).GetComponent<TextTranslatorTMP>().TargetText = buttonText;
@@ -469,20 +466,20 @@ public class ModUpdater
     }
     private static void ShowPopupWithTwoButtons(string message, string firstButtonText, string secondButtonText = "", Action onClickOnFirstButton = null, Action onClickOnSecondButton = null)
     {
-        if (InfoPopupV2 != null)
+        if (InfoPopupV2)
         {
             var templateExitGame = InfoPopupV2.transform.FindChild("ExitGame");
-            if (templateExitGame == null) return;
+            if (!templateExitGame) return;
 
             var background = InfoPopupV2.transform.FindChild("Background");
-            if (background == null) return;
+            if (!background) return;
             background.localScale *= 2f;
 
             InfoPopupV2.Show(message);
             templateExitGame.gameObject.SetActive(false);
             var firstButton = UnityEngine.Object.Instantiate(templateExitGame, InfoPopupV2.transform);
             var secondButton = UnityEngine.Object.Instantiate(templateExitGame, InfoPopupV2.transform);
-            if (firstButton != null)
+            if (firstButton)
             {
                 firstButton.gameObject.SetActive(true);
                 firstButton.name = "FirstButtom";
@@ -500,7 +497,7 @@ public class ModUpdater
                     firstButton.GetComponent<PassiveButton>().OnClick.AddListener((UnityEngine.Events.UnityAction)(() => { onClickOnFirstButton(); InfoPopupV2.Close(); }));
                 else firstButton.GetComponent<PassiveButton>().OnClick.AddListener((UnityEngine.Events.UnityAction)(() => InfoPopupV2.Close()));
             }
-            if (secondButton != null)
+            if (secondButton)
             {
                 secondButton.gameObject.SetActive(true);
                 secondButton.name = "SecondButtom";

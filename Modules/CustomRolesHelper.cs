@@ -60,7 +60,7 @@ public static class CustomRolesHelper
 
     public static bool HasImpKillButton(this PlayerControl player, bool considerVanillaShift = false)
     {
-        if (player == null) return false;
+        if (!player) return false;
 
         if (Options.CurrentGameMode is CustomGameMode.SpeedRun) return true;
 
@@ -592,7 +592,7 @@ public static class CustomRolesHelper
     public static bool CheckAddonConfilct(CustomRoles role, PlayerControl pc, bool checkLimitAddons = true, bool checkConditions = true)
     {
         // Only add-ons
-        if (!role.IsAdditionRole() || pc == null) return false;
+        if (!role.IsAdditionRole() || !pc) return false;
 
         if (pc.Is(CustomRoles.GM) || pc.Is(CustomRoles.LazyGuy)) return false;
 

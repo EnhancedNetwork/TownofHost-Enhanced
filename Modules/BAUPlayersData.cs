@@ -15,7 +15,7 @@ public class BAUPlayersData
         set
         {
             CleanUpNullEntries();
-            if (key != null)
+            if (key)
             {
                 _players[key] = value;
             }
@@ -24,7 +24,7 @@ public class BAUPlayersData
 
     private void CleanUpNullEntries()
     {
-        var keysToRemove = _players.Where(kvp => kvp.Key == null).Select(kvp => kvp.Key).ToList();
+        var keysToRemove = _players.Where(kvp => !kvp.Key).Select(kvp => kvp.Key).ToList();
         foreach (var key in keysToRemove)
         {
             _players.Remove(key);
@@ -40,7 +40,7 @@ public class BAUPlayersData
     public void Add(NetworkedPlayerInfo key, string value)
     {
         CleanUpNullEntries();
-        if (key != null)
+        if (key)
         {
             _players[key] = value;
         }

@@ -56,7 +56,7 @@ class Logger
 
         NotificationPopper np = NotificationPopperPatch.Instance;
 
-        if (np != null)
+        if (np)
         {
             Warn(text, "SendInGame");
 

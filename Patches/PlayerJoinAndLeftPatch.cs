@@ -235,7 +235,7 @@ public static class OnPlayerJoinedPatch
                     return;
                 }
 
-                if (client.Character != null && client.Character.Data != null && (client.Character.Data.DefaultOutfit.ColorId < 0 || Palette.PlayerColors.Length <= client.Character.Data.DefaultOutfit.ColorId) && Main.AllPlayerControls.Count >= 17)
+                if (client.Character && client.Character.Data && (client.Character.Data.DefaultOutfit.ColorId < 0 || Palette.PlayerColors.Length <= client.Character.Data.DefaultOutfit.ColorId) && Main.AllPlayerControls.Count >= 17)
                     Rainbow.ChangeColor(client.Character);
             }
             catch { }
@@ -329,7 +329,7 @@ class OnPlayerLeftPatch
     {
         try
         {
-            if (AmongUsClient.Instance.AmHost && GameStates.IsInGame && data != null && data.Character != null)
+            if (AmongUsClient.Instance.AmHost && GameStates.IsInGame && data != null && data.Character)
             {
                 if (data.Character.Is(CustomRoles.Lovers) && data.Character.IsAlive())
                 {
@@ -366,7 +366,7 @@ class OnPlayerLeftPatch
                 Main.SayBanwordsTimes.Remove(__instance.ClientId);
                 Main.playerVersion.Remove(data?.Character?.PlayerId ?? byte.MaxValue);
 
-                if (data != null && data.Character != null)
+                if (data != null && data.Character)
                 {
                     uint netid = data.Character.NetId;
 
@@ -397,7 +397,7 @@ class OnPlayerLeftPatch
         // StartingProcessing = true;
         LeftPlayerId = data?.Character?.PlayerId ?? byte.MaxValue;
 
-        if (data != null && data.Character != null)
+        if (data != null && data.Character)
             StartGameHostPatch.DataDisconnected[data.Character.PlayerId] = true;
 
         if (GameStates.IsInGame)
@@ -420,7 +420,7 @@ class OnPlayerLeftPatch
             MurderPlayerPatch.AfterPlayerDeathTasks(data?.Character, data?.Character, GameStates.IsMeeting);
         }
 
-        if (AmongUsClient.Instance.AmHost && data.Character != null)
+        if (AmongUsClient.Instance.AmHost && data.Character)
         {
             // Remove messages sending to left player
             // for (int i = 0; i < Main.MessagesToSend.Count; i++)
@@ -510,7 +510,7 @@ class OnPlayerLeftPatch
                 // On become Host is called before OnPlayerLeft, so this is safe to use
                 if (AmongUsClient.Instance.AmHost)
                 {
-                    if (data != null && data.Character != null)
+                    if (data != null && data.Character)
                     {
                         uint netid = data.Character.NetId;
 
@@ -635,7 +635,7 @@ class OnPlayerLeftPatch
                     if (data != null)
                     {
                         var networkedPlayerInfo = GameData.Instance.GetPlayerByClient(data);
-                        if (networkedPlayerInfo != null)
+                        if (networkedPlayerInfo)
                         {
                             networkedPlayerInfo.PlayerName = Main.AllClientRealNames[networkedPlayerInfo.ClientId];
                             networkedPlayerInfo.MarkDirty();
@@ -664,7 +664,7 @@ class InnerNetClientSpawnPatch
 
         Logger.Msg($"Spawn player data: ID {client?.Character?.PlayerId}: {client?.PlayerName}", "CreatePlayer");
 
-        if (client == null || client.Character == null // client is null
+        if (client == null || !client.Character // client is null
                            || client.ColorId < 0 || Palette.PlayerColors.Length <= client.ColorId) // invalid client color
             Logger.Warn("client is null or client have invalid color", "TrySyncAndSendMessage");
         else
@@ -674,14 +674,14 @@ class InnerNetClientSpawnPatch
             LateTask.New(() =>
             {
                 if (Main.OverrideWelcomeMsg != "")
-                    Utils.SendMessage(Main.OverrideWelcomeMsg, client.Character.PlayerId, sendOption: SendOption.None);
+                    Utils.SendMessage(Main.OverrideWelcomeMsg, client.Character.PlayerId, importance: MessageImportance.Low);
                 else
-                    TemplateManager.SendTemplate("welcome", client.Character.PlayerId, true, sendOption: SendOption.None);
+                    TemplateManager.SendTemplate("welcome", client.Character.PlayerId, true, importance: MessageImportance.Low);
             }, 3f, "Welcome Message");
 
             LateTask.New(() =>
             {
-                if (client == null || client.Character == null)
+                if (client == null || !client.Character)
                 {
                     Logger.Warn("client is null", "Spawn.RPCRequestRetryVersionCheck");
                     return;
@@ -695,7 +695,7 @@ class InnerNetClientSpawnPatch
             {
                 LateTask.New(() =>
                 {
-                    if (GameStates.IsLobby && client.Character != null && LobbyBehaviour.Instance != null && GameStates.IsVanillaServer)
+                    if (GameStates.IsLobby && !client.Character && !LobbyBehaviour.Instance && GameStates.IsVanillaServer)
                     {
                         // Only for vanilla
                         if (!client.Character.IsModded())
@@ -717,7 +717,7 @@ class InnerNetClientSpawnPatch
             }
         }
 
-        if (client != null && client.Character != null) Main.GuessNumber[client.Character.PlayerId] = [-1, 7];
+        if (client != null && client.Character) Main.GuessNumber[client.Character.PlayerId] = [-1, 7];
 
         if (Main.OverrideWelcomeMsg == string.Empty && Main.PlayerStates.Count > 0 && client != null && Main.clientIdList.Contains(client.Id))
         {
@@ -725,7 +725,7 @@ class InnerNetClientSpawnPatch
             {
                 LateTask.New(() =>
                 {
-                    if (!AmongUsClient.Instance.IsGameStarted && client.Character != null)
+                    if (!AmongUsClient.Instance.IsGameStarted && client.Character)
                     {
                         Main.isChatCommand = true;
                         Utils.ShowKillLog(client.Character.PlayerId);
@@ -749,7 +749,7 @@ class InnerNetClientSpawnPatch
             {
                 _ = new LateTask(() =>
                 {
-                    if (!AmongUsClient.Instance.IsGameStarted && client.Character != null)
+                    if (!AmongUsClient.Instance.IsGameStarted && client.Character)
                     {
                         Main.isChatCommand = true;
                         Utils.ShowLastRoles(client.Character.PlayerId);
@@ -761,7 +761,7 @@ class InnerNetClientSpawnPatch
             {
                 _ = new LateTask(() =>
                 {
-                    if (!AmongUsClient.Instance.IsGameStarted && client.Character != null)
+                    if (!AmongUsClient.Instance.IsGameStarted && client.Character)
                     {
                         Main.isChatCommand = true;
                         Utils.ShowLastResult(client.Character.PlayerId);
@@ -790,7 +790,7 @@ class InnerNetClientSpawnPatch
 
         Logger.Info($"Spawn player: ID {ownerId}: {client.PlayerName}", "InnerNetClientSpawn");
 
-        if (client == null || client.Character == null // client is null
+        if (client == null || !client.Character // client is null
             || client.ColorId < 0 || Palette.PlayerColors.Length <= client.ColorId) // invalid client color
         {
             Logger.Warn("client is null or client have invalid color", "TrySyncAndSendMessage");
@@ -810,7 +810,7 @@ class InnerNetClientSpawnPatch
 
             _ = new LateTask(() =>
             {
-                if (client == null || client.Character == null)
+                if (client == null || !client.Character)
                 {
                     Logger.Warn("client is null", "Spawn.RPCRequestRetryVersionCheck");
                     return;
@@ -824,7 +824,7 @@ class InnerNetClientSpawnPatch
             {
                 _ = new LateTask(() =>
                 {
-                    if (GameStates.IsLobby && client.Character != null && LobbyBehaviour.Instance != null && GameStates.IsVanillaServer)
+                    if (GameStates.IsLobby && client.Character && LobbyBehaviour.Instance && GameStates.IsVanillaServer)
                     {
                         // Only for vanilla
                         if (!client.Character.IsModded())
@@ -861,7 +861,7 @@ class InnerNetClientSpawnPatch
                 {
                     _ = new LateTask(() =>
                     {
-                        if (!AmongUsClient.Instance.IsGameStarted && client.Character != null)
+                        if (!AmongUsClient.Instance.IsGameStarted && client.Character)
                         {
                             Main.isChatCommand = true;
                             Utils.ShowKillLog(client.Character.PlayerId);
@@ -872,7 +872,7 @@ class InnerNetClientSpawnPatch
                 {
                     _ = new LateTask(() =>
                     {
-                        if (!AmongUsClient.Instance.IsGameStarted && client.Character != null)
+                        if (!AmongUsClient.Instance.IsGameStarted && client.Character)
                         {
                             Main.isChatCommand = true;
                             Utils.SendMessage("\n", client.Character.PlayerId, Main.LastSummaryMessage);
@@ -883,7 +883,7 @@ class InnerNetClientSpawnPatch
                 {
                     _ = new LateTask(() =>
                     {
-                        if (!AmongUsClient.Instance.IsGameStarted && client.Character != null)
+                        if (!AmongUsClient.Instance.IsGameStarted && client.Character)
                         {
                             Main.isChatCommand = true;
                             Utils.ShowLastResult(client.Character.PlayerId);
@@ -894,7 +894,7 @@ class InnerNetClientSpawnPatch
                 {
                     _ = new LateTask(() =>
                     {
-                        if (!AmongUsClient.Instance.IsGameStarted && client.Character != null)
+                        if (!AmongUsClient.Instance.IsGameStarted && client.Character)
                         {
                             Main.isChatCommand = true;
                             //Utils.SendMessage($"{GetString("Message.YTPlanNotice")} {PlayerControl.LocalPlayer.FriendCode.GetDevUser().UpName}", client.Character.PlayerId);

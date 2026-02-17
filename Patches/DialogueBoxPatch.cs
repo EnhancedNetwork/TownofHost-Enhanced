@@ -7,9 +7,9 @@ internal class DialogueBoxPatch
     public static bool Show_Prefix(DialogueBox __instance, string dialogue)
     {
         __instance.target.text = dialogue;
-        if (Minigame.Instance != null)
+        if (Minigame.Instance)
             Minigame.Instance.Close();
-        if (Minigame.Instance != null)
+        if (Minigame.Instance)
             Minigame.Instance.Close();
         __instance.gameObject.SetActive(true);
         return false;

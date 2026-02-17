@@ -28,8 +28,8 @@ public static class EnumHelper
     {
         List<TEnum[]> chunkedList = [];
         TEnum[] allValues = GetAllValues<TEnum>();
-        if (shuffle) allValues = allValues.Shuffle().ToArray();
-        if (exclude != null) allValues = allValues.Where(exclude).ToArray();
+        if (shuffle) allValues = [.. allValues.Shuffle()];
+        if (exclude != null) allValues = [.. allValues.Where(exclude)];
 
         for (int i = 0; i < allValues.Length; i += chunkSize)
         {

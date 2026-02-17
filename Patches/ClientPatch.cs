@@ -97,7 +97,7 @@ internal class RunLoginPatch
 
         var friendcode = EOSManager.Instance.friendCode;
         Main.Instance.StartCoroutine(dbConnect.Init());
-        if (friendcode == null || friendcode == "")
+        if (string.IsNullOrEmpty(friendcode))
         {
             EOSManager.Instance.attemptAuthAgain = true;
             Logger.Info("friendcode not found", "EOSManager");
@@ -120,7 +120,7 @@ internal class BanMenuSetVisiblePatch
     public static bool Prefix(BanMenu __instance, bool show)
     {
         if (!AmongUsClient.Instance.AmHost) return true;
-        show &= PlayerControl.LocalPlayer && PlayerControl.LocalPlayer.Data != null;
+        show &= PlayerControl.LocalPlayer && PlayerControl.LocalPlayer.Data;
         __instance.BanButton.gameObject.SetActive(AmongUsClient.Instance.CanBan());
         __instance.KickButton.gameObject.SetActive(AmongUsClient.Instance.CanKick());
         __instance.MenuButton.gameObject.SetActive(show);

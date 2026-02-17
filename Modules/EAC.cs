@@ -19,7 +19,7 @@ internal class EAC
     public static void WarnHost(int denum = 1)
     {
         DeNum += denum;
-        if (ErrorText.Instance != null)
+        if (ErrorText.Instance)
         {
             ErrorText.Instance.CheatDetected = DeNum > 3;
             ErrorText.Instance.SBDetected = DeNum > 10;
@@ -35,7 +35,7 @@ internal class EAC
 
         if (!AmongUsClient.Instance.AmHost) return false;
         //if (RoleBasisChanger.IsChangeInProgress) return false;
-        if (pc == null || reader == null) return false;
+        if (!pc || reader == null) return false;
         try
         {
             MessageReader sr = MessageReader.Get(reader);
@@ -157,7 +157,7 @@ internal class EAC
                     {
                         Report(pc, "Directly Murder Player In Lobby");
                         HandleCheat(pc, "Directly Murder Player In Lobby");
-                        if (murdered != null && !LobbyDeadBodies.Contains(murdered.PlayerId))
+                        if (murdered && !LobbyDeadBodies.Contains(murdered.PlayerId))
                         {
                             LobbyDeadBodies.Add(murdered.PlayerId);
                         }
@@ -393,7 +393,7 @@ internal class EAC
         Logger.Info("Check sabotage RPC" + ", PlayerName: " + player.GetNameWithRole() + ", SabotageType: " + systemType.ToString() + ", amount: " + amount.ToString(), "EAC");
         if (!AmongUsClient.Instance.AmHost) return false;
 
-        if (player == null)
+        if (!player)
         {
             Logger.Warn("PlayerControl is null", "EAC RpcUpdateSystemCheck");
             return true;
@@ -486,7 +486,7 @@ internal class EAC
             ReportTimes.Add(player.PlayerId, 0);
         }
         //target == null , button event
-        if (target == null || !Main.OverDeadPlayerList.Contains(target.PlayerId))
+        if (!target || !Main.OverDeadPlayerList.Contains(target.PlayerId))
         {
             ReportTimes[player.PlayerId]++;
         }
@@ -652,7 +652,7 @@ internal class EAC
 
     public static void Report(PlayerControl pc, string reason)
     {
-        if (pc == null)
+        if (!pc)
         {
             Logger.Warn("Report PlayerControl is null", "EAC Report");
             return;
@@ -666,7 +666,7 @@ internal class EAC
     }
     public static void HandleCheat(PlayerControl pc, string text)
     {
-        if (pc == null)
+        if (!pc)
         {
             Logger.Warn("Target PlayerControl is null", "EAC HandleCheat");
             return;

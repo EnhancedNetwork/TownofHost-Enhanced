@@ -86,7 +86,7 @@ public static class CustomRoleManager
     }
 
     public static bool HasDesyncRole(this PlayerControl player)
-        => player != null &&
+        => player &&
         (player.GetRoleClass().IsDesyncRole
         || Main.DesyncPlayerList.Contains(player.Data.PlayerId)
         || player.Is(CustomRoles.Killer)
@@ -192,7 +192,7 @@ public static class CustomRoleManager
 
         Utils.CheckTresspassing(killer, target);
 
-        if (target != null && target.Is(CustomRoles.Fragile))
+        if (target && target.Is(CustomRoles.Fragile))
         {
             if (Fragile.KillFragile(killer, target))
             {
@@ -310,7 +310,7 @@ public static class CustomRoleManager
 
         // Check if Killer is a true killing role and Target is possessed by Dollmaster
         if (DollMaster.HasEnabled && DollMaster.IsControllingPlayer)
-            if (!(DollMaster.DollMasterTarget == null || DollMaster.controllingTarget == null))
+            if (DollMaster.DollMasterTarget && DollMaster.controllingTarget)
                 if (target == DollMaster.DollMasterTarget || target == DollMaster.controllingTarget)
                 {
                     DollMaster.CheckMurderAsPossessed(killer, target);

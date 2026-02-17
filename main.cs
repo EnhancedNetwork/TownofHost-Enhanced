@@ -68,8 +68,8 @@ public class Main : BasePlugin
     public static readonly Release RELEASE = Release.BETA;
 
 #pragma warning disable IDE1006 // Naming Styles
-    public static bool devRelease => RELEASE == Release.ALPHA; // Latest: v3.0.0 Alpha 28
-    public static bool canaryRelease => RELEASE == Release.BETA; // Latest: V2.4.2 Beta 4
+    public static bool devRelease => RELEASE == Release.ALPHA; // Latest: v3.0.0 Alpha 30
+    public static bool canaryRelease => RELEASE == Release.BETA; // Latest: V2.4.2 Beta 3
     public static bool fullRelease => RELEASE == Release.RELEASE; // Latest: V2.4.1 hotfix 1
 #pragma warning restore IDE1006 // Naming Styles
 
@@ -249,7 +249,7 @@ public class Main : BasePlugin
     {
         foreach (var pc in PlayerControl.AllPlayerControls)
         {
-            if (pc == null || pc.PlayerId >= 254) continue;
+            if (!pc || pc.PlayerId >= 254) continue;
             yield return pc;
         }
     }
@@ -258,7 +258,7 @@ public class Main : BasePlugin
     {
         return EnumeratePlayerControls()
             .Where(pc => pc.IsAlive()
-                        && pc.Data != null
+                        && pc.Data
                         && (!pc.Data.Disconnected || !IntroDestroyed)
                         && !Pelican.IsEaten(pc.PlayerId));
     }
@@ -585,6 +585,7 @@ public class Main : BasePlugin
         TOHE.Logger.Disable("RpcSetNamePrivate");
         // TOHE.Logger.Disable("SendRPC");
         TOHE.Logger.Disable("KnowRoleTarget");
+        TOHE.Logger.Disable("CustomRpcSender");
         if (!DebugModeManager.AmDebugger)
         {
             TOHE.Logger.Disable("2018k");
@@ -604,7 +605,7 @@ public class Main : BasePlugin
             TOHE.Logger.Disable("SyncCustomSettings");
             TOHE.Logger.Disable("NR");
             TOHE.Logger.Disable("RpcSetName");
-            TOHE.Logger.Disable("CustomRpcSender");
+            // TOHE.Logger.Disable("CustomRpcSender");
             // TOHE.Logger.Disable("KnowRoleTarget");
         }
         //TOHE.Logger.isDetail = true;
@@ -692,7 +693,7 @@ public class Main : BasePlugin
 [Obfuscation(Exclude = true)]
 public enum CustomRoles
 {
-    // Crewmate(Vanilla)
+#region Crewmate(Vanilla)
     Crewmate = 0,
     Engineer,
     GuardianAngel,
@@ -700,14 +701,14 @@ public enum CustomRoles
     Scientist,
     Tracker,
     Detective,
-
-    // Impostor(Vanilla)
+#endregion
+#region Impostor(Vanilla)
     Impostor,
     Phantom,
     Shapeshifter,
     Viper,
-
-    // Crewmate Vanilla Remakes
+#endregion
+#region Crewmate Vanilla Remakes
     CrewmateTOHE,
     EngineerTOHE,
     GuardianAngelTOHE,
@@ -715,19 +716,19 @@ public enum CustomRoles
     ScientistTOHE,
     TrackerTOHE,
     DetectiveTOHE,
-
-    // Impostor Vanilla Remakes
+#endregion
+#region Impostor Vanilla Remakes
     ImpostorTOHE,
     PhantomTOHE,
     ShapeshifterTOHE,
     ViperTOHE,
-
-    // Impostor Ghost
+#endregion
+#region Impostor Ghost
     Bloodmoon,
     Minion,
     Possessor,
-
-    //Impostor
+#endregion
+#region Impostor
     Abyssbringer,
     Anonymous,
     AntiAdminer,
@@ -803,13 +804,13 @@ public enum CustomRoles
     Wildling,
     Witch,
     Zombie,
-
-    //Crewmate Ghost
+#endregion
+#region Crewmate Ghost
     Ghastly,
     Hawk,
     Warden,
-
-    //Crewmate
+#endregion
+#region Crewmate
     Addict,
     Admirer,
     Alchemist,
@@ -884,8 +885,8 @@ public enum CustomRoles
     Veteran,
     Vigilante,
     Witness,
-
-    //Neutral
+#endregion
+#region Neutral
     Agitater,
     Amnesiac,
     Apocalypse,
@@ -963,8 +964,8 @@ public enum CustomRoles
     Werewolf,
     Workaholic,
     Wraith,
-
-    //Coven
+#endregion
+#region Coven
     Coven,
     Conjurer,
     CovenLeader,
@@ -984,7 +985,8 @@ public enum CustomRoles
     Summoned,
     Sorceress,
     VoodooMaster,
-
+#endregion
+#region Other
     //two-way camp
     Mini,
 
@@ -996,11 +998,11 @@ public enum CustomRoles
 
     // Speed run
     Runner,
-
+#endregion
     // Sub-role after 500
     NotAssigned = 500,
 
-    // Add-ons
+#region Add-ons
     Admired,
     Antidote,
     Autopsy,
@@ -1082,6 +1084,7 @@ public enum CustomRoles
     Watcher,
     Workhorse,
     Youtuber
+#endregion
 }
 //WinData
 [Obfuscation(Exclude = true)]

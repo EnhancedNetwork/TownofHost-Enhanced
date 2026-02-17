@@ -108,7 +108,7 @@ internal class MoonDancer : CovenManager
             }
         }
 
-        return target != null && target.CanBeTeleported() && !target.IsTransformedNeutralApocalypse() && !Medic.IsProtected(target.PlayerId) && !target.Is(CustomRoles.GM) && !IsBlasted(pc, id) && !IsBlasted(id);
+        return target && target.CanBeTeleported() && !target.IsTransformedNeutralApocalypse() && !Medic.IsProtected(target.PlayerId) && !target.Is(CustomRoles.GM) && !IsBlasted(pc, id) && !IsBlasted(id);
     }
     private static bool IsBlasted(PlayerControl pc, byte id) => BlastedOffList.ContainsKey(pc.PlayerId) && BlastedOffList[pc.PlayerId].Contains(id);
     public static bool IsBlasted(byte id)
@@ -120,7 +120,7 @@ internal class MoonDancer : CovenManager
     }
     private void BlastPlayer(PlayerControl pc, PlayerControl target)
     {
-        if (pc == null || target == null || !target.CanBeTeleported()) return;
+        if (!pc || !target || !target.CanBeTeleported()) return;
         if (Mini.Age < 18 && (target.Is(CustomRoles.NiceMini) || target.Is(CustomRoles.EvilMini)))
         {
             pc.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.NiceMini), GetString("CantEat")));
@@ -148,7 +148,7 @@ internal class MoonDancer : CovenManager
 
     public override bool OnCheckMurderAsKiller(PlayerControl killer, PlayerControl target)
     {
-        if (killer == null || target == null) return false;
+        if (!killer || !target) return false;
         if (killer.CheckDoubleTrigger(target, () => { SetBatonPass(killer, target); }))
         {
             if (HasNecronomicon(killer))
@@ -194,7 +194,7 @@ internal class MoonDancer : CovenManager
 
     private static void SetBatonPass(PlayerControl killer, PlayerControl target)
     {
-        if (killer == null || target == null) return;
+        if (!killer || !target) return;
         if (target.GetCustomRole().IsCovenTeam())
         {
             BatonPassList[killer.PlayerId].Add(target.PlayerId);
@@ -212,13 +212,13 @@ internal class MoonDancer : CovenManager
 
     public override void OnReportDeadBody(PlayerControl reporter, NetworkedPlayerInfo target)
     {
-        if (_Player == null) return;
+        if (!_Player) return;
 
         KillBlastedOff();
         foreach (var md in BatonPassList.Keys)
         {
             var player = GetPlayerById(md);
-            if (player == null) continue;
+            if (!player) continue;
 
             DistributeAddOns(player);
         }
@@ -240,7 +240,7 @@ internal class MoonDancer : CovenManager
         {
             var player = GetPlayerById(pc);
 
-            if (player == null)
+            if (!player)
             {
                 BatonPassList[md.PlayerId].Remove(pc);
                 continue;
@@ -289,7 +289,7 @@ internal class MoonDancer : CovenManager
             {
                 var target = GetPlayerById(tar);
                 var killer = GetPlayerById(pc.Key);
-                if (killer == null || target == null) continue;
+                if (!killer || !target) continue;
                 Main.AllPlayerSpeed[tar] = Main.AllPlayerSpeed[tar] - 0.5f + originalSpeed[tar];
                 ReportDeadBodyPatch.CanReport[tar] = true;
                 target.RpcExileV2();

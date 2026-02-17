@@ -66,7 +66,7 @@ public class Oiiai : IAddon
 
     public static void OnMurderPlayer(PlayerControl killer, PlayerControl target)
     {
-        if (killer == null || target == null) return;
+        if (!killer || !target) return;
         if (killer.PlayerId == target.PlayerId) return;
         if (killer.Is(CustomRoles.KillingMachine) || killer.IsTransformedNeutralApocalypse()) return;
         if ((killer.Is(CustomRoles.Ghoul) || killer.Is(CustomRoles.Burst)) && !killer.IsAlive()) return;

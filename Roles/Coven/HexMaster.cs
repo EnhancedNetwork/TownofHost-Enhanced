@@ -87,8 +87,8 @@ internal class HexMaster : CovenManager
         }
         else
         {
-            var player = Utils.GetPlayerById(hexId);
-            if (player == null) return;
+            var player = GetPlayerById(hexId);
+            if (!player) return;
 
             var writer = MessageWriter.Get(SendOption.Reliable);
             writer.Write(newHex);
@@ -215,7 +215,7 @@ internal class HexMaster : CovenManager
         if (CurrentHexedPlayer == byte.MaxValue) return;
         var target = GetPlayerById(CurrentHexedPlayer);
         var killer = _Player;
-        if (target == null || killer == null) return;
+        if (!target || !killer) return;
 
         HexedPlayer[killer.PlayerId].Add(target.PlayerId);
         SendRPC(true, killer.PlayerId, target.PlayerId);
@@ -332,8 +332,8 @@ internal class HexMaster : CovenManager
             if (!dic.Any()) continue;
             if (pc.IsTransformedNeutralApocalypse() && !CanKillTNA.GetBool()) continue;
             var whichId = dic.FirstOrDefault().Key;
-            var hexmaster = Utils.GetPlayerById(whichId);
-            if (hexmaster != null && hexmaster.IsAlive())
+            var hexmaster = GetPlayerById(whichId);
+            if (hexmaster && hexmaster.IsAlive())
             {
                 if (!Main.AfterMeetingDeathPlayers.ContainsKey(pc.PlayerId))
                 {

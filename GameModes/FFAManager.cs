@@ -145,13 +145,13 @@ internal static class FFAManager
     {
         var name = reader.ReadString();
         NameNotify.Remove(PlayerControl.LocalPlayer.PlayerId);
-        if (name != null && name != string.Empty)
+        if (!name.IsNullOrWhiteSpace())
             NameNotify.Add(PlayerControl.LocalPlayer.PlayerId, (name, 0));
     }
     public static Dictionary<byte, (string TEXT, long TIMESTAMP)> NameNotify = [];
     public static void GetNameNotify(PlayerControl player, ref string name)
     {
-        if (Options.CurrentGameMode != CustomGameMode.FFA || player == null) return;
+        if (Options.CurrentGameMode != CustomGameMode.FFA || !player) return;
         if (NameNotify.ContainsKey(player.PlayerId))
         {
             name = NameNotify[player.PlayerId].TEXT;
@@ -186,7 +186,7 @@ internal static class FFAManager
     }
     public static void OnPlayerAttack(PlayerControl killer, PlayerControl target)
     {
-        if (killer == null || target == null || Options.CurrentGameMode != CustomGameMode.FFA) return;
+        if (!killer || !target || Options.CurrentGameMode != CustomGameMode.FFA) return;
         if (target.inVent)
         {
             Logger.Info("Target is in a vent, kill blocked", "FFA");
@@ -385,7 +385,7 @@ internal static class FFAManager
 
     public static void CoExitVent(PlayerControl player)
     {
-        if (player == null) return;
+        if (!player) return;
 
         var now = Utils.GetTimeStamp();
         byte playerId = player.PlayerId;
@@ -403,7 +403,7 @@ internal static class FFAManager
     public static string GetPlayerArrow(PlayerControl seer, PlayerControl target = null)
     {
         if (GameStates.IsMeeting) return string.Empty;
-        if (target != null && seer.PlayerId != target.PlayerId) return string.Empty;
+        if (target && seer.PlayerId != target.PlayerId) return string.Empty;
         if (Main.AllAlivePlayerControls.Count != 2) return string.Empty;
 
         string arrows = string.Empty;
@@ -413,7 +413,7 @@ internal static class FFAManager
             otherPlayer = pc;
             break;
         }
-        if (otherPlayer == null) return string.Empty;
+        if (!otherPlayer) return string.Empty;
 
         var arrow = TargetArrow.GetArrows(seer, otherPlayer.PlayerId);
         arrows += Utils.ColorString(Utils.GetRoleColor(CustomRoles.Killer), arrow);
@@ -496,7 +496,7 @@ internal static class FFAManager
 
                 foreach (PlayerControl pc in Main.EnumerateAlivePlayerControls())
                 {
-                    if (pc == null) return;
+                    if (!pc) return;
 
                     bool sync = false;
 

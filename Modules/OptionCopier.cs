@@ -132,7 +132,7 @@ public static class OptionCopier
     /// /// <returns>file path loaded from</returns>
     public static string Load(int presetNum = -1, string fileName = "template")
     {
-        if (AmongUsClient.Instance != null && !AmongUsClient.Instance.AmHost) return "Error: Not Host";
+        if (AmongUsClient.Instance && !AmongUsClient.Instance.AmHost) return "Error: Not Host";
         if (presetNum == -1) presetNum = OptionItem.CurrentPreset;
 
         var jsonString = File.ReadAllText(OptionCopierFileInfo(fileName).FullName);

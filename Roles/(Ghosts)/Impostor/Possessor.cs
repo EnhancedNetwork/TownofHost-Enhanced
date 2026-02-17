@@ -52,7 +52,7 @@ internal class Possessor : RoleBase
 
     private void OnFixedUpdateOther(PlayerControl target, bool lowLoad, long nowTime)
     {
-        if (_Player == null) return;
+        if (!_Player) return;
 
         if (target.PlayerId == controllingTargetId)
         {

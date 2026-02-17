@@ -199,7 +199,7 @@ namespace TOHE.Modules.ChatManager
                 for (var j = 2; j < entryParts.Length; j++) senderMessage += ':' + entryParts[j].Trim();
 
                 PlayerControl senderPlayer = Utils.GetPlayerById(Convert.ToByte(senderId));
-                if (senderPlayer == null) continue;
+                if (!senderPlayer) continue;
 
                 chat.AddChat(senderPlayer, senderMessage);
                 SendRPC(writer, senderPlayer, senderMessage);
@@ -232,14 +232,14 @@ namespace TOHE.Modules.ChatManager
         {
             if (!AmongUsClient.Instance.AmHost) return;
             PlayerControl player = GameStates.IsVanillaServer ? PlayerControl.LocalPlayer : Main.EnumerateAlivePlayerControls().MinBy(x => x.PlayerId) ?? Main.EnumeratePlayerControls().MinBy(x => x.PlayerId) ?? PlayerControl.LocalPlayer;
-            if (player == null) return;
+            if (!player) return;
 
             if (GameStates.IsVanillaServer)
             {
                 if (targets.Length <= 1 || targets.Length >= Main.AllAlivePlayerControls.Count)
-                    Loop.Times(30, _ => Utils.SendMessage(string.Empty, targets.Length == 1 ? targets[0].PlayerId : byte.MaxValue, "\u200b", force: true, sendOption: SendOption.None));
+                    Loop.Times(30, _ => Utils.SendMessage(string.Empty, targets.Length == 1 ? targets[0].PlayerId : byte.MaxValue, "\u200b", force: true, importance: MessageImportance.Low));
                 else
-                    targets.Do(x => Loop.Times(30, _ => Utils.SendMessage(string.Empty, x.PlayerId, "\u200b", force: true, sendOption: SendOption.None)));
+                    targets.Do(x => Loop.Times(30, _ => Utils.SendMessage(string.Empty, x.PlayerId, "\u200b", force: true, importance: MessageImportance.Low)));
                 
                 return;
             }
@@ -250,7 +250,7 @@ namespace TOHE.Modules.ChatManager
 
             void SendEmptyMessage(PlayerControl receiver)
             {
-                bool toEveryone = receiver == null;
+                bool toEveryone = receiver;
                 bool toLocalPlayer = !toEveryone && receiver.AmOwner;
                 if (HudManager.InstanceExists && (toLocalPlayer || toEveryone)) HudManager.Instance.Chat.AddChat(player, "<size=32767>.");
                 if (toLocalPlayer) return;
