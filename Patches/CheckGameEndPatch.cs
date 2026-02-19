@@ -167,7 +167,7 @@ class GameEndCheckerForNormal
                         break;
                     case CustomWinner.Coven:
                         if (((pc.Is(Custom_Team.Coven) || pc.Is(CustomRoles.Enchanted) || Main.PlayerStates[pc.PlayerId].IsNecromancer) && (countType == CountTypes.Coven || pc.Is(CustomRoles.Soulless)))
-                            || pc.Is(CustomRoles.Enchanted) || (Summoner.CheckWinCondition(pc.PlayerId) && CustomRoles.Summoner.RoleExist(true)) || (playerState.IsRandomizer && playerState.LockedTeam == Custom_Team.Coven))
+                            || pc.Is(CustomRoles.Enchanted) /*|| (Summoner.CheckWinCondition(pc.PlayerId) && CustomRoles.Summoner.RoleExist(true)) || (playerState.IsRandomizer && playerState.LockedTeam == Custom_Team.Coven)*/)
                         {
                             WinnerIds.Add(pc.PlayerId);
                         }
@@ -331,7 +331,7 @@ class GameEndCheckerForNormal
                 }
                 if (Main.EnumerateAlivePlayerControls().All(p => p.IsPlayerCoven() || p.Is(CustomRoles.Enchanted)))
                 {
-                    foreach (var pc in Main.EnumeratePlayerControls().Where(x => x.IsPlayerCoven() || x.Is(CustomRoles.Enchanted) || Main.PlayerStates[x.PlayerId].IsNecromancer || Summoner.CheckWinCondition(x.PlayerId)))
+                    foreach (var pc in Main.EnumeratePlayerControls().Where(x => x.IsPlayerCoven() || x.Is(CustomRoles.Enchanted) || Main.PlayerStates[x.PlayerId].IsNecromancer /*|| Summoner.CheckWinCondition(x.PlayerId)*/))
                     {
                         if (!WinnerIds.Contains(pc.PlayerId))
                             WinnerIds.Add(pc.PlayerId);
@@ -495,33 +495,33 @@ class GameEndCheckerForNormal
                 }
             }
 
-            foreach (var player in Main.EnumeratePlayerControls())
-            {
-                var playerState = Main.PlayerStates[player.PlayerId];
-                if (playerState.IsRandomizer)
-                {
-                    // Call RandomizerWinCondition to evaluate the player's win condition
-                    Randomizer.RandomizerWinCondition(player);
+            // foreach (var player in Main.EnumeratePlayerControls())
+            // {
+            //     var playerState = Main.PlayerStates[player.PlayerId];
+            //     if (playerState.IsRandomizer)
+            //     {
+            //         // Call RandomizerWinCondition to evaluate the player's win condition
+            //         Randomizer.RandomizerWinCondition(player);
 
-                    // If Randomizer met its win condition, log and add it to winners
-                    if (WinnerIds.Contains(player.PlayerId))
-                    {
-                        Logger.Info($"Randomizer {player.name} has been added to the winners list.", "GameEnd");
-                        if (player.Is(CustomRoles.Lovers))
-                        {
-                            Main.EnumeratePlayerControls()
-                            .Where(p => p.Is(CustomRoles.Lovers) && !WinnerIds.Contains(p.PlayerId))
-                            .Do(p => WinnerIds.Add(p.PlayerId));
-                            Logger.Info($"Randomizer {player.name} has a Lover, adding them to winners", "GameEnd");
-                        }
-                    }
-                    else
-                    {
-                        Logger.Warn($"Randomizer {player.name} did not meet its win condition.", "GameEnd");
-                    }
-                }
+            //         // If Randomizer met its win condition, log and add it to winners
+            //         if (WinnerIds.Contains(player.PlayerId))
+            //         {
+            //             Logger.Info($"Randomizer {player.name} has been added to the winners list.", "GameEnd");
+            //             if (player.Is(CustomRoles.Lovers))
+            //             {
+            //                 Main.EnumeratePlayerControls()
+            //                 .Where(p => p.Is(CustomRoles.Lovers) && !WinnerIds.Contains(p.PlayerId))
+            //                 .Do(p => WinnerIds.Add(p.PlayerId));
+            //                 Logger.Info($"Randomizer {player.name} has a Lover, adding them to winners", "GameEnd");
+            //             }
+            //         }
+            //         else
+            //         {
+            //             Logger.Warn($"Randomizer {player.name} did not meet its win condition.", "GameEnd");
+            //         }
+            //     }
 
-            }
+            // }
 
             ShipStatus.Instance.enabled = false;
 

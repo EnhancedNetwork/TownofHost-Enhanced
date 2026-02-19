@@ -2483,7 +2483,7 @@ public static class Utils
                 SelfSuffix.Append(Radar.GetPlayerArrow(seer, seer, isForMeeting: isForMeeting));
                 SelfSuffix.Append(Necromancer.NecromancerReminder(seer, seer, isForMeeting: isForMeeting));
                 SelfSuffix.Append(CopyCat.CopycatReminder(seer, seer, isForMeeting: isForMeeting));
-                SelfSuffix.Append(Randomizer.RandomizerReminder(seer, seer, isForMeeting: isForMeeting));
+                // SelfSuffix.Append(Randomizer.RandomizerReminder(seer, seer, isForMeeting: isForMeeting));
                 SelfSuffix.Append(Spurt.GetSuffix(seer, isformeeting: isForMeeting));
 
 
@@ -2635,7 +2635,7 @@ public static class Utils
                         TargetSuffix.Append(CustomRoleManager.GetSuffixOthers(seer, target, isForMeeting: isForMeeting));
                         TargetSuffix.Append(Necromancer.NecromancerReminder(seer, target, isForMeeting: isForMeeting));
                         TargetSuffix.Append(CopyCat.CopycatReminder(seer, target, isForMeeting: isForMeeting));
-                        TargetSuffix.Append(Randomizer.RandomizerReminder(seer, target, isForMeeting: isForMeeting));
+                        // TargetSuffix.Append(Randomizer.RandomizerReminder(seer, target, isForMeeting: isForMeeting));
 
                         // ====== Seer know target role ======
 
@@ -2945,8 +2945,8 @@ public static class Utils
                 if (!isForMeeting) SelfName += "\r\n";
 
                 SelfName = SelfName.Trim().Replace("color=", "").Replace("<#ffffff><#ffffff>", "<#ffffff>");
-                if (SelfName.EndsWith("</size>")) SelfName = SelfName.Remove(SelfName.Length - 7);
-                if (SelfName.EndsWith("</color>")) SelfName = SelfName.Remove(SelfName.Length - 8);
+                if (SelfName.EndsWith("</size>")) SelfName = SelfName[..^7];
+                if (SelfName.EndsWith("</color>")) SelfName = SelfName[..^8];
 
                 sender.RpcSetName(seer, SelfName, seer);
                 hasValue = true;
@@ -3373,7 +3373,7 @@ public static class Utils
 
             if (CustomRoles.CopyCat.HasEnabled()) CopyCat.UnAfterMeetingTasks(); // All crew have to be before this
             if (CustomRoles.Necromancer.HasEnabled()) Necromancer.UnAfterMeetingTasks();
-            if (CustomRoles.Randomizer.HasEnabled()) Randomizer.UnAfterMeetingTasks();
+            // if (CustomRoles.Randomizer.HasEnabled()) Randomizer.UnAfterMeetingTasks();
         }
         catch (Exception error)
         {
@@ -3468,22 +3468,8 @@ public static class Utils
         string t = DateTime.Now.ToString("yyyy-MM-dd_HH.mm.ss");
         string filename = $"{f}TOHE-v{Main.PluginVersion}-{t}.log";
         if (!Directory.Exists(f)) Directory.CreateDirectory(f);
-        // FileInfo file = new(@$"{Environment.CurrentDirectory}/BepInEx/LogOutput.log");
-        // file.CopyTo(@filename);
-
-        var lines = File.ReadLines(@$"{Environment.CurrentDirectory}/BepInEx/LogOutput.log").Skip(previousDumpEnd);
-        
-        int n = lines.Count();
-
-        if (n == 0)
-        {
-            if (PlayerControl.LocalPlayer)
-                HudManager.Instance?.Chat?.AddChat(PlayerControl.LocalPlayer, GetString("Dump.NoNewLogInfo"));
-            return;
-        }
-
-        previousDumpEnd += n;
-        File.WriteAllLines(@filename, lines);
+        FileInfo file = new(@$"{Environment.CurrentDirectory}/BepInEx/LogOutput.log");
+        file.CopyTo(@filename);
 
         if (!open) return;
 

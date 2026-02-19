@@ -53,23 +53,25 @@ internal class EAC
                         return true;
                     }
                     break;
-                /*
+                case RpcCalls.Exiled:
                 case RpcCalls.SetName:
-                    //Only sent by host
-                    WarnHost();
-                    Report(pc, "Directly SetName");
-                    HandleCheat(pc, "Directly SetName");
-                    Logger.Fatal($"Directly SetName【{pc.GetClientId()}:{pc.GetRealName()}】已驳回", "EAC");
-                    return true;
                 case RpcCalls.SetRole:
-                    //Only sent by host
-                    WarnHost();
-                    Report(pc, "Directly SetRole");
-                    HandleCheat(pc, "Directly SetRole");
-                    Logger.Fatal($"Directly SetRole for【{pc.GetClientId()}:{pc.GetRealName()}】已驳回", "EAC");
-                    break;
-                */
-                // Disabled due to host sending these rpcs to itself using custom sender
+                case RpcCalls.ProtectPlayer:
+                case RpcCalls.UseZipline:
+                case RpcCalls.TriggerSpores:
+                case RpcCalls.RejectShapeshift:
+                {
+                    if (!pc.IsModded())
+                    {
+                        WarnHost();
+                        Report(pc, "Invalid Rpc");
+                        HandleCheat(pc, "Invalid Rpc");
+                        Logger.Fatal($"Player [{pc.OwnerId}:{pc.GetRealName()}] sent invalid RPC {rpc}, rejected", "EAC");
+                    }
+
+                    sr.Recycle();
+                    return true;
+                }
                 case RpcCalls.SendChat:
                     var text = sr.ReadString();
                     if ((
@@ -209,6 +211,7 @@ internal class EAC
                     HandleCheat(pc, "Directly Send ChatNote");
                     Logger.Fatal($"玩家【{pc.GetClientId()}:{pc.GetRealName()}】直接Send ChatNote，已驳回", "EAC");
                     return true;
+                
             }
             switch (callId)
             {
