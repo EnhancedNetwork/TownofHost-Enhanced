@@ -61,6 +61,7 @@ public class Main : BasePlugin
     public const string PluginDisplayVersion = "2.4.2 Beta 6";
     public static readonly List<(int year, int month, int day, int revision)> SupportedVersionAU =
     [
+        (2025, 11, 18, 0), // 2025.11.18 & 17.1
         (2026, 2, 24, 0) // 2025.2.24 & 17.2.1
     ];
 
