@@ -1,5 +1,6 @@
 using BepInEx.Unity.IL2CPP.Utils;
 using Hazel;
+using Il2CppInterop.Runtime.InteropTypes.Arrays;
 using System;
 using System.Collections;
 using System.IO;
@@ -81,9 +82,11 @@ public static class CustomSoundsManager
 
     public static AudioClip LoadWav(string path)
     {
-        byte[] fileData = File.ReadAllBytes(path);
+        byte[] fileData = Il2CppSystem.IO.File.ReadAllBytes(path);
 
         WAV wav = new(fileData);
+
+        Logger.Info($"[WAV: LeftChannel={wav.LeftChannel}, RightChannel={wav.RightChannel}, ChannelCount={wav.ChannelCount}, SampleCount={wav.SampleCount}, Frequency={wav.Frequency}]", "CustomSounds");
 
         AudioClip clip = AudioClip.Create(Path.GetFileNameWithoutExtension(path), wav.SampleCount, 1, wav.Frequency, false, false); 
         clip.SetData(wav.LeftChannel, 0);
@@ -101,30 +104,26 @@ public static class CustomSoundsManager
 			return s / 32768.0F;
 		}
 
-		static int BytesToInt(byte[] bytes, int offset = 0){
-			int value=0;
-			for (int i=0;i<4;i++)
-            {
-				value |= bytes[offset + i] << (i*8);
-			}
-			return value;
-		}
+		private static int BytesToInt(Il2CppStructArray<byte> bytes, int offset = 0)
+        {
+            int value = 0;
+
+            for (int i = 0; i < 4; i++)
+                value |= bytes[offset + i] << (i * 8);
+            return value;
+        }
 
 		private static byte[] GetBytes(string filename){
 			return File.ReadAllBytes(filename);
 		}
 		// properties
-		public float[] LeftChannel{get; internal set;}
-		public float[] RightChannel{get; internal set;}
-		public int ChannelCount {get; internal set;}
-		public int SampleCount {get; internal set;}
-		public int Frequency {get; internal set;}
+		public Il2CppStructArray<float> LeftChannel { get; }
+        public Il2CppStructArray<float> RightChannel { get; }
+		public int ChannelCount { get; }
+		public int SampleCount { get; }
+		public int Frequency { get; }
 		
-		// Returns left and right double arrays. 'right' will be null if sound is mono.
-		public WAV(string filename):
-			this(GetBytes(filename)) {}
-
-		public WAV(byte[] wav){
+		public WAV(Il2CppStructArray<byte> wav){
 			// Determine if mono or stereo
 			ChannelCount = wav[22];     // Forget byte 23 as 99.999% of WAVs are 1 or 2 channels
 
@@ -172,11 +171,11 @@ public static class CustomSoundsManager
             }
         }
 
-        public float[] GetStereoData()
+        public Il2CppStructArray<float> GetStereoData()
         {
             if (RightChannel == null) return LeftChannel;
 
-            float[] stereoData = new float[SampleCount * 2];
+            var stereoData = new Il2CppStructArray<float>(SampleCount * 2);
 
             for (int i = 0; i < SampleCount; i++)
             {
