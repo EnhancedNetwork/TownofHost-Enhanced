@@ -67,10 +67,11 @@ internal class EAC
                         Report(pc, "Invalid Rpc");
                         HandleCheat(pc, "Invalid Rpc");
                         Logger.Fatal($"Player [{pc.OwnerId}:{pc.GetRealName()}] sent invalid RPC {rpc}, rejected", "EAC");
+                        sr.Recycle();
+                        return true;
                     }
 
-                    sr.Recycle();
-                    return true;
+                    break;
                 }
                 case RpcCalls.SendChat:
                     var text = sr.ReadString();
