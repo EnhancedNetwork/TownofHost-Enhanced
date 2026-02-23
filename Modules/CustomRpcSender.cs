@@ -346,7 +346,7 @@ public static class CustomRpcSenderExtensions
 
     public static void RpcSetName(this CustomRpcSender sender, PlayerControl player, string name, PlayerControl seer = null)
     {
-        bool seerIsNull = seer;
+        bool seerIsNull = seer == null;
         int targetClientId = seerIsNull ? -1 : seer.OwnerId;
 
         name = name.Replace("color=", string.Empty);

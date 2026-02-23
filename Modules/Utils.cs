@@ -1672,7 +1672,7 @@ public static class Utils
             }
             catch { Logger.Info(" Message sent", "SendMessage"); }
 
-            if (noSplit)
+            if (multiple)
             {
                 text = text.TrimStart('\n');
                 if (!text.EndsWith('\n')) text += "\n";
@@ -1705,7 +1705,7 @@ public static class Utils
                 Logger.Info($"Set sender name to {sender.GetRealName()}; Final", "SendMessage");
                 writer.AutoStartRpc(sender.NetId, RpcCalls.SetName, targetClientId)
                     .Write(sender.Data.NetId)
-                    .Write(Main.AllPlayerNames.GetValueOrDefault(sender.PlayerId, string.Empty))
+                    .Write(sender.GetRealName())
                     .EndRpc();
 
                 if (!multiple) writer.SendMessage();
@@ -3458,7 +3458,6 @@ public static class Utils
         return t?.PadRight(Mathf.Max(num - (bc - t.Length), 0));
     }
 
-    private static int previousDumpEnd = 0;
     public static void DumpLog(bool open = true)
     {
         var f = $"{Environment.GetFolderPath(Environment.SpecialFolder.DesktopDirectory)}/TOHE-logs/";

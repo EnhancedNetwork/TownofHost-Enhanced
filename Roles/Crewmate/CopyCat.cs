@@ -56,7 +56,7 @@ internal class CopyCat : RoleBase
         // playerIdList.Remove(playerId);
     }
     public static bool CanCopyTeamChangingAddon() => CopyTeamChangingAddon.GetBool();
-    public static bool NoHaveTask(byte playerId, bool ForRecompute) => playerIdList.Contains(playerId) && (playerId.GetPlayer().GetCustomRole().IsDesyncRole() || ForRecompute);
+    public static bool NoHaveTask(byte playerId, bool ForRecompute) => playerIdList.Contains(playerId) && playerId.GetPlayer() && (playerId.GetPlayer().GetCustomRole().IsDesyncRole() || ForRecompute);
     public override bool CanUseKillButton(PlayerControl pc) => true;
     public override bool CanUseImpostorVentButton(PlayerControl pc) => playerIdList.Contains(pc.PlayerId);
     public override void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = Utils.GetPlayerById(id).IsAlive() ? CurrentKillCooldown : 300f;

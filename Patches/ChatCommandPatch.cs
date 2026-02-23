@@ -416,7 +416,7 @@ internal class ChatCommands
             {
                 string name = PlayerControl.LocalPlayer.GetRealName();
 
-                Utils.SendMessage(text.Insert(0, new('\n', name.Count(x => x == '\n'))), title: name, addToHistory: false, noSplit: true, importance: MessageImportance.High);
+                Utils.SendMessage(text.Insert(0, new('\n', name.Count(x => x == '\n'))), title: name, addToHistory: false, noSplit: true, final: true, importance: MessageImportance.High);
 
                 canceled = true;
                 __instance.freeChatField.textArea.Clear();

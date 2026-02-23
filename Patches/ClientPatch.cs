@@ -5,32 +5,34 @@ using static TOHE.Translator;
 
 namespace TOHE;
 
-[HarmonyPatch(typeof(GameStartManager), nameof(GameStartManager.MakePublic))]
-internal class MakePublicPatch
-{
-    public static bool Prefix(/*GameStartManager __instance*/)
-    {
-        // 定数設定による公開ルームブロック
-        if (!Main.AllowPublicRoom)
-        {
-            var message = GetString("DisabledByProgram");
-            Logger.Info(message, "MakePublicPatch");
-            Logger.SendInGame(message);
-            return false;
-        }
-        if (ModUpdater.isBroken || (ModUpdater.hasUpdate && ModUpdater.forceUpdate) || !VersionChecker.IsSupported)
-        {
-            var message = "";
-            if (!VersionChecker.IsSupported) message = GetString("UnsupportedVersion");
-            if (ModUpdater.isBroken) message = GetString("ModBrokenMessage");
-            if (ModUpdater.hasUpdate) message = GetString("CanNotJoinPublicRoomNoLatest");
-            Logger.Info(message, "MakePublicPatch");
-            Logger.SendInGame(message);
-            return false;
-        }
-        return true;
-    }
-}
+// [HarmonyPatch(typeof(GameStartManager), nameof(GameStartManager.MakePublic))]
+// internal class MakePublicPatch
+// {
+//     public static bool Prefix(/*GameStartManager __instance*/)
+//     {
+//         // 定数設定による公開ルームブロック
+//         if (!Main.AllowPublicRoom)
+//         {
+//             var message = GetString("DisabledByProgram");
+//             Logger.Info(message, "MakePublicPatch");
+//             Logger.SendInGame(message);
+//             return false;
+//         }
+//         if (ModUpdater.isBroken || (ModUpdater.hasUpdate && ModUpdater.forceUpdate) || !VersionChecker.IsSupported)
+//         {
+//             var message = "";
+//             if (!VersionChecker.IsSupported) message = GetString("UnsupportedVersion");
+//             if (ModUpdater.isBroken) message = GetString("ModBrokenMessage");
+//             if (ModUpdater.hasUpdate) message = GetString("CanNotJoinPublicRoomNoLatest");
+//             Logger.Info(message, "MakePublicPatch");
+//             Logger.SendInGame(message);
+//             return false;
+//         }
+//         return true;
+//     }
+// }
+
+
 [HarmonyPatch(typeof(MMOnlineManager), nameof(MMOnlineManager.Start))]
 internal class MMOnlineManagerStartPatch
 {
