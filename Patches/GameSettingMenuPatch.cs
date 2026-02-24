@@ -33,6 +33,7 @@ public class GameSettingMenuPatch
             CustomGameMode.HidenSeekTOHE => Enum.GetValues<TabGroup>().Skip(3).ToArray(),
             CustomGameMode.FFA => Enum.GetValues<TabGroup>().Skip(2).ToArray(),
             CustomGameMode.SpeedRun => Enum.GetValues<TabGroup>().Skip(2).ToArray(),
+            CustomGameMode.ShapeshiftWars => Enum.GetValues<TabGroup>().Skip(2).ToArray(),
             _ => []
         };
 

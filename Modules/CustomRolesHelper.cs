@@ -62,7 +62,7 @@ public static class CustomRolesHelper
     {
         if (player == null) return false;
 
-        if (Options.CurrentGameMode is CustomGameMode.SpeedRun) return true;
+        if (Options.CurrentGameMode is CustomGameMode.SpeedRun or CustomGameMode.ShapeshiftWars) return true;
 
         return player.GetCustomRole().HasImpBasis();
     }
