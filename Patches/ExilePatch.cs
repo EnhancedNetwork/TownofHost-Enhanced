@@ -112,7 +112,7 @@ class ExileControllerWrapUpPatch
 
         if (CLThingy && exiled)
         {
-            exiled.IsDead = true;
+            // exiled.IsDead = true;
             exiled.PlayerId.SetDeathReason(PlayerState.DeathReason.Vote);
 
             var exiledRoleClass = exiled.PlayerId.GetRoleClassById();
