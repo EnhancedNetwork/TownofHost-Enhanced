@@ -434,8 +434,8 @@ public static class GuessManager
             // DEATH STUFF //
             GameEndCheckerForNormal.ShouldNotCheck = true;
             var amOwner = pc.AmOwner;
-            pc.Data.IsDead = true;
             pc.RpcExileV2();
+            pc.Data.IsDead = true;
             Main.PlayerStates[pc.PlayerId].SetDead();
             var meetingHud = MeetingHud.Instance;
             var hudManager = DestroyableSingleton<HudManager>.Instance;

@@ -90,9 +90,9 @@ internal class Revolutionist : RoleBase
         {
             var tar = GetPlayerById(x);
             if (tar == null) continue;
-            tar.Data.IsDead = true;
             tar.SetDeathReason(PlayerState.DeathReason.Sacrifice);
             tar.RpcExileV2();
+            tar.Data.IsDead = true;
             Main.PlayerStates[tar.PlayerId].SetDead();
             Logger.Info($"{tar.GetRealName()} 因会议革命失败", "Revolutionist");
         }
