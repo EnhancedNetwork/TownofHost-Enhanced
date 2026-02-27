@@ -289,7 +289,7 @@ internal class ControllerManagerUpdatePatch
             }
 
             // Host kill self
-            if (GetKeysDown(KeyCode.LeftControl, KeyCode.LeftShift, KeyCode.E, KeyCode.Return) && GameStates.IsInGame)
+            if (GetKeysDown(KeyCode.LeftControl, KeyCode.LeftShift, KeyCode.E, KeyCode.Return) && GameStates.IsInGame && PlayerControl.LocalPlayer.IsAlive())
             {
                 PlayerControl.LocalPlayer.SetDeathReason(PlayerState.DeathReason.etc);
                 PlayerControl.LocalPlayer.SetRealKiller(PlayerControl.LocalPlayer);

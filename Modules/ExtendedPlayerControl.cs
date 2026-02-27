@@ -1226,6 +1226,7 @@ static class ExtendedPlayerControl
 
     public static bool CanUseImpostorVentButton(this PlayerControl pc)
     {
+        if (Main.IntroDestroyed) return false;
         if (!pc.IsAlive()) return false;
         if (GameStates.IsHideNSeek) return true;
         if (pc.Is(CustomRoles.Killer) || pc.Is(CustomRoles.Nimble)) return true;
