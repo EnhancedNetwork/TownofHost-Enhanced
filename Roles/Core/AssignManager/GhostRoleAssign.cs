@@ -7,6 +7,7 @@ namespace TOHE.Roles.Core.AssignManager;
 public static class GhostRoleAssign
 {
     public static Dictionary<byte, CustomRoles> GhostGetPreviousRole = [];
+    public static Dictionary<byte, CustomRoles> AssignedGhostRole = [];
     private static readonly Dictionary<CustomRoles, int> getCount = [];
 
     private static IRandom Rnd => IRandom.Instance;
@@ -124,6 +125,7 @@ public static class GhostRoleAssign
             {
                 CrewCount++;
                 getCount[ChosenRole]--; // Only deduct if role has been set.
+                AssignedGhostRole[player.PlayerId] = ChosenRole;
                 player.GetRoleClass().OnRemove(player.PlayerId);
                 player.RpcSetCustomRole(ChosenRole);
                 player.GetRoleClass().OnAdd(player.PlayerId);

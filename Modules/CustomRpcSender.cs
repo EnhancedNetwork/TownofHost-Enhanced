@@ -428,4 +428,10 @@ public static class CustomRpcSenderExtensions
         // if (sender.sendOption == SendOption.Reliable) Utils.NumSnapToCallsThisRound++;
         return true;
     }
+
+    public static bool RpcExileV2(this CustomRpcSender sender, PlayerControl player)
+    {
+        sender.RpcSetRole(player, player.GetGhostRoleBasis());
+        return true;
+    }
 }

@@ -54,7 +54,6 @@ public class Rebirth : IAddon
     public static bool IsViableSwapTarget(PlayerControl x)
     {
         return !x.IsHost() 
-            && AntiBlackout.ExilePlayerId != x.PlayerId
             && !x.Is(CustomRoles.Rebirth)
             && !x.IsAnySubRole(x => x.IsConverted())
             && !x.Is(CustomRoles.Admired)

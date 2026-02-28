@@ -1,6 +1,8 @@
 using AmongUs.Data;
 using AmongUs.GameOptions;
+using Hazel;
 using System;
+using System.Diagnostics;
 using TOHE.Roles.Core;
 using TOHE.Roles.Neutral;
 
@@ -8,6 +10,7 @@ namespace TOHE;
 
 class ExileControllerWrapUpPatch
 {
+    public static Stopwatch Stopwatch;
     public static NetworkedPlayerInfo AntiBlackout_LastExiled;
     [HarmonyPatch(typeof(ExileController), nameof(ExileController.Begin))]
     class ExileControllerBeginPatch
@@ -89,8 +92,6 @@ class ExileControllerWrapUpPatch
     }
     private static void WrapUpPostfix(NetworkedPlayerInfo exiled)
     {
-        if (AntiBlackout.BlackOutIsActive) exiled = AntiBlackout_LastExiled;
-
         // Still not springing up in Airship
         if (!GameStates.AirshipIsActive)
         {
@@ -102,7 +103,6 @@ class ExileControllerWrapUpPatch
 
         bool DecidedWinner = false;
         if (!AmongUsClient.Instance.AmHost) return;
-        AntiBlackout.RestoreIsDead(doSend: false);
 
         List<Collector> collectorCL = Utils.GetRoleBasesByType<Collector>()?.ToList();
 
@@ -152,83 +152,13 @@ class ExileControllerWrapUpPatch
         // Even if an exception occurs in WrapUpPostfix, this is the only part that will be executed reliably
         if (AmongUsClient.Instance.AmHost)
         {
-            _ = new LateTask(() =>
+            Stopwatch = Stopwatch.StartNew();
+
+            LateTask.New(() =>
             {
                 if (GameStates.IsEnded) return;
-
-                exiled = AntiBlackout_LastExiled;
-                AntiBlackout.SendGameData();
-                AntiBlackout.SetRealPlayerRoles();
-
-                if (AntiBlackout.BlackOutIsActive && // State in which the expulsion target is overwritten (need not be executed if the expulsion target is not overwritten)
-                    exiled && // Exiled is not null
-                    exiled.Object) //exiled.Object is not null
-                {
-                    exiled.Object.RpcExileV2();
-                }
-            }, Options.CurrentGameMode is CustomGameMode.Standard ? 0.5f : 1.4f, "Restore IsDead Task");
-
-            _ = new LateTask(AntiBlackout.ResetAfterMeeting, 0.6f, "ResetAfterMeeting");
-
-            _ = new LateTask(() =>
-            {
-                if (GameStates.IsEnded) return;
-
-                Main.AfterMeetingDeathPlayers.Do(x =>
-                {
-                    var player = x.Key.GetPlayer();
-                    var state = Main.PlayerStates[x.Key];
-
-                    Logger.Info($"{player?.GetNameWithRole().RemoveHtmlTags()} died with {x.Value}", "AfterMeetingDeath");
-
-                    if (x.Value == PlayerState.DeathReason.Suicide)
-                        player?.SetRealKiller(player, true);
-
-                    state.deathReason = x.Value;
-                    state.SetDead();
-                    player?.RpcExileV2();
-
-                    // Just to be sure
-                    _ = new LateTask(() => player?.RpcExile(), 0.5f, "Extra Exile to be Sure");
-
-                    MurderPlayerPatch.AfterPlayerDeathTasks(player, player, true);
-                });
-
-                Main.AfterMeetingDeathPlayers.Clear();
-
-                Utils.AfterMeetingTasks();
-                Utils.SyncAllSettings();
-                Utils.CheckAndSetVentInteractions();
-
-                if (Main.CurrentServerIsVanilla && Options.BypassRateLimitAC.GetBool())
-                {
-                    Main.Instance.StartCoroutine(Utils.NotifyEveryoneAsync(speed: 5));
-                }
-                else
-                {
-                    Utils.NotifyRoles();
-                }
-
-                _ = new LateTask(() =>
-                {
-                    foreach (var player in Main.EnumerateAlivePlayerControls())
-                    {
-                        if (player.GetRoleClass() is not DefaultSetup)
-                        {
-                            if (player.GetRoleClass().ThisRoleBase.GetRoleTypesDirect() is RoleTypes.Impostor or RoleTypes.Phantom or RoleTypes.Shapeshifter or RoleTypes.Viper)
-                            {
-                                player.ResetKillCooldown();
-                                if (Main.AllPlayerKillCooldown.TryGetValue(player.PlayerId, out var killTimer) && (killTimer - 2f) > 0f)
-                                {
-                                    player.SetKillCooldown(killTimer - 2f);
-                                }
-                            }
-                        }
-                    }
-                }, 1f, $"Fix Kill Cooldown Task after meeting");
-
-                Main.LastMeetingEnded = Utils.TimeStamp;
-            }, 1f, "AfterMeetingDeathPlayers Task");
+                AntiBlackout.RevertToActualRoleTypes();
+            }, 2f, "Revert AntiBlackout Measures");
         }
 
         //This should happen shortly after the Exile Controller wrap up finished for clients
@@ -245,7 +175,72 @@ class ExileControllerWrapUpPatch
                 DestroyableSingleton<HudManager>.Instance.SetHudActive(true);
         }, 0.8f, "Set Hud Active");
 
+
+
         Logger.Info("Start of Task Phase", "Phase");
+    }
+
+    public static void AfterMeetingTasks()
+    {
+        if (CustomWinnerHolder.WinnerTeam != CustomWinner.Default || GameStates.IsEnded){ 
+            Stopwatch.Reset();
+            return;
+        }
+
+        bool hasValue = false;
+        CustomRpcSender sender = CustomRpcSender.Create("Exile AfterMeetingDeathPlayers", SendOption.Reliable);
+        Main.AfterMeetingDeathPlayers.Keys.ToValidPlayers().Do(x => hasValue |= sender.RpcExileV2(x));
+        sender.SendMessage(dispose: !hasValue);
+
+        foreach ((byte id, PlayerState.DeathReason deathReason) in Main.AfterMeetingDeathPlayers)
+        {
+            var player = id.GetPlayer();
+            var state = Main.PlayerStates[id];
+
+            Logger.Info($"{player?.GetNameWithRole().RemoveHtmlTags()} died with {deathReason}", "AfterMeetingDeath");
+
+            if (deathReason == PlayerState.DeathReason.Suicide)
+                player?.SetRealKiller(player, true);
+
+            state.deathReason = deathReason;
+            state.SetDead();
+
+            if (!player) continue;
+
+            if (deathReason == PlayerState.DeathReason.Suicide)
+                player.SetRealKiller(player, true);
+
+            MurderPlayerPatch.AfterPlayerDeathTasks(player, player, true);
+        }
+
+        Main.AfterMeetingDeathPlayers.Clear();
+
+        Utils.AfterMeetingTasks();
+        Utils.SyncAllSettings();
+        Utils.CheckAndSetVentInteractions();
+
+        Main.Instance.StartCoroutine(Utils.NotifyEveryoneAsync());
+
+        _ = new LateTask(() =>
+        {
+            foreach (var player in Main.EnumerateAlivePlayerControls())
+            {
+                if (player.GetRoleClass() is not DefaultSetup)
+                {
+                    if (player.GetRoleClass().ThisRoleBase.GetRoleTypesDirect() is RoleTypes.Impostor or RoleTypes.Phantom or RoleTypes.Shapeshifter or RoleTypes.Viper)
+                    {
+                        player.ResetKillCooldown();
+                        if (Main.AllPlayerKillCooldown.TryGetValue(player.PlayerId, out var killTimer) && (killTimer - 2f) > 0f)
+                        {
+                            player.SetKillCooldown(killTimer - 2f);
+                        }
+                    }
+                }
+            }
+        }, 1f, $"Fix Kill Cooldown Task after meeting");
+
+        Main.LastMeetingEnded = Utils.TimeStamp;
+        Stopwatch.Reset();
     }
 
     [HarmonyPatch(typeof(PbExileController), nameof(PbExileController.PlayerSpin))]

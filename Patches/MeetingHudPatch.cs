@@ -77,34 +77,13 @@ class CheckForEndVotingPatch
 
                     ExileControllerWrapUpPatch.AntiBlackout_LastExiled = exiled;
                     Main.LastVotedPlayerInfo = exiled;
-                    AntiBlackout.ExilePlayerId = exiled.PlayerId;
 
-                    if (AntiBlackout.BlackOutIsActive)
+                    if (exiled)
                     {
-                        // Need check BlackOutIsActive again
-                        var isBlackOut = AntiBlackout.BlackOutIsActive;
-
-                        if (exiled)
-                        {
-                            AntiBlackout.ShowExiledInfo = isBlackOut;
-                            ConfirmEjections(exiled, isBlackOut);
-                        }
-
-                        if (isBlackOut)
-                            __instance.AntiBlackRpcVotingComplete(states, exiled, false);
-                        else
-                            __instance.RpcVotingComplete(states, exiled, false);
+                        ConfirmEjections(exiled);
                     }
-                    else
-                    {
 
-                        if (exiled)
-                        {
-                            ConfirmEjections(exiled);
-                        }
-
-                        __instance.RpcVotingComplete(states, exiled, false);
-                    }
+                    __instance.RpcVotingComplete(states, exiled, false);
 
                     Logger.Info($"{voteTarget.GetNameWithRole()} expelled by Dictator", "Dictator");
 
@@ -379,33 +358,12 @@ class CheckForEndVotingPatch
 
             ExileControllerWrapUpPatch.AntiBlackout_LastExiled = exiledPlayer;
             Main.LastVotedPlayerInfo = exiledPlayer;
-            if (exiledPlayer) AntiBlackout.ExilePlayerId = exiledPlayer.PlayerId;
-            //RPC
-            if (AntiBlackout.BlackOutIsActive)
+            if (exiledPlayer)
             {
-                // Need check BlackOutIsActive again
-                var isBlackOut = AntiBlackout.BlackOutIsActive;
-
-                if (exiledPlayer)
-                {
-                    AntiBlackout.ShowExiledInfo = isBlackOut;
-                    ConfirmEjections(exiledPlayer, isBlackOut);
-                }
-
-                if (isBlackOut)
-                    __instance.AntiBlackRpcVotingComplete(states, exiledPlayer, tie);
-                else
-                    __instance.RpcVotingComplete(states, exiledPlayer, tie);
+                ConfirmEjections(exiledPlayer);
             }
-            else
-            {
-                if (exiledPlayer)
-                {
-                    ConfirmEjections(exiledPlayer);
-                }
 
-                __instance.RpcVotingComplete(states, exiledPlayer, tie); // Normal processing
-            }
+            __instance.RpcVotingComplete(states, exiledPlayer, tie); // Normal processing
 
             CheckForDeathOnExile(PlayerState.DeathReason.Vote, exileId);
 
@@ -419,7 +377,7 @@ class CheckForEndVotingPatch
     }
 
     // Credit：https://github.com/music-discussion/TownOfHost-TheOtherRoles
-    public static void ConfirmEjections(NetworkedPlayerInfo exiledPlayer, bool AntiBlackoutStore = false)
+    public static void ConfirmEjections(NetworkedPlayerInfo exiledPlayer)
     {
         if (!AmongUsClient.Instance.AmHost) return;
         if (!exiledPlayer) return;
@@ -587,12 +545,6 @@ class CheckForEndVotingPatch
         Logger.Info(name, "ConfirmEjections");
         TempExileMsg = name;
         TempExiledPlayer = exiledPlayer;
-
-        if (AntiBlackoutStore)
-        {
-            AntiBlackout.StoreExiledMessage = name;
-            Logger.Info(AntiBlackout.StoreExiledMessage, "AntiBlackoutStore");
-        }
     }
     public static bool CheckRole(byte id, CustomRoles role)
     {
@@ -1222,30 +1174,6 @@ class MeetingHudStartPatch
             Logger.Info("Number of remaining buttons: " + (Options.SyncedButtonCount.GetFloat() - Options.UsedButtonCount), "SyncButtonMode");
         }
 
-        // AntiBlackout Message
-        if (AntiBlackout.BlackOutIsActive)
-        {
-            _ = new LateTask(() =>
-            {
-                SendMessage(GetString("Warning.AntiBlackoutProtectionMsg"), 255, ColorString(Color.blue, GetString("AntiBlackoutProtectionTitle")), addToHistory: false);
-
-            }, 5f, "Warning BlackOut Is Active");
-        }
-
-        if (AntiBlackout.ShowExiledInfo)
-        {
-            AntiBlackout.ShowExiledInfo = false;
-            if (AntiBlackout.StoreExiledMessage != "")
-            {
-                AntiBlackout.StoreExiledMessage = GetString("Warning.ShowAntiBlackExiledPlayer") + AntiBlackout.StoreExiledMessage;
-                _ = new LateTask(() =>
-                {
-                    SendMessage(AntiBlackout.StoreExiledMessage, 255, ColorString(Color.red, GetString("DefaultSystemMessageTitle")), addToHistory: false);
-                    AntiBlackout.StoreExiledMessage = "";
-                }, 5.5f, "AntiBlackout.StoreExiledMessage");
-            }
-        }
-
         //if (GameStates.DleksIsActive)
         //{
         //    _ = new LateTask(() =>
@@ -1483,7 +1411,7 @@ class MeetingHudOnDestroyPatch
         Logger.Info("------------End Meeting------------", "Phase");
         if (AmongUsClient.Instance.AmHost)
         {
-            _ = new LateTask(() => { AntiBlackout.SetIsDead(); }, 0.1f, "AntiBlackout");
+            AntiBlackout.SetOptimalRoleTypes();
 
             Main.LastVotedPlayerInfo = null;
             EAC.ReportTimes = [];

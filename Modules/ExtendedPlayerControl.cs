@@ -14,6 +14,7 @@ using TOHE.Patches;
 using TOHE.Roles.AddOns.Common;
 using TOHE.Roles.AddOns.Impostor;
 using TOHE.Roles.Core;
+using TOHE.Roles.Core.AssignManager;
 using TOHE.Roles.Coven;
 using TOHE.Roles.Crewmate;
 using TOHE.Roles.Impostor;
@@ -1039,6 +1040,47 @@ static class ExtendedPlayerControl
         }
 
         return Main.PlayerStates.TryGetValue(player.PlayerId, out var State) ? State.countTypes : CountTypes.None;
+    }
+
+    // If you use vanilla RpcSetRole, it will block further SetRole calls until the next game starts.
+    public static void RpcSetRoleGlobal(this PlayerControl player, RoleTypes roleTypes, bool setRoleMap = false)
+    {
+        if (!AmongUsClient.Instance.AmHost) return;
+        if (AmongUsClient.Instance.AmClient) try { player.StartCoroutine(player.CoSetRole(roleTypes, true)); } catch { }
+        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(player.NetId, (byte)RpcCalls.SetRole, SendOption.Reliable);
+        writer.Write((ushort)roleTypes);
+        writer.Write(true);
+        AmongUsClient.Instance.FinishRpcImmediately(writer);
+        Logger.Info($" {player.GetNameWithRole()} => {roleTypes}", "RpcSetRoleGlobal");
+
+        // if (setRoleMap)
+        // {
+        //     foreach ((byte seerID, byte targetID) in StartGameHostPatch.RpcSetRoleReplacer.RoleMap.Keys.ToArray())
+        //     {
+        //         if (targetID == player.PlayerId)
+        //         {
+        //             var value = StartGameHostPatch.RpcSetRoleReplacer.RoleMap[(seerID, targetID)];
+        //             value.RoleType = roleTypes;
+        //             StartGameHostPatch.RpcSetRoleReplacer.RoleMap[(seerID, targetID)] = value;
+        //         }
+        //     }
+        // }
+    }
+
+    public static RoleTypes GetGhostRoleBasis(this PlayerControl __instance)
+    {
+        RoleTypes roleType;
+        
+        if (GhostRoleAssign.AssignedGhostRole.TryGetValue(__instance.PlayerId, out var ghostRole))
+            roleType = ghostRole.GetRoleTypes();
+        // else if (GhostRolesManager.ShouldHaveGhostRole(__instance))
+        //     roleType = RoleTypes.GuardianAngel;
+        else if (!(__instance.Is(RoleTypes.Impostor) && Options.DeadImpCantSabotage.GetBool()) && __instance.GetRoleClass().CanUseSabotage(__instance))
+            roleType = RoleTypes.ImpostorGhost;
+        else
+            roleType = RoleTypes.CrewmateGhost;
+
+        return roleType;
     }
 
     public static DeadBody GetDeadBody(this NetworkedPlayerInfo playerData)

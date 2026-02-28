@@ -78,33 +78,15 @@ internal class Dictator : RoleBase
         });
         states = [.. statesList];
         var exiled = target.Data;
-        var isBlackOut = AntiBlackout.BlackOutIsActive;
         CheckForEndVotingPatch.TryAddAfterMeetingDeathPlayers(PlayerState.DeathReason.Suicide, pc.PlayerId);
         ExileControllerWrapUpPatch.AntiBlackout_LastExiled = exiled;
         Main.LastVotedPlayerInfo = exiled;
-        AntiBlackout.ExilePlayerId = exiled.PlayerId;
-        if (AntiBlackout.BlackOutIsActive)
-        {
-            if (isBlackOut)
-                MeetingHud.Instance.AntiBlackRpcVotingComplete(states, exiled, false);
-            else
-                MeetingHud.Instance.RpcVotingComplete(statesList.ToArray(), exiled, false);
-            if (exiled != null)
-            {
-                AntiBlackout.ShowExiledInfo = isBlackOut;
-                CheckForEndVotingPatch.ConfirmEjections(exiled, isBlackOut);
-                MeetingHud.Instance.RpcVotingComplete(statesList.ToArray(), null, true);
-                MeetingHud.Instance.RpcClose();
-            }
-        }
-        else
-        {
-            MeetingHud.Instance.RpcVotingComplete(states, exiled, false);
 
-            if (exiled != null)
-            {
-                CheckForEndVotingPatch.ConfirmEjections(exiled);
-            }
+        MeetingHud.Instance.RpcVotingComplete(states, exiled, false);
+
+        if (exiled != null)
+        {
+            CheckForEndVotingPatch.ConfirmEjections(exiled);
         }
 
         Logger.Info($"{target.GetNameWithRole()} expelled by Dictator", "Dictator");
