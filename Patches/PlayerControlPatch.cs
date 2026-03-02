@@ -2102,6 +2102,27 @@ public static class PlayerControlCheckUseZiplinePatch
 [HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.Die))]
 public static class PlayerControlDiePatch
 {
+    public static void Old_Postfix(PlayerControl __instance, DeathReason reason)
+    {
+        if (!AmongUsClient.Instance.AmHost || !__instance) return;
+        var playerId = __instance.PlayerId;
+        // Skip Tasks while Anti Blackout but not for real exiled
+        if (AntiBlackout.SkipTasks && AntiBlackout.ExilePlayerId != playerId) return;
+
+        // Fix bug when player was dead due RpcExile while camera uses
+        if (reason is DeathReason.Exile)
+        {
+            var securityCameraSystem = ShipStatus.Instance.Systems.TryGetValue(SystemTypes.Security, out var systemType) ? systemType.CastFast<SecurityCameraSystemType>() : null;
+            if (securityCameraSystem != null && securityCameraSystem.PlayersUsing.Contains(playerId))
+            {
+                securityCameraSystem.PlayersUsing.Remove(playerId);
+                securityCameraSystem.IsDirty = true;
+            }
+        }
+
+        __instance.RpcRemovePet();
+    }
+
     public static void Postfix(PlayerControl __instance)
     {
         if (!AmongUsClient.Instance.AmHost || !__instance) return;

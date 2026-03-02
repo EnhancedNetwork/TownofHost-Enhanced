@@ -1025,7 +1025,7 @@ class IntroCutsceneDestroyPatch
 
             foreach (var player in Main.EnumeratePlayerControls())
             {
-                if (player.Is(CustomRoles.GM))
+                if (player.Is(CustomRoles.GM) && !AntiBlackout.IsCached)
                 {
                     player.RpcExile();
                     Main.PlayerStates[player.PlayerId].SetDead();

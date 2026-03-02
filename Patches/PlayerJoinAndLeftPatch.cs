@@ -480,6 +480,7 @@ class OnPlayerLeftPatch
                 }
 
                 NameNotifyManager.Notifies.Remove(data.Character.PlayerId);
+                AntiBlackout.OnDisconnect(data.Character.Data);
                 PlayerGameOptionsSender.RemoveSender(data.Character);
             }
 

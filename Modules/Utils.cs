@@ -3325,6 +3325,8 @@ public static class Utils
         if (Diseased.IsEnable) Diseased.AfterMeetingTasks();
         if (Antidote.IsEnable) Antidote.AfterMeetingTasks();
 
+        AntiBlackout.AfterMeetingTasks();
+
         try
         {
             CovenManager.CheckNecroVotes();
