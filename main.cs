@@ -57,8 +57,8 @@ public class Main : BasePlugin
 
     public const string PluginGuid = "com.0xdrmoe.townofhostenhanced";
     public const string PluginGuid4 = "90759289-1d0d-494b-b36c-839f93ae0df1"; // for matchmaking token
-    public const string PluginVersion = "2026.0220.242.10000"; // YEAR.MMDD.VERSION.CANARYDEV
-    public const string PluginDisplayVersion = "2.4.2 Beta 10";
+    public const string PluginVersion = "2026.0220.242.11000"; // YEAR.MMDD.VERSION.CANARYDEV
+    public const string PluginDisplayVersion = "2.4.2 Beta 11";
     public static readonly List<(int year, int month, int day, int revision)> SupportedVersionAU =
     [
         (2025, 11, 18, 0), // 2025.11.18 & 17.1
@@ -70,7 +70,7 @@ public class Main : BasePlugin
 
 #pragma warning disable IDE1006 // Naming Styles
     public static bool devRelease => RELEASE == Release.ALPHA; // Latest: v3.0.0 Alpha 30
-    public static bool canaryRelease => RELEASE == Release.BETA; // Latest: V2.4.2 Beta 10
+    public static bool canaryRelease => RELEASE == Release.BETA; // Latest: V2.4.2 Beta 11
     public static bool fullRelease => RELEASE == Release.RELEASE; // Latest: V2.4.1 hotfix 1
 #pragma warning restore IDE1006 // Naming Styles
 
@@ -584,7 +584,7 @@ public class Main : BasePlugin
         TOHE.Logger.Disable("SwitchSystem");
         TOHE.Logger.Disable("ModNews");
         TOHE.Logger.Disable("RpcSetNamePrivate");
-        // TOHE.Logger.Disable("SendRPC");
+        TOHE.Logger.Disable("SendRPC");
         TOHE.Logger.Disable("KnowRoleTarget");
         // TOHE.Logger.Disable("CustomRpcSender");
         if (!DebugModeManager.AmDebugger)

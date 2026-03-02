@@ -357,7 +357,7 @@ public static class CustomRpcSenderExtensions
         {
             case true when Main.LastNotifyNames.Where(x => x.Key.Item1 == player.PlayerId).All(x => x.Value == name):
             case false when Main.LastNotifyNames[(player.PlayerId, seer.PlayerId)] == name:
-                Logger.Info($"Skipped setting name of {player.GetRealName()} for seer {saw} because it was the same as previous", "RpcSetName");
+                // Logger.Info($"Skipped setting name of {player.GetRealName()} for seer {saw} because it was the same as previous", "RpcSetName");
                 return;
             case true:
                 Main.EnumeratePlayerControls().Do(x => Main.LastNotifyNames[(player.PlayerId, x.PlayerId)] = name);
