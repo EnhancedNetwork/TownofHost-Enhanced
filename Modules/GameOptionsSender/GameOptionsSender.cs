@@ -2,6 +2,7 @@ using AmongUs.GameOptions;
 using Hazel;
 using Il2CppInterop.Runtime.InteropTypes.Arrays;
 using Il2CppSystem;
+using InnerNet;
 using TOHE.Modules.Rpc;
 
 namespace TOHE.Modules;
@@ -80,18 +81,32 @@ public abstract class GameOptionsSender
     }
     protected virtual void SendOptionsArray(Il2CppStructArray<byte> optionArray, byte LogicOptionsIndex, int targetClientId)
     {
-        if (!AmongUsClient.Instance.AmHost) return;
-
-        var message = new SendOptionsArray(optionArray);
-
-        if (targetClientId < 0)
+        DataFlagRateLimiter.Enqueue(() =>
         {
-            RpcUtils.LateBroadcastReliableMessage(message);
-        }
-        else
-        {
-            RpcUtils.LateSpecificSendMessage(message, targetClientId);
-        }
+            MessageWriter writer = MessageWriter.Get(SendOption.Reliable);
+
+            writer.StartMessage(targetClientId == -1 ? Tags.GameData : Tags.GameDataTo);
+            {
+                writer.Write(AmongUsClient.Instance.GameId);
+                if (targetClientId != -1) writer.WritePacked(targetClientId);
+
+                writer.StartMessage(1);
+                {
+                    writer.WritePacked(GameManager.Instance.NetId);
+                    writer.StartMessage(LogicOptionsIndex);
+                    {
+                        writer.WriteBytesAndSize(optionArray);
+                    }
+                    writer.EndMessage();
+                }
+                writer.EndMessage();
+            }
+
+            writer.EndMessage();
+
+            AmongUsClient.Instance.SendOrDisconnect(writer);
+            writer.Recycle();
+        });
     }
     public abstract IGameOptions BuildGameOptions();
 

@@ -1463,7 +1463,10 @@ public static class Utils
                     Logger.Msg("Temporarily reviving host to send message....", "TempReviveHost");
 
                     sender.Data.IsDead = false;
-                    sender.Data.SendGameData();
+
+                    var qa = sender.Data.SendGameData();
+                    yield return qa.Wait();
+                    if (qa.Dropped) yield break;
                     
                     while (TempReviveHostRevertStopwatch.ElapsedMilliseconds < 1000)
                         yield return null;
@@ -1479,7 +1482,7 @@ public static class Utils
                     }
 
                     sender.Data.IsDead = true;
-                    sender.Data.SendGameData();
+                    yield return sender.Data.SendGameData().Wait();
                     
                     TempReviveHostRunning = false;
                 }
@@ -3671,9 +3674,11 @@ public static class Utils
         MeetingHud.Instance.RpcClose();
     }
 
-    public static void SetChatVisibleSpecific(this PlayerControl player)
+    public static void SetChatVisibleSpecific(this PlayerControl player, MessageWriter packedWriter = null)
     {
         if (!GameStates.IsInGame || !AmongUsClient.Instance.AmHost || GameStates.IsMeeting) return;
+
+        Logger.Info($"Setting the chat visible for {player.GetNameWithRole()}", "SetChatVisible");
 
         if (player.IsHost())
         {
@@ -3688,35 +3693,51 @@ public static class Utils
             return;
         }
 
-        var customNetId = AmongUsClient.Instance.NetIdCnt++;
-        var vanillasend = MessageWriter.Get(SendOption.Reliable);
+        if (packedWriter == null) DataFlagRateLimiter.Enqueue(Action, calls: 3);
+        else Action();
+        return;
 
-        vanillasend.StartMessage(6);
-        vanillasend.Write(AmongUsClient.Instance.GameId);
-        vanillasend.Write(player.OwnerId);
-
-        vanillasend.StartMessage((byte)GameDataTag.SpawnFlag);
-        vanillasend.WritePacked(1); // 1 Meeting Hud Spawn id
-        vanillasend.WritePacked(-2); // Owned by host
-        vanillasend.Write((byte)SpawnFlags.None);
-        vanillasend.WritePacked(1);
-        vanillasend.WritePacked(customNetId);
-
-        vanillasend.StartMessage(1);
-        vanillasend.WritePacked(0);
-        vanillasend.EndMessage();
-
-        vanillasend.EndMessage();
-
-        vanillasend.StartMessage((byte)GameDataTag.RpcFlag);
-        vanillasend.WritePacked(customNetId);
-        vanillasend.Write((byte)RpcCalls.CloseMeeting);
-        vanillasend.EndMessage();
-
-        vanillasend.EndMessage();
-
-        AmongUsClient.Instance.SendOrDisconnect(vanillasend);
-        vanillasend.Recycle();
+        void Action()
+        {
+            bool dead = player.Data.IsDead;
+            MessageWriter writer = packedWriter ?? MessageWriter.Get(SendOption.Reliable);
+            writer.StartMessage(6);
+            writer.Write(AmongUsClient.Instance.GameId);
+            writer.WritePacked(player.OwnerId);
+            writer.StartMessage(4);
+            writer.WritePacked(HudManager.Instance.MeetingPrefab.SpawnId);
+            writer.WritePacked(-2);
+            writer.Write((byte)SpawnFlags.None);
+            writer.WritePacked(1);
+            uint netIdCnt = AmongUsClient.Instance.NetIdCnt;
+            AmongUsClient.Instance.NetIdCnt = netIdCnt + 1U;
+            writer.WritePacked(netIdCnt);
+            writer.StartMessage(1);
+            writer.WritePacked(0);
+            writer.EndMessage();
+            writer.EndMessage();
+            player.Data.IsDead = true;
+            writer.StartMessage(1);
+            writer.WritePacked(player.Data.NetId);
+            player.Data.Serialize(writer, true);
+            writer.EndMessage();
+            writer.StartMessage(2);
+            writer.WritePacked(netIdCnt);
+            writer.Write((byte)RpcCalls.CloseMeeting);
+            writer.EndMessage();
+            player.Data.IsDead = dead;
+            writer.StartMessage(1);
+            writer.WritePacked(player.Data.NetId);
+            player.Data.Serialize(writer, true);
+            writer.EndMessage();
+            writer.StartMessage(5);
+            writer.WritePacked(netIdCnt);
+            writer.EndMessage();
+            writer.EndMessage();
+            if (packedWriter != null) return;
+            AmongUsClient.Instance.SendOrDisconnect(writer);
+            writer.Recycle();
+        }
     }
 
     public static bool CheckTresspassing(PlayerControl killer, PlayerControl target)

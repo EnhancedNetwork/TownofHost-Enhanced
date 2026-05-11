@@ -537,6 +537,7 @@ class GameEndCheckerForNormal
 
     public static void StartEndGame(GameOverReason reason)
     {
+        DataFlagRateLimiter.DropQueue();
         // string msg = GetString("NotifyGameEnding");
 
         // Main.EnumeratePlayerControls()

@@ -1,5 +1,6 @@
 using Hazel;
 using System;
+using TOHE.Modules;
 
 namespace TOHE.Patches;
 
@@ -80,18 +81,78 @@ static class VentSystemDeterioratePatch
 
     public static void SerializeV2(VentilationSystem __instance, PlayerControl player = null)
     {
-        foreach (var pc in Main.EnumerateAlivePlayerControls())
+        foreach (PlayerControl pc in PlayerControl.AllPlayerControls)
         {
-            if (pc.AmOwner || (player && pc != player)) continue;
+            if (pc.AmOwner) continue;
+            if (player && pc != player) continue;
 
-            if (pc.BlockVentInteraction())
+            DataFlagRateLimiter.Enqueue(() =>
             {
-                pc.RpcCloseVent(__instance);
-            }
-            else
-            {
-                pc.RpcSerializeVent(__instance);
-            }
+                MessageWriter writer = MessageWriter.Get(SendOption.Reliable);
+
+                if (BlockVentInteraction(pc))
+                {
+                    writer.StartMessage(6);
+                    writer.Write(AmongUsClient.Instance.GameId);
+                    writer.WritePacked(pc.OwnerId);
+                    writer.StartMessage(1);
+                    writer.WritePacked(ShipStatus.Instance.NetId);
+                    writer.StartMessage((byte)SystemTypes.Ventilation);
+                    int vents = ShipStatus.Instance.AllVents.Count(vent => pc.CantUseVent(vent.Id));
+                    List<NetworkedPlayerInfo> allPlayers = [];
+
+                    foreach (NetworkedPlayerInfo playerInfo in GameData.Instance.AllPlayers)
+                    {
+                        if (playerInfo && !playerInfo.Disconnected)
+                            allPlayers.Add(playerInfo);
+                    }
+
+                    int maxVents = Math.Min(vents, allPlayers.Count);
+                    var blockedVents = 0;
+                    writer.WritePacked(maxVents);
+
+                    foreach (Vent vent in pc.GetVentsFromClosest())
+                    {
+                        if (pc.CantUseVent(vent.Id))
+                        {
+                            writer.Write(allPlayers[blockedVents].PlayerId);
+                            writer.Write((byte)vent.Id);
+                            ++blockedVents;
+                        }
+
+                        if (blockedVents >= maxVents)
+                            break;
+                    }
+
+                    writer.WritePacked(__instance.PlayersInsideVents.Count);
+
+                    foreach (Il2CppSystem.Collections.Generic.KeyValuePair<byte, byte> keyValuePair2 in __instance.PlayersInsideVents)
+                    {
+                        writer.Write(keyValuePair2.Key);
+                        writer.Write(keyValuePair2.Value);
+                    }
+
+                    writer.EndMessage();
+                    writer.EndMessage();
+                    writer.EndMessage();
+                }
+                else
+                {
+                    writer.StartMessage(6);
+                    writer.Write(AmongUsClient.Instance.GameId);
+                    writer.WritePacked(pc.OwnerId);
+                    writer.StartMessage(1);
+                    writer.WritePacked(ShipStatus.Instance.NetId);
+                    writer.StartMessage((byte)SystemTypes.Ventilation);
+                    __instance.Serialize(writer, false);
+                    writer.EndMessage();
+                    writer.EndMessage();
+                    writer.EndMessage();
+                }
+
+                AmongUsClient.Instance.SendOrDisconnect(writer);
+                writer.Recycle();
+            });
         }
     }
     /// <summary>

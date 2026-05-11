@@ -1,6 +1,7 @@
 using System;
 using InnerNet;
 using TMPro;
+using TOHE.Modules;
 using TOHE.Roles.AddOns.Common;
 using TOHE.Roles.Core;
 using UnityEngine;
@@ -53,6 +54,9 @@ public static class FixedUpdatePatch
             //         EAC.TimeSinceLastTaskCompletion[key] += Time.fixedDeltaTime;
             // }
             // catch (Exception e) { Utils.ThrowException(e); }
+
+            try { DataFlagRateLimiter.OnFixedUpdate(); }
+            catch (Exception e) { Utils.ThrowException(e); }
 
             if (!PlayerControl.LocalPlayer) return;
 
