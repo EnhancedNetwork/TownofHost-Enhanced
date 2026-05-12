@@ -4712,5 +4712,6 @@
   "Command.VipColor": "vipcolor|vipcolour",
   "CommandDescription.VipColor": "Set your vip tag color, can use two colors for a gradient or enabled",
 
-  "NoSpamAnymoreUseCmd": "<size=2.5><#ff0000>⚠ <#ffff00>USE THE '/cmd {command name} {arguments}' FORMAT <#ff0000>⚠</size>\\n<#ffa500>Otherwise your messages are exposed!"
+  "NoSpamAnymoreUseCmd": "<size=2.5><#ff0000>⚠ <#ffff00>USE THE '/cmd {command name} {arguments}' FORMAT <#ff0000>⚠</size>\\n<#ffa500>Otherwise your messages are exposed!",
+  "Message.OnlyVIPCanUse": "Only VIPs can use this command right now."
 }
