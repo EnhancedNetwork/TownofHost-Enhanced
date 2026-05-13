@@ -1,114 +1,183 @@
+using System.Collections;
+using System.Diagnostics;
 using AmongUs.GameOptions;
 using Hazel;
 using Il2CppInterop.Runtime.InteropTypes.Arrays;
 using Il2CppSystem;
 using InnerNet;
 using TOHE.Modules.Rpc;
+using UnityEngine;
 
 namespace TOHE.Modules;
 
 public abstract class GameOptionsSender
 {
-    #region Static
-    public readonly static List<GameOptionsSender> AllSenders = new(100) { new NormalGameOptionsSender() };
+    protected abstract bool IsDirty { get; set; }
 
-    public static void SendAllGameOptions()
+    private Il2CppStructArray<byte> BuildOptionArray()
     {
-        AllSenders.RemoveAll(s => !s.AmValid()); // .AmValid() has a virtual property, so it doesn't always return true
-        var AllSendersArray = AllSenders.ToArray();
-        foreach (GameOptionsSender sender in AllSendersArray)
-        {
-            if (sender.IsDirty) sender.SendGameOptions();
-            sender.IsDirty = false;
-        }
-    }
-    #endregion
-
-    public abstract IGameOptions BasedGameOptions { get; }
-    public abstract bool IsDirty { get; protected set; }
-
-
-    public virtual void SendGameOptions()
-    {
-        if (!AmongUsClient.Instance.AmHost) return;
-
-        var opt = BuildGameOptions();
-        var currentGameMode = AprilFoolsMode.IsAprilFoolsModeToggledOn //April fools mode toggled on by host
-            ? opt.AprilFoolsOnMode : opt.GameMode; //Change game mode, same as well as in "RpcSyncSettings()"
+        IGameOptions opt = BuildGameOptions();
+        var currentGameMode = AprilFoolsMode.IsAprilFoolsModeToggledOn ? opt.AprilFoolsOnMode : opt.GameMode;
 
         // option => byte[]
-        MessageWriter writer = MessageWriter.Get(SendOption.None);
+        MessageWriter writer = MessageWriter.Get();
         writer.Write(opt.Version);
         writer.StartMessage(0);
         writer.Write((byte)currentGameMode);
-        if (opt.TryCast<NormalGameOptionsV10>(out var normalOpt))
+
+        if (opt.TryCast(out NormalGameOptionsV10 normalOpt))
             NormalGameOptionsV10.Serialize(writer, normalOpt);
-        else if (opt.TryCast<HideNSeekGameOptionsV10>(out var hnsOpt))
+        else if (opt.TryCast(out HideNSeekGameOptionsV10 hnsOpt))
             HideNSeekGameOptionsV10.Serialize(writer, hnsOpt);
         else
-        {
-            writer.Recycle();
-            Logger.Error("Option Cast Failed", this.ToString());
-        }
+            Logger.Error("Option cast failed", ToString());
+
         writer.EndMessage();
 
-        // Create into array
-        var byteArray = new Il2CppStructArray<byte>(writer.Length - 1);
-        // MessageWriter.ToByteArray
-        Buffer.BlockCopy(writer.Buffer.CastFast<Array>(), 1, byteArray.CastFast<Array>(), 0, writer.Length - 1);
-
-        SendOptionsArray(byteArray);
+        Il2CppStructArray<byte> optionArray = writer.ToByteArray(false);
         writer.Recycle();
+        return optionArray;
     }
-    public virtual void SendOptionsArray(Il2CppStructArray<byte> optionArray)
+
+    protected virtual void SendGameOptions()
+    {
+        Il2CppStructArray<byte> optionArray = BuildOptionArray();
+        SendOptionsArray(optionArray);
+    }
+
+    protected virtual IEnumerator SendGameOptionsAsync()
+    {
+        Il2CppStructArray<byte> optionArray = BuildOptionArray();
+        yield return SendOptionsArrayAsync(optionArray);
+    }
+
+    private void SendOptionsArray(Il2CppStructArray<byte> optionArray)
+    {
+        int count = GameManager.Instance.LogicComponents.Count;
+
+        for (byte i = 0; i < count; i++)
+        {
+            Il2CppSystem.Object logicComponent = GameManager.Instance.LogicComponents[i];
+            if (logicComponent.TryCast<LogicOptions>(out _)) SendOptionsArray(optionArray, i);
+        }
+    }
+
+    private IEnumerator SendOptionsArrayAsync(Il2CppStructArray<byte> optionArray)
+    {
+        int count = GameManager.Instance.LogicComponents.Count;
+
+        for (byte i = 0; i < count; i++)
+        {
+            Il2CppSystem.Object logicComponent = GameManager.Instance.LogicComponents[i];
+            if (logicComponent.TryCast<LogicOptions>(out _)) SendOptionsArray(optionArray, i);
+            yield return WaitFrameIfNecessary();
+        }
+    }
+
+    protected abstract void SendOptionsArray(Il2CppStructArray<byte> optionArray, byte logicOptionsIndex);
+
+    public abstract IGameOptions BuildGameOptions();
+
+    protected virtual bool AmValid()
+    {
+        return true;
+    }
+
+    #region Static
+
+    public static readonly List<GameOptionsSender> AllSenders = [new NormalGameOptionsSender()];
+
+    protected static MessageWriter PackedWriter;
+    protected static int PackedWriterMessages;
+
+    public static IEnumerator SendDirtyGameOptionsContinuously()
     {
         try
         {
-            byte logicOptionsIndex = 0;
-            foreach (var logicComponent in GameManager.Instance.LogicComponents.GetFastEnumerator())
+            while (GameStates.InGame || GameStates.IsLobby)
             {
-                if (logicComponent.CastFast<LogicOptions>() != null)
+                if (GameStates.InGame)
                 {
-                    SendOptionsArray(optionArray, logicOptionsIndex, -1);
+                    PackedWriterMessages = 0;
+                    PackedWriter = MessageWriter.Get(SendOption.Reliable);
+                    PackedWriter.StartMessage(26);
+                    PackedWriter.WritePacked(AmongUsClient.Instance.GameId);
                 }
-                logicOptionsIndex++;
-            }
-        }
-        catch (System.Exception error)
-        {
-            Logger.Fatal(error.ToString(), "GameOptionsSender.SendOptionsArray");
-        }
-    }
-    protected virtual void SendOptionsArray(Il2CppStructArray<byte> optionArray, byte LogicOptionsIndex, int targetClientId)
-    {
-        DataFlagRateLimiter.Enqueue(() =>
-        {
-            MessageWriter writer = MessageWriter.Get(SendOption.Reliable);
-
-            writer.StartMessage(targetClientId == -1 ? Tags.GameData : Tags.GameDataTo);
-            {
-                writer.Write(AmongUsClient.Instance.GameId);
-                if (targetClientId != -1) writer.WritePacked(targetClientId);
-
-                writer.StartMessage(1);
+                
+                for (var index = 0; index < AllSenders.Count; index++)
                 {
-                    writer.WritePacked(GameManager.Instance.NetId);
-                    writer.StartMessage(LogicOptionsIndex);
+                    yield return WaitFrameIfNecessary();
+
+                    if (PackedWriter != null && (PackedWriter.Length > 500 || PackedWriterMessages >= AmongUsClient.Instance.GetMaxMessagePackingLimit()))
                     {
-                        writer.WriteBytesAndSize(optionArray);
+                        PackedWriter.EndMessage();
+                        var qa = DataFlagRateLimiter.Enqueue(() => AmongUsClient.Instance.SendOrDisconnect(PackedWriter));
+                        yield return qa.Wait();
+                        PackedWriterMessages = 0;
+                        if (qa.Dropped) break;
+                        PackedWriter.Clear(SendOption.Reliable);
+                        PackedWriter.StartMessage(26);
+                        PackedWriter.WritePacked(AmongUsClient.Instance.GameId);
                     }
-                    writer.EndMessage();
+                    
+                    yield return WaitFrameIfNecessary();
+                    
+                    if (index >= AllSenders.Count) break;
+                    GameOptionsSender sender = AllSenders[index];
+
+                    if (sender == null || !sender.AmValid())
+                    {
+                        AllSenders.RemoveAt(index);
+                        index--;
+                        continue;
+                    }
+
+                    if (sender.IsDirty)
+                        yield return sender.SendGameOptionsAsync();
+
+                    sender.IsDirty = false;
                 }
-                writer.EndMessage();
+
+                yield return WaitFrameIfNecessary();
+
+                if (PackedWriterMessages > 0 && PackedWriter != null)
+                {
+                    PackedWriter.EndMessage();
+                    yield return DataFlagRateLimiter.Enqueue(() => AmongUsClient.Instance.SendOrDisconnect(PackedWriter)).Wait();
+                }
+
+                PackedWriter?.Recycle();
+                PackedWriter = null;
+                PackedWriterMessages = 0;
+
+                ForceWaitFrame = true;
+                yield return WaitFrameIfNecessary();
             }
-
-            writer.EndMessage();
-
-            AmongUsClient.Instance.SendOrDisconnect(writer);
-            writer.Recycle();
-        });
+        }
+        finally
+        {
+            ActiveCoroutine = null;
+            PackedWriter?.Recycle();
+            PackedWriter = null;
+            PackedWriterMessages = 0;
+        }
     }
-    public abstract IGameOptions BuildGameOptions();
 
-    public virtual bool AmValid() => true;
+    protected static IEnumerator WaitFrameIfNecessary()
+    {
+        if (ForceWaitFrame || Stopwatch.ElapsedMilliseconds >= FrameBudget)
+        {
+            ForceWaitFrame = false;
+            Stopwatch.Reset();
+            yield return null;
+            Stopwatch.Start();
+        }
+    }
+
+    public static Coroutine ActiveCoroutine;
+    private static readonly Stopwatch Stopwatch = new();
+    private const int FrameBudget = 3; // in milliseconds
+    protected static bool ForceWaitFrame;
+
+    #endregion
 }

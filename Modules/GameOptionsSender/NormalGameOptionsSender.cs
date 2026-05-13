@@ -1,4 +1,6 @@
 using AmongUs.GameOptions;
+using Hazel;
+using Il2CppInterop.Runtime.InteropTypes.Arrays;
 using System;
 
 namespace TOHE.Modules;
@@ -6,42 +8,65 @@ namespace TOHE.Modules;
 public class NormalGameOptionsSender : GameOptionsSender
 {
     private LogicOptions _logicOptions;
-    public override IGameOptions BasedGameOptions
-        => GameOptionsManager.Instance.CurrentGameOptions;
+    private static IGameOptions BasedGameOptions => GameOptionsManager.Instance.CurrentGameOptions;
 
-    public override bool IsDirty
+    protected override bool IsDirty
     {
         get
         {
             try
             {
-                if (_logicOptions == null || !GameManager.Instance.LogicComponents.Contains(_logicOptions))
+                if (GameManager.Instance != null && GameManager.Instance.LogicComponents != null && (_logicOptions == null || !GameManager.Instance.LogicComponents.Contains(_logicOptions)))
                 {
-                    foreach (var glc in GameManager.Instance?.LogicComponents.GetFastEnumerator())
-                        if (glc.TryCast<LogicOptions>(out var lo))
+                    foreach (GameLogicComponent glc in GameManager.Instance.LogicComponents)
+                    {
+                        if (glc.TryCast(out LogicOptions lo))
                             _logicOptions = lo;
+                    }
                 }
-                return _logicOptions != null && _logicOptions.IsDirty;
+
+                return _logicOptions is { IsDirty: true };
             }
-            catch (Exception error)
+            catch (Exception ex)
             {
-                Logger.Warn($"_logicOptions == null {_logicOptions == null} --- GameManager.Instance.LogicComponents == null {GameManager.Instance.LogicComponents == null} - Error: {error}", "NormalGameOptionsSender.IsDirty.Get");
-                return _logicOptions != null && _logicOptions.IsDirty;
+                Logger.Error(ex.ToString(), "NormalGameOptionsSender.IsDirty.Get");
+                return _logicOptions is { IsDirty: true };
             }
         }
-        protected set
-        {
-            try
-            {
-                _logicOptions?.ClearDirtyFlag();
-            }
-            catch (Exception error)
-            {
-                Logger.Warn(error.ToString(), "NormalGameOptionsSender.IsDirty.ProtectedSet");
-            }
-        }
+        set => _logicOptions?.ClearDirtyFlag();
     }
 
     public override IGameOptions BuildGameOptions()
-        => BasedGameOptions;
+    {
+        return BasedGameOptions;
+    }
+    
+    protected override void SendOptionsArray(Il2CppStructArray<byte> optionArray, byte logicOptionsIndex)
+    {
+        DataFlagRateLimiter.Enqueue(() =>
+        {
+            MessageWriter writer = MessageWriter.Get(SendOption.Reliable);
+
+            writer.StartMessage(5);
+            {
+                writer.Write(AmongUsClient.Instance.GameId);
+
+                writer.StartMessage(1);
+                {
+                    writer.WritePacked(GameManager.Instance.NetId);
+                    writer.StartMessage(logicOptionsIndex);
+                    {
+                        writer.WriteBytesAndSize(optionArray);
+                    }
+                    writer.EndMessage();
+                }
+                writer.EndMessage();
+            }
+
+            writer.EndMessage();
+
+            AmongUsClient.Instance.SendOrDisconnect(writer);
+            writer.Recycle();
+        });
+    }
 }

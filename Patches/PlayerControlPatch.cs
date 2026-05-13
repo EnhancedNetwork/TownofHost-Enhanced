@@ -1316,7 +1316,7 @@ class FixedUpdateInNormalGamePatch
 
                     if (timerLowLoad % 6 == 0)
                     {
-                        GameOptionsSender.SendAllGameOptions();
+                        PlayerGameOptionsSender.SetDirtyToAll();
                         // Of course we should be updating dirty game options
                         // This will be triggered by host playerControl every 0.2s
                     }

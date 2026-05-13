@@ -1055,8 +1055,7 @@ static class ExtendedPlayerControl
     }
     public static void SyncSettings(this PlayerControl player)
     {
-        PlayerGameOptionsSender.SetDirty(player.PlayerId);
-        GameOptionsSender.SendAllGameOptions();
+        PlayerGameOptionsSender.ForceSendImmediately(player.PlayerId);
     }
     public static void WriteSettingsInWriter(this MessageWriter writer, PlayerControl player)
     {
