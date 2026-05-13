@@ -419,6 +419,15 @@ internal class StartGameHostPatch
             yield break;
         }
 
+        //Start CustomRpcSender
+        RpcSetRoleReplacer.StartReplace();
+
+        RpcSetRoleReplacer.BuildInitialRoleMap();
+        RpcSetRoleReplacer.MakeDesyncSenders();
+
+        //send All RPCs
+        RpcSetRoleReplacer.Release();
+
         try
         {
             foreach (var pc in Main.EnumeratePlayerControls())
@@ -542,15 +551,6 @@ internal class StartGameHostPatch
             Utils.ThrowException(ex);
             yield break;
         }
-
-        //Start CustomRpcSender
-        RpcSetRoleReplacer.StartReplace();
-
-        RpcSetRoleReplacer.BuildInitialRoleMap();
-        RpcSetRoleReplacer.MakeDesyncSenders();
-
-        //send All RPCs
-        RpcSetRoleReplacer.Release();
 
         Logger.Info("Others assign finished", "AssignRoleTypes");
         yield return new WaitForSecondsRealtime(GameStates.IsLocalGame ? 1f : 2f);

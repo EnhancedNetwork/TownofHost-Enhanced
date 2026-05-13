@@ -24,8 +24,6 @@ public class CustomRpcSender
     public delegate void onSendDelegateType();
     public onSendDelegateType onSendDelegate;
 
-    // for logging
-    private RpcCalls? LastCall;
     private readonly List<string> LastRpcs = [];
     private readonly List<object> LastWriten = [];
 
