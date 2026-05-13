@@ -456,8 +456,6 @@ public static class CustomRpcSenderExtensions
 
         name = name.Replace("color=", string.Empty);
 
-        var saw = seerIsNull ? "Everyone" : seer.GetRealName(); // Ternary operators can't be used inside of $ strings
-
         switch (seerIsNull)
         {
             case true when Main.LastNotifyNames.Where(x => x.Key.Item1 == player.PlayerId).All(x => x.Value == name):
@@ -472,7 +470,7 @@ public static class CustomRpcSenderExtensions
                 break;
         }
 
-        Logger.Info($"Set name for {player.GetRealName()} for seer {saw} to {name.RemoveHtmlTags()}", "RpcSetName");
+        Logger.Info($"Set name for {player.GetRealName()} for seer {(seerIsNull ? "Everyone" : seer.GetRealName())} to {name.RemoveHtmlTags()}", "RpcSetName");
 
         sender.AutoStartRpc(player.NetId, (byte)RpcCalls.SetName, targetClientId)
             .Write(player.Data.NetId)

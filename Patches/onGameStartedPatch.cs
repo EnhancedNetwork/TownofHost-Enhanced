@@ -411,12 +411,6 @@ internal class StartGameHostPatch
             }
 
             Logger.Msg("Is Started", "AssignRoles");
-
-            //Start CustomRpcSender
-            RpcSetRoleReplacer.StartReplace();
-
-            RpcSetRoleReplacer.BuildInitialRoleMap();
-            RpcSetRoleReplacer.MakeDesyncSenders();
         }
         catch (Exception ex)
         {
@@ -425,19 +419,9 @@ internal class StartGameHostPatch
             yield break;
         }
 
-        if (Main.CurrentServerIsVanilla && Options.BypassRateLimitAC.GetBool())
-        {
-            yield return RpcSetRoleReplacer.ReleaseVanilla();
-        }
-        else
-        {
-            // Send all RPC for modded region
-            RpcSetRoleReplacer.Release();
-        }
-
         try
         {
-            foreach (var pc in PlayerControl.AllPlayerControls.GetFastEnumerator())
+            foreach (var pc in Main.EnumeratePlayerControls())
             {
                 if (Main.PlayerStates[pc.PlayerId].MainRole != CustomRoles.NotAssigned) continue;
                 var role = pc.Data.Role.Role switch
@@ -505,7 +489,7 @@ internal class StartGameHostPatch
 
             GhostRoleAssign.Add();
 
-            foreach (var pc in PlayerControl.AllPlayerControls.GetFastEnumerator())
+            foreach (var pc in Main.EnumeratePlayerControls())
             {
                 if (Utils.IsMethodOverridden(pc.GetRoleClass(), "UnShapeShiftButton"))
                 {
@@ -523,7 +507,7 @@ internal class StartGameHostPatch
 
         EndOfSelectRolePatch:
 
-            foreach (var pc in PlayerControl.AllPlayerControls.GetFastEnumerator())
+            foreach (var pc in Main.EnumeratePlayerControls())
                 pc.ResetKillCooldown();
 
             // Role types
@@ -558,6 +542,15 @@ internal class StartGameHostPatch
             Utils.ThrowException(ex);
             yield break;
         }
+
+        //Start CustomRpcSender
+        RpcSetRoleReplacer.StartReplace();
+
+        RpcSetRoleReplacer.BuildInitialRoleMap();
+        RpcSetRoleReplacer.MakeDesyncSenders();
+
+        //send All RPCs
+        RpcSetRoleReplacer.Release();
 
         Logger.Info("Others assign finished", "AssignRoleTypes");
         yield return new WaitForSecondsRealtime(GameStates.IsLocalGame ? 1f : 2f);
@@ -674,13 +667,18 @@ public static class RpcSetRoleReplacer
 {
     public static bool BlockSetRole = false;
     public static Dictionary<int, CustomRpcSender> Senders = [];
+    public static Dictionary<byte, RoleTypes> StoragedData = [];
     public static Dictionary<(byte seerId, byte targetId), (RoleTypes roleType, CustomRoles customRole)> RoleMap = [];
-    // List of Senders that do not require additional writing because SetRoleRpc has already been written by another process such as Position Desync
+    public static List<CustomRpcSender> OverriddenSenderList = [];
+    public static Dictionary<byte, RoleTypes> OverriddenTeamRevealScreen = [];
     public static void Initialize()
     {
         BlockSetRole = true;
         Senders = [];
         RoleMap = [];
+        StoragedData = [];
+        OverriddenSenderList = [];
+        OverriddenTeamRevealScreen = [];
     }
     public static bool Prefix()
     {
@@ -688,13 +686,19 @@ public static class RpcSetRoleReplacer
     }
     public static void StartReplace()
     {
-        foreach (var pc in PlayerControl.AllPlayerControls.GetFastEnumerator())
-        {
-            if (pc.AmOwner) continue;
-
-            Senders[pc.OwnerId] = CustomRpcSender.Create($"SetRole Sender." + pc.OwnerId, SendOption.Reliable, false)
-                    .StartMessage(pc.GetClientId());
-        }
+        try
+            {
+                foreach (PlayerControl pc in Main.EnumeratePlayerControls())
+                {
+                    try
+                    {
+                        Senders[pc.PlayerId] = CustomRpcSender.Create($"{pc.name}'s SetRole Sender", SendOption.Reliable)
+                            .StartMessage(pc.OwnerId);
+                    }
+                    catch (Exception e) { Utils.ThrowException(e); }
+                }
+            }
+            catch (Exception e) { Utils.ThrowException(e); }
     }
 
     public static void BuildInitialRoleMap()
@@ -733,7 +737,7 @@ public static class RpcSetRoleReplacer
             {
                 var roleType = role.GetRoleTypes();
 
-                if (roleType is not RoleTypes.Impostor and not RoleTypes.Shapeshifter and not RoleTypes.Phantom)
+                if (roleType is not RoleTypes.Impostor and not RoleTypes.Shapeshifter and not RoleTypes.Phantom and not RoleTypes.Viper)
                 {
                     foreach (var target in Main.EnumeratePlayerControls())
                     {
@@ -889,22 +893,27 @@ public static class RpcSetRoleReplacer
 
     public static void Release()
     {
-        Senders.Do(kvp => kvp.Value.SendMessage());
-        BlockSetRole = false;
-    }
-
-    public static System.Collections.IEnumerator ReleaseVanilla()
-    {
-        foreach (var kvp in Senders)
+        try
         {
-            kvp.Value.SendMessage();
-            yield return new WaitForSecondsRealtime(0.3f);
+            BlockSetRole = false;
+
+            foreach (CustomRpcSender sender in Senders.Values)
+            {
+                try { sender.SendMessage(); }
+                catch (Exception e) { Utils.ThrowException(e); }
+            }
         }
-        BlockSetRole = false;
+        catch (Exception e) { Utils.ThrowException(e); }
     }
 
     public static void EndReplace()
     {
-        Senders = null;
+        try
+        {
+            Senders = null;
+            OverriddenSenderList = null;
+            StoragedData = null;
+        }
+        catch (Exception e) { Utils.ThrowException(e); }
     }
 }

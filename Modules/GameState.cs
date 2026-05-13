@@ -131,7 +131,10 @@ public class PlayerState(byte playerId)
             countTypes = CountTypes.Coven;
         }
 
-        MainRoleLogs.Add((DateTime.Now, role));
+        if (Main.IntroDestroyed && (MainRoleLogs.Count == 0 || MainRoleLogs[^1].Item2 != MainRole))
+            MainRoleLogs.Add((DateTime.Now, role));
+
+        Logger.Info($"ID {PlayerId} ({PlayerId.GetPlayerName()}) => {role}, CountTypes => {countTypes}", "SetMainRole");
 
         if (GameStates.IsInGame && preMainRole != CustomRoles.NotAssigned)
         {
