@@ -2268,18 +2268,29 @@ public static class Utils
 
         return baseMethod.DeclaringType != derivedMethod.DeclaringType;
     }
-    public static IEnumerator NotifyEveryoneAsync(int speed = 2)
+    public static IEnumerator NotifyEveryoneAsync(bool noCache = true, SendOption sendOption = SendOption.Reliable)
     {
-        var count = 0;
+        if (!AmongUsClient.Instance.AmHost || GameStates.IsMeeting) yield break;
 
-        var aapc = Main.EnumeratePlayerControls();
+        const int frameBudget = 3; // milliseconds per frame
+        var stopwatch = new Stopwatch();
+        var aapc = Main.AllAlivePlayerControls;
 
         foreach (PlayerControl seer in aapc)
         {
             foreach (PlayerControl target in aapc)
             {
-                NotifyRoles(SpecifySeer: seer, SpecifyTarget: target);
-                if (count++ % speed == 0) yield return null;
+                if (GameStates.IsMeeting) yield break;
+                var sender = CustomRpcSender.Create("Utils.NotifyEveryoneAsync", sendOption, log: false);
+                var hasValue = WriteSetNameRpcsToSender(ref sender, false, noCache, false, false, false, false, seer, [seer], [target], out bool senderWasCleared, sendOption) && !senderWasCleared;
+                sender.SendMessage(!hasValue || sender.stream.Length <= 3);
+                
+                if (stopwatch.ElapsedMilliseconds >= frameBudget)
+                {
+                    stopwatch.Reset();
+                    yield return null;
+                    stopwatch.Start();
+                }
             }
         }
     }

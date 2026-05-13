@@ -541,7 +541,7 @@ class MurderPlayerPatch
             Utils.SyncAllSettings();
         }
 
-        Main.Instance.StartCoroutine(Utils.NotifyEveryoneAsync(speed: 4));
+        Main.Instance.StartCoroutine(Utils.NotifyEveryoneAsync(false));
     }
     public static void AfterPlayerDeathTasks(PlayerControl killer, PlayerControl target, bool inMeeting, bool fromRole = false)
     {
