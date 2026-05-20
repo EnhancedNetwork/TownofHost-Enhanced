@@ -1,3 +1,4 @@
+// https://github.com/Gurge44/EndlessHostRoles/blob/main/Modules/DataFlagRateLimiter.cs
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -5,7 +6,6 @@ using Hazel;
 
 namespace TOHE.Modules;
 
-// Credit: EHR
 public static class DataFlagRateLimiter
 {
     public class QueuedAction
@@ -22,6 +22,8 @@ public static class DataFlagRateLimiter
                 yield return null;
         }
     }
+
+    private static int LastPingMs;
 
     // =========================
     // RELIABLE
@@ -58,24 +60,47 @@ public static class DataFlagRateLimiter
         };
 
         // Not needed on modded regions
-        if (!Main.CurrentServerIsVanilla)
+        if (!GameStates.IsVanillaServer)
         {
             Execute(qa);
+            return qa;
+        }
+
+        if (GameStates.IsEnded && !GameStates.IsLobby)
+        {
+            Drop(qa);
             return qa;
         }
 
         switch (channel)
         {
             case SendOption.Reliable:
-                EnqueueInternal(ReliableQueue, ref ReliableSent, ReliableTimer, ReliableRateLimitPerSecond, qa);
+                EnqueueInternal(ReliableQueue, ref ReliableSent, ReliableRateLimitPerSecond, qa);
                 break;
 
             case SendOption.None: // Unreliable
-                EnqueueInternal(UnreliableQueue, ref UnreliableSent, UnreliableTimer, UnreliableRateLimitPerSecond, qa);
+                EnqueueInternal(UnreliableQueue, ref UnreliableSent, UnreliableRateLimitPerSecond, qa);
                 break;
         }
 
         return qa;
+    }
+
+    private static void Drop(QueuedAction qa)
+    {
+        try
+        {
+            qa.Cleanup?.Invoke();
+        }
+        catch (Exception e)
+        {
+            Utils.ThrowException(e);
+
+
+        }
+
+        qa.Dropped = true;
+        qa.Done = true;
     }
 
     // Called once per frame
@@ -92,17 +117,9 @@ public static class DataFlagRateLimiter
     private static void EnqueueInternal(
         Queue<QueuedAction> queue,
         ref int sent,
-        Stopwatch timer,
         int limit,
         QueuedAction qa)
     {
-        // Reset window every second
-        if (timer.ElapsedMilliseconds >= 1000)
-        {
-            timer.Restart();
-            sent = 0;
-        }
-
         // Try immediate execution if no backlog
         if (queue.Count == 0 && sent + qa.Cost <= limit)
         {
@@ -121,8 +138,9 @@ public static class DataFlagRateLimiter
         int limit)
     {
         // Reset window every second
-        if (timer.ElapsedMilliseconds >= 1000)
+        if (timer.ElapsedMilliseconds >= 1000 + Math.Max(0, LastPingMs - AmongUsClient.Instance.Ping))
         {
+            LastPingMs = AmongUsClient.Instance.Ping;
             timer.Restart();
             sent = 0;
         }

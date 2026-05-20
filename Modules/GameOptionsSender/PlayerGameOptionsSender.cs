@@ -53,6 +53,22 @@ public class PlayerGameOptionsSender(PlayerControl player) : GameOptionsSender
     public static void SendAllImmediately()
     {
         ForceWaitFrame = true;
+
+        if (PackedWriterMessages > 0 && PackedWriter != null)
+        {
+            PackedWriter.EndMessage();
+            var capturedWriter = PackedWriter;
+            DataFlagRateLimiter.Enqueue(() =>
+            {
+                AmongUsClient.Instance.SendOrDisconnect(capturedWriter);
+                capturedWriter.Recycle();
+            }, cleanup: capturedWriter.Recycle);
+        }
+
+        PackedWriter = MessageWriter.Get(SendOption.Reliable);
+        PackedWriter.StartMessage(26);
+        PackedWriter.WritePacked(AmongUsClient.Instance.GameId);
+        PackedWriterMessages = 0;
         
         for (var index = 0; index < AllSenders.Count; index++)
         {
@@ -60,10 +76,45 @@ public class PlayerGameOptionsSender(PlayerControl player) : GameOptionsSender
 
             if (allSender is PlayerGameOptionsSender { IsDirty: true } sender)
             {
+                if (PackedWriter != null && (PackedWriter.Length > 500 || PackedWriterMessages >= AmongUsClient.Instance.GetMaxMessagePackingLimit()))
+                {
+                    PackedWriter.EndMessage();
+                    var capturedWriter = PackedWriter;
+                    DataFlagRateLimiter.Enqueue(() =>
+                    {
+                        AmongUsClient.Instance.SendOrDisconnect(capturedWriter);
+                        capturedWriter.Recycle();
+                    }, cleanup: capturedWriter.Recycle);
+                    PackedWriterMessages = 0;
+                    PackedWriter = MessageWriter.Get(SendOption.Reliable);
+                    PackedWriter.StartMessage(26);
+                    PackedWriter.WritePacked(AmongUsClient.Instance.GameId);
+                }
                 sender.SendGameOptions();
                 sender.IsDirty = false;
             }
         }
+
+        if (PackedWriter != null)
+        {
+            if (PackedWriterMessages > 0)
+            {
+                PackedWriter.EndMessage();
+                var capturedWriter = PackedWriter;
+                DataFlagRateLimiter.Enqueue(() =>
+                {
+                    AmongUsClient.Instance.SendOrDisconnect(capturedWriter);
+                    capturedWriter.Recycle();
+                }, cleanup: capturedWriter.Recycle);
+            }
+            else
+            {
+                PackedWriter.Recycle();
+            }
+        }
+
+        PackedWriter = null;
+        PackedWriterMessages = 0;
     }
 
     public static void SetDirtyToAll()
@@ -152,11 +203,40 @@ public class PlayerGameOptionsSender(PlayerControl player) : GameOptionsSender
     
     protected override void SendOptionsArray(Il2CppStructArray<byte> optionArray, byte logicOptionsIndex)
     {
-        if (PackedWriter == null) return;
+        if (PackedWriter == null)
+        {
+            DataFlagRateLimiter.Enqueue(() =>
+            {
+                MessageWriter writer = MessageWriter.Get(SendOption.Reliable);
+
+                writer.StartMessage(6);
+                {
+                    writer.Write(AmongUsClient.Instance.GameId);
+                    writer.WritePacked(player.OwnerId);
+
+                    writer.StartMessage(1);
+                    {
+                        writer.WritePacked(GameManager.Instance.NetId);
+                        writer.StartMessage(logicOptionsIndex);
+                        {
+                            writer.WriteBytesAndSize(optionArray);
+                        }
+                        writer.EndMessage();
+                    }
+                    writer.EndMessage();
+                }
+
+                writer.EndMessage();
+
+                AmongUsClient.Instance.SendOrDisconnect(writer);
+                writer.Recycle();
+            });
+            return;
+        }
         
         PackedWriterMessages++;
         
-        PackedWriter.StartMessage(Tags.GameDataTo);
+        PackedWriter.StartMessage(6);
         {
             PackedWriter.Write(AmongUsClient.Instance.GameId);
             PackedWriter.WritePacked(player.OwnerId);
