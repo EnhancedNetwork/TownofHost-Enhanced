@@ -1372,7 +1372,7 @@ public static class Options
              .SetGameMode(CustomGameMode.Standard)
              .SetColor(Color.red);*/
 
-        MessageRpcSizeLimit = IntegerOptionItem.Create(60296, "MessageRpcSizeLimit", new(500, 100000, 100), 1400, TabGroup.SystemSettings)
+        MessageRpcSizeLimit = IntegerOptionItem.Create(60296, "MessageRpcSizeLimit", new(500, 1200, 100), 1000, TabGroup.SystemSettings)
             .SetHeader(true);
 
         KickNotJoinedPlayersRegularly = BooleanOptionItem.Create(60295, "KickNotJoinedPlayersRegularly", true, TabGroup.SystemSettings)
