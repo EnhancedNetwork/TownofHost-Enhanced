@@ -1793,7 +1793,7 @@
   "MedicShieldDeactivationIsVisible_OFF": "<color=#ff0000>AUS</color>",
   "MedicResetCooldown": "On kill attempt, reset murderer's Cooldown to",
   "MedicShieldedCanBeGuessed": "Guessen ignoriert das <color=#00ff97>Sanitäter</color> -Schild",
-  "MedicPortableVitals": "Medic has Portable Vitals After Shielding a Player",
+  "MedicPortableVitals": "Medic hat nach dem Schild eines Spielers tragbare Vitale",
   "MadmateSpawnMode": "<color=#ff1919>Verräterhelfer</color> Entstehungsmodus",
   "MadmateSpawnMode.Assign": "Zuweisen",
   "MadmateSpawnMode.FirstKill": "Erster Kill",
