@@ -2132,7 +2132,7 @@
   "SummonerSettings.HasAbilityUses": "Summoner has ability limit",
   "SummonerSettings.SummonedKnowsCoven": "Summoned players know who summoner is",
   "Summoner.SummonerDead": "You can't summon players while dead.",
-  "Summoner.SummonSelf": "Look at you, trying to summon yourself! You're already here, can't you see?",
+  "Summoner.SummonSelf": "Sieh dich nur an, wie du versuchst, dich selbst herbeizurufen! Du bist doch schon hier, merkst du das nicht?",
   "Summoner.InvalidID": "Invalid player ID specified.\nPlease use '/cmd summon [playerID]' to summon a player.\nExample :- /cmd summon 5",
   "Summoner.NullPlayer": "Target player not found.",
   "Summoner.NoUses": "You have reached the maximum number of summons.",
