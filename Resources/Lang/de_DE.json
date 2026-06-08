@@ -2962,7 +2962,7 @@
   "SoulCollectorHasImpostorVision": "<color=#A675A1>Soul Collector</color> has <color=#ff1919>Impostor</color> Vision",
   "LichPointsToWin": "Required number of Charges",
   "LichTarget": "You have cursed <b>{0}</b>",
-  "GetPassiveCharges": "Gain a passive charge every round",
+  "GetPassiveCharges": "Bekomme eine passive Ladung jede Runde",
   "PassiveChargeGained": "You have gained a passive Charge for your Grimoire",
   "LichTargetUsed": "You have cursed <b>{0}</b> instead",
   "LichCantTargetApoc": "Can't curse another Apocalypse",
